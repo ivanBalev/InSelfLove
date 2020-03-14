@@ -1,0 +1,146 @@
+$primary: #f083c1;
+$primary-overlay: rgba(0, 0, 0, 0.6);
+
+body {
+  margin-top: 45px;
+}
+
+.navbar {
+  box-shadow: 2px 2px 5px $primary; // horizontal offset, vertical offset, blur, color
+  opacity: 0.9;
+  background: #fff;
+
+  .nav-item {
+    font-size: 1.2rem;
+    padding-right: 1.2rem;
+  }
+}
+
+#showcase {
+  position: relative;
+  background: url('../img/backgroundImg.jpg');
+  min-height: 600px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center center;
+
+  .showcase-wrapper {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+  }
+}
+
+#slimShowcase {
+  position: relative;
+  background: url('../img/backgroundImg.jpg');
+  height: 200px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center center;
+
+  .slimShowcase-wrapper {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.dark-overlay {
+  background: $primary-overlay;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#blog {
+  a {
+    color: inherit;
+  }
+
+  a:hover {
+    opacity: 0.6;
+  }
+}
+
+#allArticles {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card:hover {
+    opacity: 0.6;
+  }
+}
+
+.info-header {
+  width: 50%;
+  margin: auto;
+  border-bottom: 1px $primary solid;
+}
+
+#videoCarousel {
+  .carousel-control-prev {
+    margin-left: -15%;
+  }
+  .carousel-control-next {
+    margin-right: -15%;
+  }
+
+  .carousel-control-next-icon,
+  .carousel-control-prev-icon {
+    filter: invert(1);
+  }
+}
+
+#main-footer {
+  color: white;
+  background: #606061;
+}
+
+// singleArticleStyling
+
+#singleArticle .card-img-top {
+  width: 100%;
+  height: 30vw;
+  object-fit: cover;
+}
+
+//allVideosStyling
+
+#videoGallery {
+  .col {
+    padding-bottom: 2%;
+    border-bottom: 1px $primary solid;
+  }
+}
+
+//Accordion
+
+#comments {
+  #accordion {
+    .card-header {
+      cursor: pointer;
+    }
+  }
+
+  hr {
+    border-color: $primary;
+  }
+}
+
+#videoGallery {
+  .card-header {
+    cursor: pointer;
+  }
+}
+
+#mapid {
+  height: 500px;
+}

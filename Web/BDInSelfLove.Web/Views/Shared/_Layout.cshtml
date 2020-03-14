@@ -1,0 +1,103 @@
+﻿@using BDInSelfLove.Common
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+          integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    @this.RenderSection("Links", required: false)
+    <link rel="stylesheet" href="~/Custom/css/bootstrap.css">
+    <link rel="stylesheet" href="~/Custom/css/style.css">
+    <title>In.Self.Love</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top py-0" id="main-nav">
+        <div class="container">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
+                @* TAG HELPER EXERCISE *@
+                <h3 font-awesome-icon="fab fa-pagelines" brand-name="In.Self.Love" class="d-inline"></h3>
+            </a>
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="navbarCollapse" class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-5 mr-auto">
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Articles" asp-action="Index" class="nav-link">Articles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Videos" asp-action="Index" class="nav-link">Videos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Home" asp-action="Contact" class="nav-link">Contact</a>
+                    </li>
+                    @* VIEW COMPONENT EXERCISE - DYNAMIC NAVBAR - ОТДЕЛЯМЕ ЛОГИКАТА КАТО ОТДЕЛЕН КОМПОНЕНТ, КОЕТО ПОЗВОЛЯВА ДА НЕ ЗАТОРМОЗЯВАМЕ _LAYOUT *@
+                    @* https://github.com/NikolayIT/nikolay.it SEE IMPERATIVE!!!*@
+                    <vc:navbar count="2"></vc:navbar>
+                </ul>
+
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+
+        <div class=" d-none d-lg-inline-block">
+            <ul class="navbar-nav socialMedia">
+                <li class="nav-item">
+                    <a href="https://www.facebook.com/in.self.love/" target="_blank" class="d-inline-block p-3"
+                   rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a href="https://www.instagram.com/in.self.love/" class="d-inline-block p-3" target="_blank"
+                   rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <partial name="_CookieConsentPartial" />
+    </div>
+
+    @this.RenderBody()
+
+
+    <!-- FOOTER -->
+    <footer id="main-footer" class="text-center pt-3">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <p>Copyright &copy; <span id="year"></span> In.Self.Love</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+            integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+            crossorigin="anonymous"></script>
+    <script>
+        // Get the current year for the copyright
+        $('#year').text(new Date().getFullYear());
+
+        $('.carousel').carousel({
+            interval: false
+        });
+    </script>
+
+    @this.RenderSection("Scripts", required: false)
+
+</body>
+</html>
