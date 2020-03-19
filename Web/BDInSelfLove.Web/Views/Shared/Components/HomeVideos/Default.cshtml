@@ -1,0 +1,32 @@
+﻿@model BDInSelfLove.Web.ViewComponents.Models.Videos.AllHomeVideosViewModel
+@{
+    int index = 0;
+}
+
+@foreach (var video in Model.Videos)
+{
+    if (index == 0)
+    {
+        <div class="carousel-item active">
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe width="560" height="315" src="@video.Url" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+
+        @(index++);
+    }
+    else
+    {
+        <div class="carousel-item">
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe width="560" height="315" src="@video.Url" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    }
+}

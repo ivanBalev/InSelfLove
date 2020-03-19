@@ -1,16 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.Controllers
+﻿namespace BDInSelfLove.Web.Controllers
 {
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Services.Data.Videos;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.ViewComponents.Models.Videos;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
     public class VideosController : BaseController
     {
-        public IActionResult Index()
+        private readonly IVideoService videoService;
+
+        public VideosController(IVideoService videoService)
         {
-            return this.View();
+            this.videoService = videoService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var viewModel = new AllHomeVideosViewModel
+            {
+                Videos = await this.videoService
+              .GetAll()
+              .To<HomeVideoViewModel>()
+              .ToListAsync(),
+            };
+
+            return this.View(viewModel);
         }
     }
 }

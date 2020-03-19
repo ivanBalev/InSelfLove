@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    var title = "Administration Panel";
+}
+
+<partial name="_SlimShowcasePartial" model="@title" />
+
+<div class="container">
+    <h1 class="text-center"></h1>
+    <div class="mb-3 mt-4">
+        <div class="row">
+            <div class="col-md-3" id="manageNav">
+                <partial name="_ManageNav" />
+            </div>
+            <div class="col-md-9 navBody">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+
+@section HeadScripts {
+    @RenderSection("HeadScripts", required: false)
+}

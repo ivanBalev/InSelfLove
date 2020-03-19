@@ -1,19 +1,30 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
     using System.Diagnostics;
-    using BDInSelfLove.Web.Filters;
-    using BDInSelfLove.Web.Filters.AuthorizationFilters;
-    using BDInSelfLove.Web.Filters.ExceptionFilters;
-    using BDInSelfLove.Web.Filters.ResourceFilters;
-    using BDInSelfLove.Web.Filters.ResultFilters;
-    using BDInSelfLove.Web.ViewModels;
+    using System.Linq;
+    using System.Threading.Tasks;
 
+    using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.ViewModels;
+    using BDInSelfLove.Web.ViewModels.Articles;
+    using BDInSelfLove.Web.ViewModels.Home;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
 
     // DEPENDENCY INJECTION WITH FILTERS
     //[TypeFilter(typeof(AddHeaderActionFilterAttribute))]
     public class HomeController : BaseController
     {
+        private const int IndexArticlesCount = 4;
+
+        private readonly IArticleService articleService;
+
+        public HomeController(IArticleService articleService)
+        {
+            this.articleService = articleService;
+        }
+
         //[AddHeaderAsyncActionFilter]
         //// SERVICEFILTER ALLOWS US TO CONTROL HOW WE INSTANTIATE THE FILTER (SINGLETON, TRANSIENT, SCOPED) IN THE FILE STARTUP.CS
         ////[ServiceFilter(typeof(AddHeaderAsyncActionFilterAttribute))]
@@ -21,7 +32,23 @@
         //[MyExceptionFilter]
         //[MyResourceFilter]
         //[MyResultFilter]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
+        {
+            var lastArticles = await this.articleService
+               .GetAll(IndexArticlesCount)
+               .To<ArticleViewModel>()
+               .ToListAsync();
+
+            var viewModel = new HomeViewModel
+            {
+                LastArticles = lastArticles.Skip(1),
+                FeaturedArticle = lastArticles[0],
+            };
+
+            return this.View(viewModel);
+        }
+
+        public IActionResult Contact()
         {
             return this.View();
         }
@@ -38,9 +65,5 @@
                 new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
         }
 
-        public IActionResult Contact()
-        {
-            return this.View();
-        }
     }
 }

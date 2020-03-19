@@ -1,21 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.Controllers
+﻿namespace BDInSelfLove.Web.Controllers
 {
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.ViewModels.Articles;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
     public class ArticlesController : BaseController
     {
-        public IActionResult Index()
+        private readonly IArticleService articleService;
+
+        public ArticlesController(IArticleService articleService)
         {
-            return this.View();
+            this.articleService = articleService;
         }
 
-        public IActionResult Single(int id)
+        public async Task<IActionResult> IndexAsync()
         {
-            return this.View();
+            var viewModel = await this.articleService
+                .GetAll()
+                .To<ArticleViewModel>()
+                .ToListAsync();
+
+            return this.View(viewModel);
+        }
+
+        public async Task<IActionResult> Single(int id)
+        {
+            var model = await this.articleService
+                .GetAll()
+                .Where(a => a.Id == id)
+                .To<ArticleViewModel>()
+                .FirstOrDefaultAsync();
+
+            return this.View(model);
         }
     }
 }

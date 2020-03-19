@@ -1,0 +1,20 @@
+﻿@model IEnumerable<BDInSelfLove.Web.ViewModels.Articles.ArticleViewModel>
+
+@foreach (var article in Model)
+{
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a asp-area="" asp-controller="Articles" asp-action="Single" asp-route-id="@article.Id">
+            <div class="card">
+                <img src=@article.ImageUrl alt="" class="img-fluid card-img-top">
+                <div class="card-body bg-light text-center">
+                    <div class="card-title">@article.Title</div>
+                    <small class="text-muted">Posted by @article.UserUsername on @article.CreatedOn.ToString("MMMM dd")</small>
+                    <hr>
+                    <p class="card-text">
+                        @article.PreviewContent
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+}

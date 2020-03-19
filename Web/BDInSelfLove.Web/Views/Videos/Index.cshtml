@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BDInSelfLove.Web.ViewComponents.Models.Videos.AllHomeVideosViewModel
+@{
     ViewData["Title"] = "All Videos";
 }
 
@@ -6,53 +7,16 @@
 
 <section id="videoGallery" class="py-4">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col">
-                <div class="embed-responsive embed-responsive-21by9">
-                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/xxR7rcR2dXY"></iframe>
-                </div>
-                <partial name="_CommentsPartial" />
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col">
-                <div class="embed-responsive embed-responsive-21by9">
-                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/WTH1Q0dqjnE"></iframe>
+        @foreach (var video in Model.Videos)
+        {
+            <div class="row mb-4">
+                <div class="col">
+                    <div class="embed-responsive embed-responsive-21by9">
+                        <iframe class="embed-responsive-item" src="@video.Url"></iframe>
+                    </div>
+                    <partial name="_CommentsPartial" />
                 </div>
             </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col">
-                <div class="embed-responsive embed-responsive-21by9">
-                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/TmRhhn-YFBc"></iframe>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col">
-                <div class="embed-responsive embed-responsive-21by9">
-                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/WTH1Q0dqjnE"></iframe>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col">
-                <div class="embed-responsive embed-responsive-21by9">
-                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/xxR7rcR2dXY"></iframe>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col">
-                <div class="embed-responsive embed-responsive-21by9">
-                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/TmRhhn-YFBc"></iframe>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </section>

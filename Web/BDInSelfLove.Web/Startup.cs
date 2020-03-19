@@ -9,15 +9,18 @@
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Data.Seeding;
     using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
-    using BDInSelfLove.Web.Filters;
+    using BDInSelfLove.Services.Models.Articles;
     using BDInSelfLove.Web.Infrastructure.ModelBinders;
-    using BDInSelfLove.Web.Middlewares;
+    using BDInSelfLove.Web.ViewComponents.Models.Videos;
     using BDInSelfLove.Web.ViewModels;
+    using BDInSelfLove.Web.ViewModels.Articles;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -48,15 +51,16 @@
                         options.MinimumSameSitePolicy = SameSiteMode.None;
                     });
 
-            services.AddControllersWithViews( configure =>
-            {
-                // FILTERS EXERCISE
-                // GLOBAL SCOPE OF FILTER - APPLIES EVERY TIME(BEFORE/AFTER EACH REQUEST)
-                // configure.Filters.Add(new AddHeaderActionFilterAttribute());
-                
-                // BINDING EXERCISE
-                configure.ModelBinderProviders.Insert(0, new YearModelBinderProvider());
-            });
+            services.AddControllersWithViews(configure =>
+           {
+               configure.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+               // FILTERS EXERCISE
+               // GLOBAL SCOPE OF FILTER - APPLIES EVERY TIME(BEFORE/AFTER EACH REQUEST)
+               // configure.Filters.Add(new AddHeaderActionFilterAttribute());
+
+               // BINDING EXERCISE
+               configure.ModelBinderProviders.Insert(0, new YearModelBinderProvider());
+           });
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
 
@@ -67,9 +71,16 @@
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
 
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+            });
+
             // Application services
             services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
             services.AddTransient<ISettingsService, SettingsService>();
+            services.AddTransient<IArticleService, ArticleService>();
+            services.AddTransient<IVideoService, VideoService>();
             // FILTERS EXERCISE
             // Allows control over instantiation of filter.
             // APPLIES TO LOCAL USES OF FILTERS AS ATTRIBUTES AS OPPOSED TO THE GLOBAL IMPLEMENTATIONN IN THE .AddControllersWithViews method above
@@ -79,7 +90,11 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly);
+            AutoMapperConfig.RegisterMappings(
+                typeof(ErrorViewModel).GetTypeInfo().Assembly,
+                typeof(ArticleServiceModel).GetTypeInfo().Assembly,
+                typeof(ArticleViewModel).GetTypeInfo().Assembly,
+                typeof(HomeVideoViewModel).GetTypeInfo().Assembly);
 
             // Seed data on application startup
             using (var serviceScope = app.ApplicationServices.CreateScope())
@@ -106,8 +121,9 @@
             }
 
             app.UseHttpsRedirection();
+            app.UseResponseCompression();
             // MIDDLEWARE EXERCISE
-            app.UseMiddleware<RedirectToGoogleIfNotHttps>();
+            // app.UseMiddleware<RedirectToGoogleIfNotHttps>();
             // MIDDLEWARE EXERCISE
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -124,7 +140,7 @@
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
                         // MAPPING EXERCISE
-                        //endpoints.MapControllerRoute(
+                        // endpoints.MapControllerRoute(
                         //    name: "exampleName",
                         //    pattern: "Example/{slug}/{id:int}",
                         //    defaults: new { controller = "Example", action = "ExampleAction" });

@@ -1,47 +1,20 @@
-﻿<div class="container">
+﻿@model BDInSelfLove.Web.ViewModels.Articles.ArticleViewModel
+
+<div class="container">
     <div id="singleArticle">
         <div class="card mb-4">
-            <img class="card-img-top" src="https://source.unsplash.com/random/800x600" alt="">
+            <img class="card-img-top" src="@Model.ImageUrl" alt="">
             <div class="card-body">
-                <h4 class="card-title text-center mb-2">My Article's Title</h4>
+                <h4 class="card-title text-center mb-2">@Model.Title</h4>
 
                 <div class="text-center">
-                    <small class="text-muted text-center">Posted on January 1, 2019 at 12:00 PM</small>
+                    <small class="text-muted text-center">Posted on @Model.CreatedOn.ToString("MMMM dd, yyyy") at @Model.CreatedOn.ToString("HH:mm") by @Model.UserUsername</small>
                 </div>
-
-                <p class="card-text mt-3">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae libero
-                    voluptatum consectetur dignissimos quam, possimus officiis molestiae vel labore. Voluptatibus
-                    numquam alias blanditiis culpa similique hic, reprehenderit minima explicabo necessitatibus quos
-                    incidunt iusto, autem beatae modi sed magnam, porro voluptatem exercitationem at! Accusamus
-                    quibusdam suscipit quae delectus excepturi quaerat dignissimos soluta blanditiis fuga voluptatem
-                    nostrum, itaque beatae ullam sit culpa cumque sapiente autem tempore aliquam optio. Illo
-                    consequatur enim quas, aliquam reprehenderit nisi nulla magni doloribus rem aspernatur quasi
-                    quaerat eius vel dicta nihil voluptate, cumque qui sunt. Sint recusandae minima corrupti optio
-                    eaque iure tenetur quod obcaecati vel quo.
-                </p>
-                <p class="card-text">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae libero
-                    voluptatum consectetur dignissimos quam, possimus officiis molestiae vel labore. Voluptatibus
-                    numquam alias blanditiis culpa similique hic, reprehenderit minima explicabo necessitatibus quos
-                    incidunt iusto, autem beatae modi sed magnam, porro voluptatem exercitationem at! Accusamus
-                    quibusdam suscipit quae delectus excepturi quaerat dignissimos soluta blanditiis fuga voluptatem
-                    nostrum, itaque beatae ullam sit culpa cumque sapiente autem tempore aliquam optio. Illo
-                    consequatur enim quas, aliquam reprehenderit nisi nulla magni doloribus rem aspernatur quasi
-                    quaerat eius vel dicta nihil voluptate, cumque qui sunt. Sint recusandae minima corrupti optio
-                    eaque iure tenetur quod obcaecati vel quo.
-                </p>
-                <p class="card-text">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae libero
-                    voluptatum consectetur dignissimos quam, possimus officiis molestiae vel labore. Voluptatibus
-                    numquam alias blanditiis culpa similique hic, reprehenderit minima explicabo necessitatibus quos
-                    incidunt iusto, autem beatae modi sed magnam, porro voluptatem exercitationem at! Accusamus
-                    quibusdam suscipit quae delectus excepturi quaerat dignissimos soluta blanditiis fuga voluptatem
-                    nostrum, itaque beatae ullam sit culpa cumque sapiente autem tempore aliquam optio. Illo
-                    consequatur enim quas, aliquam reprehenderit nisi nulla magni doloribus rem aspernatur quasi
-                    quaerat eius vel dicta nihil voluptate, cumque qui sunt. Sint recusandae minima corrupti optio
-                    eaque iure tenetur quod obcaecati vel quo.
-                </p>
+                <div class="row justify-content-around">
+                    <div class="col-md-8">
+                        @Html.Raw(Model.SanitizedContent)
+                    </div>
+                </div>
             </div>
         </div>
     </div>
