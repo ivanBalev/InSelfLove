@@ -29,6 +29,16 @@
     <Compile Remove="Migrations\20200323104121_Test.Designer.cs" />
     <Compile Remove="Migrations\20200323104434_Restart.cs" />
     <Compile Remove="Migrations\20200323104434_Restart.Designer.cs" />
+    <Compile Remove="Migrations\20200324092929_CommentsUpdated.cs" />
+    <Compile Remove="Migrations\20200324092929_CommentsUpdated.Designer.cs" />
+    <Compile Remove="Migrations\20200324103035_CommentsFixed.cs" />
+    <Compile Remove="Migrations\20200324103035_CommentsFixed.Designer.cs" />
+    <Compile Remove="Migrations\20200324103903_CommentsTableUpdate.cs" />
+    <Compile Remove="Migrations\20200324103903_CommentsTableUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20200324104052_Restart.cs" />
+    <Compile Remove="Migrations\20200324104052_Restart.Designer.cs" />
+    <Compile Remove="Migrations\20200324153441_CommentRelationsFix.cs" />
+    <Compile Remove="Migrations\20200324153441_CommentRelationsFix.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

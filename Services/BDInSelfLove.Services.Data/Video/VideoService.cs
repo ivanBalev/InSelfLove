@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Services.Data.Video
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Videos;
+    using Microsoft.EntityFrameworkCore;
 
     public class VideoService : IVideoService
     {
@@ -39,6 +41,21 @@
             }
 
             return query.To<VideoServiceModel>();
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var dbVideo = await this.videosRepository.All().SingleOrDefaultAsync(a => a.Id == id);
+
+            if (dbVideo == null)
+            {
+                throw new ArgumentNullException(nameof(dbVideo));
+            }
+
+            this.videosRepository.Delete(dbVideo);
+            int result = await this.videosRepository.SaveChangesAsync();
+
+            return result > 0;
         }
     }
 }

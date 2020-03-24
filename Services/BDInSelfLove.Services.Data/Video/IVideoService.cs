@@ -10,5 +10,7 @@
         IQueryable<VideoServiceModel> GetAll(int? count = null);
 
         Task<int> CreateAsync(VideoServiceModel videoServiceModel);
+
+        Task<bool> Delete(int id);
     }
 }

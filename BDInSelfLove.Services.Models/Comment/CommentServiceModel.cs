@@ -4,11 +4,17 @@ using BDInSelfLove.Services.Models.Post;
 using BDInSelfLove.Services.Models.User;
 using BDInSelfLove.Services.Models.Videos;
 using System;
+using System.Collections.Generic;
 
 namespace BDInSelfLove.Services.Models.Comment
 {
     public class CommentServiceModel : IMapFrom<BDInSelfLove.Data.Models.Comment>, IMapTo<BDInSelfLove.Data.Models.Comment>
     {
+        public CommentServiceModel()
+        {
+            this.SubComments = new List<CommentServiceModel>();
+        }
+
         public int Id { get; set; }
 
         public string Content { get; set; }
@@ -34,5 +40,7 @@ namespace BDInSelfLove.Services.Models.Comment
         public ArticleServiceModel ParentArticle { get; set; }
 
         public PostServiceModel Post { get; set; }
+
+        public IList<CommentServiceModel> SubComments { get; set; }
     }
 }

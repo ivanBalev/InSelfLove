@@ -1,4 +1,6 @@
-﻿@model BDInSelfLove.Web.ViewComponents.Models.Videos.AllHomeVideosViewModel
+﻿@model BDInSelfLove.Web.ViewComponents.Models.Video.AllHomeVideoViewModel
+@using BDInSelfLove.Common
+
 @{
     ViewData["Title"] = "All Videos";
 }
@@ -14,6 +16,14 @@
                     <div class="embed-responsive embed-responsive-21by9">
                         <iframe class="embed-responsive-item" src="@video.Url"></iframe>
                     </div>
+
+                    @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                    {
+                        <div class="row mt-2">
+                            <div class="col"><a asp-area="Administration" asp-controller="Video" asp-action="Delete" asp-route-id="@video.Id" class="btn btn-block btn-outline-danger">Delete</a></div>
+                        </div>
+                    }
+
                     <partial name="_CommentsPartial" />
                 </div>
             </div>

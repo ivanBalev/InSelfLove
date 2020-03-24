@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BDInSelfLove.Data.Migrations
 {
-    public partial class Restart : Migration
+    public partial class RestartAttempt999 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -92,10 +92,10 @@ namespace BDInSelfLove.Data.Migrations
                     DeletedOn = table.Column<DateTime>(nullable: true),
                     Content = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: false),
+                    ParentPostId = table.Column<int>(nullable: true),
                     ParentCommentId = table.Column<int>(nullable: true),
                     ParentVideoId = table.Column<int>(nullable: true),
-                    ParentArticleId = table.Column<int>(nullable: true),
-                    ParentPostId = table.Column<int>(nullable: true)
+                    ParentArticleId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {

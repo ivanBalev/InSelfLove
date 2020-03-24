@@ -9,8 +9,10 @@ namespace BDInSelfLove.Services.Data.Comment
 {
     public interface ICommentService
     {
-        Task<int> CreateAsync(CommentServiceModel categoryServiceModel);
+        Task<int> Create(CommentServiceModel categoryServiceModel);
 
         IQueryable<CommentServiceModel> GetAll(int parentId, string parentType);
+
+        Task<CommentServiceModel> GetAllSubComments(CommentServiceModel comment);
     }
 }

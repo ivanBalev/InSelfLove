@@ -45,5 +45,12 @@
            // TODO: Exception handling
             return this.RedirectToAction("Index", "Video", new { area = string.Empty });
         }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            await this.videoService.Delete(id);
+
+            return this.Redirect("/");
+        }
     }
 }

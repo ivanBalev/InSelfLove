@@ -11,7 +11,7 @@
     {
         public PostServiceModel()
         {
-            this.Comments = new HashSet<CommentServiceModel>();
+            this.Comments = new List<CommentServiceModel>();
         }
 
         public int Id { get; set; }
@@ -26,7 +26,7 @@
 
         public ApplicationUserServiceModel User { get; set; }
 
-        public ICollection<CommentServiceModel> Comments { get; set; }
+        public IList<CommentServiceModel> Comments { get; set; }
 
         public int CategoryId { get; set; }
 

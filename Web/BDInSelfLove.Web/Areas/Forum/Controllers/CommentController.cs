@@ -33,7 +33,7 @@
             var serviceModel = AutoMapperConfig.MapperInstance.Map<CommentServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
 
-            var commentId = await this.commentService.CreateAsync(serviceModel);
+            var commentId = await this.commentService.Create(serviceModel);
 
             if (commentId == 0)
             {

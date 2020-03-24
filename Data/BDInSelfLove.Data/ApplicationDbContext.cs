@@ -90,7 +90,15 @@
 
         // Applies configurations
         private void ConfigureUserIdentityRelations(ModelBuilder builder)
-             => builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+        {
+            builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+
+            builder.Entity<Comment>()
+                .HasMany(c => c.SubComments)
+                .WithOne(r => r.ParentComment)
+                .HasForeignKey(c => c.ParentCommentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
 
         private void ApplyAuditInfoRules()
         {
