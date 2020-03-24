@@ -13,6 +13,22 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200314135909_ArticlesTableAdded.cs" />
     <Compile Remove="Migrations\20200314135909_ArticlesTableAdded.Designer.cs" />
+    <Compile Remove="Migrations\20200322215800_UpdatedCommentStructure.cs" />
+    <Compile Remove="Migrations\20200322215800_UpdatedCommentStructure.Designer.cs" />
+    <Compile Remove="Migrations\20200322220043_CommentTableUpdated.cs" />
+    <Compile Remove="Migrations\20200322220043_CommentTableUpdated.Designer.cs" />
+    <Compile Remove="Migrations\20200322221050_DeletedCommentsTable.cs" />
+    <Compile Remove="Migrations\20200322221050_DeletedCommentsTable.Designer.cs" />
+    <Compile Remove="Migrations\20200322221349_Restart.cs" />
+    <Compile Remove="Migrations\20200322221349_Restart.Designer.cs" />
+    <Compile Remove="Migrations\20200322221746_Restart.cs" />
+    <Compile Remove="Migrations\20200322221746_Restart.Designer.cs" />
+    <Compile Remove="Migrations\20200323103742_MadeCommentsParentsNullable.cs" />
+    <Compile Remove="Migrations\20200323103742_MadeCommentsParentsNullable.Designer.cs" />
+    <Compile Remove="Migrations\20200323104121_Test.cs" />
+    <Compile Remove="Migrations\20200323104121_Test.Designer.cs" />
+    <Compile Remove="Migrations\20200323104434_Restart.cs" />
+    <Compile Remove="Migrations\20200323104434_Restart.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,7 +7,7 @@
     using BDInSelfLove.Services.Data;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.ViewModels;
-    using BDInSelfLove.Web.ViewModels.Articles;
+    using BDInSelfLove.Web.ViewModels.Article;
     using BDInSelfLove.Web.ViewModels.Home;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;

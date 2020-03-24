@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using BDInSelfLove.Web.ViewModels.Articles;
+    using BDInSelfLove.Web.ViewModels.Article;
 
     public class HomeViewModel
     {

@@ -1,0 +1,118 @@
+﻿@model BDInSelfLove.Web.ViewModels.Forum.Category.CategoryViewModel
+
+<div class="container my-3">
+    <nav class="breadcrumb">
+        <a href="index.html" class="breadcrumb-item">Board index</a>
+        <span class="breadcrumb-item active">Category name</span>
+    </nav>
+    <div class="row">
+        <div class="col-12">
+            <section>
+                <div class="card">
+                    <div class="card-header text-white bg-primary p-4 rounded-top">
+                        <h2 class="h4">@Model.Name</h2>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="topic-col">Topic</th>
+                                <th scope="col" class="created-col">Created</th>
+                                <th scope="col">Statistics</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var post in Model.Posts)
+                            {
+                                <tr>
+                                    <td>
+                                        <h3 class="h6">
+                                            <span class="badge badge-primary">7 unread</span> <a asp-action="Index" asp-controller="Post" asp-route-id="@post.Id">
+                                                @post.Title
+                                            </a>
+                                        </h3>
+                                        <div class="small">
+                                            Go to page: <a href="overview-topics.html#0">1</a>,
+                                            <a href="overview-topics.html#0">2</a>,
+                                            <a href="overview-topics.html#0">3</a>
+                                            … <a href="overview-topics.html#0">7</a>,
+                                            <a href="overview-topics.html#0">8</a>,
+                                            <a href="overview-topics.html#0">9</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            by <a href="overview-topics.html#">
+                                                @post.UserUserName IMPLEMENT ME
+                                            </a>
+                                        </div>
+                                        <div>@post.CreatedOn</div>
+                                    </td>
+                                    <td>
+                                        <div>5 replies IMPLEMENT ME</div>
+                                        <div>179 views IMPLEMENT ME</div>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    <div class="mb-3 clearfix">
+        <nav aria-label="Navigate post pages" class="float-lg-right">
+            <ul class="pagination pagination-sm mb-lg-0">
+                <li class="page-item active">
+                    <a href="overview-topics.html#" class="page-link">
+                        1 <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="page-item"><a href="overview-topics.html#" class="page-link">2</a></li>
+                <li class="page-item"><a href="overview-topics.html#" class="page-link">3</a></li>
+                <li class="page-item"><a href="overview-topics.html#" class="page-link">4</a></li>
+                <li class="page-item"><a href="overview-topics.html#" class="page-link">5</a></li>
+                <li class="page-item"><a href="overview-topics.html#" class="page-link">… 31</a></li>
+                <li class="page-item"><a href="overview-topics.html#" class="page-link">Next</a></li>
+            </ul>
+        </nav>
+        <form class="form-inline float-lg-left d-block d-sm-flex">
+            <div class="mb-2 mb-sm-0 mr-2">Display posts from previous:</div>
+            <div class="form-group mr-2">
+                <label class="sr-only" for="example-select-time">Time period</label>
+                <select class="form-control form-control-sm" id="example-select-time">
+                    <option value="all-posts" selected="">All posts</option>
+                    <option value="day">1 day</option>
+                    <option value="week">1 week</option>
+                    <option value="month">1 month</option>
+                    <option value="year">1 year</option>
+                </select>
+            </div>
+            <div class="mb-2 mb-sm-0 mr-2">Sort by:</div>
+            <div class="form-group mr-2">
+                <label class="sr-only" for="example-select-sort">Sort by</label>
+                <select class="form-control form-control-sm" id="example-select-sort">
+                    <option value="author">Author</option>
+                    <option value="post-time" selected="">Post time</option>
+                    <option value="replies">Replies</option>
+                    <option value="subject">Subject</option>
+                    <option value="views">Views</option>
+                </select>
+            </div>
+            <div class="form-group mr-2">
+                <label class="sr-only" for="example-select-direction">Sort direction</label>
+                <select class="form-control form-control-sm" id="example-select-direction">
+                    <option value="post-time">Ascending</option>
+                    <option value="author" selected="">Descending</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Go</button>
+        </form>
+    </div>
+    <a asp-controller="Post" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-md btn-outline-secondary">New topic</a>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/Custom/css/forumStyle.css">
+}

@@ -1,9 +1,9 @@
-﻿@model IEnumerable<BDInSelfLove.Web.ViewModels.Articles.ArticleViewModel>
+﻿@model IEnumerable<BDInSelfLove.Web.ViewModels.Article.ArticleViewModel>
 
 @foreach (var article in Model)
 {
     <div class="col-lg-4 col-md-6 mb-4">
-        <a asp-area="" asp-controller="Articles" asp-action="Single" asp-route-id="@article.Id">
+        <a asp-area="" asp-controller="Article" asp-action="Single" asp-route-id="@article.Id">
             <div class="card">
                 <img src=@article.ImageUrl alt="" class="img-fluid card-img-top">
                 <div class="card-body bg-light text-center">

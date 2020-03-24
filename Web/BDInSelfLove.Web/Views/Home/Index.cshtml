@@ -14,7 +14,7 @@
                         <h1>
                             @Model.FeaturedArticle.Title
                         </h1>
-                        <a asp-controller="Articles" asp-action="Single" asp-route-id="@Model.FeaturedArticle.Id" class="btn btn-outline-secondary btn-md text-white mt-2">
+                        <a asp-controller="Article" asp-action="Single" asp-route-id="@Model.FeaturedArticle.Id" class="btn btn-outline-secondary btn-md text-white mt-2">
                             Read More
                         </a>
                     </div>
@@ -46,7 +46,7 @@
             <partial name="_ArticlesPartial" model="@Model.LastArticles" />
         </div>
 
-        <a asp-controller="Articles" asp-action="Index" class="btn btn-outline-secondary btn-block mt-2">Check Them All Out</a>
+        <a asp-controller="Article" asp-action="All" class="btn btn-outline-secondary btn-block mt-2">Check Them All Out</a>
 
     </div>
 </section>
@@ -83,7 +83,7 @@
                     </ol>
 
                     <div class="carousel-inner">
-                       <vc:home-videos></vc:home-videos>
+                        <vc:home-video></vc:home-video>
                     </div>
 
                     <!-- CONTROLS -->
@@ -97,6 +97,6 @@
                 </div>
             </div>
         </div>
+        <a asp-controller="Video" asp-action="All" class="btn btn-outline-secondary btn-block my-4">See All My Videos</a>
     </div>
-    <a asp-controller="Videos" asp-action="Index" class="btn btn-outline-secondary btn-block my-4">See All My Videos</a>
 </section>

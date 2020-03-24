@@ -1,0 +1,18 @@
+﻿@model BDInSelfLove.Web.ViewModels.Administration.Video.CreateVideoInputModel
+
+    <div class="container mb-5">
+        <h1 class="text-center">Add Video</h1>
+        <form method="post" asp-action="Create">
+            <div class="form-group">
+                <label asp-for="@Model.Url"></label>
+                <input asp-for="@Model.Url" class="form-control" rows="20" />
+                <span asp-validation-for="@Model.Url" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-outline-success btn-block w-50 mx-auto">Create</button>
+        </form>
+    </div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

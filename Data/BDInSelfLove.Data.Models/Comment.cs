@@ -1,7 +1,8 @@
 ﻿namespace BDInSelfLove.Data.Models
 {
-    using BDInSelfLove.Data.Common.Models;
     using System.ComponentModel.DataAnnotations;
+
+    using BDInSelfLove.Data.Common.Models;
 
     public class Comment : BaseDeletableModel<int>
     {
@@ -15,7 +16,6 @@
 
         public int? ParentCommentId { get; set; }
 
-        // Can have one of either pair below?
         public virtual Comment ParentComment { get; set; }
 
         public int? ParentVideoId { get; set; }
@@ -25,5 +25,9 @@
         public int? ParentArticleId { get; set; }
 
         public virtual Article ParentArticle { get; set; }
+
+        public int? ParentPostId { get; set; }
+
+        public virtual Post ParentPost { get; set; }
     }
 }

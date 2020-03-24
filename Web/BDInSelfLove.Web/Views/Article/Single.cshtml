@@ -1,0 +1,33 @@
+﻿@using BDInSelfLove.Common
+@model BDInSelfLove.Web.ViewModels.Article.ArticleViewModel
+
+
+<div class="container">
+    <div id="singleArticle">
+        <div class="card mb-4">
+            <img class="card-img-top" src="@Model.ImageUrl" alt="">
+            <div class="card-body">
+                @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                {
+                    <div class="row mb-4">
+                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">Edit</a></div>
+                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">Delete</a></div>
+
+                    </div>
+                }
+                <h4 class="card-title text-center mb-2">@Model.Title</h4>
+
+                <div class="text-center">
+                    <small class="text-muted text-center">Posted on @Model.CreatedOn.ToString("MMMM dd, yyyy") at @Model.CreatedOn.ToString("HH:mm") by @Model.UserUsername</small>
+                </div>
+                <div class="row justify-content-around">
+                    <div class="col-md-8">
+                        @Html.Raw(Model.SanitizedContent)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_CommentsPartial" />

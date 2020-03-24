@@ -47,6 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Custom\" />
+    <Folder Include="Areas\Forum\Views\Shared\" />
   </ItemGroup>
 </Project>

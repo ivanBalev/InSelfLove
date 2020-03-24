@@ -140,7 +140,6 @@ body {
     min-height: 150px;
 }
 
-.card img {
+a .card img {
     max-height: 200px;
 }
-

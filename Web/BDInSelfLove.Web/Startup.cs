@@ -9,14 +9,17 @@
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Data.Seeding;
     using BDInSelfLove.Services.Data;
-    using BDInSelfLove.Services.Data.Videos;
+    using BDInSelfLove.Services.Data.Category;
+    using BDInSelfLove.Services.Data.Comment;
+    using BDInSelfLove.Services.Data.Post;
+    using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
-    using BDInSelfLove.Services.Models.Articles;
+    using BDInSelfLove.Services.Models.Article;
     using BDInSelfLove.Web.Infrastructure.ModelBinders;
-    using BDInSelfLove.Web.ViewComponents.Models.Videos;
+    using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels;
-    using BDInSelfLove.Web.ViewModels.Articles;
+    using BDInSelfLove.Web.ViewModels.Article;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -78,9 +81,11 @@
 
             // Application services
             services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
-            services.AddTransient<ISettingsService, SettingsService>();
             services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IVideoService, VideoService>();
+            services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<IPostService, PostService>();
+            services.AddTransient<ICommentService, CommentService>();
             // FILTERS EXERCISE
             // Allows control over instantiation of filter.
             // APPLIES TO LOCAL USES OF FILTERS AS ATTRIBUTES AS OPPOSED TO THE GLOBAL IMPLEMENTATIONN IN THE .AddControllersWithViews method above

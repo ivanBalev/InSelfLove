@@ -1,0 +1,38 @@
+﻿@model BDInSelfLove.Web.ViewModels.Article.ArticleDeleteViewModel
+<div class="container mb-5">
+    <h1 class="text-center">Delete Article</h1>
+    <form method="post" asp-area="Administration" asp-controller="Article" asp-action="Delete" asp-route-id="@Model.Id">
+        <div class="form-group">
+            <label asp-for="@Model.Title"></label>
+            <input asp-for="@Model.Title" class="form-control" disabled />
+            <span asp-validation-for="@Model.Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.ImageUrl"></label>
+            <input asp-for="@Model.ImageUrl" class="form-control" disabled />
+            <span asp-validation-for="@Model.ImageUrl" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Content"></label>
+            <textarea asp-for="@Model.Content" class="form-control" rows="20" id="mytextarea" disabled></textarea>
+            <span asp-validation-for="@Model.Content" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-danger btn-block w-50 mx-auto">Delete</button>
+    </form>
+</div>
+
+@section HeadScripts
+{
+    <script src="https://cdn.tiny.cloud/1/mky5s0u10p9um2r86zbuod2opxi008rpr3tpgf6dtd16t787/tinymce/5/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    <script>
+                tinymce.init({
+                    selector: '#mytextarea',
+                    readonly: 1,
+                });
+    </script>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
