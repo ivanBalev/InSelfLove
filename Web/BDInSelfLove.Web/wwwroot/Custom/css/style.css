@@ -109,8 +109,8 @@ body {
 #mapid {
   height: 500px; }
 
- #loginPage  a {
-    color: #f083c1 !important;
+ #loginPage a {
+    color: black !important;
     text-decoration: none !important;
 }
 
@@ -141,5 +141,5 @@ body {
 }
 
 a .card img {
-    max-height: 200px;
+    height: 200px;
 }

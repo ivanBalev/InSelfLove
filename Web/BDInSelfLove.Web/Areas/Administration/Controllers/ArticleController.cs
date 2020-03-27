@@ -4,6 +4,7 @@
 
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Article;
     using BDInSelfLove.Web.ViewModels.Administration.Article;
@@ -15,11 +16,14 @@
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IArticleService articleService;
+        private readonly ICloudinaryService cloudinaryService;
 
-        public ArticleController(UserManager<ApplicationUser> userManager, IArticleService articleService)
+        public ArticleController(UserManager<ApplicationUser> userManager, IArticleService articleService,
+            ICloudinaryService cloudinaryService)
         {
             this.userManager = userManager;
             this.articleService = articleService;
+            this.cloudinaryService = cloudinaryService;
         }
 
 
@@ -37,8 +41,17 @@
             }
 
             var user = await this.userManager.GetUserAsync(this.User);
+
             var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
+
+            if (inputModel.ImageUrl == null)
+            {
+                var imageUrl = await this.cloudinaryService.UploadPicture(
+                inputModel.Image, inputModel.Title);
+
+                serviceModel.ImageUrl = imageUrl;
+            }
 
             // TODO: Does this return postId?
             var postId = await this.articleService.CreateAsync(serviceModel);
@@ -64,26 +77,34 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ArticleEditViewModel model)
+        public async Task<IActionResult> Edit(ArticleEditViewModel inputModel)
         {
             if (!this.ModelState.IsValid)
             {
-                return this.View(model);
+                return this.View(inputModel);
             }
 
             var user = await this.userManager.GetUserAsync(this.User);
-            var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleServiceModel>(model);
+            var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
+
+            if (inputModel.ImageUrl == null)
+            {
+                var imageUrl = await this.cloudinaryService.UploadPicture(
+                inputModel.Image, inputModel.Title);
+
+                serviceModel.ImageUrl = imageUrl;
+            }
 
             await this.articleService.Edit(serviceModel);
 
-            return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = model.Id });
+            return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = inputModel.Id });
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             var articleServiceModel = await this.articleService.GetById(id);
-            var articleDeleteModel = 
+            var articleDeleteModel =
                 AutoMapperConfig.MapperInstance.Map<ArticleDeleteViewModel>(articleServiceModel);
 
 

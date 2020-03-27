@@ -28,7 +28,7 @@
 
             var viewModel = AutoMapperConfig.MapperInstance.Map<PostViewModel>(serviceModel);
 
-            return this.View(viewModel);
+            return this.View(serviceModel);
         }
 
         public IActionResult Create(int categoryId)

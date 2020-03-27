@@ -10,6 +10,7 @@
     using BDInSelfLove.Data.Seeding;
     using BDInSelfLove.Services.Data;
     using BDInSelfLove.Services.Data.Category;
+    using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Data.Comment;
     using BDInSelfLove.Services.Data.Post;
     using BDInSelfLove.Services.Data.Video;
@@ -20,6 +21,7 @@
     using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels;
     using BDInSelfLove.Web.ViewModels.Article;
+    using CloudinaryDotNet;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -46,6 +48,33 @@
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // Cloudinary setup
+            Account cloudinaryCredentials = new Account(
+                this.configuration["Cloudinary:CloudName"],
+                this.configuration["Cloudinary:ApiKey"],
+                this.configuration["Cloudinary:ApiSecret"]);
+
+            Cloudinary cloudinaryUtility = new Cloudinary(cloudinaryCredentials);
+
+            services.AddSingleton(cloudinaryUtility);
+
+            // External Logins
+            // TODO: Request different info from users preferring to use facebook login https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins?view=aspnetcore-3.1
+            services.AddAuthentication()
+                .AddGoogle(googleOptions =>
+                {
+                    IConfigurationSection googleAuthNSection =
+                                   this.configuration.GetSection("Authentication:Google");
+
+                    googleOptions.ClientId = googleAuthNSection["ClientId"];
+                    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+                })
+                .AddFacebook(facebookOptions =>
+                {
+                    facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
+                    facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
+                });
 
             services.Configure<CookiePolicyOptions>(
                 options =>
@@ -86,6 +115,8 @@
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<ICloudinaryService, CloudinaryService>();
+
             // FILTERS EXERCISE
             // Allows control over instantiation of filter.
             // APPLIES TO LOCAL USES OF FILTERS AS ATTRIBUTES AS OPPOSED TO THE GLOBAL IMPLEMENTATIONN IN THE .AddControllersWithViews method above

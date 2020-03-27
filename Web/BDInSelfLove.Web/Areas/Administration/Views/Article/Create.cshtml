@@ -1,7 +1,7 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Administration.Article.ArticleCreateInputModel
 <div class="container mb-5">
     <h1 class="text-center">Create Article</h1>
-    <form method="post" asp-area="Administration" asp-controller="Article" asp-action="Create">
+    <form method="post" asp-area="Administration" asp-controller="Article" asp-action="Create" enctype="multipart/form-data">
         <div class="form-group">
             <label asp-for="@Model.Title"></label>
             <input asp-for="@Model.Title" class="form-control" />
@@ -11,6 +11,14 @@
             <label asp-for="@Model.ImageUrl"></label>
             <input asp-for="@Model.ImageUrl" class="form-control" />
             <span asp-validation-for="@Model.ImageUrl" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Image" class="btn btn-outline-secondary mt-4 btn-block text-left">
+                Or upload an image, if that's what you'd prefer
+                <input type="file" asp-for="@Model.Image" hidden onchange="$('#upload-file-info').html(this.files[0].name); $('#ImageUrl').val('')">
+            </label>
+            <span class='label label-info' id="upload-file-info"></span>
+            <span asp-validation-for="@Model.Image" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="@Model.Content"></label>
