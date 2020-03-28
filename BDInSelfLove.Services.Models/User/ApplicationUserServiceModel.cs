@@ -6,5 +6,6 @@
 
     public class ApplicationUserServiceModel : IdentityUser, IMapFrom<ApplicationUser>, IMapTo<ApplicationUser>
     {
+        public string ProfilePhoto { get; set; }
     }
 }

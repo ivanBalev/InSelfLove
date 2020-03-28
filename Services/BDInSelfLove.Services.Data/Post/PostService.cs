@@ -58,6 +58,8 @@
                     User = new ApplicationUserServiceModel
                     {
                         UserName = x.User.UserName,
+                        ProfilePhoto = x.User.ProfilePhoto,
+
                     },
                     UserId = x.UserId,
                     Comments = x.Comments.Select(c => new CommentServiceModel
@@ -70,6 +72,7 @@
                         User = new ApplicationUserServiceModel
                         {
                             UserName = c.User.UserName,
+                            ProfilePhoto = c.User.ProfilePhoto,
                         },
                         CreatedOn = c.CreatedOn,
                     }).ToList(),

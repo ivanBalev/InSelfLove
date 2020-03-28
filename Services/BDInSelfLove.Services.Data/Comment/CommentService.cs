@@ -30,7 +30,7 @@
             var comment = AutoMapperConfig.MapperInstance.Map<Comment>(categoryServiceModel);
 
             await this.commentRepository.AddAsync(comment);
-            var result = await this.commentRepository.SaveChangesAsync();
+            await this.commentRepository.SaveChangesAsync();
 
             return comment.Id;
         }

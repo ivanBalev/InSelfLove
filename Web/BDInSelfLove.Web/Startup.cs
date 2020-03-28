@@ -13,6 +13,7 @@
     using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Data.Comment;
     using BDInSelfLove.Services.Data.Post;
+    using BDInSelfLove.Services.Data.User;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
@@ -116,6 +117,7 @@
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICloudinaryService, CloudinaryService>();
+            services.AddTransient<IUserService, UserService>();
 
             // FILTERS EXERCISE
             // Allows control over instantiation of filter.

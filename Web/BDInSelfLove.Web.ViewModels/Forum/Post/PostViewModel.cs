@@ -13,9 +13,11 @@ namespace BDInSelfLove.Web.ViewModels.Forum.Post
 
         public string Title { get; set; }
 
+        public string UserId { get; set; }
+
         public string UserUserName { get; set; }
 
-        public string UserId { get; set; }
+        public string UserProfilePhoto { get; set; }
 
         public DateTime CreatedOn { get; set; }
 

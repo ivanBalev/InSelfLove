@@ -1,8 +1,14 @@
 ﻿@using BDInSelfLove.Data.Models
 @using Microsoft.AspNetCore.Identity
-@model BDInSelfLove.Services.Models.Post.PostServiceModel
+@using BDInSelfLove.Web.ViewModels.Forum.Comment
+
+@model BDInSelfLove.Web.ViewModels.Forum.Post.PostViewModel
 @inject SignInManager<ApplicationUser> SignInManager
 
+@{
+    this.ViewData["width"] = "62";
+    this.ViewData["height"] = "62";
+}
 
 <div class="container my-3">
     <nav class="breadcrumb">
@@ -16,16 +22,16 @@
             <!-- TABLE BELOW -->
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card mb-0 pb-0 border-left-0 border-right-0 border-bottom-5">
+                    <div class="card mb-0 pb-0 border-0" id="0">
                         <div class="card-header text-dark p-4">
                             <h2 class="h4">@Model.Title</h2>
                         </div>
-                        <div class="card-header bg-white">
+                        <div class="card-header bg-white border-0">
                             <div class="media flex-wrap w-100 align-items-center">
-                                <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg"
+                                <img src="@Model.UserProfilePhoto" height="@this.ViewData["width"]" width="@this.ViewData["height"]"
                                      class="d-block rounded-circle" alt="">
                                 <div class="media-body ml-3">
-                                    <a href="javascript:void(0)" data-abc="true">@Model.User.UserName</a>
+                                    <a class="user-link" href="@Model.UserId" data-abc="true">@Model.UserUserName</a>
                                     <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
                                 </div>
                                 <div class="px-4 pt-3">
@@ -49,13 +55,16 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            @*@Html.Raw(@Model.SanitizedContent)*@
-                            @Model.Content
+                            @Html.Raw(@Model.SanitizedContent)
                         </div>
-
                     </div>
                 </div>
             </div>
+
+            <hr />
+
+            <h5 class="mb-0 ml-4 mt-5">Comments</h5>
+
             @foreach (var comment in Model.Comments)
             {
                 <partial name="_RecursiveCommentPartial" model="@comment" />
@@ -80,18 +89,14 @@
             </ul>
         </nav>
     </div>
-    <form class="mb-3" asp-controller="Comment" asp-action="Create">
-        <div class="form-group">
-            <label for="comment">Reply to this post:</label>
-            <textarea id="mytextarea" class="form-control" rows="10" placeholder="Write your comment here."
-                      required="" name="Content"></textarea>
-            <input type="hidden" name="ParentPostId" value=@Model.Id />
-        </div>
-        <button type="submit" class="btn btn-outline-primary btn-block w-25">Reply</button>
-    </form>
+
     @if (!this.SignInManager.IsSignedIn(this.User))
     {
         <partial name="_PostLoginPartial" model="null" />
+    }
+    else
+    {
+        <partial name="_AddCommentPartial" model="@(new CommentCreateInputModel { ParentPostId = Model.Id })" />
     }
 </div>
 
@@ -103,5 +108,38 @@
         tinymce.init({
             selector: '#mytextarea'
         });
+    </script>
+}
+
+@section Scripts 
+{
+    <script>
+        function SetReply(id, name) {
+            $("#ParentCommentId").val(id);
+            if (id == '0') {
+                $("#AddCommentText").html('Add New Comment');
+            }
+            else {
+                $("#AddCommentText").html('Add a reply to ' + name + '\'s comment');
+            }
+
+            $('html, body').animate({ scrollTop: $("#AddCommentText").offset().top }, 500);
+        }
+
+
+        (function getButtons() {
+            const comments = document.querySelectorAll('.card');
+
+
+            comments.forEach(c => {
+                const parentCommentUser = c.querySelector('.user-link').textContent;
+                const parentCommentId = c.getAttribute('id');
+
+                const button = c.querySelector('button');
+
+                button.addEventListener('click', () => SetReply(parentCommentId, parentCommentUser), false);
+
+            })
+        })();
     </script>
 }

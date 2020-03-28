@@ -8,5 +8,7 @@
         public string Content { get; set; }
 
         public int ParentPostId { get; set; }
+
+        public int? ParentCommentId { get; set; }
     }
 }

@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using BDInSelfLove.Data.Models;
+using BDInSelfLove.Services.Data.CloudinaryService;
+using BDInSelfLove.Services.Data.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,16 +17,24 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUserService userService;
+        private readonly ICloudinaryService cloudinaryService;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IUserService userService,
+            ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            this.userService = userService;
+            this.cloudinaryService = cloudinaryService;
         }
 
         public string Username { get; set; }
+
+        public string ProfilePicture { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -36,18 +47,22 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            public IFormFile ProfilePicture { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var profilePicture = await this.userService.GetProfilePicture(user.Id);
 
             Username = userName;
+            ProfilePicture = profilePicture;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
             };
         }
 
@@ -87,6 +102,12 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                     throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
                 }
             }
+
+            // TODO: Error handling
+            var profilePicture = await this.cloudinaryService.UploadPicture(
+                Input.ProfilePicture, $"{user.Id}_profile-picture");
+
+            var setProfilePictureResult = await this.userService.SetProfilePicture(user, profilePicture);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
