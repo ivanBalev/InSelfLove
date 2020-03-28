@@ -9,7 +9,7 @@
         <div class="col-12">
             <section>
                 <div class="card">
-                    <div class="card-header text-white bg-primary p-4 rounded-top">
+                    <div class="card-header text-dark p-4 rounded-top">
                         <h2 class="h4">@Model.Name</h2>
                     </div>
                     <table class="table">
@@ -26,7 +26,7 @@
                                 <tr>
                                     <td>
                                         <h3 class="h6">
-                                            <span class="badge badge-primary">7 unread</span> <a asp-action="Index" asp-controller="Post" asp-route-id="@post.Id">
+                                            <span class="badge badge-secondary">7 unread</span> <a asp-action="Index" asp-controller="Post" asp-route-id="@post.Id">
                                                 @post.Title
                                             </a>
                                         </h3>
@@ -107,10 +107,10 @@
                     <option value="author" selected="">Descending</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-sm btn-outline-secondary">Go</button>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Go</button>
         </form>
     </div>
-    <a asp-controller="Post" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-md btn-outline-secondary">New topic</a>
+    <a asp-controller="Post" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-md btn-outline-success">New topic</a>
 </div>
 
 @section Styles {

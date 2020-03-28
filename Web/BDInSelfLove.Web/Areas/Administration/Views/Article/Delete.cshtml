@@ -1,7 +1,7 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Article.ArticleDeleteViewModel
 <div class="container mb-5">
     <h1 class="text-center">Delete Article</h1>
-    <form method="post" asp-area="Administration" asp-controller="Article" asp-action="Delete" asp-route-id="@Model.Id">
+    <form method="post" asp-action="Delete" asp-route-id="@Model.Id">
         <div class="form-group">
             <label asp-for="@Model.Title"></label>
             <input asp-for="@Model.Title" class="form-control" disabled />

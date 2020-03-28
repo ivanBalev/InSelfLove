@@ -1,4 +1,5 @@
 ﻿using BDInSelfLove.Services.Models.Comment;
+using BDInSelfLove.Services.Models.Post;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace BDInSelfLove.Services.Data.Comment
 
         IQueryable<CommentServiceModel> GetAll(int parentId, string parentType);
 
-        Task<CommentServiceModel> GetAllSubComments(CommentServiceModel comment);
+        Task<CommentServiceModel> GetAllSubComments(CommentServiceModel comment, PostServiceModel post);
     }
 }

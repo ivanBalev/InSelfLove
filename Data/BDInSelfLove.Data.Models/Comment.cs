@@ -25,6 +25,10 @@
 
         public virtual Post ParentPost { get; set; }
 
+        public int? MainCommentId { get; set; }
+
+        public virtual Comment MainComment { get; set; }
+
         public int? ParentCommentId { get; set; }
 
         public virtual Comment ParentComment { get; set; }

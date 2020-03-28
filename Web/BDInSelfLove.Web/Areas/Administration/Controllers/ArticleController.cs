@@ -101,6 +101,7 @@
             return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = inputModel.Id });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var articleServiceModel = await this.articleService.GetById(id);
@@ -118,7 +119,7 @@
         }
 
         [HttpPost]
-        [Route("/Article/Delete/{id}")]
+        [Route("/Administration/Article/Delete/{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
             await this.articleService.Delete(id);

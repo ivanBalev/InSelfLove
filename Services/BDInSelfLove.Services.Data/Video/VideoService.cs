@@ -52,7 +52,7 @@
                 throw new ArgumentNullException(nameof(dbVideo));
             }
 
-            this.videosRepository.Delete(dbVideo);
+            this.videosRepository.HardDelete(dbVideo);
             int result = await this.videosRepository.SaveChangesAsync();
 
             return result > 0;

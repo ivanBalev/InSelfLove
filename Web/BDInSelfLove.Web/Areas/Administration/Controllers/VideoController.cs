@@ -22,6 +22,7 @@
             this.videoService = videoService;
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return this.View();
@@ -43,7 +44,7 @@
             var videoId = await this.videoService.CreateAsync(serviceModel);
 
            // TODO: Exception handling
-            return this.RedirectToAction("Index", "Video", new { area = string.Empty });
+            return this.RedirectToAction("All", "Video", new { area = string.Empty });
         }
 
         public async Task<IActionResult> Delete(int id)

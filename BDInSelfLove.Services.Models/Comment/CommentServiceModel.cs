@@ -39,7 +39,7 @@ namespace BDInSelfLove.Services.Models.Comment
 
         public ArticleServiceModel ParentArticle { get; set; }
 
-        public PostServiceModel Post { get; set; }
+        public PostServiceModel ParentPost { get; set; }
 
         public IList<CommentServiceModel> SubComments { get; set; }
     }

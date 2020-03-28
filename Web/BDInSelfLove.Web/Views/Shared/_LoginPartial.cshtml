@@ -33,7 +33,7 @@
                 }
 
                 <li>
-                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout">
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Context.Request.Path">
                         Logout
                     </a>
                 </li>

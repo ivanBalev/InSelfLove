@@ -48,8 +48,4 @@
     <ProjectReference Include="..\BDInSelfLove.Web.Infrastructure\BDInSelfLove.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\BDInSelfLove.Web.ViewModels\BDInSelfLove.Web.ViewModels.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Forum\Views\Shared\" />
-  </ItemGroup>
 </Project>

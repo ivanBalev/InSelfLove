@@ -7,6 +7,7 @@
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Comment;
+    using BDInSelfLove.Services.Models.Post;
     using Microsoft.EntityFrameworkCore;
 
     public class CommentService : ICommentService
@@ -50,18 +51,15 @@
             return query.To<CommentServiceModel>();
         }
 
-        public async Task<CommentServiceModel> GetAllSubComments(CommentServiceModel comment)
+        public async Task<CommentServiceModel> GetAllSubComments(CommentServiceModel comment, PostServiceModel post)
         {
-            var subComments = await this.commentRepository.All()
-                                   .Where(x => x.ParentCommentId == comment.Id)
-                                   .To<CommentServiceModel>()
-                                   .ToListAsync();
+            var subComments = post.Comments.Where(c => c.ParentCommentId == comment.Id).ToList();
 
             comment.SubComments = subComments;
 
             for (var i = 0; i < subComments.Count; i++)
             {
-                await this.GetAllSubComments(subComments[i]);
+                await this.GetAllSubComments(subComments[i], post);
             }
 
             return comment;

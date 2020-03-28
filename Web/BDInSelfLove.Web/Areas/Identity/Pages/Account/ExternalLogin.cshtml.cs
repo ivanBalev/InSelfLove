@@ -112,6 +112,8 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
         {
+            // TODO: Currently you can register two users with the same email address.
+
             returnUrl = returnUrl ?? Url.Content("~/");
             // Get the information about the user from the external login provider
             var info = await _signInManager.GetExternalLoginInfoAsync();

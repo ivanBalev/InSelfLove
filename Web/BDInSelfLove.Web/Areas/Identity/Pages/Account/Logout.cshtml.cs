@@ -23,12 +23,14 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGet(string returnUrl = null)
         {
+            returnUrl = returnUrl == null ? "/" : returnUrl;
+
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
 
-            return Redirect("/");
+            return Redirect(returnUrl);
         }
     }
 }
