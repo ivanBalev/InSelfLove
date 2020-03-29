@@ -48,4 +48,34 @@
     <ProjectReference Include="..\BDInSelfLove.Web.Infrastructure\BDInSelfLove.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\BDInSelfLove.Web.ViewModels\BDInSelfLove.Web.ViewModels.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\ShopSPA\Views\Shared\" />
+    <Folder Include="wwwroot\lib\sammy\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\SPA\controllers\homeController.js" />
+    <None Include="wwwroot\SPA\controllers\offerController.js" />
+    <None Include="wwwroot\SPA\controllers\userController.js" />
+    <None Include="wwwroot\SPA\helpers\helper.js" />
+    <None Include="wwwroot\SPA\helpers\requester.js" />
+    <None Include="wwwroot\SPA\images\offerPicture.png" />
+    <None Include="wwwroot\SPA\images\userIcon.png" />
+    <None Include="wwwroot\SPA\scripts\app.js" />
+    <None Include="wwwroot\SPA\styles\styles.css" />
+    <None Include="wwwroot\SPA\views\common\footer.hbs" />
+    <None Include="wwwroot\SPA\views\common\header.hbs" />
+    <None Include="wwwroot\SPA\views\home\homePage.hbs" />
+    <None Include="wwwroot\SPA\views\offers\create.hbs" />
+    <None Include="wwwroot\SPA\views\offers\dashboard.hbs" />
+    <None Include="wwwroot\SPA\views\offers\delete.hbs" />
+    <None Include="wwwroot\SPA\views\offers\details.hbs" />
+    <None Include="wwwroot\SPA\views\offers\edit.hbs" />
+    <None Include="wwwroot\SPA\views\offers\noOffers.hbs" />
+    <None Include="wwwroot\SPA\views\offers\singleOffer.hbs" />
+    <None Include="wwwroot\SPA\views\user\loginPage.hbs" />
+    <None Include="wwwroot\SPA\views\user\profilePage.hbs" />
+    <None Include="wwwroot\SPA\views\user\registerPage.hbs" />
+  </ItemGroup>
 </Project>

@@ -11,6 +11,21 @@
       ]
     },
     {
+      "library": "sammy@0.7.6",
+      "destination": "wwwroot/lib/sammy/",
+      "files": [
+        "lib/sammy.js",
+        "lib/plugins/sammy.handlebars.js"
+      ]
+    },
+    {
+      "library": "handlebars@4.1.2",
+      "destination": "wwwroot/lib/handlebars/",
+      "files": [
+        "dist/handlebars.js"
+      ]
+    },
+    {
       "library": "bootstrap@4.4.1",
       "destination": "wwwroot/lib/bootstrap/",
       "files": [

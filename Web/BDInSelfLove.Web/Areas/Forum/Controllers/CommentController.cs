@@ -42,7 +42,7 @@
                 return this.View(inputModel);
             }
 
-            return this.RedirectToAction("Index", "Home");
+            return this.RedirectToAction("Index", "Post", new { id = inputModel.ParentPostId });
         }
     }
 }
