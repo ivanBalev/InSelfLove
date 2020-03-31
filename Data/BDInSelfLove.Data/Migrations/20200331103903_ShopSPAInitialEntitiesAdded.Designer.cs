@@ -4,14 +4,16 @@ using BDInSelfLove.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BDInSelfLove.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200331103903_ShopSPAInitialEntitiesAdded")]
+    partial class ShopSPAInitialEntitiesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -362,7 +364,7 @@ namespace BDInSelfLove.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProductTypeId")
+                    b.Property<int>("ProductTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("SellerId")
@@ -620,7 +622,9 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.HasOne("BDInSelfLove.Data.Models.ProductCategory", "ProductType")
                         .WithMany()
-                        .HasForeignKey("ProductTypeId");
+                        .HasForeignKey("ProductTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "Seller")
                         .WithMany("ProductsForSale")

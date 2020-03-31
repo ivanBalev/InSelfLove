@@ -18,7 +18,7 @@ const userController = function () {
 
                 helper.loadPartials(context)
                     .then(function () {
-                        this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/user/profilePage_taysoz.hbs')
+                        this.partial('./SPA/views/user/profilePage.hbs')
                     })
             });
     }
@@ -26,14 +26,14 @@ const userController = function () {
     const getRegister = function (context) {
         helper.loadPartials(context)
             .then(function () {
-                this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/user/registerPage_nkbzbs.hbs')
+                this.partial('./SPA/views/user/registerPage.hbs')
             });
     };
 
     const getLogin = function (context) {
         helper.loadPartials(context)
             .then(function () {
-                this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/user/loginPage_uoqdhx.hbs')
+                this.partial('./SPA/views/user/loginPage.hbs')
             })
     };
 

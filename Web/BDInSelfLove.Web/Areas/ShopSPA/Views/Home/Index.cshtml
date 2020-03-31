@@ -1,5 +1,30 @@
-﻿<section id="shop">
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
+
+@using BDInSelfLove.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+<nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+        <a class="navbar-brand" href="#/home">BookShop</a>
+        @if (this.SignInManager.IsSignedIn(this.User))
+        {
+            <form id="csrf" method="post"></form>
+            <a class="navbar-item" href="#/dashboard">Dashboard</a>
+            <a class="navbar-item" href="#/createOffer">Create Offer</a>
+        }
+
+    </div>
+</nav>
+<section id="notifications">
+    <div class="p-3 mb-2 bg-success w-50 text-white text-center" id="successNotification">Success</div>
+    <div class="p-3 mb-2 bg-danger w-50 text-white text-center" id="errorNotification">Error</div>
+    <div class="p-3 mb-2 bg-info w-50 text-white text-center" id="loadingNotification">Loading...</div>
+</section>
+<section id="shop">
 </section>
 
 @section Links {
@@ -19,4 +44,19 @@
     <script src="~/SPA/controllers/offerController.js"></script>
 
     <script src="~/SPA/scripts/app.js"></script>
+
+
+    @*<script>
+        (function sendVote() {
+            var token = $("#csrf input[name=__RequestVerificationToken]").val();
+            $.ajax({
+                url: "/api/product",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                headers: { 'X-CSRF-TOKEN': token },
+               
+            });
+        })();
+    </script>*@
 } 

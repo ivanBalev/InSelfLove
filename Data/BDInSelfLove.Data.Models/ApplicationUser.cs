@@ -17,6 +17,8 @@ namespace BDInSelfLove.Data.Models
             this.Claims = new HashSet<IdentityUserClaim<string>>();
             this.Logins = new HashSet<IdentityUserLogin<string>>();
             this.Comments = new HashSet<Comment>();
+            this.ProductsForSale = new HashSet<Product>();
+            this.ProductsBought = new HashSet<Product>();
         }
 
         // Audit info
@@ -40,5 +42,9 @@ namespace BDInSelfLove.Data.Models
         public virtual ICollection<Comment> Comments { get; set; }
 
         public virtual ICollection<Post> Posts { get; set; }
+
+        public virtual ICollection<Product> ProductsForSale { get; set; }
+
+        public virtual ICollection<Product> ProductsBought { get; set; }
     }
 }

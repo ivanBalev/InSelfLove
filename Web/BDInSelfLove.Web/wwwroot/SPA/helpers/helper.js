@@ -32,8 +32,8 @@ const helper = function () {
 
     const loadPartials = function (context, externalPartials) {
         let defaultPartials = {
-            header: "https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/common/header_n0mzv5.hbs",
-            footer: "https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/common/footer_utpcdg.hbs"
+            header: "./SPA/views/common/header.hbs",
+            footer: "./SPA/views/common/footer.hbs"
         };
 
         if (externalPartials) {

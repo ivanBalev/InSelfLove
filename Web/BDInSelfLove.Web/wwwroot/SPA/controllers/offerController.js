@@ -7,10 +7,10 @@ const offerController = function () {
     }
 
     const validateInput = function (context) {
-        let isValid = context.params.product !== '' &&
+        let isValid = context.params.name !== '' &&
             context.params.description !== '' &&
             context.params.price !== '' &&
-            validateUrl(context.params.pictureUrl);
+            validateUrl(context.params.picture);
 
         return isValid;
     }
@@ -20,7 +20,7 @@ const offerController = function () {
         helper.setHeaderView(context);
         helper.loadPartials(context)
             .then(function () {
-                this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/offers/create_pckmai.hbs')
+                this.partial('./SPA/views/offers/create.hbs')
             })
 
     }
@@ -56,18 +56,18 @@ const offerController = function () {
             .then(helper.handler)
             .then((data) => {
                 data.forEach(d => {
-                    d.isCreator = sessionStorage.getItem('username') === d.creator;
+                    d.isCreator = true;
                 });
 
                 context.offers = data;
                 helper.setHeaderView(context);
 
                 helper.loadPartials(context, {
-                    noOffers: 'https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/offers/noOffers_jwf6ge.hbs',
-                    singleOffer: 'https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/offers/singleOffer_bdkio1.hbs'
+                    noOffers: './SPA/views/offers/noOffers.hbs',
+                    singleOffer: './SPA/views/offers/singleOffer.hbs'
                 })
                     .then(function () {
-                        this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/offers/dashboard_mwqu1c.hbs')
+                        this.partial('./SPA/views/offers/dashboard.hbs')
                     });
             })
     }
@@ -84,7 +84,7 @@ const offerController = function () {
 
                 helper.loadPartials(context)
                     .then(function () {
-                        this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/offers/details_abww48.hbs')
+                        this.partial('./SPA/views/offers/details.hbs')
                     })
             })
     }
@@ -99,7 +99,7 @@ const offerController = function () {
 
                 helper.loadPartials(context)
                     .then(function () {
-                        this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/offers/edit_qvbvqr.hbs')
+                        this.partial('./SPA/views/offers/edit.hbs')
                     })
             });
     }
@@ -141,7 +141,7 @@ const offerController = function () {
 
                 helper.loadPartials(context)
                     .then(function () {
-                        this.partial('https://res.cloudinary.com/dzcajpx0y/raw/upload/v1585493652/hbs/views/offers/delete_it8g3s.hbs')
+                        this.partial('./SPA/views/offers/delete.hbs')
                     })
             });
     }

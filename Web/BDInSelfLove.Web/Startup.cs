@@ -13,6 +13,7 @@
     using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Data.Comment;
     using BDInSelfLove.Services.Data.Post;
+    using BDInSelfLove.Services.Data.Product;
     using BDInSelfLove.Services.Data.User;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
@@ -94,6 +95,12 @@
                // BINDING EXERCISE
                configure.ModelBinderProviders.Insert(0, new YearModelBinderProvider());
            });
+
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+            });
+
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
 
@@ -118,6 +125,7 @@
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICloudinaryService, CloudinaryService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IProductService, ProductService>();
 
             // FILTERS EXERCISE
             // Allows control over instantiation of filter.
@@ -163,7 +171,13 @@
             // MIDDLEWARE EXERCISE
             // app.UseMiddleware<RedirectToGoogleIfNotHttps>();
             // MIDDLEWARE EXERCISE
-            app.UseStaticFiles();
+
+            // TODO: Get rid of this after done with SPA frontend - SECURITY RISK
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true,
+                DefaultContentType = "text/plain",
+            });
             app.UseCookiePolicy();
 
             app.UseRouting();
