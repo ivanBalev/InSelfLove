@@ -14,6 +14,6 @@ namespace BDInSelfLove.Services.Data.Comment
 
         IQueryable<CommentServiceModel> GetAll(int parentId, string parentType);
 
-        Task<CommentServiceModel> GetAllSubComments(CommentServiceModel comment, PostServiceModel post);
+        Task GetAllSubComments(CommentServiceModel comment, PostServiceModel post);
     }
 }

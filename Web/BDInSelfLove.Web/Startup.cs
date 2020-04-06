@@ -9,6 +9,7 @@
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Data.Seeding;
     using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Data.Category;
     using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Data.Comment;
@@ -101,9 +102,7 @@
                 options.HeaderName = "X-CSRF-TOKEN";
             });
 
-            services.AddRazorPages()
-                .AddRazorRuntimeCompilation();
-
+            services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSingleton(this.configuration);
 
             // Data repositories
@@ -126,6 +125,7 @@
             services.AddTransient<ICloudinaryService, CloudinaryService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IAppointmentService, AppointmentService>();
 
             // FILTERS EXERCISE
             // Allows control over instantiation of filter.

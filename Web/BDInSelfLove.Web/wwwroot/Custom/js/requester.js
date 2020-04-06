@@ -4,15 +4,15 @@ const requester = function () {
     const appKey = "kid_Hk6TCNV7B";
     const appSecret = "9509e3e978aa470bb120acbae81f8002";
 
-    const get = function (endpoint, module, type) {
-        const headers = makeHeaders(type, 'GET');
-        const url = `${baseUrl}product`;
+    const get = function (endpoint) {
+        const headers = makeHeaders('GET');
+        const url = `${baseUrl}${endpoint}`;
 
         return fetch(url, headers);
     };
 
     const post = function (endpoint, module, type, data) {
-        const headers = makeHeaders(type, 'POST', data);
+        const headers = makeHeaders('POST', data);
         const url = `${baseUrl}product`;
 
         return fetch(url, headers);
@@ -40,7 +40,7 @@ const requester = function () {
             : 'Kinvey ' + sessionStorage.getItem('authtoken');
     }
 
-    const makeHeaders = (type, httpMethod, data) => {
+    const makeHeaders = (httpMethod, data) => {
         const headers = {
             method: httpMethod,
             headers: {

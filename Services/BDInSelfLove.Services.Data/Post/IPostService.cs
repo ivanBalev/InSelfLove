@@ -11,6 +11,6 @@
 
         Task<int> Create(PostServiceModel categoryServiceModel);
 
-        Task<PostServiceModel> GetById(int id);
+        Task<PostServiceModel> GetById(int id, int take, int skip = 0);
     }
 }

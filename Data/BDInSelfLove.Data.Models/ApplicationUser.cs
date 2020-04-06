@@ -19,6 +19,7 @@ namespace BDInSelfLove.Data.Models
             this.Comments = new HashSet<Comment>();
             this.ProductsForSale = new HashSet<Product>();
             this.ProductsBought = new HashSet<Product>();
+            this.Appointments = new HashSet<Appointment>();
         }
 
         // Audit info
@@ -46,5 +47,7 @@ namespace BDInSelfLove.Data.Models
         public virtual ICollection<Product> ProductsForSale { get; set; }
 
         public virtual ICollection<Product> ProductsBought { get; set; }
+
+        public virtual ICollection<Appointment> Appointments { get; set; }
     }
 }

@@ -1,0 +1,74 @@
+﻿@using BDInSelfLove.Common
+@using BDInSelfLove.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="container mt-4 py-4">
+    <form id="csfrToken" method="post"></form>
+    <div id="calendar"></div>
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="eventTitle"></span></h4>
+                </div>
+                    <div class="modal-body">
+                        <button id="btnDelete" class="btn btn-default btn-sm pull-right">
+                            <span><i class="fas fa-trash"></i></span> Remove
+                        </button>
+                        <button id="btnEdit" class="btn btn-default btn-sm pull-right" style="margin-right:5px;">
+                            <span><i class="fas fa-edit"></i></span> Edit
+                        </button>
+                        <p id="pDetails"></p>
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-warning btn-block" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="myModalSave" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Save Appointment</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <input type="hidden" id="hdEventID" value="0" />
+                    <div class="form-group">
+                        <label>Available hours</label>
+                        <div class="input-group date" id="dtp1">
+                            @*<input type="text" id="txtStart" class="form-control" />*@
+                            <select class="form-control" id="txtStart">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="txtDescription" rows="3" class="form-control"></textarea>
+                    </div>
+                    <button type="button" id="btnSave" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-outline-warning" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" integrity="sha256-Kpo67ZL4Mq+OPqdedHe9lvnMI6i6gZOI1+7NqujLdq0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.min.css" integrity="sha256-O3Oq9/mud7866SStmc+zBcjkPs2PY/I/MhETci3wOrg=" crossorigin="anonymous" media="print" />
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" integrity="sha256-1hjUhpc44NwiNg8OwMu2QzJXhD8kcj+sJA3aCQZoUjg=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js" integrity="sha256-SYIz/7Qe8avYdBE3w2kKVL1PB/mS05GGgKVn5qa86SY=" crossorigin="anonymous"></script>
+
+
+    <script src="~/Custom/js/fullcalendar.js"></script>
+}

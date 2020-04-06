@@ -51,7 +51,7 @@
             return query.To<CommentServiceModel>();
         }
 
-        public async Task<CommentServiceModel> GetAllSubComments(CommentServiceModel comment, PostServiceModel post)
+        public async Task GetAllSubComments(CommentServiceModel comment, PostServiceModel post)
         {
             var subComments = post.Comments.Where(c => c.ParentCommentId == comment.Id).ToList();
 
@@ -61,8 +61,6 @@
             {
                 await this.GetAllSubComments(subComments[i], post);
             }
-
-            return comment;
         }
     }
 }

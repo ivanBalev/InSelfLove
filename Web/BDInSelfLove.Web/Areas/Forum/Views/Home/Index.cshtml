@@ -10,7 +10,7 @@
         <div class="col-12 col-xl-9">
             @foreach (var category in Model)
             {
-                <section>
+                <section class="mb-3">
                     <div class="card">
                         <div class="card-header p-4 align-content-between">
                             <a asp-controller="Category" asp-action="Index" asp-route-id="@category.Id" class="text-dark">
@@ -30,13 +30,15 @@
                                     <th scope="col">Total Comments</th>
                                 </tr>
                             </thead>
+                            @if(category.LastPost != null)
+                            {
                             <tbody>
                                 <tr>
                                     <td>
                                         <a asp-controller="Post" asp-action="Index" asp-route-id="@category.LastPost.Id"
                                            class="mb-0 font-weight-bold">
                                             @category.LastPost.Title
-                                        </a> 
+                                        </a>
                                         by <a href="#">@category.LastPost.UserUserName</a>
                                         @category.LastPost.CreatedOn.ToString("dd MMMM yyyy HH:mm")
                                     </td>
@@ -48,6 +50,8 @@
                                     </td>
                                 </tr>
                             </tbody>
+                            }
+
                         </table>
                     </div>
                 </section>

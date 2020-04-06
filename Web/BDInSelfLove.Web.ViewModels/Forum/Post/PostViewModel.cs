@@ -1,12 +1,12 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Post;
-using Ganss.XSS;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Web.ViewModels.Forum.Post
+﻿namespace BDInSelfLove.Web.ViewModels.Forum.Post
 {
+    using System;
+    using System.Collections.Generic;
+
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Post;
+    using Ganss.XSS;
+
     public class PostViewModel : IMapFrom<PostServiceModel>
     {
         public int Id { get; set; }
@@ -26,5 +26,9 @@ namespace BDInSelfLove.Web.ViewModels.Forum.Post
         public string SanitizedContent => new HtmlSanitizer().Sanitize(this.Content);
 
         public ICollection<PostCommentViewModel> Comments { get; set; }
+
+        public int PagesCount { get; set; }
+
+        public int CurrentPage { get; set; }
     }
 }

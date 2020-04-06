@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Web.Areas.Forum.Controllers
 {
+    using System;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Models;
@@ -12,6 +13,8 @@
 
     public class PostController : BaseForumController
     {
+        private const int CommentsPerPage = 5;
+
         private readonly IPostService postService;
         private readonly UserManager<ApplicationUser> userManager;
 
@@ -21,12 +24,20 @@
             this.userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(int id, int page = 1)
         {
             var serviceModel = await this.postService
-                .GetById(id);
+                .GetById(id, CommentsPerPage, (page - 1) * CommentsPerPage);
 
+            var pagesCount = (int)Math.Ceiling(serviceModel.CommentsCount / (decimal)CommentsPerPage);
             var viewModel = AutoMapperConfig.MapperInstance.Map<PostViewModel>(serviceModel);
+            viewModel.CurrentPage = page;
+            viewModel.PagesCount = pagesCount;
+
+            if (viewModel.PagesCount == 0)
+            {
+                viewModel.PagesCount = 1;
+            }
 
             return this.View(viewModel);
         }

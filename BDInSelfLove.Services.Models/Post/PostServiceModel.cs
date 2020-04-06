@@ -32,5 +32,7 @@
 
         public CategoryServiceModel Category { get; set; }
 
+        public int CommentsCount { get; set; }
+
     }
 }
