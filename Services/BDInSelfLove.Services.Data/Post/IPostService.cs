@@ -12,5 +12,7 @@
         Task<int> Create(PostServiceModel categoryServiceModel);
 
         Task<PostServiceModel> GetById(int id, int take, int skip = 0);
+
+        IQueryable<PostServiceModel> SearchPosts(string searchTerm);
     }
 }

@@ -23,6 +23,8 @@
         public HomeController(IArticleService articleService)
         {
             this.articleService = articleService;
+
+            // TODO: Payments will need deployment. Otherwise we can't receive response from epay about payment status.
         }
 
         //[AddHeaderAsyncActionFilter]
