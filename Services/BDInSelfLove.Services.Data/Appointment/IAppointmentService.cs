@@ -9,13 +9,13 @@ namespace BDInSelfLove.Services.Data.Calendar
 {
     public interface IAppointmentService
     {
-        IQueryable<AppointmentServiceModel> GetAll();
+        IQueryable<AppointmentServiceModel> GetAll(string userId = null);
 
         Task<AppointmentServiceModel> GetById(int id);
 
         Task<int> Create(AppointmentServiceModel appointmentServiceModel);
 
-        Task<int> Edit(AppointmentServiceModel appointmentServiceModel);
+        //Task<int> Edit(AppointmentServiceModel appointmentServiceModel);
 
         Task<bool> Delete(int appointmentId);
 

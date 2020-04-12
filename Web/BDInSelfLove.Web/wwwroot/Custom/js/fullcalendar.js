@@ -8,7 +8,7 @@
         events = [];
         $.ajax({
             type: "GET",
-            url: "/appointment/GetAll",
+            url: "/api/appointment/GetAll",
             success: function (data) {
                 $.each(data, function (i, v) {
                     events.push({
@@ -20,8 +20,13 @@
 
                 GenerateCalendar(events);
             },
-            error: function (error) {
-                alert('Failed');
+            error: function (request, textStatus, error) {
+                if (request.getResponseHeader('location') != undefined) {
+                    window.location.href = request.getResponseHeader('location');
+                } else {
+                    alert('Error');
+                }
+
             }
         })
     }
@@ -54,62 +59,23 @@
             },
             selectable: true,
             select: function (start) {
-                console.log(start);
                 selectedEvent = {
                     id: 0,
                     description: '',
                     start: '',
                 };
-                openAddEditForm(start._d);
+                openAddForm(start._d);
                 $('#calendar').fullCalendar('unselect');
             },
         })
     }
 
-    $('#btnEdit').click(function () {
-        //Open modal dialog for edit event
-        openAddEditForm();
-    })
-    $('#btnDelete').click(function () {
-        if (selectedEvent != null && confirm('Are you sure?')) {
-            $.ajax({
-                type: "POST",
-                url: '/appointment/Delete',
-                data: { 'id': selectedEvent.id },
-                headers: { 'X-CSRF-TOKEN': token },
-                success: function (data) {
-                    if (data.status) {
-                        //Refresh the calender
-                        fetchEventAndRenderCalendar();
-                        $('#myModal').modal('hide');
-                    }
-                },
-                error: function () {
-                    alert('Failed');
-                }
-            })
-        }
-    })
 
-    //function openAddEditForm() {
-    //    if (selectedEvent != null) {
-    //        $('#hdEventID').val(selectedEvent.id);
-
-    //        if (selectedEvent.start != '') {
-    //            $('#txtStart').val(selectedEvent.start.format("DD.MM.YYYY HH:mm"));
-    //        }
-
-    //        $('#txtDescription').val(selectedEvent.description);
-    //    }
-    //    $('#myModal').modal('hide');
-    //    $('#myModalSave').modal();
-    //}
-
-    function openAddEditForm(date) {
+    function openAddForm(date) {
         $.ajax({
             type: "GET",
             data: { date: date },
-            url: "/appointment/GetAppointmentsByDate",
+            url: "/api/appointment/GetAppointmentsByDate",
             success: function (appointments) {
 
                 var select = document.getElementById("txtStart");
@@ -126,45 +92,91 @@
                 $('#myModalSave').modal();
             },
             error: function (error) {
-                alert('Failed');
+                alert('Error');
             }
         })
     }
-    $('#btnSave').click(function (test) {
+
+    $('#btnWorkingHours').click(function () {
+        $('#workingHours').modal();
+    })
+
+    $('#workingHoursSubmitBtn').click(function () {
+        // VALIDATE
+
+        let startHour = document.querySelector('#startTime').value;
+        let endHour = document.querySelector('#endTime').value;
+
+        $.ajax({
+            type: "POST",
+            url: '/api/appointment/SetWorkingHours',
+            data: {
+                startHour,
+                endHour,
+            },
+            headers: { 'X-CSRF-TOKEN': token },
+            success: function (data) {
+                fetchEventAndRenderCalendar();
+                $('#workingHours').modal('hide');
+            },
+            error: function () {
+                alert('Error');
+            }
+        })
+    })
+
+    $('#btnDelete').click(function () {
+        if (selectedEvent != null && confirm('Are you sure?')) {
+            $.ajax({
+                type: "DELETE",
+                url: '/api/appointment/Delete',
+                data: { 'id': selectedEvent.id },
+                headers: { 'X-CSRF-TOKEN': token },
+                success: function (data) {
+                    if (data.status) {
+                        //Refresh the calender
+                        fetchEventAndRenderCalendar();
+                        $('#myModal').modal('hide');
+                    }
+                },
+                error: function () {
+                    alert('Error');
+                }
+            })
+        }
+    })
+
+    $('#btnSave').click(function () {
         //Validation/
-        console.log(test);
         if ($('#txtStart').val().trim() == "") {
             alert('Start date required');
             return;
         }
 
         var e = document.getElementById("txtStart");
-        console.log(e);
-        console.log(e.options[e.selectedIndex].text);
 
         var data = {
             Id: $('#hdEventID').val(),
             Start: e.options[e.selectedIndex].value,
             Description: $('#txtDescription').val(),
         }
+
         SaveEvent(data);
-        // call function for submit data to the server 
     })
     function SaveEvent(data) {
         $.ajax({
             type: "POST",
-            url: '/appointment/Save',
+            url: '/api/appointment/Save',
             data: data,
             headers: { 'X-CSRF-TOKEN': token },
             success: function (data) {
                 if (data.status) {
-                    //Refresh the calender
                     fetchEventAndRenderCalendar();
                     $('#myModalSave').modal('hide');
                 }
             },
             error: function () {
-                alert('Failed');
+                alert('Error');
             }
         })
     }

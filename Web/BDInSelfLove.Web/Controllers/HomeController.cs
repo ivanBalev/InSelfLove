@@ -9,6 +9,7 @@
     using BDInSelfLove.Web.ViewModels;
     using BDInSelfLove.Web.ViewModels.Article;
     using BDInSelfLove.Web.ViewModels.Home;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +52,12 @@
         }
 
         public IActionResult Contact()
+        {
+            return this.View();
+        }
+
+        [Authorize]
+        public IActionResult Appointment()
         {
             return this.View();
         }

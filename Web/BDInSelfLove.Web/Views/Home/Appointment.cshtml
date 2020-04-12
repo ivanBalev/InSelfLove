@@ -6,6 +6,10 @@
 
 <div class="container mt-4 py-4">
     <form id="csfrToken" method="post"></form>
+    @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+    {
+        <button id="btnWorkingHours" class="btn btn-block btn-outline-warning">Set Working Hours</button>
+    }
     <div id="calendar"></div>
 
     <div id="myModal" class="modal fade" role="dialog">
@@ -17,9 +21,6 @@
                 <div class="modal-body">
                     <button id="btnDelete" class="btn btn-default btn-sm pull-right">
                         <span><i class="fas fa-trash"></i></span> Remove
-                    </button>
-                    <button id="btnEdit" class="btn btn-default btn-sm pull-right" style="margin-right:5px;">
-                        <span><i class="fas fa-edit"></i></span> Edit
                     </button>
                     <p id="pDetails"></p>
                 </div>
@@ -62,29 +63,31 @@
 </div>
 
 <div id="workingHours" class="modal fade" role="dialog">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h4 class="modal-title">Set Working Hours</h4>
-        </div>
-        <div class="modal-body">
-            <form class="form-horizontal">
-                <div class="form-group">
-                    <label>Start Time</label>
-                    <div class="input-group date" id="dtp1">
-                        <input type="time" id="startTime" name="startTime" required>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Set Working Hours</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <div class="input-group date">
+                            <input type="time" id="startTime" name="startTime" required>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>End Time</label>
-                    <input type="time" id="endTime" name="endTime" required>
-                </div>
-                <button type="button" id="workingHoursBtn" class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-outline-warning" data-dismiss="modal">Close</button>
-            </form>
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <div class="input-group date">
+                            <input type="time" id="endTime" name="endTime" required>
+                        </div>
+                    </div>
+                    <button type="button" id="workingHoursSubmitBtn" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-outline-warning" data-dismiss="modal">Close</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 

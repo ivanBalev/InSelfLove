@@ -11,18 +11,26 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Appointment;
+    using BDInSelfLove.Web.Areas.Administration;
+    using BDInSelfLove.Web.Infrastructure.ModelBinders;
     using BDInSelfLove.Web.ViewModels.Calendar;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    public class AppointmentController : Controller
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService appointmentService;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEmailSender emailSender;
 
-        public AppointmentController(IAppointmentService appointmentService, UserManager<ApplicationUser> userManager,
+        public AppointmentController(
+            IAppointmentService appointmentService,
+            UserManager<ApplicationUser> userManager,
             IEmailSender emailSender)
         {
             this.appointmentService = appointmentService;
@@ -30,108 +38,101 @@
             this.emailSender = emailSender;
         }
 
-
-        public ActionResult Index()
+        [HttpGet]
+        [Route("GetAll")]
+        public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAll()
         {
-            return this.View();
-        }
+            string userId = this.User.IsInRole(GlobalConstants.AdministratorRoleName) ?
+                null : this.userManager.GetUserId(this.User);
 
-        public async Task<JsonResult> GetAll()
-        {
-            var appointmentViewModel = await this.appointmentService.GetAll()
+            var appointmentViewModel = await this.appointmentService.GetAll(userId)
                 .To<AppointmentViewModel>()
                 .ToListAsync();
 
-            return new JsonResult(appointmentViewModel);
+            return appointmentViewModel;
         }
 
         [HttpPost]
-        public async Task<JsonResult> Save(AppointmentInputModel inputModel)
+        [Route("Save")]
+        public async Task<IActionResult> Save([FromForm]AppointmentInputModel inputModel)
         {
-            var request = this.HttpContext;
-
-            var status = false;
             var serviceModel = AutoMapperConfig.MapperInstance.Map<AppointmentServiceModel>(inputModel);
 
             // Validate
-            var dbCheck = await this.appointmentService.GetAllByDate(serviceModel.Start).Where(a => a.Start.Hour == serviceModel.Start.Hour).FirstOrDefaultAsync();
+            var appointmentSlotIsOccupied = await this.appointmentService
+                                                      .GetAllByDate(serviceModel.Start)
+                                                      .Where(a => a.Start.Hour == serviceModel.Start.Hour)
+                                                      .FirstOrDefaultAsync();
 
-            if (dbCheck != null)
+            if (appointmentSlotIsOccupied != null)
             {
-                return null;
+                return this.BadRequest(new { status = false });
             }
 
-            if (inputModel.Id > 0)
-            {
-                await this.appointmentService.Edit(serviceModel);
-            }
-            else
-            {
-                var user = await this.userManager.GetUserAsync(this.User);
-                var userId = user.Id;
-                serviceModel.UserId = userId;
+            var user = await this.userManager.GetUserAsync(this.User);
+            serviceModel.UserId = user.Id;
+            await this.appointmentService.Create(serviceModel);
 
-                await this.appointmentService.Create(serviceModel);
+            await this.emailSender.SendEmailAsync(
+                                        user.Email,
+                                        user.UserName,
+                                        GlobalConstants.SystemEmail,
+                                        GlobalConstants.SystemName + " " + GlobalConstants.AppointmentEmailSubject,
+                                        serviceModel.Start.ToString("dd MMMM HH:mm") + Environment.NewLine + serviceModel.Description);
 
-                await this.emailSender.SendEmailAsync(
-                                            user.Email,
-                                            user.UserName,
-                                            GlobalConstants.SystemEmail,
-                                            GlobalConstants.SystemName + " " + GlobalConstants.AppointmentEmailSubject,
-                                            serviceModel.Start.ToString("dd MMMM HH:mm") + Environment.NewLine + serviceModel.Description);
-            }
-
-            status = true;
-
-            return new JsonResult(new { status });
+            return this.Ok(new { status = true });
         }
 
-        [HttpPost]
-        public async Task<JsonResult> Delete(int id)
+        [HttpDelete]
+        [Route("Delete")]
+        public async Task<IActionResult> Delete([FromForm]int id)
         {
-            var status = false;
-
-            // TODO: the check below is temporary. Needs to be reworked
             var creatorId = (await this.appointmentService.GetById(id)).UserId;
             var currentUserId = (await this.userManager.GetUserAsync(this.User)).Id;
 
             if (creatorId != currentUserId)
             {
-                return new JsonResult(status);
+                return this.BadRequest(new { status = false });
             }
 
+            await this.appointmentService.Delete(id);
 
-            var deleteResult = await this.appointmentService.Delete(id);
-
-            status = true;
-            return new JsonResult(new { status });
+            return this.Ok(new { status = true });
         }
 
         [HttpGet]
-        public async Task<JsonResult> GetAppointmentsByDate(string date)
+        [Route("GetAppointmentsByDate")]
+        public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAppointmentsByDate([ModelBinder(typeof(AppointmentDateBinder))]DateTime date)
         {
-            var formattedDate = string.Join(" ", date.Split(" ").Skip(1).Take(3));
-            var parsedDate = DateTime.ParseExact(formattedDate, "MMM dd yyyy", CultureInfo.InvariantCulture);
-
-            var currentDayAppointments = await this.appointmentService.GetAllByDate(parsedDate)
+            var currentDayAppointments = await this.appointmentService.GetAllByDate(date)
                 .To<AppointmentViewModel>()
                 .ToListAsync();
 
-            var availableHours = Enumerable.Range(9, 10);
+            var availableHours = Enumerable.Range(GlobalAdminValues.WorkDayStart, GlobalAdminValues.WorkDayEnd - GlobalAdminValues.WorkDayStart);
 
             var returnList = new List<AppointmentViewModel>();
 
-            foreach (var item in availableHours)
+            foreach (var hour in availableHours)
             {
-                if (currentDayAppointments.Any(a => a.Start.Hour == item))
+                if (currentDayAppointments.Any(a => a.Start.Hour == hour))
                 {
                     continue;
                 }
 
-                returnList.Add(new AppointmentViewModel { Start = new DateTime(parsedDate.Year, parsedDate.Month, parsedDate.Day, item, 0, 0) });
+                returnList.Add(new AppointmentViewModel { Start = new DateTime(date.Year, date.Month, date.Day, hour, 0, 0) });
             }
 
-            return new JsonResult(returnList);
+            return returnList;
+        }
+
+        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        [Route("SetWorkingHours")]
+        public async Task<IActionResult> SetWorkingHours([FromForm]string startHour, [FromForm]string endHour)
+        {
+            GlobalAdminValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
+            GlobalAdminValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);
+
+            return this.Ok(new { status = true });
         }
     }
 }
