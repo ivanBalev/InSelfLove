@@ -179,7 +179,7 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Appointment");
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Article", b =>
@@ -285,22 +285,13 @@ namespace BDInSelfLove.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MainCommentId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("ParentArticleId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ParentCommentId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ParentPostId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ParentVideoId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -311,15 +302,9 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("MainCommentId");
-
-                    b.HasIndex("ParentArticleId");
-
                     b.HasIndex("ParentCommentId");
 
                     b.HasIndex("ParentPostId");
-
-                    b.HasIndex("ParentVideoId");
 
                     b.HasIndex("UserId");
 
@@ -368,71 +353,24 @@ namespace BDInSelfLove.Data.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("BDInSelfLove.Data.Models.Product", b =>
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Report", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("BuyerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Picture")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("ProductTypeId")
+                    b.Property<int>("CommentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SellerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BuyerId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("ProductTypeId");
-
-                    b.HasIndex("SellerId");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("BDInSelfLove.Data.Models.ProductCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -440,14 +378,21 @@ namespace BDInSelfLove.Data.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubmitterId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommentId");
+
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("ProductCategories");
+                    b.HasIndex("SubmitterId");
+
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
@@ -617,14 +562,6 @@ namespace BDInSelfLove.Data.Migrations
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Comment", b =>
                 {
-                    b.HasOne("BDInSelfLove.Data.Models.Comment", "MainComment")
-                        .WithMany()
-                        .HasForeignKey("MainCommentId");
-
-                    b.HasOne("BDInSelfLove.Data.Models.Article", "ParentArticle")
-                        .WithMany("Comments")
-                        .HasForeignKey("ParentArticleId");
-
                     b.HasOne("BDInSelfLove.Data.Models.Comment", "ParentComment")
                         .WithMany("SubComments")
                         .HasForeignKey("ParentCommentId")
@@ -633,10 +570,6 @@ namespace BDInSelfLove.Data.Migrations
                     b.HasOne("BDInSelfLove.Data.Models.Post", "ParentPost")
                         .WithMany("Comments")
                         .HasForeignKey("ParentPostId");
-
-                    b.HasOne("BDInSelfLove.Data.Models.Video", "ParentVideo")
-                        .WithMany("Comments")
-                        .HasForeignKey("ParentVideoId");
 
                     b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "User")
                         .WithMany("Comments")
@@ -658,21 +591,17 @@ namespace BDInSelfLove.Data.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("BDInSelfLove.Data.Models.Product", b =>
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Report", b =>
                 {
-                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "Buyer")
-                        .WithMany("ProductsBought")
-                        .HasForeignKey("BuyerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("BDInSelfLove.Data.Models.Comment", "Comment")
+                        .WithMany("Reports")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("BDInSelfLove.Data.Models.ProductCategory", "ProductType")
-                        .WithMany()
-                        .HasForeignKey("ProductTypeId");
-
-                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "Seller")
-                        .WithMany("ProductsForSale")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "Submitter")
+                        .WithMany("Reports")
+                        .HasForeignKey("SubmitterId");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>

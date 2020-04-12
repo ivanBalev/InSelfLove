@@ -12,17 +12,13 @@
 
     public class CommentService : ICommentService
     {
-        private const string ParentComment = "comment";
-        private const string ParentArticle = "article";
-        private const string ParentVideo = "video";
-        private const string ParentPost = "post";
-
-
         private readonly IDeletableEntityRepository<Comment> commentRepository;
+        private readonly IDeletableEntityRepository<Report> reportRepository;
 
-        public CommentService(IDeletableEntityRepository<Comment> commentRepository)
+        public CommentService(IDeletableEntityRepository<Comment> commentRepository, IDeletableEntityRepository<Report> reportRepository)
         {
             this.commentRepository = commentRepository;
+            this.reportRepository = reportRepository;
         }
 
         public async Task<int> Create(CommentServiceModel categoryServiceModel)
@@ -35,20 +31,21 @@
             return comment.Id;
         }
 
-        public IQueryable<CommentServiceModel> GetAll(int parentId, string parentType)
+        public IQueryable<CommentServiceModel> GetAllByUserId(string userId, int count = int.MaxValue)
         {
-            IQueryable<Comment> query = this.commentRepository.All();
+            var query = this.commentRepository.All().Where(c => c.UserId == userId)
+                .OrderByDescending(c => c.CreatedOn).Take(count)
+                .Select(c => new CommentServiceModel
+                {
+                    ParentPostId = c.ParentPostId,
+                    ParentPost = new PostServiceModel {
+                        Title = c.ParentPost.Title,
+                    },
+                    Content = c.Content,
+                    CreatedOn = c.CreatedOn,
+                });
 
-            switch (parentType.ToLower())
-            {
-                case ParentComment: return query.Where(c => c.ParentArticleId != null).To<CommentServiceModel>();
-                case ParentArticle: return query.Where(c => c.ParentArticleId != null).To<CommentServiceModel>();
-                case ParentVideo: return query.Where(c => c.ParentVideoId != null).To<CommentServiceModel>();
-                case ParentPost: return query.Where(c => c.ParentPostId != null).To<CommentServiceModel>();
-            }
-
-            // TODO: Redo this alternative return. It shouldn't be possible to receive anything other than the 4 parent types.
-            return query.To<CommentServiceModel>();
+            return query;
         }
 
         public async Task GetAllSubComments(CommentServiceModel comment, PostServiceModel post)
@@ -61,6 +58,28 @@
             {
                 await this.GetAllSubComments(subComments[i], post);
             }
+        }
+
+        public IQueryable<CommentServiceModel> GetById(int id)
+        {
+            // TODO: Could not get the following to work. Does not want to take ParentPost.Title 
+
+            //var test1 = this.commentRepository.All().Where(c => c.Id == id).To<CommentServiceModel>().ToList();
+
+            //var test2 = this.commentRepository.All().Where(c => c.Id == id).Include(c => c.ParentPost).To<CommentServiceModel>().ToList();
+
+            return this.commentRepository.All().Where(c => c.Id == id).To<CommentServiceModel>();
+        }
+
+        public async Task<int> SubmitReport(ReportServiceModel reportService)
+        {
+            var report = AutoMapperConfig.MapperInstance.Map<Report>(reportService);
+            report.IsApproved = false;
+
+            await this.reportRepository.AddAsync(report);
+            await this.commentRepository.SaveChangesAsync();
+
+            return report.Id;
         }
     }
 }
