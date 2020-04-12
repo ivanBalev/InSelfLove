@@ -63,7 +63,7 @@
 
             <hr />
 
-            <h5 class="mb-3 ml-4 mt-5">Comments</h5>
+            <h5 class="mb-0 ml-4 mt-5">Comments</h5>
 
             @foreach (var comment in Model.Comments)
             {
@@ -167,21 +167,18 @@
 
 
         (function getButtons() {
-            const comments = document.querySelectorAll('.comment');
+            const comments = document.querySelectorAll('.card');
 
 
             comments.forEach(c => {
                 const parentCommentUser = c.querySelector('.user-link').textContent;
-                const parentCommentId = c.querySelector('.card').getAttribute('id');
+                const parentCommentId = c.getAttribute('id');
 
-                const button = c.querySelector('.reply-button');
+                const button = c.querySelector('button');
 
                 button.addEventListener('click', () => SetReply(parentCommentId, parentCommentUser), false);
 
             })
-
-            document.querySelectorAll('button')[1].addEventListener('click', () => SetReply(0, null), false);
-
         })();
     </script>
 }

@@ -1,4 +1,5 @@
 ﻿using BDInSelfLove.Services.Mapping;
+using BDInSelfLove.Services.Models.Product;
 using Ganss.XSS;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,5 @@ namespace BDInSelfLove.Web.ViewModels.Forum.Search
         public List<SearchPostViewModel> Posts { get; set; }
 
         public string SearchTerm { get; set; }
-
-        public string UserId { get; set; }
     }
 }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BDInSelfLove.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200409125304_testie")]
-    partial class testie
+    [Migration("20200406085314_AddedApprovalToAppointmentEntity")]
+    partial class AddedApprovalToAppointmentEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -287,6 +287,9 @@ namespace BDInSelfLove.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("MainCommentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
@@ -309,6 +312,8 @@ namespace BDInSelfLove.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted");
+
+                    b.HasIndex("MainCommentId");
 
                     b.HasIndex("ParentArticleId");
 
@@ -445,48 +450,6 @@ namespace BDInSelfLove.Data.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("ProductCategories");
-                });
-
-            modelBuilder.Entity("BDInSelfLove.Data.Models.Report", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubmitterId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("SubmitterId");
-
-                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
@@ -656,6 +619,10 @@ namespace BDInSelfLove.Data.Migrations
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Comment", b =>
                 {
+                    b.HasOne("BDInSelfLove.Data.Models.Comment", "MainComment")
+                        .WithMany()
+                        .HasForeignKey("MainCommentId");
+
                     b.HasOne("BDInSelfLove.Data.Models.Article", "ParentArticle")
                         .WithMany("Comments")
                         .HasForeignKey("ParentArticleId");
@@ -708,19 +675,6 @@ namespace BDInSelfLove.Data.Migrations
                         .WithMany("ProductsForSale")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("BDInSelfLove.Data.Models.Report", b =>
-                {
-                    b.HasOne("BDInSelfLove.Data.Models.Comment", "Comment")
-                        .WithMany("Reports")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "Submitter")
-                        .WithMany("Reports")
-                        .HasForeignKey("SubmitterId");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>

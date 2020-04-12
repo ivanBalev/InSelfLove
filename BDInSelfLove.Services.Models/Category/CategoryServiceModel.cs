@@ -8,6 +8,11 @@
 
     public class CategoryServiceModel : IMapTo<Data.Models.Category>, IMapFrom<Data.Models.Category>
     {
+        public CategoryServiceModel()
+        {
+            this.Posts = new List<PostServiceModel>();
+        }
+
         public int Id { get; set; }
 
         public string Name { get; set; }

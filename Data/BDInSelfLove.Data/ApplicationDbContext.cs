@@ -34,9 +34,9 @@
 
         public DbSet<Post> Posts { get; set; }
 
-        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Product> Products { get; set; }
 
-        public DbSet<Report> Reports { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 
@@ -101,6 +101,18 @@
                 .HasMany(c => c.SubComments)
                 .WithOne(r => r.ParentComment)
                 .HasForeignKey(c => c.ParentCommentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Product>()
+                .HasOne(p => p.Buyer)
+                .WithMany(b => b.ProductsBought)
+                .HasForeignKey(p => p.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Product>()
+                .HasOne(p => p.Seller)
+                .WithMany(s => s.ProductsForSale)
+                .HasForeignKey(p => p.SellerId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
 

@@ -36,7 +36,7 @@
         }
 
         [HttpGet]
-        public async Task<ActionResult> Search(string term, int page = 1)
+        public virtual async Task<ActionResult> Search(string term, int page = 1)
         {
             if (string.IsNullOrWhiteSpace(term))
             {
@@ -48,7 +48,13 @@
             var postsQuery = this.postService.SearchPosts(
                 term).To<SearchPostViewModel>();
 
+
+            var test = await this.postService.SearchPosts(
+                term).ToListAsync();
+
+
             var totalPostsCount = postsQuery.Count();
+
             var posts = await postsQuery.Skip((page - 1) * SearchPostsPerPage).Take(SearchPostsPerPage)
                 .ToListAsync();
 

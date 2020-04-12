@@ -11,7 +11,5 @@
         public const string SystemEmail = "isbalev@gmail.com";
 
         public const string AppointmentEmailSubject = "Appointment";
-
-        public const string ReportEmailSubject = "Report";
     }
 }
