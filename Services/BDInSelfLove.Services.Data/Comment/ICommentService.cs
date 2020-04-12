@@ -12,8 +12,12 @@ namespace BDInSelfLove.Services.Data.Comment
     {
         Task<int> Create(CommentServiceModel categoryServiceModel);
 
-        IQueryable<CommentServiceModel> GetAll(int parentId, string parentType);
-
         Task GetAllSubComments(CommentServiceModel comment, PostServiceModel post);
+
+        IQueryable<CommentServiceModel> GetAllByUserId(string userId, int count = int.MaxValue);
+
+        IQueryable<CommentServiceModel> GetById(int id);
+
+        Task<int> SubmitReport(ReportServiceModel reportService);
     }
 }

@@ -7,13 +7,8 @@
     using BDInSelfLove.Services.Models.Comment;
     using BDInSelfLove.Services.Models.User;
 
-    public class PostServiceModel : IMapTo<Data.Models.Post>, IMapFrom<Data.Models.Post>
+    public class PostServiceModel : IMapTo<BDInSelfLove.Data.Models.Post>, IMapFrom<BDInSelfLove.Data.Models.Post>
     {
-        public PostServiceModel()
-        {
-            this.Comments = new List<CommentServiceModel>();
-        }
-
         public int Id { get; set; }
 
         public DateTime CreatedOn { get; set; }

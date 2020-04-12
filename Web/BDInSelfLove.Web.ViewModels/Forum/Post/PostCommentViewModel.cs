@@ -22,6 +22,7 @@ namespace BDInSelfLove.Web.ViewModels.Forum.Post
 
         public string Content { get; set; }
 
+        // TODO: remove sanitation from all view models. it's now done in the service model
         public string SanitizedContent => new HtmlSanitizer().Sanitize(this.Content);
 
         public IList<PostCommentViewModel> SubComments { get; set; }
