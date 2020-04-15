@@ -9,6 +9,6 @@ namespace BDInSelfLove.Web.Areas.Administration
     {
         public static int WorkDayStart = 9;
 
-        public static int WorkDayEnd = 5;
+        public static int WorkDayEnd = 17;
     }
 }

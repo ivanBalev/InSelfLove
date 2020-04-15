@@ -24,6 +24,8 @@
     [Route("api/[controller]")]
     public class AppointmentController : ControllerBase
     {
+        private const string AppointmentDeleteEmailBody = "The client opted to cancel their appointment";
+
         private readonly IAppointmentService appointmentService;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEmailSender emailSender;
@@ -88,14 +90,21 @@
         public async Task<IActionResult> Delete([FromForm]int id)
         {
             var creatorId = (await this.appointmentService.GetById(id)).UserId;
-            var currentUserId = (await this.userManager.GetUserAsync(this.User)).Id;
+            var currentUser = await this.userManager.GetUserAsync(this.User);
 
-            if (creatorId != currentUserId)
+            if (creatorId != currentUser.Id)
             {
                 return this.BadRequest(new { status = false });
             }
 
             await this.appointmentService.Delete(id);
+
+            await this.emailSender.SendEmailAsync(
+                                        currentUser.Email,
+                                        currentUser.UserName,
+                                        GlobalConstants.SystemEmail,
+                                        GlobalConstants.SystemName + " " + GlobalConstants.AppointmentEmailSubject,
+                                        AppointmentDeleteEmailBody);
 
             return this.Ok(new { status = true });
         }
@@ -104,6 +113,11 @@
         [Route("GetAppointmentsByDate")]
         public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAppointmentsByDate([ModelBinder(typeof(AppointmentDateBinder))]DateTime date)
         {
+            if (DateTime.Compare(date, DateTime.UtcNow) <= 0)
+            {
+                return this.BadRequest(new { status = false });
+            }
+
             var currentDayAppointments = await this.appointmentService.GetAllByDate(date)
                 .To<AppointmentViewModel>()
                 .ToListAsync();
@@ -127,7 +141,7 @@
 
         [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
         [Route("SetWorkingHours")]
-        public async Task<IActionResult> SetWorkingHours([FromForm]string startHour, [FromForm]string endHour)
+        public ActionResult SetWorkingHours([FromForm]string startHour, [FromForm]string endHour)
         {
             GlobalAdminValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
             GlobalAdminValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);

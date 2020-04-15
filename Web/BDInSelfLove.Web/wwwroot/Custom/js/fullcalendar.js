@@ -40,7 +40,7 @@
             header: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'month,basicWeek,basicDay,agenda'
+                right: 'month'
             },
             eventLimit: true,
             eventColor: '#378006',
@@ -59,6 +59,12 @@
             },
             selectable: true,
             select: function (start) {
+
+                if (start.isBefore(moment())) {
+                    $('#calendar').fullCalendar('unselect');
+                    return false;
+                }
+
                 selectedEvent = {
                     id: 0,
                     description: '',
