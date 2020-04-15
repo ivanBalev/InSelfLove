@@ -10,132 +10,126 @@
     this.ViewData["height"] = "62";
 }
 
-<div class="container my-3">
-    <nav class="breadcrumb">
-        <a href="index.html" class="breadcrumb-item">Board index</a>
-        <a href="overview-forum-category.html" class="breadcrumb-item">Forum category</a>
-        <span class="breadcrumb-item active">Forum post title with a complex and long question</span>
-    </nav>
-    <div class="row">
-        <div class="col">
 
-            <!-- TABLE BELOW -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card mb-0 pb-0 border-0" id="0">
-                        <div class="card-header text-dark p-4">
-                            <h2 class="h4">@Model.Title</h2>
-                        </div>
-                        <div class="card-header bg-white border-0">
-                            <div class="media flex-wrap w-100 align-items-center">
-                                <img src="@Model.UserProfilePhoto" height="@this.ViewData["width"]" width="@this.ViewData["height"]"
-                                     class="d-block rounded-circle" alt="">
-                                <div class="media-body ml-3">
-                                    <a class="user-link" href="@Model.UserId" data-abc="true">@Model.UserUserName</a>
-                                    <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
-                                </div>
-                                <div class="px-4 pt-3">
-                                    <a href="javascript:void(0)"
-                                       class="text-muted d-inline-flex align-items-center align-middle" data-abc="true">
-                                        <i class="fa fa-heart text-danger"></i>&nbsp; <span class="align-middle">445</span>
-                                    </a>
-                                    <span class="text-muted d-inline-flex align-items-center align-middle ml-4">
-                                        <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span>
-                                    </span>
-                                </div>
-                                <div class="px-4 pt-3">
-                                    <button type="button" class="btn btn-outline-primary btn-sm">
-                                        <i class="ion ion-md-create"></i>Reply
-                                    </button>
-                                </div>
-                                <div class="text-muted small ml-3">
-                                    <div>Member since <strong>01/1/2019 IMPLEMENT ME</strong></div>
-                                    <div><strong>134</strong> posts IMPLEMENT ME</div>
-                                </div>
+<div class="row">
+    <div class="col">
+
+        <!-- TABLE BELOW -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-0 pb-0 border-0" id="0">
+                    <div class="card-header text-dark p-4">
+                        <h2 class="h4">@Model.Title</h2>
+                    </div>
+                    <div class="card-header bg-white border-0">
+                        <div class="media flex-wrap w-100 align-items-center">
+                            <img src="@Model.UserProfilePhoto" height="@this.ViewData["width"]" width="@this.ViewData["height"]"
+                                 class="d-block rounded-circle" alt="">
+                            <div class="media-body ml-3">
+                                <a class="user-link" href="@Model.UserId" data-abc="true">@Model.UserUserName</a>
+                                <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
+                            </div>
+                            <div class="px-4 pt-3">
+                                <a href="javascript:void(0)"
+                                   class="text-muted d-inline-flex align-items-center align-middle" data-abc="true">
+                                    <i class="fa fa-heart text-danger"></i>&nbsp; <span class="align-middle">445</span>
+                                </a>
+                                <span class="text-muted d-inline-flex align-items-center align-middle ml-4">
+                                    <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span>
+                                </span>
+                            </div>
+                            <div class="px-4 pt-3">
+                                <button type="button" class="btn btn-outline-primary btn-sm">
+                                    <i class="ion ion-md-create"></i>Reply
+                                </button>
+                            </div>
+                            <div class="text-muted small ml-3">
+                                <div>Member since <strong>01/1/2019 IMPLEMENT ME</strong></div>
+                                <div><strong>134</strong> posts IMPLEMENT ME</div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            @Html.Raw(@Model.SanitizedContent)
-                        </div>
+                    </div>
+                    <div class="card-body">
+                        @Html.Raw(@Model.SanitizedContent)
                     </div>
                 </div>
             </div>
+        </div>
 
-            <hr />
+        <hr />
 
-            <h5 class="mb-3 ml-4 mt-5">Comments</h5>
+        <h5 class="mb-3 ml-4 mt-5">Comments</h5>
 
-            @foreach (var comment in Model.Comments)
+        @foreach (var comment in Model.Comments)
+        {
+            <partial name="_RecursiveCommentPartial" model="@comment" />
+        }
+
+    </div>
+</div>
+<div class="mb-3 clearfix">
+    <nav>
+        <ul class="pagination justify-content-center">
+            @if (this.Model.CurrentPage == 1)
             {
-                <partial name="_RecursiveCommentPartial" model="@comment" />
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Previous</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       asp-area="Forum"
+                       asp-controller="Post"
+                       asp-action="Index"
+                       asp-route-id="@this.Model.Id"
+                       asp-route-page="@(this.Model.CurrentPage - 1)">Previous</a>
+                </li>
             }
 
-        </div>
-    </div>
-    <div class="mb-3 clearfix">
-        <nav>
-            <ul class="pagination justify-content-center">
-                @if (this.Model.CurrentPage == 1)
-                {
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#">Previous</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-area="Forum"
-                           asp-controller="Post"
-                           asp-action="Index"
-                           asp-route-id="@this.Model.Id"
-                           asp-route-page="@(this.Model.CurrentPage - 1)">Previous</a>
-                    </li>
-                }
+            @for (int i = 1; i <= this.Model.PagesCount; i++)
+            {
+                var active = i == this.Model.CurrentPage ? "active" : string.Empty;
+                <li class="page-item @active">
+                    <a class="page-link"
+                       asp-area="Forum"
+                       asp-controller="Post"
+                       asp-action="Index"
+                       asp-route-id="@this.Model.Id"
+                       asp-route-page="@i">@i</a>
+                </li>
+            }
 
-                @for (int i = 1; i <= this.Model.PagesCount; i++)
-                {
-                    var active = i == this.Model.CurrentPage ? "active" : string.Empty;
-                    <li class="page-item @active">
-                        <a class="page-link"
-                           asp-area="Forum"
-                           asp-controller="Post"
-                           asp-action="Index"
-                           asp-route-id="@this.Model.Id"
-                           asp-route-page="@i">@i</a>
-                    </li>
-                }
-
-                @if (this.Model.CurrentPage == this.Model.PagesCount)
-                {
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#">Next</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-area="Forum"
-                           asp-controller="Post"
-                           asp-action="Index"
-                           asp-route-id="@this.Model.Id"
-                           asp-route-page="@(this.Model.CurrentPage + 1)">Next</a>
-                    </li>
-                }
-            </ul>
-        </nav>
-    </div>
-
-    @if (!this.SignInManager.IsSignedIn(this.User))
-    {
-        <partial name="_PostLoginPartial" model="null" />
-    }
-    else
-    {
-        <partial name="_AddCommentPartial" model="@(new CommentCreateInputModel { ParentPostId = Model.Id })" />
-    }
+            @if (this.Model.CurrentPage == this.Model.PagesCount)
+            {
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       asp-area="Forum"
+                       asp-controller="Post"
+                       asp-action="Index"
+                       asp-route-id="@this.Model.Id"
+                       asp-route-page="@(this.Model.CurrentPage + 1)">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
 </div>
+
+@if (!this.SignInManager.IsSignedIn(this.User))
+{
+    <partial name="_PostLoginPartial" model="null" />
+}
+else
+{
+    <partial name="_AddCommentPartial" model="@(new CommentCreateInputModel { ParentPostId = Model.Id })" />
+}
 
 @section HeadScripts
 {
@@ -148,7 +142,7 @@
     </script>
 }
 
-@section Scripts 
+@section Scripts
 {
     @*TODO: when user is not logged in and Reply is clicked, we get an error instead of scrolling to bottom*@
 

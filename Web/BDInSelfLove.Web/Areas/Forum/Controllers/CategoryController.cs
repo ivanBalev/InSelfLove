@@ -11,6 +11,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using SmartBreadcrumbs;
 
     public class CategoryController : BaseForumController
     {
@@ -23,12 +24,13 @@
             this.userManager = userManager;
         }
 
+        [HttpGet]
+        [Breadcrumb("Category")]
         public async Task<IActionResult> Index(int id)
         {
             // TODO: Potentially consider either using plain AutoMapper or sending a direct SQL Command to Server
             var categoryServiceModel = await this.categoryService.GetById(id);
-            var categoryViewModel = 
-                AutoMapperConfig.MapperInstance.Map<CategoryViewModel>(categoryServiceModel);
+            var categoryViewModel = AutoMapperConfig.MapperInstance.Map<CategoryViewModel>(categoryServiceModel);
 
             return this.View(categoryViewModel);
         }

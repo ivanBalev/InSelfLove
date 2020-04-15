@@ -11,6 +11,7 @@
     using BDInSelfLove.Web.ViewModels.Forum.Search;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using SmartBreadcrumbs;
 
     public class HomeController : BaseForumController
     {
@@ -25,6 +26,8 @@
             this.postService = postService;
         }
 
+        [HttpGet]
+        [DefaultBreadcrumb("Forum")]
         public async Task<IActionResult> Index()
         {
             var categories = await this.categoryService
@@ -36,6 +39,7 @@
         }
 
         [HttpGet]
+        [Breadcrumb("Search")]
         public async Task<ActionResult> Search(string term, int page = 1)
         {
             if (string.IsNullOrWhiteSpace(term))
@@ -63,7 +67,10 @@
                 SearchTerm = term,
             };
 
-            return View(viewModel);
+            var breadcrumb = new BreadcrumbNode("Search", "Search", "Home", null, null);
+            this.ViewData["BreadcrumbNode"] = breadcrumb;
+
+            return this.View(viewModel);
         }
     }
 }

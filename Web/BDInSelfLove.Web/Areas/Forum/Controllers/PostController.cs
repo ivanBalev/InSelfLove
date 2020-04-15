@@ -10,6 +10,7 @@
     using BDInSelfLove.Web.ViewModels.Forum.Post;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using SmartBreadcrumbs;
 
     public class PostController : BaseForumController
     {
@@ -24,6 +25,8 @@
             this.userManager = userManager;
         }
 
+        [HttpGet]
+        [Breadcrumb("Post")]
         public async Task<IActionResult> Index(int id, int page = 1)
         {
             var serviceModel = await this.postService
@@ -38,6 +41,10 @@
             {
                 viewModel.PagesCount = 1;
             }
+
+            var parentCategory = new BreadcrumbNode("Category", "Index", "Category", new { id = 1 });
+            var childPost = new BreadcrumbNode("Post", "Index", "Post", null, parentCategory);
+            this.ViewData["BreadcrumbNode"] = childPost;
 
             return this.View(viewModel);
         }

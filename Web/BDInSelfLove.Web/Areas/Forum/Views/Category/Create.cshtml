@@ -1,29 +1,22 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Forum.Category.CategoryCreateInputModel
 
-<div class="container my-3">
-    <nav class="breadcrumb">
-        <a href="index.html" class="breadcrumb-item">Board index</a>
-        <a href="overview-forum-category.html" class="breadcrumb-item">Forum category</a>
-        <a href="overview-topics.html" class="breadcrumb-item">Forum name</a>
-        <span class="breadcrumb-item active">Create new topic</span>
-    </nav>
-    <div class="row">
-        <div class="col-12">
-            <h2 class="h4 text-dark bg-light mb-3 p-4 rounded">Create New Category</h2>
-            <form class="mb-3" method="post" asp-controller="Category" asp-action="Create">
-                <div class="form-group">
-                    <label asp-for="@Model.Name"></label>
-                    <input asp-for="@Model.Name" class="form-control" placeholder="Give your category a name.">
-                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.Description"></label>
-                    <textarea asp-for="@Model.Description" class="form-control" rows="10"></textarea>
-                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
-                </div>
-                <button type="submit" class="btn btn-outline-success">Create topic</button>
-            </form>
-        </div>
+
+<div class="row">
+    <div class="col-12">
+        <h2 class="h4 text-dark bg-light mb-3 p-4 rounded">Create New Category</h2>
+        <form class="mb-3" method="post" asp-controller="Category" asp-action="Create">
+            <div class="form-group">
+                <label asp-for="@Model.Name"></label>
+                <input asp-for="@Model.Name" class="form-control" placeholder="Give your category a name.">
+                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Description"></label>
+                <textarea asp-for="@Model.Description" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="@Model.Description" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-outline-success">Create topic</button>
+        </form>
     </div>
 </div>
 

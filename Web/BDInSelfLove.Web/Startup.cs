@@ -32,6 +32,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using SmartBreadcrumbs;
 
     public class Startup
     {
@@ -95,6 +96,8 @@
                // BINDING EXERCISE
                configure.ModelBinderProviders.Insert(0, new YearModelBinderProvider());
            });
+
+            services.UseBreadcrumbs(this.GetType().Assembly);
 
             services.AddAntiforgery(options =>
             {
