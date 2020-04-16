@@ -8,6 +8,7 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Post;
     using BDInSelfLove.Web.ViewModels.Forum.Post;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using SmartBreadcrumbs;
@@ -42,22 +43,20 @@
                 viewModel.PagesCount = 1;
             }
 
-            var parentCategory = new BreadcrumbNode("Category", "Index", "Category", new { id = 1 });
+            var parentCategory = new BreadcrumbNode("Category", "Index", "Category", new { id = serviceModel.CategoryId });
             var childPost = new BreadcrumbNode("Post", "Index", "Post", null, parentCategory);
             this.ViewData["BreadcrumbNode"] = childPost;
 
             return this.View(viewModel);
         }
 
+        [Authorize]
         public IActionResult Create(int categoryId)
         {
-            categoryId = 1;
-
-            this.ViewData["CategoryId"] = categoryId;
-
-            return this.View();
+            return this.View(new PostCreateInputModel { CategoryId = categoryId });
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(PostCreateInputModel inputModel)
         {

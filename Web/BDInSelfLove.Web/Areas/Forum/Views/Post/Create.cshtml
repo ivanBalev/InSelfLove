@@ -15,18 +15,14 @@
                 <textarea asp-for="@Model.Content" class="form-control" rows="10" id="mytextarea"></textarea>
                 <span asp-validation-for="@Model.Content" class="text-danger"></span>
             </div>
-            @if (this.ViewData.ContainsKey("CategoryId"))
-            {
-                <div>
-                    <input type="hidden" asp-for="@Model.CategoryId" value="@this.ViewData["CategoryId"]" />
-                </div>
-            }
+            <div>
+                <input type="hidden" asp-for="@Model.CategoryId" />
+            </div>
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="checkbox" value="notification">
                 <label class="form-check-label" for="checkbox">Notify me upon replies.</label>
             </div>
             <button type="submit" class="btn btn-outline-primary">Create post</button>
-            <button type="reset" class="btn btn-outline-danger">Reset</button>
         </form>
     </div>
 </div>

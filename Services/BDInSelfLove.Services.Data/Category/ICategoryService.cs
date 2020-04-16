@@ -8,8 +8,6 @@
 
     public interface ICategoryService
     {
-        IQueryable<CategoryServiceModel> GetAll();
-
         Task<int> Create(CategoryServiceModel categoryServiceModel);
 
         Task<CategoryServiceModel> GetById(int id);

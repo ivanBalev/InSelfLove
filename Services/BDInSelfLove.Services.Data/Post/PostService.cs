@@ -51,12 +51,14 @@
         {
             // TODO: See what we can do about these requests - the one below is still int Red - slow. Used Automapper before that and had to wait 10+ seconds for response from server
             var post = await this.postRepository.All()
+                .Where(p => p.Id == id)
                 .Select(x => new PostServiceModel
                 {
                     Id = x.Id,
                     CreatedOn = x.CreatedOn,
                     Title = x.Title,
                     Content = x.Content,
+                    CategoryId = x.CategoryId,
                     User = new ApplicationUserServiceModel
                     {
                         UserName = x.User.UserName,

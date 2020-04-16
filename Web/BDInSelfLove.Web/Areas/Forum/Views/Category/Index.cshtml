@@ -37,8 +37,8 @@
                                 </td>
                                 <td>
                                     <div>
-                                        by <a href="overview-topics.html#">
-                                            @post.UserUserName IMPLEMENT ME
+                                        by <a asp-action="Index" asp-controller="Profile" asp-route-username="@post.UserUserName">
+                                            @post.UserUserName
                                         </a>
                                     </div>
                                     <div>@post.CreatedOn</div>
@@ -106,5 +106,5 @@
         <button type="submit" class="btn btn-sm btn-outline-primary">Go</button>
     </form>
 </div>
-<a asp-controller="Post" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-md btn-outline-success">New topic</a>
+<a asp-controller="Post" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-md btn-success btn-block">New Post</a>
 

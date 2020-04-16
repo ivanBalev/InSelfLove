@@ -23,5 +23,7 @@
         public PostServiceModel LastPost { get; set; }
 
         public int PostsCount { get; set; }
+
+        public int CommentsCount { get; set; }
     }
 }

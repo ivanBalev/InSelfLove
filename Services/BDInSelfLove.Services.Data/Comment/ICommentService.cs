@@ -19,5 +19,7 @@ namespace BDInSelfLove.Services.Data.Comment
         IQueryable<CommentServiceModel> GetById(int id);
 
         Task<int> SubmitReport(ReportServiceModel reportService);
+
+        int CommentsCountByCategoryId(int categoryId);
     }
 }

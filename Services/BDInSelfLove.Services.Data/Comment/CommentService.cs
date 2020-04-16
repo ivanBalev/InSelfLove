@@ -21,6 +21,13 @@
             this.reportRepository = reportRepository;
         }
 
+        public int CommentsCountByCategoryId(int categoryId)
+        {
+            int commentsCount = this.commentRepository.All().Where(c => c.ParentPost.CategoryId == categoryId).Count();
+
+            return commentsCount;
+        }
+
         public async Task<int> Create(CommentServiceModel categoryServiceModel)
         {
             var comment = AutoMapperConfig.MapperInstance.Map<Comment>(categoryServiceModel);
