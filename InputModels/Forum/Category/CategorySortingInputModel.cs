@@ -1,10 +1,11 @@
-﻿namespace BDInSelfLove.Web.ViewModels.Forum.Category
-{
-    using System.Collections.Generic;
-    using BDInSelfLove.Services.Mapping;
-    using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-    public class CategorySortingModel
+namespace BDInSelfLove.Web.InputModels.Forum.Category
+{
+    public class CategorySortingInputModel
     {
         public int CategoryId { get; set; }
 

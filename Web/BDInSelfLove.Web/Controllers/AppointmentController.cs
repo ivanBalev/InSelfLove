@@ -13,7 +13,8 @@
     using BDInSelfLove.Services.Models.Appointment;
     using BDInSelfLove.Web.Areas.Administration;
     using BDInSelfLove.Web.Infrastructure.ModelBinders;
-    using BDInSelfLove.Web.ViewModels.Calendar;
+    using BDInSelfLove.Web.InputModels.Appointment;
+    using BDInSelfLove.Web.ViewModels.Appointment;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;

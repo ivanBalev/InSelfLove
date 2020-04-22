@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
+    using BDInSelfLove.Web.InputModels.Forum.Category;
 
     public class CategoryViewModel : IMapFrom<CategoryServiceModel>
     {
@@ -21,6 +22,6 @@
 
         public ICollection<PostCategoryViewModel> Posts { get; set; }
 
-        public CategorySortingModel CategorySorting { get; set; }
+        public CategorySortingInputModel CategorySorting { get; set; }
     }
 }

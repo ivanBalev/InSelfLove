@@ -1,11 +1,13 @@
-﻿namespace BDInSelfLove.Web.ViewModels.Administration.Article
+﻿using BDInSelfLove.Services.Mapping;
+using BDInSelfLove.Services.Models.Article;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+
+namespace BDInSelfLove.Web.InputModels.Administration.Article
 {
-    using System.ComponentModel.DataAnnotations;
-
-    using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Article;
-    using Microsoft.AspNetCore.Http;
-
     public class ArticleCreateInputModel : IMapTo<ArticleServiceModel>
     {
         [Required]

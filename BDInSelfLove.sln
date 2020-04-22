@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDInSelfLove.Services.Model
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SandboxTests", "SandboxTests\SandboxTests.csproj", "{8067C023-9A23-49CA-A0C0-19B5CAE3A92D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputModels", "InputModels\InputModels.csproj", "{05309EAE-C8E4-4BA3-8933-885B7C06195E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDInSelfLove.Web.InputModels", "InputModels\BDInSelfLove.Web.InputModels.csproj", "{05309EAE-C8E4-4BA3-8933-885B7C06195E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

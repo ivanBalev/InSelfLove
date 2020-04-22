@@ -9,6 +9,8 @@
     using BDInSelfLove.Services.Data.Category;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
+    using BDInSelfLove.Web.InputModels.Administration.Category;
+    using BDInSelfLove.Web.InputModels.Forum.Category;
     using BDInSelfLove.Web.ViewModels.Forum.Category;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
@@ -42,7 +44,7 @@
                 { "OrderingCriteria", new List<string> { "descending", "ascending" } },
             };
 
-            categoryViewModel.CategorySorting = new CategorySortingModel
+            categoryViewModel.CategorySorting = new CategorySortingInputModel
             {
                 CategoryId = id,
                 TimeCriteria = new List<SelectListItem>(availableSortingCriteria["TimeCriteria"].Select(x => new SelectListItem { Text = x, Value = x })),

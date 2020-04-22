@@ -7,7 +7,7 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Videos;
     using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
-    using BDInSelfLove.Web.ViewModels.Administration.Video;
+    using InputModels.Administration.Video;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
 

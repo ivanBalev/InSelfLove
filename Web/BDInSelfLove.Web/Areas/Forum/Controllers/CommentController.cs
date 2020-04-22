@@ -10,13 +10,13 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Comment;
+    using BDInSelfLove.Web.InputModels.Forum.Comment;
     using BDInSelfLove.Web.ViewModels.Forum.Comment;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    [Authorize]
     public class CommentController : BaseForumController
     {
         private readonly ICommentService commentService;
@@ -33,6 +33,8 @@
 
 
         [HttpPost]
+        [Authorize]
+
         public async Task<IActionResult> Create(CommentCreateInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
@@ -57,6 +59,7 @@
             return this.RedirectToAction("Index", "Post", new { id = inputModel.ParentPostId });
         }
 
+        [Authorize]
         public async Task<IActionResult> Report(int id)
         {
             var comment = await this.commentService.GetById(id).To<ReportCommentViewModel>().FirstOrDefaultAsync();
@@ -67,10 +70,11 @@
 
         // TODO: CREATE REPORT APPROVAL BY ADMIN FUNCTIONALITY
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Report(ReportCommentViewModel viewModel)
         {
-            // TODO: could not get automapper to get parentpost.title. works with comment entity and include in service model but here it doesn't. wasted 3 days. 
-            var comment = await this.commentService.GetById(viewModel.Id).To<ReportCommentSubmitModel>().FirstOrDefaultAsync();
+            // TODO: could not get automapper to get parentpost.title. works with comment entity and include in service model but here it doesn't. wasted 3 days.
+            var comment = await this.commentService.GetById(viewModel.Id).To<ReportCommentInputModel>().FirstOrDefaultAsync();
             var offendingUser = await this.userManager.FindByIdAsync(comment.UserId);
             var reportSubmitter = await this.userManager.GetUserAsync(this.User);
 

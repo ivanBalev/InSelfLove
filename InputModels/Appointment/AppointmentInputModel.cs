@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
 
-namespace BDInSelfLove.Web.ViewModels.Calendar
+namespace BDInSelfLove.Web.InputModels.Appointment
 {
     public class AppointmentInputModel : IMapTo<AppointmentServiceModel>, IHaveCustomMappings
     {

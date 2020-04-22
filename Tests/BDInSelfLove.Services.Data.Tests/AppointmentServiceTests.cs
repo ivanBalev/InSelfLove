@@ -4,7 +4,7 @@ using BDInSelfLove.Data.Repositories;
 using BDInSelfLove.Services.Data.Calendar;
 using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Appointment;
-using BDInSelfLove.Web.ViewModels.Calendar;
+using BDInSelfLove.Web.ViewModels.Appointment;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

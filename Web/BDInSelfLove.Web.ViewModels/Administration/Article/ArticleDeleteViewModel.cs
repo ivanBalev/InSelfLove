@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace BDInSelfLove.Web.ViewModels.Article
+namespace BDInSelfLove.Web.ViewModels.Administration.Article
 {
     public class ArticleDeleteViewModel : IMapFrom<ArticleServiceModel>
     {

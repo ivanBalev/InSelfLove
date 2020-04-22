@@ -1,12 +1,14 @@
-﻿namespace BDInSelfLove.Web.ViewModels.Article
+﻿using BDInSelfLove.Services.Mapping;
+using BDInSelfLove.Services.Models.Article;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+
+namespace BDInSelfLove.Web.InputModels.Administration.Article
 {
-    using System.ComponentModel.DataAnnotations;
-
-    using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Article;
-    using Microsoft.AspNetCore.Http;
-
-    public class ArticleEditViewModel : IMapTo<ArticleServiceModel>, IMapFrom<ArticleServiceModel>
+    public class ArticleEditInputModel : IMapTo<ArticleServiceModel>, IMapFrom<ArticleServiceModel>
     {
         public int Id { get; set; }
 
@@ -20,6 +22,7 @@
         public string ImageUrl { get; set; }
 
         [Display(Name = "Or, upload an image, if you prefer.")]
+
         public IFormFile Image { get; set; }
     }
 }

@@ -7,8 +7,8 @@
     using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Article;
+    using BDInSelfLove.Web.InputModels.Administration.Article;
     using BDInSelfLove.Web.ViewModels.Administration.Article;
-    using BDInSelfLove.Web.ViewModels.Article;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
 
@@ -64,7 +64,7 @@
         {
             var articleServiceModel = await this.articleService.GetById(id);
             var articleEditViewModel =
-                AutoMapperConfig.MapperInstance.Map<ArticleEditViewModel>(articleServiceModel);
+                AutoMapperConfig.MapperInstance.Map<ArticleEditInputModel>(articleServiceModel);
 
 
             if (articleEditViewModel == null)
@@ -77,7 +77,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ArticleEditViewModel inputModel)
+        public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
             {

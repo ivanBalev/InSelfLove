@@ -1,11 +1,10 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Forum.Comment.ReportCommentViewModel
 
     <div class="row">
-
         <div class="col-md-6">
             <form asp-controller="Comment" asp-action="Report" method="post">
                 <input asp-for="@Model.Id" type="hidden">
-                <h2>Report Post By:@Model.UserUsername</h2>
+                <h2>Report Comment By:@Model.UserUsername</h2>
                 <div class="form-group">
                     <label asp-for="@Model.Reason">Reason</label>
                     <textarea asp-for="@Model.Reason" class="form-control textarea" cols="20" rows="2"></textarea>

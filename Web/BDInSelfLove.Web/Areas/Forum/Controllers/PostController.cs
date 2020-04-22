@@ -7,6 +7,7 @@
     using BDInSelfLove.Services.Data.Post;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Post;
+    using BDInSelfLove.Web.InputModels.Forum.Post;
     using BDInSelfLove.Web.ViewModels.Forum.Post;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;

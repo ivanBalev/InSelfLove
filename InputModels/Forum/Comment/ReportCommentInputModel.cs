@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BDInSelfLove.Web.ViewModels.Forum.Comment
+namespace BDInSelfLove.Web.InputModels.Forum.Comment
 {
-    public class ReportCommentSubmitModel : IMapFrom<CommentServiceModel>
+    public class ReportCommentInputModel : IMapFrom<CommentServiceModel>
     {
         public int Id { get; set; }
 

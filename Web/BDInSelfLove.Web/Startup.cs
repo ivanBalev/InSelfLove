@@ -20,6 +20,7 @@
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Article;
     using BDInSelfLove.Web.Infrastructure.ModelBinders;
+    using BDInSelfLove.Web.InputModels.Administration.Article;
     using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels;
     using BDInSelfLove.Web.ViewModels.Article;
@@ -141,7 +142,8 @@
                 typeof(ErrorViewModel).GetTypeInfo().Assembly,
                 typeof(ArticleServiceModel).GetTypeInfo().Assembly,
                 typeof(ArticleViewModel).GetTypeInfo().Assembly,
-                typeof(HomeVideoViewModel).GetTypeInfo().Assembly);
+                typeof(HomeVideoViewModel).GetTypeInfo().Assembly,
+                typeof(ArticleEditInputModel).GetTypeInfo().Assembly);
 
             // Seed data on application startup
             using (var serviceScope = app.ApplicationServices.CreateScope())

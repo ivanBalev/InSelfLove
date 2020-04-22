@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\BDInSelfLove.Common\BDInSelfLove.Common.csproj" />
     <ProjectReference Include="..\..\BDInSelfLove.Services.Models\BDInSelfLove.Services.Models.csproj" />
+    <ProjectReference Include="..\..\InputModels\BDInSelfLove.Web.InputModels.csproj" />
     <ProjectReference Include="..\..\Services\BDInSelfLove.Services.Mapping\BDInSelfLove.Services.Mapping.csproj" />
   </ItemGroup>
 

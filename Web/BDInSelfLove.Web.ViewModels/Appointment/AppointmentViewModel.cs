@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BDInSelfLove.Web.ViewModels.Calendar
+namespace BDInSelfLove.Web.ViewModels.Appointment
 {
     public class AppointmentViewModel : IMapFrom<AppointmentServiceModel>
     {
