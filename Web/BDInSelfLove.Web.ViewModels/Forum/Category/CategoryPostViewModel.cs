@@ -11,12 +11,10 @@
 
         public DateTime CreatedOn { get; set; }
 
-        [Required]
         public string Title { get; set; }
 
         public string UserId { get; set; }
 
-        [Required]
         public string UserUserName { get; set; }
     }
 }

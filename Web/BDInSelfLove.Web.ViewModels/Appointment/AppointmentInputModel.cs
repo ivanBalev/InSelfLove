@@ -3,6 +3,7 @@ using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Appointment;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
 
@@ -10,6 +11,7 @@ namespace BDInSelfLove.Web.ViewModels.Calendar
 {
     public class AppointmentInputModel : IMapTo<AppointmentServiceModel>, IHaveCustomMappings
     {
+        [Required]
         public string Start { get; set; }
 
         public string Description { get; set; }

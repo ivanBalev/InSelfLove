@@ -44,6 +44,7 @@
     <ProjectReference Include="..\..\BDInSelfLove.Services.Models\BDInSelfLove.Services.Models.csproj" />
     <ProjectReference Include="..\..\Data\BDInSelfLove.Data.Models\BDInSelfLove.Data.Models.csproj" />
     <ProjectReference Include="..\..\Data\BDInSelfLove.Data\BDInSelfLove.Data.csproj" />
+    <ProjectReference Include="..\..\InputModels\InputModels.csproj" />
     <ProjectReference Include="..\..\Services\BDInSelfLove.Services.Data\BDInSelfLove.Services.Data.csproj" />
     <ProjectReference Include="..\..\Services\BDInSelfLove.Services.Mapping\BDInSelfLove.Services.Mapping.csproj" />
     <ProjectReference Include="..\..\Services\BDInSelfLove.Services.Messaging\BDInSelfLove.Services.Messaging.csproj" />

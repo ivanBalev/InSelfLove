@@ -1,11 +1,10 @@
 ﻿namespace BDInSelfLove.Web.ViewModels.Forum.Category
 {
     using System.Collections.Generic;
-    using AutoMapper;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
 
-    public class CategoryViewModel : IMapFrom<CategoryServiceModel>, IMapFrom<BDInSelfLove.Data.Models.Category>
+    public class CategoryViewModel : IMapFrom<CategoryServiceModel>
     {
         public CategoryViewModel()
         {
@@ -21,5 +20,7 @@
         public string UserUserName { get; set; }
 
         public ICollection<PostCategoryViewModel> Posts { get; set; }
+
+        public CategorySortingModel CategorySorting { get; set; }
     }
 }

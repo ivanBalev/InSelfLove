@@ -1,5 +1,7 @@
 ﻿namespace BDInSelfLove.Web.Areas.Forum.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Common;
@@ -11,6 +13,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
     using SmartBreadcrumbs;
 
     public class CategoryController : BaseForumController
@@ -31,6 +34,21 @@
             // TODO: Potentially consider either using plain AutoMapper or sending a direct SQL Command to Server
             var categoryServiceModel = await this.categoryService.GetById(id);
             var categoryViewModel = AutoMapperConfig.MapperInstance.Map<CategoryViewModel>(categoryServiceModel);
+
+            var availableSortingCriteria = new Dictionary<string, List<string>>
+            {
+                { "TimeCriteria", new List<string> { "all posts", "day", "month", "year" } },
+                { "GroupingCriteria",  new List<string> { "date created", "author", "replies", "topic" } },
+                { "OrderingCriteria", new List<string> { "descending", "ascending" } },
+            };
+
+            categoryViewModel.CategorySorting = new CategorySortingModel
+            {
+                CategoryId = id,
+                TimeCriteria = new List<SelectListItem>(availableSortingCriteria["TimeCriteria"].Select(x => new SelectListItem { Text = x, Value = x })),
+                GroupingCriteria = new List<SelectListItem>(availableSortingCriteria["GroupingCriteria"].Select(x => new SelectListItem { Text = x, Value = x })),
+                OrderingCriteria = new List<SelectListItem>(availableSortingCriteria["OrderingCriteria"].Select(x => new SelectListItem { Text = x, Value = x })),
+            };
 
             return this.View(categoryViewModel);
         }
