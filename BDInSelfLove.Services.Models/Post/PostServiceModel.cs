@@ -2,12 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
+    using AutoMapper;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
     using BDInSelfLove.Services.Models.Comment;
     using BDInSelfLove.Services.Models.User;
 
-    public class PostServiceModel : IMapTo<BDInSelfLove.Data.Models.Post>, IMapFrom<BDInSelfLove.Data.Models.Post>
+    public class PostServiceModel : IMapTo<BDInSelfLove.Data.Models.Post>, IMapFrom<Data.Models.Post>
     {
         public int Id { get; set; }
 
@@ -28,6 +29,5 @@
         public CategoryServiceModel Category { get; set; }
 
         public int CommentsCount { get; set; }
-
     }
 }

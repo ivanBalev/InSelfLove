@@ -31,10 +31,9 @@
 
         [HttpGet]
         [Breadcrumb("Category")]
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(int id, CategorySortingInputModel sortingModel)
         {
-            // TODO: Potentially consider either using plain AutoMapper or sending a direct SQL Command to Server
-            var categoryServiceModel = await this.categoryService.GetById(id);
+            var categoryServiceModel = await this.categoryService.GetById(id, sortingModel);
             var categoryViewModel = AutoMapperConfig.MapperInstance.Map<CategoryViewModel>(categoryServiceModel);
 
             var availableSortingCriteria = new Dictionary<string, List<string>>

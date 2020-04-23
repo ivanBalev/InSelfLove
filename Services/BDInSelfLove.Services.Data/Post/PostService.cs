@@ -11,6 +11,7 @@
     using BDInSelfLove.Services.Models.Comment;
     using BDInSelfLove.Services.Models.Post;
     using BDInSelfLove.Services.Models.User;
+    using BDInSelfLove.Web.InputModels.Forum.Category;
     using Microsoft.EntityFrameworkCore;
 
     public class PostService : IPostService
@@ -22,6 +23,20 @@
         {
             this.postRepository = postRepository;
             this.commentService = commentService;
+        }
+
+        public ICollection<PostServiceModel> GetSortedPostsForCategory(int categoryId, CategorySortingInputModel sortingModel)
+        {
+            var availableSortingCriteria = new Dictionary<string, List<string>>
+            {
+                { "TimeCriteria", new List<string> { "all posts", "day", "month", "year" } },
+                { "GroupingCriteria",  new List<string> { "date created", "author", "replies", "topic" } },
+                { "OrderingCriteria", new List<string> { "descending", "ascending" } },
+            };
+
+
+
+            return this.postRepository.All().Where(p => p.CategoryId == categoryId).To<PostServiceModel>().ToList();
         }
 
         public async Task<int> Create(PostServiceModel postServiceModel)

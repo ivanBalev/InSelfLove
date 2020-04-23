@@ -16,5 +16,7 @@
         public string UserId { get; set; }
 
         public string UserUserName { get; set; }
+
+        public int CommentsCount { get; set; }
     }
 }

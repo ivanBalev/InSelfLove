@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Services.Data.Comment
 {
+    using System.Collections;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -21,11 +22,10 @@
             this.reportRepository = reportRepository;
         }
 
+
         public int CommentsCountByCategoryId(int categoryId)
         {
-            int commentsCount = this.commentRepository.All().Where(c => c.ParentPost.CategoryId == categoryId).Count();
-
-            return commentsCount;
+            return this.commentRepository.All().Where(c => c.ParentPost.CategoryId == categoryId).Count();
         }
 
         public async Task<int> Create(CommentServiceModel categoryServiceModel)
