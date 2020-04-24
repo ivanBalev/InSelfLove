@@ -64,7 +64,6 @@
             services.AddSingleton(cloudinaryUtility);
 
             // External Logins
-            // TODO: Request different info from users preferring to use facebook login https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins?view=aspnetcore-3.1
             services.AddAuthentication()
                 .AddGoogle(googleOptions =>
                 {
@@ -175,12 +174,7 @@
             // app.UseMiddleware<RedirectToGoogleIfNotHttps>();
             // MIDDLEWARE EXERCISE
 
-            // TODO: Get rid of this after done with SPA frontend - SECURITY RISK
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                ServeUnknownFileTypes = true,
-                DefaultContentType = "text/plain",
-            });
+            app.UseStaticFiles();
             app.UseCookiePolicy();
 
             app.UseRouting();
@@ -193,13 +187,6 @@
                     {
                         endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-
-                        // MAPPING EXERCISE
-                        // endpoints.MapControllerRoute(
-                        //    name: "exampleName",
-                        //    pattern: "Example/{slug}/{id:int}",
-                        //    defaults: new { controller = "Example", action = "ExampleAction" });
-
                         endpoints.MapRazorPages();
                     });
         }

@@ -9,7 +9,9 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Comment;
     using BDInSelfLove.Services.Models.Post;
+    using BDInSelfLove.Services.Models.User;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Internal;
 
     public class CommentService : ICommentService
     {
@@ -45,7 +47,8 @@
                 .Select(c => new CommentServiceModel
                 {
                     ParentPostId = c.ParentPostId,
-                    ParentPost = new PostServiceModel {
+                    ParentPost = new PostServiceModel
+                    {
                         Title = c.ParentPost.Title,
                     },
                     Content = c.Content,
@@ -78,15 +81,54 @@
             return this.commentRepository.All().Where(c => c.Id == id).To<CommentServiceModel>();
         }
 
-        public async Task<int> SubmitReport(ReportServiceModel reportService)
+        public async Task<int> SubmitReport(ReportServiceModel reportServiceModel)
         {
-            var report = AutoMapperConfig.MapperInstance.Map<Report>(reportService);
+            var report = AutoMapperConfig.MapperInstance.Map<Report>(reportServiceModel);
             report.IsApproved = false;
 
             await this.reportRepository.AddAsync(report);
             await this.commentRepository.SaveChangesAsync();
 
             return report.Id;
+        }
+
+        public IQueryable<CommentServiceModel> GetCommentWithReport(int reportId)
+        {
+            var comment = this.commentRepository.All()
+                .Where(c => c.Reports.Any(r => r.Id == reportId))
+                .Select(c => new CommentServiceModel
+                {
+                    ParentPostId = c.ParentPostId,
+                    Content = c.Content,
+                    User = new ApplicationUserServiceModel
+                    {
+                        UserName = c.User.UserName,
+                        ProfilePhoto = c.User.ProfilePhoto,
+                    },
+                    Report = c.Reports.Select(r => new ReportServiceModel
+                    {
+                        Id = r.Id,
+                        Reason = r.Reason,
+                        Submitter = new ApplicationUserServiceModel
+                        {
+                            UserName = r.Submitter.UserName,
+                            ProfilePhoto = r.Submitter.ProfilePhoto,
+                        },
+                    }).FirstOrDefault(r => r.Id == reportId),
+                });
+
+            return comment;
+        }
+
+        public async Task<int> AddReportAssessment(int reportId, bool assessment)
+        {
+            var reportFromDb = await this.reportRepository.All().FirstOrDefaultAsync(r => r.Id == reportId);
+            reportFromDb.IsApproved = assessment;
+            this.reportRepository.Update(reportFromDb);
+            var result = await this.reportRepository.SaveChangesAsync();
+            return result;
+
+            return 1;
         }
     }
 }

@@ -19,6 +19,8 @@
 
     public class CommentController : BaseForumController
     {
+        private const string ReportBaseAddress = "Forum/Post/Index/";
+
         private readonly ICommentService commentService;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEmailSender emailSender;
@@ -73,6 +75,11 @@
         [Authorize]
         public async Task<IActionResult> Report(ReportCommentViewModel viewModel)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(viewModel);
+            }
+
             // TODO: could not get automapper to get parentpost.title. works with comment entity and include in service model but here it doesn't. wasted 3 days.
             var comment = await this.commentService.GetById(viewModel.Id).To<ReportCommentInputModel>().FirstOrDefaultAsync();
             var offendingUser = await this.userManager.FindByIdAsync(comment.UserId);
@@ -84,18 +91,43 @@
                                             GlobalConstants.SystemEmail,
                                             GlobalConstants.SystemName + " " + GlobalConstants.ReportEmailSubject,
                                             @$"{GlobalConstants.ReportEmailSubject} by {reportSubmitter.UserName} against {offendingUser.UserName}'s comment{Environment.NewLine}
-                                            Comment text: {Environment.NewLine}{comment.Content}");
+                                            Comment text: {Environment.NewLine}{comment.Content} /n {GlobalConstants.SystemAddress}{ReportBaseAddress}{comment.ParentPostId}");
 
-            //var report = new ReportServiceModel
-            //{
-            //    Reason = viewModel.Reason,
-            //    CommentId = comment.Id,
-            //    SubmitterId = reportSubmitter.Id,
-            //};
+            var report = new ReportServiceModel
+            {
+                Reason = viewModel.Reason,
+                CommentId = comment.Id,
+                SubmitterId = reportSubmitter.Id,
+            };
 
-            //await this.commentService.SubmitReport(report);
+            await this.commentService.SubmitReport(report);
 
             return this.RedirectToAction("Index", "Post", new { id = comment.ParentPostId });
+        }
+
+        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        public async Task<IActionResult> AssessReport(int id)
+        {
+            var comment = await this.commentService.GetCommentWithReport(id)
+                .To<AssessCommentViewModel>()
+                .FirstOrDefaultAsync();
+
+            return this.View(comment);
+        }
+
+        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        [HttpPost]
+        public async Task<IActionResult> AssessReport(AssessCommentReportinputModel inputModel)
+        {
+            // TODO: Why checking modelstate when there are no validation attributes triggers an internal server error asking for migration updates?
+            if (!this.ModelState.IsValid)
+            {
+                return this.RedirectToAction("Index", "Post", new { id = inputModel.ParentPostId });
+            }
+
+            await this.commentService.AddReportAssessment(inputModel.ReportId, inputModel.AssessmentValue);
+
+            return this.RedirectToAction("Index", "Post", new { id = inputModel.ParentPostId });
         }
     }
 }

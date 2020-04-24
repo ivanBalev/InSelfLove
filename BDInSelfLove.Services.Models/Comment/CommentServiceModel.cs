@@ -31,5 +31,7 @@ namespace BDInSelfLove.Services.Models.Comment
         public IList<CommentServiceModel> SubComments { get; set; }
 
         public ICollection<ReportServiceModel> Reports { get; set; }
+
+        public ReportServiceModel Report { get; set; }
     }
 }

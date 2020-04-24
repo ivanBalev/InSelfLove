@@ -2,20 +2,18 @@
 using BDInSelfLove.Services.Models.Comment;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace BDInSelfLove.Web.ViewModels.Forum.Comment
 {
-    // TODO: MAKE SURE ALL VALIDATION IS PRESENT EVERYWHERE!!!
-    public class ReportCommentViewModel : IMapFrom<CommentServiceModel>
+    public class AssessCommentReportViewModel : IMapFrom<ReportServiceModel>
     {
         public int Id { get; set; }
 
-        public string UserUsername { get; set; }
-
-        [Required]
-        [MinLength(30)]
         public string Reason { get; set; }
+
+        public string SubmitterProfilePhoto { get; set; }
+
+        public string SubmitterUserName { get; set; }
     }
 }

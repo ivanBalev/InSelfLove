@@ -11,6 +11,8 @@ namespace BDInSelfLove.Services.Models.Comment
 
     public class ReportServiceModel : IMapTo<Data.Models.Report>, IMapFrom<Data.Models.Report>
     {
+        public int Id { get; set; }
+
         public string Reason { get; set; }
 
         public int CommentId { get; set; }
