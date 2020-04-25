@@ -19,7 +19,7 @@
 
     public class CommentController : BaseForumController
     {
-        private const string ReportBaseAddress = "Forum/Post/Index/";
+        private const string ReportBaseAddress = "Forum/Comment/AssessReport/";
 
         private readonly ICommentService commentService;
         private readonly UserManager<ApplicationUser> userManager;
@@ -85,14 +85,6 @@
             var offendingUser = await this.userManager.FindByIdAsync(comment.UserId);
             var reportSubmitter = await this.userManager.GetUserAsync(this.User);
 
-            await this.emailSender.SendEmailAsync(
-                                            offendingUser.Email,
-                                            offendingUser.UserName,
-                                            GlobalConstants.SystemEmail,
-                                            GlobalConstants.SystemName + " " + GlobalConstants.ReportEmailSubject,
-                                            @$"{GlobalConstants.ReportEmailSubject} by {reportSubmitter.UserName} against {offendingUser.UserName}'s comment{Environment.NewLine}
-                                            Comment text: {Environment.NewLine}{comment.Content} /n {GlobalConstants.SystemAddress}{ReportBaseAddress}{comment.ParentPostId}");
-
             var report = new ReportServiceModel
             {
                 Reason = viewModel.Reason,
@@ -100,7 +92,16 @@
                 SubmitterId = reportSubmitter.Id,
             };
 
-            await this.commentService.SubmitReport(report);
+            var reportId = await this.commentService.SubmitReport(report);
+
+            await this.emailSender.SendEmailAsync(
+                                            offendingUser.Email,
+                                            offendingUser.UserName,
+                                            GlobalConstants.SystemEmail,
+                                            GlobalConstants.SystemName + " " + GlobalConstants.ReportEmailSubject,
+                                            @$"{GlobalConstants.ReportEmailSubject} by {reportSubmitter.UserName} against {offendingUser.UserName}'s comment{Environment.NewLine}
+                                            Comment text: {Environment.NewLine}{comment.Content} /n {GlobalConstants.SystemAddress}{ReportBaseAddress}{reportId}");
+
 
             return this.RedirectToAction("Index", "Post", new { id = comment.ParentPostId });
         }

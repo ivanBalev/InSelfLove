@@ -25,20 +25,6 @@
             this.commentService = commentService;
         }
 
-        public ICollection<PostServiceModel> GetSortedPostsForCategory(int categoryId, CategorySortingInputModel sortingModel)
-        {
-            var availableSortingCriteria = new Dictionary<string, List<string>>
-            {
-                { "TimeCriteria", new List<string> { "all posts", "day", "month", "year" } },
-                { "GroupingCriteria",  new List<string> { "date created", "author", "replies", "topic" } },
-                { "OrderingCriteria", new List<string> { "descending", "ascending" } },
-            };
-
-
-
-            return this.postRepository.All().Where(p => p.CategoryId == categoryId).To<PostServiceModel>().ToList();
-        }
-
         public async Task<int> Create(PostServiceModel postServiceModel)
         {
             var post = AutoMapperConfig.MapperInstance.Map<BDInSelfLove.Data.Models.Post>(postServiceModel);

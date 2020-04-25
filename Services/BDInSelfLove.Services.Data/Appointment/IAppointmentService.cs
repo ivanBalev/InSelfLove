@@ -15,8 +15,6 @@ namespace BDInSelfLove.Services.Data.Calendar
 
         Task<int> Create(AppointmentServiceModel appointmentServiceModel);
 
-        //Task<int> Edit(AppointmentServiceModel appointmentServiceModel);
-
         Task<bool> Delete(int appointmentId);
 
         IQueryable<AppointmentServiceModel> GetAllByDate(DateTime date);

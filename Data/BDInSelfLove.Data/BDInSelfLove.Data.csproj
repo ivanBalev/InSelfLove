@@ -11,51 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20200314135909_ArticlesTableAdded.cs" />
-    <Compile Remove="Migrations\20200314135909_ArticlesTableAdded.Designer.cs" />
-    <Compile Remove="Migrations\20200322215800_UpdatedCommentStructure.cs" />
-    <Compile Remove="Migrations\20200322215800_UpdatedCommentStructure.Designer.cs" />
-    <Compile Remove="Migrations\20200322220043_CommentTableUpdated.cs" />
-    <Compile Remove="Migrations\20200322220043_CommentTableUpdated.Designer.cs" />
-    <Compile Remove="Migrations\20200322221050_DeletedCommentsTable.cs" />
-    <Compile Remove="Migrations\20200322221050_DeletedCommentsTable.Designer.cs" />
-    <Compile Remove="Migrations\20200322221349_Restart.cs" />
-    <Compile Remove="Migrations\20200322221349_Restart.Designer.cs" />
-    <Compile Remove="Migrations\20200322221746_Restart.cs" />
-    <Compile Remove="Migrations\20200322221746_Restart.Designer.cs" />
-    <Compile Remove="Migrations\20200323103742_MadeCommentsParentsNullable.cs" />
-    <Compile Remove="Migrations\20200323103742_MadeCommentsParentsNullable.Designer.cs" />
-    <Compile Remove="Migrations\20200323104121_Test.cs" />
-    <Compile Remove="Migrations\20200323104121_Test.Designer.cs" />
-    <Compile Remove="Migrations\20200323104434_Restart.cs" />
-    <Compile Remove="Migrations\20200323104434_Restart.Designer.cs" />
-    <Compile Remove="Migrations\20200324092929_CommentsUpdated.cs" />
-    <Compile Remove="Migrations\20200324092929_CommentsUpdated.Designer.cs" />
-    <Compile Remove="Migrations\20200324103035_CommentsFixed.cs" />
-    <Compile Remove="Migrations\20200324103035_CommentsFixed.Designer.cs" />
-    <Compile Remove="Migrations\20200324103903_CommentsTableUpdate.cs" />
-    <Compile Remove="Migrations\20200324103903_CommentsTableUpdate.Designer.cs" />
-    <Compile Remove="Migrations\20200324104052_Restart.cs" />
-    <Compile Remove="Migrations\20200324104052_Restart.Designer.cs" />
-    <Compile Remove="Migrations\20200324153441_CommentRelationsFix.cs" />
-    <Compile Remove="Migrations\20200324153441_CommentRelationsFix.Designer.cs" />
-    <Compile Remove="Migrations\20200408071400_WeirdError.cs" />
-    <Compile Remove="Migrations\20200408071400_WeirdError.Designer.cs" />
-    <Compile Remove="Migrations\20200408205018_CommentReportingAdded.cs" />
-    <Compile Remove="Migrations\20200408205018_CommentReportingAdded.Designer.cs" />
-    <Compile Remove="Migrations\20200409062248_wtf.cs" />
-    <Compile Remove="Migrations\20200409062248_wtf.Designer.cs" />
-    <Compile Remove="Migrations\20200409104456_tiebamaikata.cs" />
-    <Compile Remove="Migrations\20200409104456_tiebamaikata.Designer.cs" />
-    <Compile Remove="Migrations\20200409121538_CommentReportingAdded.cs" />
-    <Compile Remove="Migrations\20200409121538_CommentReportingAdded.Designer.cs" />
-    <Compile Remove="Migrations\20200409124121_desperation.cs" />
-    <Compile Remove="Migrations\20200409124121_desperation.Designer.cs" />
-    <Compile Remove="Migrations\20200409124927_test.cs" />
-    <Compile Remove="Migrations\20200409124927_test.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
 

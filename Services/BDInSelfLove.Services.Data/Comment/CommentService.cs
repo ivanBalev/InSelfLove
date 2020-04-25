@@ -127,8 +127,6 @@
             this.reportRepository.Update(reportFromDb);
             var result = await this.reportRepository.SaveChangesAsync();
             return result;
-
-            return 1;
         }
     }
 }

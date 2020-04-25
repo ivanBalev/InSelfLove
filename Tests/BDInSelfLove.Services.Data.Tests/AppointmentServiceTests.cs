@@ -1,65 +1,101 @@
-﻿using BDInSelfLove.Data;
-using BDInSelfLove.Data.Models;
-using BDInSelfLove.Data.Repositories;
-using BDInSelfLove.Services.Data.Calendar;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Appointment;
-using BDInSelfLove.Web.ViewModels.Appointment;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace BDInSelfLove.Services.Data.Tests
+﻿namespace BDInSelfLove.Services.Data.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Data;
+    using BDInSelfLove.Data.Common.Repositories;
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Data.Repositories;
+    using BDInSelfLove.Services.Data.Calendar;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Appointment;
+    using Microsoft.Data.Sqlite;
+    using Microsoft.EntityFrameworkCore;
+    using Moq;
+    using Xunit;
+
     public class AppointmentServiceTests
     {
         [Fact]
-        public async Task GetAllShouldReturnAllAppointmentsWithNoUserId()
+        public async Task GetAllShouldReturnOnlySpecificAppointmentsWithGivenId()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-               .UseInMemoryDatabase(Guid.NewGuid().ToString());
-            var repository = new EfDeletableEntityRepository<Appointment>(new ApplicationDbContext(options.Options));
+            var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
 
-            await repository.AddAsync(new Appointment { Start = DateTime.UtcNow });
-            await repository.AddAsync(new Appointment { Start = DateTime.UtcNow });
-            await repository.AddAsync(new Appointment { Start = DateTime.UtcNow });
+            try
+            {
+                var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .UseSqlite(connection)
+                    .Options;
 
-            await repository.SaveChangesAsync();
+                using (var context = new ApplicationDbContext(options))
+                {
+                    context.Database.EnsureCreated();
+                }
 
-            var appointmentService = new AppointmentService(repository);
+                using (var context = new ApplicationDbContext(options))
+                {
+                    var repository = new EfDeletableEntityRepository<Appointment>(context);
 
-            AutoMapperConfig.RegisterMappings(typeof(AppointmentServiceModel).Assembly);
+                    var user1 = context.Users.Add(new ApplicationUser { Id = "1" });
+                    var user2 = context.Users.Add(new ApplicationUser { Id = "2" });
+                    var user3 = context.Users.Add(new ApplicationUser { Id = "3" });
 
-            var appointmentsCount = appointmentService.GetAll().Count();
+                    await repository.SaveChangesAsync();
 
-            Assert.Equal(3, appointmentsCount);
+                    await repository.AddAsync(new Appointment { UserId = "1", IsApproved = true });
+                    await repository.AddAsync(new Appointment { UserId = "2", IsApproved = true });
+                    await repository.AddAsync(new Appointment { UserId = "3", IsApproved = true });
+
+                    await repository.SaveChangesAsync();
+                }
+
+                using (var context = new ApplicationDbContext(options))
+                {
+                    var repository = new EfDeletableEntityRepository<Appointment>(context);
+                    var appointmentService = new AppointmentService(repository);
+
+                    AutoMapperConfig.RegisterMappings(typeof(AppointmentServiceModel).Assembly);
+
+                    var appointments = await appointmentService.GetAll("1").ToListAsync();
+
+                    Assert.Single(appointments);
+                    Assert.Equal("1", appointments[0].UserId);
+                }
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
 
         [Fact]
-        public async Task GetAllShouldReturnOnlySpecificAppointments()
+        public void GetAllShouldReturnAllAppointmentsWithoutId()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-               .UseInMemoryDatabase(Guid.NewGuid().ToString());
-            var repository = new EfDeletableEntityRepository<Appointment>(new ApplicationDbContext(options.Options));
+            var queryableData = new List<Appointment>
+            {
+                new Appointment { Start = DateTime.UtcNow, Id = 1 },
+                new Appointment { Start = DateTime.UtcNow, Id = 2 },
+                new Appointment { Start = DateTime.UtcNow, Id = 3 },
+            }
+            .AsQueryable();
 
-            await repository.AddAsync(new Appointment {UserId = "1", IsApproved = true });
-            await repository.AddAsync(new Appointment {UserId = "2", IsApproved = true });
-            await repository.AddAsync(new Appointment {UserId = "3", IsApproved = true });
+            var repository = new Mock<IDeletableEntityRepository<Appointment>>();
+            repository.Setup(r => r.All()).Returns(queryableData);
 
-            await repository.SaveChangesAsync();
-
-            var appointmentService = new AppointmentService(repository);
+            var appointmentService = new AppointmentService(repository.Object);
 
             AutoMapperConfig.RegisterMappings(typeof(AppointmentServiceModel).Assembly);
 
-            var appointmentsCount = await appointmentService.GetAll().FirstOrDefaultAsync();
+            var appointments = appointmentService.GetAll().ToList();
 
-            Assert.Equal(appointmentsCount.UserId, "1");
+            Assert.Equal(3, appointments.Count());
+            Assert.Equal(1, appointments[0].Id);
+            Assert.Equal(2, appointments[1].Id);
+            Assert.Equal(3, appointments[2].Id);
         }
-
     }
 }

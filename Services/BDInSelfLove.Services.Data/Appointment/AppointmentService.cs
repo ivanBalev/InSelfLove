@@ -33,26 +33,6 @@
               .SingleOrDefaultAsync(appointment => appointment.Id == id);
         }
 
-        //public async Task<int> Edit(AppointmentServiceModel appointmentServiceModel)
-        //{
-        //    var dbAppointment = await this.appointmentRepository.All()
-        //      .SingleOrDefaultAsync(appointment =>
-        //      appointment.Id == appointmentServiceModel.Id);
-
-        //    if (dbAppointment == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(dbAppointment));
-        //    }
-
-        //    dbAppointment.Start = appointmentServiceModel.Start;
-        //    dbAppointment.Description = appointmentServiceModel.Description;
-
-        //    this.appointmentRepository.Update(dbAppointment);
-        //    int result = await this.appointmentRepository.SaveChangesAsync();
-
-        //    return result;
-        //}
-
         public async Task<int> Create(AppointmentServiceModel appointmentServiceModel)
         {
             var appointment = AutoMapperConfig.MapperInstance.Map<Appointment>(appointmentServiceModel);

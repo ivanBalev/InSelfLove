@@ -16,8 +16,5 @@
         Task<PostServiceModel> GetById(int id, int take, int skip = 0);
 
         IQueryable<PostServiceModel> SearchPosts(string searchTerm);
-
-        ICollection<PostServiceModel> GetSortedPostsForCategory(int categoryId, CategorySortingInputModel sortingModel);
-
     }
 }
