@@ -1,34 +1,30 @@
 ﻿namespace BDInSelfLove.Web.Tests
 {
-    using OpenQA.Selenium;
+    using BDInSelfLove.Web;
     using OpenQA.Selenium.Chrome;
     using OpenQA.Selenium.Remote;
-
     using Xunit;
 
-    public class SeleniumTests : IClassFixture<SeleniumServerFactory<Startup>>
+    public class SeleniumTests
     {
-        private readonly SeleniumServerFactory<Startup> server;
-        private readonly IWebDriver browser;
+        private RemoteWebDriver browser;
+        private SeleniumServerFactory<Startup> serverFactory;
 
-        // Be sure that selenium-server-standalone-3.141.59.jar is running
-        public SeleniumTests(SeleniumServerFactory<Startup> server)
+        public SeleniumTests()
         {
-            this.server = server;
-            server.CreateClient();
-            var opts = new ChromeOptions();
-            opts.AddArgument("--headless"); // Optional, comment this out if you want to SEE the browser window
-            opts.AddArgument("no-sandbox");
-            this.browser = new RemoteWebDriver(opts);
+            this.serverFactory = new SeleniumServerFactory<Startup>();
+            serverFactory.CreateClient();
+            var options = new ChromeOptions();
+            options.AddArguments("--no-sandbox", "--ignore-certificate-errors");
+            this.browser = new RemoteWebDriver(options);
         }
 
-        [Fact(Skip = "Example test. Disabled for CI.")]
-        public void FooterOfThePageContainsPrivacyLink()
+        [Fact]
+        public void HomePageShouldHaveH1Tag()
         {
-            this.browser.Navigate().GoToUrl(this.server.RootUri);
-            Assert.Contains(
-                this.browser.FindElements(By.CssSelector("footer a")),
-                x => x.GetAttribute("href").EndsWith("/Home/Privacy"));
+            this.browser.Navigate().GoToUrl(this.serverFactory.RootUri + "/Home/Index");
+            var result = this.browser.FindElementByTagName("html");
+            Assert.True(this.browser.FindElementByCssSelector("html") != null);
         }
     }
 }

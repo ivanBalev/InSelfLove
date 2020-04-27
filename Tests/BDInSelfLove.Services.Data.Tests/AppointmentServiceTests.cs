@@ -92,6 +92,7 @@
 
             var appointments = appointmentService.GetAll().ToList();
 
+            Assert.IsType<AppointmentServiceModel>(appointments[0]);
             Assert.Equal(3, appointments.Count());
             Assert.Equal(1, appointments[0].Id);
             Assert.Equal(2, appointments[1].Id);

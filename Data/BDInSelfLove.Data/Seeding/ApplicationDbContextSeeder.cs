@@ -28,6 +28,8 @@
                               new RolesSeeder(),
                               new SettingsSeeder(),
                               new AdminSeeder(),
+                              new ArticleSeeder(),
+                              new VideoSeeder(),
                           };
 
             foreach (var seeder in seeders)

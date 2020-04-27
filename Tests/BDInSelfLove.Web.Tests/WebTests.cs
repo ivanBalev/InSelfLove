@@ -1,10 +1,16 @@
 ﻿namespace BDInSelfLove.Web.Tests
 {
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-
+    using BDInSelfLove.Data;
+    using BDInSelfLove.Data.Common.Repositories;
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Data.Repositories;
+    using BDInSelfLove.Services.Data;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc.Testing;
-
+    using Microsoft.EntityFrameworkCore;
     using Xunit;
 
     public class WebTests : IClassFixture<WebApplicationFactory<Startup>>
@@ -16,22 +22,48 @@
             this.server = server;
         }
 
-        [Fact(Skip = "Example test. Disabled for CI.")]
-        public async Task IndexPageShouldReturnStatusCode200WithTitle()
+        [Theory]
+        [InlineData("/")]
+        [InlineData("/Forum")]
+        [InlineData("/Home/Appointment")]
+        [InlineData("/Home/Contact")]
+        [InlineData("/Video/All")]
+        [InlineData("/Article/All")]
+        public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             var client = this.server.CreateClient();
-            var response = await client.GetAsync("/");
+
+            var response = await client.GetAsync(url);
+
             response.EnsureSuccessStatusCode();
-            var responseContent = await response.Content.ReadAsStringAsync();
-            Assert.Contains("<title>", responseContent);
+            Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
         }
 
-        [Fact(Skip = "Example test. Disabled for CI.")]
-        public async Task AccountManagePageRequiresAuthorization()
+        [Fact]
+        public async Task IndexPageShouldHaveFeaturedArticle()
         {
-            var client = this.server.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
-            var response = await client.GetAsync("Identity/Account/Manage");
-            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            // At present, this test will work correctly only with the default seeded data.
+            var client = this.server.CreateClient();
+
+          
+
+            var response = await client.GetAsync("/");
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.Contains(@"<h5 class=""font-weight-light"">Featured Article</h5>
+                        <h1>
+                            Test4", responseContent);
+
+            Assert.DoesNotContain(@"<div class=""card - title"">Test4</div>", responseContent);
+        }
+
+        [Fact]
+        public async Task GetRequestToAppointmentsPageRedirectsToLoginForAnonymousUser()
+        {
+            // At present, this test will work correctly only with the default seeded data.
+            var client = this.server.CreateClient();
+            var response = await client.GetAsync("/Home/Appointment");
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.Contains(@"Login with Google</button>", responseContent);
         }
     }
 }
