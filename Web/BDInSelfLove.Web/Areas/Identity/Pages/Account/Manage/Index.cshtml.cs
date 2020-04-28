@@ -103,15 +103,14 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            // TODO: Error handling
             var profilePicture = await this.cloudinaryService.UploadPicture(
-                Input.ProfilePicture, $"{user.Id}_profile-picture");
+                this.Input.ProfilePicture, $"{user.Id}_profile-picture");
 
-            var setProfilePictureResult = await this.userService.SetProfilePicture(user, profilePicture);
+            await this.userService.SetProfilePicture(user, profilePicture);
 
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
-            return RedirectToPage();
+            await this._signInManager.RefreshSignInAsync(user);
+            this.StatusMessage = "Your profile has been updated";
+            return this.RedirectToPage();
         }
     }
 }

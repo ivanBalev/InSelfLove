@@ -74,7 +74,6 @@
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            // TODO: How is the ASPValidationCookie generated? How can the SPAShop be detached from that? Do we need that at all?
             returnUrl = returnUrl ?? Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (this.ModelState.IsValid)

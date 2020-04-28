@@ -25,7 +25,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGet(string returnUrl = null)
         {
-            returnUrl = returnUrl == null ? "/" : returnUrl;
+            returnUrl = "/";
 
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");

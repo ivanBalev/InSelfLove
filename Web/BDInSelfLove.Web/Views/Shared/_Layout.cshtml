@@ -68,6 +68,11 @@
     <div class="container">
         <partial name="_CookieConsentPartial" />
     </div>
+
+    @if (this.TempData["Error"] != null)
+    {
+        <partial name="_ErrorPartial" model="@(this.TempData["Error"])" />
+    }
     <div id="content">
         @this.RenderBody()
     </div>

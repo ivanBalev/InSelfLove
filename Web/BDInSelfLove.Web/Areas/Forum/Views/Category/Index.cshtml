@@ -24,18 +24,10 @@
                             <tr>
                                 <td>
                                     <h3 class="h6">
-                                        <span class="badge badge-secondary">7 unread</span> <a asp-action="Index" asp-controller="Post" asp-route-id="@post.Id">
+                                        <a asp-action="Index" asp-controller="Post" asp-route-id="@post.Id">
                                             @post.Title
                                         </a>
                                     </h3>
-                                    <div class="small">
-                                        Go to page: <a href="overview-topics.html#0">1</a>,
-                                        <a href="overview-topics.html#0">2</a>,
-                                        <a href="overview-topics.html#0">3</a>
-                                        … <a href="overview-topics.html#0">7</a>,
-                                        <a href="overview-topics.html#0">8</a>,
-                                        <a href="overview-topics.html#0">9</a>
-                                    </div>
                                 </td>
                                 <td>
                                     <div>
@@ -59,21 +51,6 @@
     </div>
 </div>
 <div class="mb-3 clearfix">
-    <nav aria-label="Navigate post pages" class="float-lg-right">
-        <ul class="pagination pagination-sm mb-lg-0">
-            <li class="page-item active">
-                <a href="overview-topics.html#" class="page-link">
-                    1 <span class="sr-only">(current)</span>
-                </a>
-            </li>
-            <li class="page-item"><a href="overview-topics.html#" class="page-link">2</a></li>
-            <li class="page-item"><a href="overview-topics.html#" class="page-link">3</a></li>
-            <li class="page-item"><a href="overview-topics.html#" class="page-link">4</a></li>
-            <li class="page-item"><a href="overview-topics.html#" class="page-link">5</a></li>
-            <li class="page-item"><a href="overview-topics.html#" class="page-link">… 31</a></li>
-            <li class="page-item"><a href="overview-topics.html#" class="page-link">Next</a></li>
-        </ul>
-    </nav>
     <partial name="_SortingPartial" model="@Model.CategorySorting" />
 </div>
 <a asp-controller="Post" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-md btn-success btn-block">New Post</a>

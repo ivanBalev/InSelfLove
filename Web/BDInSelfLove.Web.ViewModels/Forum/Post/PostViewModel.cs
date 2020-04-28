@@ -19,6 +19,8 @@
 
         public string UserProfilePhoto { get; set; }
 
+        public DateTime UserCreatedOn { get; set; }
+
         public DateTime CreatedOn { get; set; }
 
         public string Content { get; set; }

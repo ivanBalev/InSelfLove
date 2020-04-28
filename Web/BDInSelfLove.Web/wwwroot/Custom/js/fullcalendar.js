@@ -158,12 +158,16 @@
             alert('Start date required');
             return;
         }
+        if ($('#txtDescription').val().trim() == "" || $('#txtDescription').val().trim().length < 30 ) {
+            alert('Description longer than 30 symbols required.')
+            return;
+        }
 
-        var e = document.getElementById("txtStart");
+        var time = document.getElementById("txtStart");
 
         var data = {
             Id: $('#hdEventID').val(),
-            Start: e.options[e.selectedIndex].value,
+            Start: time.options[time.selectedIndex].value,
             Description: $('#txtDescription').val(),
         }
 

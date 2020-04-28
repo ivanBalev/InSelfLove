@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Common;
@@ -21,7 +22,10 @@
     public class CommentController : BaseForumController
     {
         private const string ReportBaseAddress = "Forum/Comment/AssessReport/";
-        private const string BanMessage = "You have been banned from submitting comments. Default ban length is 3 days.";
+        private const string BanErrorMessage = "You have been banned from submitting comments. Default ban length is 3 days.";
+        private const string InvalidReportAssessmentMessage = "Invalid assessment. Please try again.";
+        private const string CommentCreateError = "An error occurred while creating your comment. Please try again.";
+        private const string ReportCreateError = "An error occurred while creating your report. Please try again.";
 
         private readonly ICommentService commentService;
         private readonly UserManager<ApplicationUser> userManager;
@@ -43,6 +47,7 @@
         {
             if (!this.ModelState.IsValid)
             {
+                this.TempData["Error"] = CommentCreateError;
                 return this.RedirectToAction("Index", "Post", new { id = inputModel.ParentPostId });
             }
 
@@ -54,7 +59,7 @@
 
                 if (!doesBanNeedToBeLifted)
                 {
-                    this.TempData["Error"] = BanMessage;
+                    this.TempData["Error"] = BanErrorMessage;
                     return this.RedirectToAction("Index", "Post", new { id = inputModel.ParentPostId });
                 }
 
@@ -68,8 +73,7 @@
 
             if (commentId == 0)
             {
-                this.TempData["Error"] = "Error";
-
+                this.TempData["Error"] = CommentCreateError;
                 return this.View(inputModel);
             }
 
@@ -89,6 +93,7 @@
         {
             if (!this.ModelState.IsValid)
             {
+                this.TempData["Error"] = ReportCreateError;
                 return this.View(viewModel);
             }
 
@@ -111,8 +116,12 @@
                 offendingUser.UserName,
                 GlobalConstants.SystemEmail,
                 GlobalConstants.SystemName + " " + GlobalConstants.ReportEmailSubject,
-                @$"{GlobalConstants.ReportEmailSubject} by {reportSubmitter.UserName} against {offendingUser.UserName}'s comment{Environment.NewLine}
-                Comment text: {Environment.NewLine}{comment.Content} /n {GlobalConstants.SystemAddress}{ReportBaseAddress}{reportId}");
+                @$"{GlobalConstants.ReportEmailSubject} by <strong>{reportSubmitter.UserName}</strong>
+                                                        against <strong>{offendingUser.UserName}</strong>'s comment <br>
+                                                        <strong>Comment text:</strong> <br>
+                                                        {Regex.Replace(comment.Content, @"<[^>]+>", string.Empty)} <br>
+                                                        Click on the link below to assess this report: <br>
+                                                        {GlobalConstants.SystemAddress}{ReportBaseAddress}{reportId}");
 
 
             return this.RedirectToAction("Index", "Post", new { id = comment.ParentPostId });
@@ -130,12 +139,12 @@
 
         [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
         [HttpPost]
-        public async Task<IActionResult> AssessReport(AssessCommentReportinputModel inputModel)
+        public async Task<IActionResult> AssessReport(AssessCommentReportInputModel inputModel)
         {
-            // TODO: Different redirect if modelstate is invalid
             if (!this.ModelState.IsValid)
             {
-                return this.RedirectToAction("Index", "Post", new { id = inputModel.ParentPostId });
+                this.TempData["Error"] = InvalidReportAssessmentMessage;
+                return this.View(inputModel);
             }
 
             await this.commentService.AddReportAssessment(inputModel.ReportId, inputModel.AssessmentValue, inputModel.OffenderId);

@@ -50,7 +50,6 @@
 
         public async Task<PostServiceModel> GetById(int id, int take, int skip = 0)
         {
-            // TODO: See what we can do about these requests - the one below is still int Red - slow. Used Automapper before that and had to wait 10+ seconds for response from server
             var post = await this.postRepository.All()
                 .Where(p => p.Id == id)
                 .Select(x => new PostServiceModel
@@ -64,7 +63,7 @@
                     {
                         UserName = x.User.UserName,
                         ProfilePhoto = x.User.ProfilePhoto,
-
+                        CreatedOn = x.User.CreatedOn,
                     },
                     UserId = x.UserId,
                     Comments = x.Comments.Select(c => new CommentServiceModel
@@ -78,6 +77,7 @@
                         {
                             UserName = c.User.UserName,
                             ProfilePhoto = c.User.ProfilePhoto,
+                            CreatedOn = x.User.CreatedOn,
                         },
                         CreatedOn = c.CreatedOn,
                     }).ToList(),
@@ -92,7 +92,6 @@
             // Remove all subcomments from the main post comments list
             post.Comments = post.Comments.Where(p => p.ParentCommentId == null).ToList();
 
-            // TODO: Don't know how to take comments in query. Fuck it
             post.CommentsCount = post.Comments.Count();
             post.Comments = post.Comments.Skip(skip).Take(take).ToList();
 

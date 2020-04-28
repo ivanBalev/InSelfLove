@@ -13,6 +13,8 @@
 
     public class VideoController : AdministrationController
     {
+        private const string VideoCreateError = "Error creating video. Please try again.";
+
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IVideoService videoService;
 
@@ -34,6 +36,7 @@
         {
             if (!this.ModelState.IsValid)
             {
+                this.ViewData["Error"] = VideoCreateError;
                 return this.View(inputModel);
             }
 
@@ -41,9 +44,8 @@
             var serviceModel = AutoMapperConfig.MapperInstance.Map<VideoServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
 
-            var videoId = await this.videoService.CreateAsync(serviceModel);
+            await this.videoService.CreateAsync(serviceModel);
 
-           // TODO: Exception handling
             return this.RedirectToAction("All", "Video", new { area = string.Empty });
         }
 

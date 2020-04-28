@@ -27,7 +27,6 @@
             this.userManager = userManager;
         }
 
-        [HttpGet]
         [Breadcrumb("Post")]
         public async Task<IActionResult> Index(int id, int page = 1)
         {

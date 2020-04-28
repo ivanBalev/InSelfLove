@@ -36,12 +36,10 @@
         public async Task<int> Create(AppointmentServiceModel appointmentServiceModel)
         {
             var appointment = AutoMapperConfig.MapperInstance.Map<Appointment>(appointmentServiceModel);
-
-            // TODO: Elaborate
             appointment.IsApproved = true;
 
             await this.appointmentRepository.AddAsync(appointment);
-            var result = await this.appointmentRepository.SaveChangesAsync();
+            await this.appointmentRepository.SaveChangesAsync();
 
             return appointment.Id;
         }

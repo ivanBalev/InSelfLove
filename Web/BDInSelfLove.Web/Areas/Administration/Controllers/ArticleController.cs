@@ -14,11 +14,16 @@
 
     public class ArticleController : AdministrationController
     {
+        private const string ArticleCreateError = "Error while creating article. Please try again.";
+        private const string ArticleEditError = "Error while editing article. Please try again.";
+
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IArticleService articleService;
         private readonly ICloudinaryService cloudinaryService;
 
-        public ArticleController(UserManager<ApplicationUser> userManager, IArticleService articleService,
+        public ArticleController(
+            UserManager<ApplicationUser> userManager,
+            IArticleService articleService,
             ICloudinaryService cloudinaryService)
         {
             this.userManager = userManager;
@@ -37,6 +42,7 @@
         {
             if (!this.ModelState.IsValid)
             {
+                this.ViewData["Error"] = ArticleCreateError;
                 return this.View(inputModel);
             }
 
@@ -45,18 +51,13 @@
             var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
 
-            if (inputModel.ImageUrl == null)
+            if (inputModel.Image != null)
             {
-                var imageUrl = await this.cloudinaryService.UploadPicture(
-                inputModel.Image, inputModel.Title);
-
+                var imageUrl = await this.cloudinaryService.UploadPicture(inputModel.Image, inputModel.Title);
                 serviceModel.ImageUrl = imageUrl;
             }
 
-            // TODO: Does this return postId?
             var postId = await this.articleService.CreateAsync(serviceModel);
-
-            // TODO: Error handling
             return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = postId });
         }
 
@@ -66,13 +67,6 @@
             var articleEditViewModel =
                 AutoMapperConfig.MapperInstance.Map<ArticleEditInputModel>(articleServiceModel);
 
-
-            if (articleEditViewModel == null)
-            {
-                // TODO: Error Handling
-                return this.Redirect("/");
-            }
-
             return this.View(articleEditViewModel);
         }
 
@@ -81,6 +75,7 @@
         {
             if (!this.ModelState.IsValid)
             {
+                this.ViewData["Error"] = ArticleEditError;
                 return this.View(inputModel);
             }
 
@@ -88,11 +83,9 @@
             var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
 
-            if (inputModel.ImageUrl == null)
+            if (inputModel.Image != null)
             {
-                var imageUrl = await this.cloudinaryService.UploadPicture(
-                inputModel.Image, inputModel.Title);
-
+                var imageUrl = await this.cloudinaryService.UploadPicture(inputModel.Image, inputModel.Title);
                 serviceModel.ImageUrl = imageUrl;
             }
 
@@ -105,15 +98,7 @@
         public async Task<IActionResult> Delete(int id)
         {
             var articleServiceModel = await this.articleService.GetById(id);
-            var articleDeleteModel =
-                AutoMapperConfig.MapperInstance.Map<ArticleDeleteViewModel>(articleServiceModel);
-
-
-            if (articleDeleteModel == null)
-            {
-                // TODO: Error Handling
-                return this.Redirect("/");
-            }
+            var articleDeleteModel = AutoMapperConfig.MapperInstance.Map<ArticleDeleteViewModel>(articleServiceModel);
 
             return this.View(articleDeleteModel);
         }
@@ -123,7 +108,6 @@
         public async Task<IActionResult> DeletePost(int id)
         {
             await this.articleService.Delete(id);
-
             return this.Redirect("/");
         }
     }

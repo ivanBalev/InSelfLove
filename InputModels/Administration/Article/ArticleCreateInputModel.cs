@@ -16,10 +16,9 @@ namespace BDInSelfLove.Web.InputModels.Administration.Article
         [Required]
         public string Content { get; set; }
 
-        [Display(Name = "Link to the image you'd like to use for your article")]
+        [Display(Name = "Link to your article's image")]
         public string ImageUrl { get; set; }
 
-        // TODO: Custom validation on front & backend checking whether we have one or the other - Picture or imageUrl
         public IFormFile Image { get; set; }
     }
 }

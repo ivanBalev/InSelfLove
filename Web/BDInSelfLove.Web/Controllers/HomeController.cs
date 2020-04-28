@@ -13,8 +13,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    // DEPENDENCY INJECTION WITH FILTERS
-    //[TypeFilter(typeof(AddHeaderActionFilterAttribute))]
     public class HomeController : BaseController
     {
         private const int IndexArticlesCount = 4;
@@ -24,17 +22,8 @@
         public HomeController(IArticleService articleService)
         {
             this.articleService = articleService;
-
-            // TODO: Payments will need deployment. Otherwise we can't receive response from epay about payment status.
         }
 
-        //[AddHeaderAsyncActionFilter]
-        //// SERVICEFILTER ALLOWS US TO CONTROL HOW WE INSTANTIATE THE FILTER (SINGLETON, TRANSIENT, SCOPED) IN THE FILE STARTUP.CS
-        ////[ServiceFilter(typeof(AddHeaderAsyncActionFilterAttribute))]
-        //[MyAuthorizationFilter]
-        //[MyExceptionFilter]
-        //[MyResourceFilter]
-        //[MyResultFilter]
         public async Task<IActionResult> Index()
         {
             var lastArticles = await this.articleService

@@ -10,9 +10,11 @@ namespace BDInSelfLove.Web.InputModels.Administration.Category
     public class CategoryCreateInputModel : IMapTo<CategoryServiceModel>
     {
         [Required]
+        [MinLength(15)]
         public string Name { get; set; }
 
         [Required]
+        [MinLength(20)]
         public string Description { get; set; }
     }
 }

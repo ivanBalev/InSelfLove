@@ -14,6 +14,8 @@ namespace BDInSelfLove.Web.InputModels.Appointment
         [Required]
         public string Start { get; set; }
 
+        [Required]
+        [MinLength(30)]
         public string Description { get; set; }
 
         public void CreateMappings(IProfileExpression configuration)
