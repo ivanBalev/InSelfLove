@@ -8,16 +8,58 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BDInSelfLove.Services.Mapping;
+using BDInSelfLove.Services.Data.Comment;
 
 namespace BDInSelfLove.Services.Data.User
 {
     public class UserService : IUserService
     {
+        private const int UserBanThreshold = 3;
+        private const int DefaultBanLength = 3;
+
         private readonly IDeletableEntityRepository<ApplicationUser> userRepository;
 
         public UserService(IDeletableEntityRepository<ApplicationUser> userRepository)
         {
             this.userRepository = userRepository;
+        }
+
+        public async Task CheckIfUserNeedsToBeBanned(string userId, int reportsCount)
+        {
+            if (reportsCount < UserBanThreshold - 1)
+            {
+                return;
+            }
+
+            var user = await this.userRepository.All().FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user.IsBanned)
+            {
+                return;
+            }
+
+            user.IsBanned = true;
+            user.Bans.Add(new Ban());
+
+            this.userRepository.Update(user);
+            await this.userRepository.SaveChangesAsync();
+        }
+
+        public async Task<bool> CheckIfBanNeedsToBeLifted(string userId)
+        {
+            var user = await this.userRepository.All().Include(u => u.Bans).FirstOrDefaultAsync(u => u.Id == userId);
+
+            var daysSinceBanned = (DateTime.UtcNow - user.Bans.FirstOrDefault().CreatedOn).TotalDays;
+
+            if (!(daysSinceBanned > DefaultBanLength))
+            {
+                return false;
+            }
+
+            user.IsBanned = false;
+            user.Bans.FirstOrDefault().IsDeleted = true;
+            await this.userRepository.SaveChangesAsync();
+            return true;
         }
 
         public async Task<ApplicationUserServiceModel> GetProfileInfo(string username)

@@ -15,5 +15,7 @@ namespace BDInSelfLove.Web.InputModels.Forum.Comment
 
         [Required]
         public bool AssessmentValue { get; set; }
+
+        public string OffenderId { get; set; }
     }
 }

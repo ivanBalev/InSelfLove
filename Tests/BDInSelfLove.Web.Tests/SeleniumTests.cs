@@ -15,7 +15,7 @@
             this.serverFactory = new SeleniumServerFactory<Startup>();
             serverFactory.CreateClient();
             var options = new ChromeOptions();
-            options.AddArguments("--no-sandbox", "--ignore-certificate-errors");
+            options.AddArguments("--headless", "--no-sandbox", "--ignore-certificate-errors");
             this.browser = new RemoteWebDriver(options);
         }
 
@@ -24,6 +24,7 @@
         {
             this.browser.Navigate().GoToUrl(this.serverFactory.RootUri + "/Home/Index");
             var result = this.browser.FindElementByTagName("html");
+            //Assert.Contains("Welcome to", this.browser.FindElementByTagName("body").Text);
             Assert.True(this.browser.FindElementByCssSelector("html") != null);
         }
     }

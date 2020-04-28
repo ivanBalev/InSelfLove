@@ -20,6 +20,8 @@ namespace BDInSelfLove.Web.ViewModels.Forum.Comment
 
         public string UserProfilePhoto { get; set; }
 
+        public string UserId { get; set; }
+
         public AssessCommentReportViewModel Report { get; set; }
     }
 }

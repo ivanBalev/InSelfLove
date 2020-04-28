@@ -7,8 +7,6 @@ using System.Text;
 
 namespace BDInSelfLove.Services.Models.Comment
 {
-    // TODO: Implement automatic banning for a certain amount of time after let's say 5 approved reports
-
     public class ReportServiceModel : IMapTo<Data.Models.Report>, IMapFrom<Data.Models.Report>
     {
         public int Id { get; set; }
@@ -22,5 +20,9 @@ namespace BDInSelfLove.Services.Models.Comment
         public string SubmitterId { get; set; }
 
         public ApplicationUserServiceModel Submitter { get; set; }
+
+        public string OffenderId { get; set; }
+
+        public ApplicationUserServiceModel Offender { get; set; }
     }
 }

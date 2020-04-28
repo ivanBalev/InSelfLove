@@ -47,4 +47,4 @@
     </div>
 </div>
 
-<partial name="_CommentReportAssessmentPartial" model=@(new AssessCommentReportinputModel { ReportId = Model.Report.Id, ParentPostId = Model.ParentPostId })>
+<partial name="_CommentReportAssessmentPartial" model=@(new AssessCommentReportinputModel { ReportId = Model.Report.Id, ParentPostId = Model.ParentPostId, OffenderId = Model.UserId })>

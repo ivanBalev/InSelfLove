@@ -1,6 +1,6 @@
 ﻿@using BDInSelfLove.Data.Models
 @using Microsoft.AspNetCore.Identity
-@using BDInSelfLove.Web.InputModels.Forum.Comment 
+@using BDInSelfLove.Web.InputModels.Forum.Comment
 
 @model BDInSelfLove.Web.ViewModels.Forum.Post.PostViewModel
 @inject SignInManager<ApplicationUser> SignInManager
@@ -10,6 +10,10 @@
     this.ViewData["height"] = "62";
 }
 
+@if (this.TempData["Error"] != null)
+{
+    <partial name="_ErrorPartial" model="@(this.TempData["Error"])" />
+}
 
 <div class="row">
     <div class="col">
@@ -38,7 +42,7 @@
                                     <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span>
                                 </span>
                             </div>
-                            
+
                             <div class="text-muted small ml-3">
                                 <div>Member since <strong>01/1/2019 IMPLEMENT ME</strong></div>
                                 <div><strong>134</strong> posts IMPLEMENT ME</div>
@@ -117,6 +121,8 @@
         </ul>
     </nav>
 </div>
+
+
 
 @if (!this.SignInManager.IsSignedIn(this.User))
 {

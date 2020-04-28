@@ -7,11 +7,12 @@ using System.Text;
 
 namespace BDInSelfLove.Web.ViewModels.Forum.Comment
 {
-    // TODO: MAKE SURE ALL VALIDATION IS PRESENT EVERYWHERE!!!
     public class ReportCommentViewModel : IMapFrom<CommentServiceModel>
     {
+        [Required]
         public int Id { get; set; }
 
+        
         public string UserUsername { get; set; }
 
         [Required]

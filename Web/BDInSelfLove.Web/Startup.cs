@@ -170,10 +170,8 @@
 
             app.UseHttpsRedirection();
             app.UseResponseCompression();
-            // MIDDLEWARE EXERCISE
-            // app.UseMiddleware<RedirectToGoogleIfNotHttps>();
-            // MIDDLEWARE EXERCISE
-
+            app.UseResponseCaching();
+            
             app.UseStaticFiles();
             app.UseCookiePolicy();
 

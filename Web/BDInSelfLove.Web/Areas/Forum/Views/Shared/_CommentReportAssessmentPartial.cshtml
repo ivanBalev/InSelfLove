@@ -12,6 +12,9 @@
             <div>
                 <input type="hidden" asp-for="@Model.AssessmentValue" value="true" />
             </div>
+            <div>
+                <input type="hidden" asp-for="@Model.OffenderId" />
+            </div>
             <button type="submit" class="btn btn-outline-success">Accept</button>
         </form>
         <form class="mb-3" method="POST" asp-controller="Comment" asp-action="AssessReport">
@@ -23,6 +26,9 @@
             </div>
             <div>
                 <input type="hidden" asp-for="@Model.AssessmentValue" value="false" />
+            </div>
+            <div>
+                <input type="hidden" asp-for="@Model.OffenderId" />
             </div>
             <button type="submit" class="btn btn-outline-danger">Decline</button>
         </form>

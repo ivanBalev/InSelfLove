@@ -22,6 +22,10 @@ namespace BDInSelfLove.Data.Models
 
         public virtual ApplicationUser Submitter { get; set; }
 
+        public string OffenderId { get; set; }
+
+        public virtual ApplicationUser Offender { get; set; }
+
         public bool IsApproved { get; set; }
     }
 }

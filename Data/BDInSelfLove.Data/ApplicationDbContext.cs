@@ -38,6 +38,8 @@
 
         public DbSet<Report> Reports { get; set; }
 
+        public DbSet<Ban> Bans { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
@@ -101,6 +103,18 @@
                 .HasMany(c => c.SubComments)
                 .WithOne(r => r.ParentComment)
                 .HasForeignKey(c => c.ParentCommentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(u => u.ReportsSubmitted)
+                .WithOne(r => r.Submitter)
+                .HasForeignKey(r => r.SubmitterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(u => u.ReportsReceived)
+                .WithOne(r => r.Offender)
+                .HasForeignKey(r => r.OffenderId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
 

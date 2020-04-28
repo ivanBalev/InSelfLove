@@ -24,6 +24,8 @@ namespace BDInSelfLove.Services.Data.Comment
 
         IQueryable<CommentServiceModel> GetCommentWithReport(int reportId);
 
-        Task<int> AddReportAssessment(int reportId, bool assessment);
+        Task<int> AddReportAssessment(int reportId, bool assessment, string offenderId);
+
+        Task ClearUserReports(string userId);
     }
 }
