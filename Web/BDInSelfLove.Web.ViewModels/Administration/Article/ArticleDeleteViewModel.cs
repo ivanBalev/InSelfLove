@@ -1,12 +1,10 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Article;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-
-namespace BDInSelfLove.Web.ViewModels.Administration.Article
+﻿namespace BDInSelfLove.Web.ViewModels.Administration.Article
 {
+    using System.ComponentModel.DataAnnotations;
+
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Article;
+
     public class ArticleDeleteViewModel : IMapFrom<ArticleServiceModel>
     {
         public int Id { get; set; }

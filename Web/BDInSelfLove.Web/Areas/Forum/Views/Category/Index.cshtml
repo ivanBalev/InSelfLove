@@ -1,8 +1,5 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Forum.Category.CategoryViewModel
 
-
-
-
 <div class="row">
     <div class="col-12">
         <section>
@@ -53,5 +50,5 @@
 <div class="mb-3 clearfix">
     <partial name="_SortingPartial" model="@Model.CategorySorting" />
 </div>
-<a asp-controller="Post" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-md btn-success btn-block">New Post</a>
+<a asp-controller="Post" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-outline-primary btn-block w-50 mx-auto">New Post</a>
 

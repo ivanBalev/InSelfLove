@@ -1,15 +1,13 @@
-﻿using BDInSelfLove.Services.Data.Comment;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Web.ViewModels.Forum.Profile;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.ViewComponents
+﻿namespace BDInSelfLove.Web.ViewComponents
 {
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Services.Data.Comment;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.ViewModels.Forum.Profile;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
     public class ProfileCommentsViewComponent : ViewComponent
     {
         private const int DefaultProfileCommentsCount = 5;

@@ -31,7 +31,6 @@
             this.cloudinaryService = cloudinaryService;
         }
 
-
         public IActionResult Create()
         {
             return this.View();
@@ -64,8 +63,7 @@
         public async Task<IActionResult> Edit(int id)
         {
             var articleServiceModel = await this.articleService.GetById(id);
-            var articleEditViewModel =
-                AutoMapperConfig.MapperInstance.Map<ArticleEditInputModel>(articleServiceModel);
+            var articleEditViewModel = AutoMapperConfig.MapperInstance.Map<ArticleEditInputModel>(articleServiceModel);
 
             return this.View(articleEditViewModel);
         }
@@ -94,7 +92,6 @@
             return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = inputModel.Id });
         }
 
-        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var articleServiceModel = await this.articleService.GetById(id);

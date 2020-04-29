@@ -19,7 +19,6 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Article;
-    using BDInSelfLove.Web.Infrastructure.ModelBinders;
     using BDInSelfLove.Web.InputModels.Administration.Article;
     using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels;
@@ -89,14 +88,9 @@
             services.AddControllersWithViews(configure =>
            {
                configure.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-               // FILTERS EXERCISE
-               // GLOBAL SCOPE OF FILTER - APPLIES EVERY TIME(BEFORE/AFTER EACH REQUEST)
-               // configure.Filters.Add(new AddHeaderActionFilterAttribute());
-
-               // BINDING EXERCISE
-               configure.ModelBinderProviders.Insert(0, new YearModelBinderProvider());
            });
 
+            // Breadcrumbs
             services.UseBreadcrumbs(this.GetType().Assembly);
 
             services.AddAntiforgery(options =>
@@ -127,11 +121,6 @@
             services.AddTransient<ICloudinaryService, CloudinaryService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAppointmentService, AppointmentService>();
-
-            // FILTERS EXERCISE
-            // Allows control over instantiation of filter.
-            // APPLIES TO LOCAL USES OF FILTERS AS ATTRIBUTES AS OPPOSED TO THE GLOBAL IMPLEMENTATIONN IN THE .AddControllersWithViews method above
-            // services.AddSingleton<AddHeaderAsyncActionFilterAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -171,7 +160,7 @@
             app.UseHttpsRedirection();
             app.UseResponseCompression();
             app.UseResponseCaching();
-            
+
             app.UseStaticFiles();
             app.UseCookiePolicy();
 

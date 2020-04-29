@@ -2,8 +2,6 @@
 {
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.User;
-    using System.Collections;
-    using System.Collections.Generic;
 
     public class ProfileUserViewModel : IMapFrom<ApplicationUserServiceModel>
     {

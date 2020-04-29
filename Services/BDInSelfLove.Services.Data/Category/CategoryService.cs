@@ -1,14 +1,12 @@
 ﻿namespace BDInSelfLove.Services.Data.Category
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Services.Data.Comment;
-    using BDInSelfLove.Services.Data.Post;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
     using BDInSelfLove.Services.Models.Post;
@@ -20,14 +18,106 @@
     {
         private readonly IDeletableEntityRepository<BDInSelfLove.Data.Models.Category> categoryRepository;
         private readonly ICommentService commentService;
-        private readonly IPostService postService;
 
-        public CategoryService(IDeletableEntityRepository<BDInSelfLove.Data.Models.Category> categoryRepository,
-            ICommentService commentService, IPostService postService)
+        private Dictionary<string, List<string>> availableSortingCriteria = new Dictionary<string, List<string>>
+            {
+                { "TimeCriteria", new List<string> { "all posts", "day", "month", "year" } },
+                { "GroupingCriteria",  new List<string> { "date created", "author", "replies", "topic" } },
+                { "OrderingCriteria", new List<string> { "descending", "ascending" } },
+            };
+
+        public CategoryService(IDeletableEntityRepository<BDInSelfLove.Data.Models.Category> categoryRepository, ICommentService commentService)
         {
             this.categoryRepository = categoryRepository;
             this.commentService = commentService;
-            this.postService = postService;
+        }
+
+        public IQueryable<CategoryServiceModel> Search(string searchTerm)
+        {
+            var searchItems = SearchHelpers.GetSearchItems(searchTerm);
+
+            var categories = this.categoryRepository.All();
+
+            foreach (var item in searchItems)
+            {
+                categories = categories.Where(p =>
+                p.Name.ToLower().Contains(item) ||
+                p.Description.ToLower().Contains(item));
+            }
+
+            return categories
+                .Distinct()
+                .OrderByDescending(p => p.CreatedOn)
+                .To<CategoryServiceModel>();
+        }
+
+        public Dictionary<string, List<string>> GetAvailableSortingCriteria()
+        {
+            return this.availableSortingCriteria;
+        }
+
+        public async Task<int> Create(CategoryServiceModel categoryServiceModel)
+        {
+            var category = AutoMapperConfig.MapperInstance.Map<BDInSelfLove.Data.Models.Category>(categoryServiceModel);
+
+            await this.categoryRepository.AddAsync(category);
+            await this.categoryRepository.SaveChangesAsync();
+
+            return category.Id;
+        }
+
+        public async Task<CategoryServiceModel> GetById(int id, CategorySortingInputModel sortingModel)
+        {
+            var test = this.categoryRepository.All()
+                .Where(x => x.Id == id)
+                .Select(x => new CategoryServiceModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    UserId = x.UserId,
+                    User = AutoMapperConfig.MapperInstance.Map<ApplicationUserServiceModel>(x.User),
+                    Posts = SortPosts(
+                        x.Posts.Select(p => new PostServiceModel
+                        {
+                            Id = p.Id,
+                            CreatedOn = p.CreatedOn,
+                            Title = p.Title,
+                            UserId = p.UserId,
+                            User = AutoMapperConfig.MapperInstance.Map<ApplicationUserServiceModel>(p.User),
+                            CommentsCount = p.Comments.Count,
+                        }).ToList(),
+                        sortingModel),
+                });
+
+            return await test.FirstOrDefaultAsync();
+        }
+
+        public IQueryable<CategoryServiceModel> GetHomeCategoryInfo()
+        {
+            var result = this.categoryRepository.All().Select(c => new CategoryServiceModel
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                PostsCount = c.Posts.Count,
+                CommentsCount = this.commentService.CommentsCountByCategoryId(c.Id),
+                LastPost = c.Posts.OrderByDescending(p => p.CreatedOn)
+                   .Select(p => new PostServiceModel
+                   {
+                       Title = p.Title,
+                       Id = p.Id,
+                       User = new Models.User.ApplicationUserServiceModel
+                       {
+                           UserName = p.User.UserName,
+                       },
+                       UserId = p.UserId,
+                       CreatedOn = p.CreatedOn,
+                   })
+                   .FirstOrDefault(),
+            });
+
+            return result;
         }
 
         private static ICollection<PostServiceModel> GetCurrentDayPosts(ICollection<PostServiceModel> posts) =>
@@ -62,18 +152,6 @@
 
         private static ICollection<PostServiceModel> OrderByTopicAscending(ICollection<PostServiceModel> query) =>
             query.OrderBy(c => c.Title).ToList();
-
-
-
-        public async Task<int> Create(CategoryServiceModel categoryServiceModel)
-        {
-            var category = AutoMapperConfig.MapperInstance.Map<BDInSelfLove.Data.Models.Category>(categoryServiceModel);
-
-            await this.categoryRepository.AddAsync(category);
-            await this.categoryRepository.SaveChangesAsync();
-
-            return category.Id;
-        }
 
         private static ICollection<PostServiceModel> SortPosts(ICollection<PostServiceModel> posts, CategorySortingInputModel sortingModel)
         {
@@ -113,83 +191,6 @@
             }
 
             return posts;
-        }
-
-        public async Task<CategoryServiceModel> GetById(int id, CategorySortingInputModel sortingModel)
-        {
-            var test = this.categoryRepository.All()
-                .Where(x => x.Id == id)
-                .Select(x => new CategoryServiceModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    UserId = x.UserId,
-                    User = AutoMapperConfig.MapperInstance.Map<ApplicationUserServiceModel>(x.User),
-                    Posts = SortPosts(
-                        x.Posts.Select(p => new PostServiceModel
-                        {
-                            Id = p.Id,
-                            CreatedOn = p.CreatedOn,
-                            Title = p.Title,
-                            UserId = p.UserId,
-                            User = AutoMapperConfig.MapperInstance.Map<ApplicationUserServiceModel>(p.User),
-                            CommentsCount = p.Comments.Count,
-                        }).ToList(),
-                        sortingModel),
-                });
-
-            return await test.FirstOrDefaultAsync();
-        }
-
-        public IQueryable<CategoryServiceModel> GetHomeCategoryInfo()
-        {
-            // Horrendous request sent to server if Automapper is used.
-            var result = this.categoryRepository.All().Select(c => new CategoryServiceModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description,
-                PostsCount = c.Posts.Count,
-                CommentsCount = this.commentService.CommentsCountByCategoryId(c.Id),
-                LastPost = c.Posts.OrderByDescending(p => p.CreatedOn)
-                   .Select(p => new PostServiceModel
-                   {
-                       Title = p.Title,
-                       Id = p.Id,
-                       User = new Models.User.ApplicationUserServiceModel
-                       {
-                           UserName = p.User.UserName,
-                       },
-                       UserId = p.UserId,
-                       CreatedOn = p.CreatedOn,
-                   })
-                   .FirstOrDefault(),
-            });
-
-            //var result1 = this.categoryRepository.All().Select(c => new CategoryServiceModel
-            //{
-            //    Id = c.Id,
-            //    Name = c.Name,
-            //    Description = c.Description,
-            //    PostsCount = c.Posts.Count,
-            //    CommentsCount = c.Posts.Sum(p => p.Comments.Count) -- why does this produce the need for DB UPDATE?,
-            //    LastPost = c.Posts.OrderByDescending(p => p.CreatedOn)
-            //       .Select(p => new PostServiceModel
-            //       {
-            //           Title = p.Title,
-            //           Id = p.Id,
-            //           User = new Models.User.ApplicationUserServiceModel
-            //           {
-            //               UserName = p.User.UserName,
-            //           },
-            //           UserId = p.UserId,
-            //           CreatedOn = p.CreatedOn,
-            //       })
-            //       .FirstOrDefault(),
-            //}).ToListAsync();
-
-            return result;
         }
     }
 }

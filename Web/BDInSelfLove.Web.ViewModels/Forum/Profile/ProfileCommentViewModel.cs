@@ -1,9 +1,10 @@
 ﻿namespace BDInSelfLove.Web.ViewModels.Forum.Profile
 {
+    using System;
+
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Comment;
     using Ganss.XSS;
-    using System;
 
     public class ProfileCommentViewModel : IMapFrom<CommentServiceModel>
     {

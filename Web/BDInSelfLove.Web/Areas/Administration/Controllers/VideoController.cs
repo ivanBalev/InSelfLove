@@ -7,7 +7,7 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Videos;
     using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
-    using InputModels.Administration.Video;
+    using BDInSelfLove.Web.InputModels.Administration.Video;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +24,6 @@
             this.videoService = videoService;
         }
 
-        [HttpGet]
         public IActionResult Create()
         {
             return this.View();

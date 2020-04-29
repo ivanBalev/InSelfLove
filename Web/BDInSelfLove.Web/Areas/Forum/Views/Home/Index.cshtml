@@ -1,20 +1,16 @@
 ﻿@model IList<BDInSelfLove.Web.ViewModels.Forum.Home.Category.HomeCategoryViewModel>
 @using BDInSelfLove.Common
 
-
-
 <div class="row">
     <div class="col">
-
         @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
         {
             <div class="row">
-                <div class="col mb-2">
-                    <a asp-controller="Category" asp-action="Create" class="btn btn-success btn-block">Create Category</a>
+                <div class="col mb-3">
+                    <a asp-controller="Category" asp-action="Create" class="btn btn-outline-primary btn-block w-50 mx-auto">Create Category</a>
                 </div>
             </div>
         }
-
         @foreach (var category in Model)
         {
             <section class="mb-3">
@@ -58,12 +54,10 @@
                                 </tr>
                             </tbody>
                         }
-
                     </table>
                 </div>
             </section>
         }
-
     </div>
 </div>
 

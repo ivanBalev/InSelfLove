@@ -3,11 +3,9 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.ViewModels.Article;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 

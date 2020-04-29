@@ -1,11 +1,11 @@
 ﻿namespace BDInSelfLove.Web.ViewModels.Forum.Category
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
+
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Post;
 
-    public class PostCategoryViewModel : IMapFrom<PostServiceModel>
+    public class CategoryPostViewModel : IMapFrom<PostServiceModel>
     {
         public int Id { get; set; }
 

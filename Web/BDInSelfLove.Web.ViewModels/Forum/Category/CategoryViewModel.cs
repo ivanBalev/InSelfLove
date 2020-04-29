@@ -1,6 +1,7 @@
 ﻿namespace BDInSelfLove.Web.ViewModels.Forum.Category
 {
     using System.Collections.Generic;
+
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
     using BDInSelfLove.Web.InputModels.Forum.Category;
@@ -9,7 +10,7 @@
     {
         public CategoryViewModel()
         {
-            this.Posts = new List<PostCategoryViewModel>();
+            this.Posts = new List<CategoryPostViewModel>();
         }
 
         public int Id { get; set; }
@@ -20,7 +21,7 @@
 
         public string UserUserName { get; set; }
 
-        public ICollection<PostCategoryViewModel> Posts { get; set; }
+        public ICollection<CategoryPostViewModel> Posts { get; set; }
 
         public CategorySortingInputModel CategorySorting { get; set; }
     }

@@ -29,19 +29,13 @@
             this.userManager = userManager;
         }
 
-        [HttpGet]
         [Breadcrumb("Category")]
         public async Task<IActionResult> Index(int id, CategorySortingInputModel sortingModel)
         {
             var categoryServiceModel = await this.categoryService.GetById(id, sortingModel);
             var categoryViewModel = AutoMapperConfig.MapperInstance.Map<CategoryViewModel>(categoryServiceModel);
 
-            var availableSortingCriteria = new Dictionary<string, List<string>>
-            {
-                { "TimeCriteria", new List<string> { "all posts", "day", "month", "year" } },
-                { "GroupingCriteria",  new List<string> { "date created", "author", "replies", "topic" } },
-                { "OrderingCriteria", new List<string> { "descending", "ascending" } },
-            };
+            var availableSortingCriteria = this.categoryService.GetAvailableSortingCriteria();
 
             categoryViewModel.CategorySorting = new CategorySortingInputModel
             {

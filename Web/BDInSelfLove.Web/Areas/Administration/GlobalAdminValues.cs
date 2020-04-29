@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.Areas.Administration
+﻿namespace BDInSelfLove.Web.Areas.Administration
 {
     public static class GlobalAdminValues
     {

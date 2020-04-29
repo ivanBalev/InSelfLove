@@ -1,12 +1,13 @@
-﻿using BDInSelfLove.Services.Data.User;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Web.ViewModels.Forum.Profile;
-using Microsoft.AspNetCore.Mvc;
-using SmartBreadcrumbs;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.Areas.Forum.Controllers
+﻿namespace BDInSelfLove.Web.Areas.Forum.Controllers
 {
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Services.Data.User;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.ViewModels.Forum.Profile;
+    using Microsoft.AspNetCore.Mvc;
+    using SmartBreadcrumbs;
+
     public class ProfileController : BaseForumController
     {
         private readonly IUserService userService;

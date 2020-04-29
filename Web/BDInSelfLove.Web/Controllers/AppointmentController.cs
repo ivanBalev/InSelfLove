@@ -2,9 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Calendar;
@@ -25,6 +25,7 @@
     [Route("api/[controller]")]
     public class AppointmentController : ControllerBase
     {
+        private const string AppointmentEmailSubject = "Appointment";
         private const string AppointmentDeleteEmailBody = "The client opted to cancel their appointment";
 
         private readonly IAppointmentService appointmentService;
@@ -61,12 +62,11 @@
         {
             var serviceModel = AutoMapperConfig.MapperInstance.Map<AppointmentServiceModel>(inputModel);
 
-            // Validate
+            // Validation
             var appointmentSlotIsOccupied = await this.appointmentService
                                                       .GetAllByDate(serviceModel.Start)
                                                       .Where(a => a.Start.Hour == serviceModel.Start.Hour)
                                                       .FirstOrDefaultAsync();
-
             if (appointmentSlotIsOccupied != null)
             {
                 return this.BadRequest(new { status = false });
@@ -74,14 +74,14 @@
 
             var user = await this.userManager.GetUserAsync(this.User);
             serviceModel.UserId = user.Id;
-            await this.appointmentService.Create(serviceModel);
 
+            await this.appointmentService.Create(serviceModel);
             await this.emailSender.SendEmailAsync(
                                         user.Email,
                                         user.UserName,
                                         GlobalConstants.SystemEmail,
-                                        GlobalConstants.SystemName + " " + GlobalConstants.AppointmentEmailSubject,
-                                        serviceModel.Start.ToString("dd MMMM HH:mm") + Environment.NewLine + serviceModel.Description);
+                                        GlobalConstants.SystemName + " " + AppointmentEmailSubject,
+                                        serviceModel.Start.ToString("dd MMMM HH:mm") + "<br>" + serviceModel.Description);
 
             return this.Ok(new { status = true });
         }
@@ -104,7 +104,7 @@
                                         currentUser.Email,
                                         currentUser.UserName,
                                         GlobalConstants.SystemEmail,
-                                        GlobalConstants.SystemName + " " + GlobalConstants.AppointmentEmailSubject,
+                                        GlobalConstants.SystemName + " " + AppointmentEmailSubject,
                                         AppointmentDeleteEmailBody);
 
             return this.Ok(new { status = true });

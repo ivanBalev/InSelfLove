@@ -17,6 +17,7 @@
     public class PostController : BaseForumController
     {
         private const int CommentsPerPage = 5;
+        private const string CommentCreateError = "Error while creating comment. Plase try again";
 
         private readonly IPostService postService;
         private readonly UserManager<ApplicationUser> userManager;
@@ -30,11 +31,10 @@
         [Breadcrumb("Post")]
         public async Task<IActionResult> Index(int id, int page = 1)
         {
-            var serviceModel = await this.postService
-                .GetById(id, CommentsPerPage, (page - 1) * CommentsPerPage);
-
+            var serviceModel = await this.postService.GetById(id, CommentsPerPage, (page - 1) * CommentsPerPage);
             var pagesCount = (int)Math.Ceiling(serviceModel.CommentsCount / (decimal)CommentsPerPage);
             var viewModel = AutoMapperConfig.MapperInstance.Map<PostViewModel>(serviceModel);
+
             viewModel.CurrentPage = page;
             viewModel.PagesCount = pagesCount;
 
@@ -62,6 +62,7 @@
         {
             if (!this.ModelState.IsValid)
             {
+                this.ViewData["Error"] = CommentCreateError;
                 return this.View(inputModel);
             }
 
@@ -74,8 +75,7 @@
 
             if (postId == 0)
             {
-                this.TempData["Error"] = "Error";
-
+                this.ViewData["Error"] = CommentCreateError;
                 return this.View(inputModel);
             }
 

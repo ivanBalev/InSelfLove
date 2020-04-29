@@ -30,6 +30,23 @@
             this.userService = userService;
         }
 
+        public IQueryable<CommentServiceModel> Search(string searchTerm)
+        {
+            var searchItems = SearchHelpers.GetSearchItems(searchTerm);
+
+            var comments = this.commentRepository.All();
+
+            foreach (var item in searchItems)
+            {
+                comments = comments.Where(p =>
+                p.Content.ToLower().Contains(item));
+            }
+
+            return comments
+                .Distinct()
+                .OrderByDescending(p => p.CreatedOn)
+                .To<CommentServiceModel>();
+        }
 
         public int CommentsCountByCategoryId(int categoryId)
         {

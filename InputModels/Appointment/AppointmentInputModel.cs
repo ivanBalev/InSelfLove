@@ -2,10 +2,8 @@
 using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Appointment;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Text;
 
 namespace BDInSelfLove.Web.InputModels.Appointment
 {

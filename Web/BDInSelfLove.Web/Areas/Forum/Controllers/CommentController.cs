@@ -1,7 +1,5 @@
 ﻿namespace BDInSelfLove.Web.Areas.Forum.Controllers
 {
-    using System;
-    using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
@@ -42,7 +40,6 @@
 
         [HttpPost]
         [Authorize]
-
         public async Task<IActionResult> Create(CommentCreateInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
@@ -98,6 +95,7 @@
             }
 
             var comment = await this.commentService.GetById(viewModel.Id).To<ReportCommentInputModel>().FirstOrDefaultAsync();
+            var securedCommentContent = Regex.Replace(comment.Content, @"<[^>]+>", string.Empty);
             var offendingUser = await this.userManager.FindByIdAsync(comment.UserId);
             var reportSubmitter = await this.userManager.GetUserAsync(this.User);
 
@@ -119,10 +117,9 @@
                 @$"{GlobalConstants.ReportEmailSubject} by <strong>{reportSubmitter.UserName}</strong>
                                                         against <strong>{offendingUser.UserName}</strong>'s comment <br>
                                                         <strong>Comment text:</strong> <br>
-                                                        {Regex.Replace(comment.Content, @"<[^>]+>", string.Empty)} <br>
+                                                        {securedCommentContent} <br>
                                                         Click on the link below to assess this report: <br>
                                                         {GlobalConstants.SystemAddress}{ReportBaseAddress}{reportId}");
-
 
             return this.RedirectToAction("Index", "Post", new { id = comment.ParentPostId });
         }

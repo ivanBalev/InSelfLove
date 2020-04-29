@@ -1,13 +1,12 @@
-﻿namespace BDInSelfLove.Web.ViewModels.Forum.Post
+﻿namespace BDInSelfLove.Web.ViewModels.Forum.Search
 {
     using System;
-    using System.Collections.Generic;
 
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Comment;
     using Ganss.XSS;
 
-    public class PostCommentViewModel : IMapFrom<CommentServiceModel>
+    public class SearchCommentViewModel : IMapFrom<CommentServiceModel>
     {
         public int Id { get; set; }
 
@@ -24,7 +23,5 @@
         public string Content { get; set; }
 
         public string SanitizedContent => new HtmlSanitizer().Sanitize(this.Content);
-
-        public IList<PostCommentViewModel> SubComments { get; set; }
     }
 }

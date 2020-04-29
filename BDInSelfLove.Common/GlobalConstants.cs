@@ -10,8 +10,6 @@
 
         public const string SystemEmail = "isbalev@gmail.com";
 
-        public const string AppointmentEmailSubject = "Appointment";
-
         public const string ReportEmailSubject = "Report";
 
         public const string SystemAddress = "https://localhost:44319/";

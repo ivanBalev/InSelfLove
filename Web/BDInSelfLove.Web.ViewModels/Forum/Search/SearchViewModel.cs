@@ -1,18 +1,24 @@
-﻿using BDInSelfLove.Services.Mapping;
-using Ganss.XSS;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Web.ViewModels.Forum.Search
+﻿namespace BDInSelfLove.Web.ViewModels.Forum.Search
 {
+    using System.Collections.Generic;
+
     public class SearchViewModel
     {
         public int PagesCount { get; set; }
 
         public int CurrentPage { get; set; }
 
+        public int TotalPostsCount { get; set; }
+
+        public int TotalCategoriesCount { get; set; }
+
+        public int TotalCommentsCount { get; set; }
+
         public List<SearchPostViewModel> Posts { get; set; }
+
+        public List<SearchCategoryViewModel> Categories { get; set; }
+
+        public List<SearchCommentViewModel> Comments { get; set; }
 
         public string SearchTerm { get; set; }
 

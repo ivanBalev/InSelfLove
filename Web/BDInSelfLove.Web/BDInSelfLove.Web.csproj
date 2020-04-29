@@ -14,6 +14,13 @@
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\Rules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\lib\sammy\**" />
+    <Content Remove="wwwroot\lib\sammy\**" />
+    <EmbeddedResource Remove="wwwroot\lib\sammy\**" />
+    <None Remove="wwwroot\lib\sammy\**" />
+  </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
@@ -52,14 +59,6 @@
     <ProjectReference Include="..\..\Services\BDInSelfLove.Services\BDInSelfLove.Services.csproj" />
     <ProjectReference Include="..\BDInSelfLove.Web.Infrastructure\BDInSelfLove.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\BDInSelfLove.Web.ViewModels\BDInSelfLove.Web.ViewModels.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\lib\sammy\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\Custom\js\requester.js" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

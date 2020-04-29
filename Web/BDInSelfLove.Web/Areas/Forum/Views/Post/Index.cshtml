@@ -11,47 +11,46 @@
 }
 
 <div class="row">
-    <div class="col">
-
-        <!-- TABLE BELOW -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-0 pb-0 border-0" id="0">
-                    <div class="card-header text-dark p-4">
-                        <h2 class="h4">@Model.Title</h2>
+    <div class="col-md-12">
+       
+        <div class="card mb-0 pb-0 border-0" id="0">
+            <div class="card-header text-dark p-4">
+                <h2 class="h4">@Model.Title</h2>
+            </div>
+            <div class="card-header bg-white border-0">
+                <div class="row">
+                    <div class="col-md-2 mb-3 p-0">
+                        <button type="button" class="btn btn-outline-primary btn-sm btn-block reply-button">
+                            <i class="ion ion-md-create"></i>Reply
+                        </button>
                     </div>
-                    <div class="card-header bg-white border-0">
-                        <div class="media flex-wrap w-100 align-items-center">
-                            <img src="@(Model.UserProfilePhoto == null ? "https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" : Model.UserProfilePhoto)" 
-                                 height="@this.ViewData["width"]" width="@this.ViewData["height"]"
-                                 class="d-block rounded-circle" alt="">
-                            <div class="media-body ml-3">
-                                <a asp-controller="Profile" asp-action="Index" asp-route-username="@Model.UserUserName" class="user-link" data-abc="true">@Model.UserUserName</a>
-                                <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
-                            </div>
-                            <div class="text-muted small ml-3">
-                                <div>Member since <strong>@Model.UserCreatedOn.ToString("dd MMMM yyyy HH:mm")</strong></div>
-                            </div>
-                        </div>
+                </div>
+                <div class="media flex-wrap w-100 align-items-center">
+                    <img src="@(Model.UserProfilePhoto == null ? "https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" : Model.UserProfilePhoto)"
+                         height="@this.ViewData["width"]" width="@this.ViewData["height"]"
+                         class="d-block rounded-circle" alt="">
+                    <div class="media-body ml-3">
+                        <a asp-controller="Profile" asp-action="Index" asp-route-username="@Model.UserUserName" class="user-link" data-abc="true">@Model.UserUserName</a>
+                        <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
                     </div>
-                    <div class="card-body">
-                        @Html.Raw(@Model.SanitizedContent)
+                    <div class="text-muted small ml-3">
+                        <div>Member since <strong>@Model.UserCreatedOn.ToString("dd MMMM yyyy HH:mm")</strong></div>
                     </div>
                 </div>
             </div>
+            <div class="card-body">
+                @Html.Raw(@Model.SanitizedContent)
+            </div>
         </div>
-
-        <hr />
-
-        <h5 class="mb-3 ml-4 mt-5">Comments</h5>
-
-        @foreach (var comment in Model.Comments)
-        {
-            <partial name="_RecursiveCommentPartial" model="@comment" />
-        }
-
     </div>
 </div>
+<hr />
+<h5 class="mb-3 ml-4 mt-5">Comments</h5>
+@foreach (var comment in Model.Comments)
+{
+    <partial name="_RecursiveCommentPartial" model="@comment" />
+}
+
 <div class="mb-3 clearfix">
     <nav>
         <ul class="pagination justify-content-center">
@@ -107,8 +106,6 @@
     </nav>
 </div>
 
-
-
 @if (!this.SignInManager.IsSignedIn(this.User))
 {
     <partial name="_PostLoginPartial" model="null" />
@@ -120,47 +117,11 @@ else
 
 @section HeadScripts
 {
-    <script src="https://cdn.tiny.cloud/1/mky5s0u10p9um2r86zbuod2opxi008rpr3tpgf6dtd16t787/tinymce/5/tinymce.min.js"
-            referrerpolicy="origin"></script>
-    <script>
-        tinymce.init({
-            selector: '#mytextarea'
-        });
-    </script>
+    <script src="https://cdn.tiny.cloud/1/mky5s0u10p9um2r86zbuod2opxi008rpr3tpgf6dtd16t787/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>tinymce.init({ selector: '#mytextarea' });</script>
 }
 
 @section Scripts
 {
-    <script>
-        function SetReply(id, name) {
-            $("#ParentCommentId").val(id);
-            if (id == '0') {
-                $("#AddCommentText").html('Add New Comment');
-            }
-            else {
-                $("#AddCommentText").html('Add a reply to ' + name + '\'s comment');
-            }
-
-            $('html, body').animate({ scrollTop: $("#AddCommentText").offset().top }, 500);
-        }
-
-
-        (function getButtons() {
-            const comments = document.querySelectorAll('.comment');
-
-
-            comments.forEach(c => {
-                const parentCommentUser = c.querySelector('.user-link').textContent;
-                const parentCommentId = c.querySelector('.card').getAttribute('id');
-
-                const button = c.querySelector('.reply-button');
-
-                button.addEventListener('click', () => SetReply(parentCommentId, parentCommentUser), false);
-
-            })
-
-            document.querySelectorAll('button')[1].addEventListener('click', () => SetReply(0, null), false);
-
-        })();
-    </script>
+    <script src="~/Custom/js/forumComment.js"></script>
 }

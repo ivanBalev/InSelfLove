@@ -1,13 +1,9 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Comment;
-using BDInSelfLove.Web.InputModels.Forum.Comment;
-using Ganss.XSS;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Web.ViewModels.Forum.Comment
+﻿namespace BDInSelfLove.Web.ViewModels.Forum.Comment
 {
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Comment;
+    using Ganss.XSS;
+
     public class AssessCommentViewModel : IMapFrom<CommentServiceModel>
     {
         public int ParentPostId { get; set; }

@@ -1,0 +1,31 @@
+﻿@model IEnumerable<BDInSelfLove.Web.ViewModels.Forum.Search.SearchCommentViewModel>
+
+    <h1>Comments</h1>
+@foreach (var comment in Model)
+{
+    <div class="comment">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <div class="card  border-0" id="@comment.Id">
+                    <div class="card-header bg-white border-0">
+                        <div class="media flex-wrap w-100 align-items-center">
+                            <img src="@(comment.UserProfilePhoto == null ? "https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" : comment.UserProfilePhoto)"
+                                 width="@ViewData["width"]" height="@ViewData["height"]"
+                                 class="d-block rounded-circle" alt="">
+                            <div class="media-body ml-3">
+                                <a asp-controller="Profile" asp-action="Index" asp-route-username="@comment.UserUserName" class="user-link" data-abc="true">@comment.UserUserName</a>
+                                <div class="text-muted small">@comment.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
+                            </div>
+                            <div class="text-muted small ml-3">
+                                <div>Member since <strong>@comment.UserCreatedOn.ToString("dd MMMM yyyy HH:mm")</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @Html.Raw(comment.SanitizedContent)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

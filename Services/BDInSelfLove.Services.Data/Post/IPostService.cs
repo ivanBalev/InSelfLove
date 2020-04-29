@@ -15,6 +15,6 @@
 
         Task<PostServiceModel> GetById(int id, int take, int skip = 0);
 
-        IQueryable<PostServiceModel> SearchPosts(string searchTerm);
+        IQueryable<PostServiceModel> Search(string searchTerm);
     }
 }

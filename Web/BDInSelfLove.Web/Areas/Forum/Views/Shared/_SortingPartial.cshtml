@@ -1,6 +1,5 @@
 ﻿@model BDInSelfLove.Web.InputModels.Forum.Category.CategorySortingInputModel
 
-
 <form asp-controller="Category" asp-action="Index" method="GET" class="form-inline float-lg-left d-block d-sm-flex">
     <input type="hidden" asp-for="@Model.CategoryId" value="@Model.CategoryId" />
     <div class="mb-2 mb-sm-0 mr-2">Display posts from previous:</div>
@@ -25,31 +24,3 @@
     </div>
     <button type="submit" class="btn btn-sm btn-outline-primary">Go</button>
 </form>
-
-
-@*@{
-        var timeCriteria = new Dictionary<string, string>()
-    {
-            { "all-posts", "All-posts" },
-            { "day", "1 day" },
-            {"week", "1 week" },
-            {"month", "1 month" },
-            {"year", "1 year" },
-        };
-
-        var groupingCriteria = new Dictionary<string, string>()
-    {
-            {"post-time", "Post time" },
-            {"author", "Author" },
-            {"replies", "Replies" },
-            {"subject", "Subject" },
-            {"views", "Views" },
-        };
-
-        var orderingCriteria = new Dictionary<string, string>()
-    {
-            {"descending", "Descending" },
-            {"ascending", "Ascending" },
-        };
-    }*@
-

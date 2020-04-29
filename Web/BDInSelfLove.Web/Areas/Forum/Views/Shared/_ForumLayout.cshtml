@@ -2,23 +2,22 @@
     this.Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-    <div class="container my-3">
-        <breadcrumb></breadcrumb>
-
-        <form asp-controller="Home" asp-action="Search" method="get">
-            <div class="input-group mb-3">
-                <input class="form-control" id="term" name="term" placeholder="Search for..." type="text" value="">
-                <div class="input-group-append">
-                    <button class="btn btn-secondary" type="submit">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
+<div class="container my-3">
+    <breadcrumb></breadcrumb>
+    <form asp-controller="Home" asp-action="Search" method="get">
+        <div class="input-group mb-3">
+            <input class="form-control" id="term" name="term" placeholder="Search posts for..." type="text" value="">
+            <input class="form-control" id="target" name="target" placeholder="Search posts for..." type="text" hidden value="posts">
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="submit">
+                    <i class="fa fa-search"></i>
+                </button>
             </div>
-        </form>
+        </div>
+    </form>
 
-        @RenderBody()
-    </div>
-
+    @RenderBody()
+</div>
 
 @section Scripts {
     @RenderSection("Scripts", required: false)
