@@ -7,6 +7,8 @@
 @{
     this.ViewData["width"] = "62";
     this.ViewData["height"] = "62";
+
+    var target = Model.Posts != null ? "posts" : Model.Categories != null ? "categories" : "comments";
 }
 
 <div class="row">
@@ -92,7 +94,7 @@
                        asp-controller="Home"
                        asp-action="Search"
                        asp-route-term="@this.Model.SearchTerm"
-                       asp-route-target="@this.Model.SearchTerm"
+                       asp-route-target="@target"
                        asp-route-page="@(this.Model.CurrentPage - 1)">Previous</a>
                 </li>
             }
@@ -103,9 +105,10 @@
                 <li class="page-item @active">
                     <a class="page-link"
                        asp-area="Forum"
-                       asp-controller="Post"
-                       asp-action="Index"
-                       asp-route-searchTerm="@this.Model.SearchTerm"
+                       asp-controller="Home"
+                       asp-action="Search"
+                       asp-route-term="@this.Model.SearchTerm"
+                       asp-route-target="@target"
                        asp-route-page="@i">@i</a>
                 </li>
             }
@@ -121,9 +124,10 @@
                 <li class="page-item">
                     <a class="page-link"
                        asp-area="Forum"
-                       asp-controller="Post"
-                       asp-action="Index"
-                       asp-route-searchTerm="@this.Model.SearchTerm"
+                      asp-controller="Home"
+                       asp-action="Search"
+                       asp-route-term="@this.Model.SearchTerm"
+                       asp-route-target="@target"
                        asp-route-page="@(this.Model.CurrentPage + 1)">Next</a>
                 </li>
             }

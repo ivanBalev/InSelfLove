@@ -70,8 +70,8 @@
                 TotalCommentsCount = await commentsQuery.CountAsync(),
                 TotalPostsCount = await postsQuery.CountAsync(),
             };
-            int totalItemsCount = term == "posts" ? viewModel.TotalPostsCount :
-                                  term == "comments" ? viewModel.TotalCommentsCount :
+            int totalItemsCount = target == "posts" ? viewModel.TotalPostsCount :
+                                  target == "comments" ? viewModel.TotalCommentsCount :
                                                          viewModel.TotalCategoriesCount;
 
             switch (target)

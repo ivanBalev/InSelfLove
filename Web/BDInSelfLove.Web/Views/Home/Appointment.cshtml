@@ -4,6 +4,12 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+@{
+    ViewData["Title"] = "Appointment";
+}
+
+<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
+
 <div class="container mt-4 py-4">
     <form id="csfrToken" method="post"></form>
     @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))

@@ -25,5 +25,5 @@
 
     })
 
-    document.querySelectorAll('button')[2].addEventListener('click', () => SetReply(0, null), false);
+    document.querySelector('.reply-to-post-button').addEventListener('click', () => SetReply(0, null), false);
 })();

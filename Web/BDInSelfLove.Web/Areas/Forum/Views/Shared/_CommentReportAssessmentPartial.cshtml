@@ -1,7 +1,7 @@
 ﻿@model BDInSelfLove.Web.InputModels.Forum.Comment.AssessCommentReportInputModel
 
 <div class="row">
-    <div class="col-md-2 p-0">
+    <div class="col-md-6">
         <form class="mb-3" method="POST" asp-controller="Comment" asp-action="AssessReport">
             <div>
                 <input type="hidden" asp-for="@Model.ReportId" />
@@ -15,8 +15,10 @@
             <div>
                 <input type="hidden" asp-for="@Model.OffenderId" />
             </div>
-            <button type="submit" class="btn btn-outline-success">Accept</button>
+            <button type="submit" class="btn btn-outline-success btn-block">Accept</button> 
         </form>
+    </div>
+    <div class="col-md-6">
         <form class="mb-3" method="POST" asp-controller="Comment" asp-action="AssessReport">
             <div>
                 <input type="hidden" asp-for="@Model.ReportId" />
@@ -30,7 +32,7 @@
             <div>
                 <input type="hidden" asp-for="@Model.OffenderId" />
             </div>
-            <button type="submit" class="btn btn-outline-danger">Decline</button>
+            <button type="submit" class="btn btn-outline-danger btn-block">Decline</button>
         </form>
     </div>
 </div>
