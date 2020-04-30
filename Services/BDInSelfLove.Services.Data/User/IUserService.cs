@@ -1,12 +1,10 @@
-﻿using BDInSelfLove.Data.Models;
-using BDInSelfLove.Services.Models.User;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Services.Data.User
+﻿namespace BDInSelfLove.Services.Data.User
 {
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Models.User;
+
     public interface IUserService
     {
         Task<string> GetProfilePicture(string userId);

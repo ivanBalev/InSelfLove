@@ -20,6 +20,8 @@
 
     public class CategoryController : BaseForumController
     {
+        private const string CategoryCreateError = "Error while creating category. Please try again.";
+
         private readonly ICategoryService categoryService;
         private readonly UserManager<ApplicationUser> userManager;
 
@@ -59,6 +61,7 @@
         {
             if (!this.ModelState.IsValid)
             {
+                this.TempData["Error"] = CategoryCreateError;
                 return this.View(inputModel);
             }
 
@@ -71,8 +74,7 @@
 
             if (categoryId == 0)
             {
-                this.TempData["Error"] = "Error";
-
+                this.TempData["Error"] = CategoryCreateError;
                 return this.View(inputModel);
             }
 

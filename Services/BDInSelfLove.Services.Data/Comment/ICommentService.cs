@@ -1,13 +1,11 @@
-﻿using BDInSelfLove.Services.Models.Comment;
-using BDInSelfLove.Services.Models.Post;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Services.Data.Comment
+﻿namespace BDInSelfLove.Services.Data.Comment
 {
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Services.Models.Comment;
+    using BDInSelfLove.Services.Models.Post;
+
     public interface ICommentService
     {
         Task<int> Create(CommentServiceModel categoryServiceModel);

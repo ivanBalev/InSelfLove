@@ -1,12 +1,8 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Comment;
-using BDInSelfLove.Services.Models.User;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Services.Models.Comment
+﻿namespace BDInSelfLove.Services.Models.Comment
 {
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.User;
+
     public class ReportServiceModel : IMapTo<Data.Models.Report>, IMapFrom<Data.Models.Report>
     {
         public int Id { get; set; }

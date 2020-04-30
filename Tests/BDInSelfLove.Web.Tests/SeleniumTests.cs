@@ -24,7 +24,8 @@
         {
             this.browser.Navigate().GoToUrl(this.serverFactory.RootUri + "/Home/Index");
             var result = this.browser.FindElementByTagName("html");
-            //Assert.Contains("Welcome to", this.browser.FindElementByTagName("body").Text);
+
+            // Assert.Contains("Welcome to", this.browser.FindElementByTagName("body").Text);
             Assert.True(this.browser.FindElementByCssSelector("html") != null);
         }
     }

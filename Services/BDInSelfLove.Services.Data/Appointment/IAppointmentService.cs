@@ -1,12 +1,11 @@
-﻿using BDInSelfLove.Services.Models.Appointment;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Services.Data.Calendar
+﻿namespace BDInSelfLove.Services.Data.Calendar
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Services.Models.Appointment;
+
     public interface IAppointmentService
     {
         IQueryable<AppointmentServiceModel> GetAll(string userId = null);

@@ -1,11 +1,11 @@
 ﻿namespace BDInSelfLove.Services.Models.User
 {
+    using System;
+    using System.Collections.Generic;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Comment;
     using Microsoft.AspNetCore.Identity;
-    using System;
-    using System.Collections.Generic;
 
     public class ApplicationUserServiceModel : IdentityUser, IMapFrom<ApplicationUser>, IMapTo<ApplicationUser>
     {

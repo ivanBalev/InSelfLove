@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-
-namespace BDInSelfLove.Services.Data
+﻿namespace BDInSelfLove.Services.Data
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+
     public static class SearchHelpers
     {
         public static string[] GetSearchItems(string searchInput)

@@ -1,8 +1,6 @@
 ﻿namespace BDInSelfLove.Services.Data.Post
 {
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Common.Repositories;
@@ -11,7 +9,6 @@
     using BDInSelfLove.Services.Models.Comment;
     using BDInSelfLove.Services.Models.Post;
     using BDInSelfLove.Services.Models.User;
-    using BDInSelfLove.Web.InputModels.Forum.Category;
     using Microsoft.EntityFrameworkCore;
 
     public class PostService : IPostService

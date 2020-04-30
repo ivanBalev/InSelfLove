@@ -1,10 +1,9 @@
 ﻿namespace BDInSelfLove.Services.Models.Category
 {
+    using System.Collections.Generic;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Post;
     using BDInSelfLove.Services.Models.User;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class CategoryServiceModel : IMapTo<Data.Models.Category>, IMapFrom<Data.Models.Category>
     {

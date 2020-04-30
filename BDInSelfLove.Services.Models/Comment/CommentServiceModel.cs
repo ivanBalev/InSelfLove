@@ -1,13 +1,11 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Article;
-using BDInSelfLove.Services.Models.Post;
-using BDInSelfLove.Services.Models.User;
-using BDInSelfLove.Services.Models.Videos;
-using System;
-using System.Collections.Generic;
-
-namespace BDInSelfLove.Services.Models.Comment
+﻿namespace BDInSelfLove.Services.Models.Comment
 {
+    using System;
+    using System.Collections.Generic;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Post;
+    using BDInSelfLove.Services.Models.User;
+
     public class CommentServiceModel : IMapFrom<BDInSelfLove.Data.Models.Comment>, IMapTo<BDInSelfLove.Data.Models.Comment>
     {
         public int Id { get; set; }

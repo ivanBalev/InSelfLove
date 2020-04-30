@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Services.Data.CloudinaryService
+﻿namespace BDInSelfLove.Services.Data.CloudinaryService
 {
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Http;
+
     public interface ICloudinaryService
     {
         public Task<string> UploadPicture(IFormFile pictureFile, string fileName);

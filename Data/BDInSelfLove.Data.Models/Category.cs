@@ -1,11 +1,11 @@
-﻿using BDInSelfLove.Data.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-
-namespace BDInSelfLove.Data.Models
+﻿namespace BDInSelfLove.Data.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+
+    using BDInSelfLove.Data.Common.Models;
+
     public class Category : BaseDeletableModel<int>
     {
         public Category()

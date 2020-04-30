@@ -26,5 +26,4 @@
     })
 
     document.querySelectorAll('button')[2].addEventListener('click', () => SetReply(0, null), false);
-
 })();

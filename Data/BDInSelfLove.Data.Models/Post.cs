@@ -1,10 +1,10 @@
-﻿using BDInSelfLove.Data.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Data.Models
+﻿namespace BDInSelfLove.Data.Models
 {
+    using System;
+    using System.Collections.Generic;
+
+    using BDInSelfLove.Data.Common.Models;
+
     public class Post : BaseDeletableModel<int>
     {
         public Post()

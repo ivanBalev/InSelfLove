@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using CloudinaryDotNet;
-using System.IO;
-using CloudinaryDotNet.Actions;
-
-namespace BDInSelfLove.Services.Data.CloudinaryService
+﻿namespace BDInSelfLove.Services.Data.CloudinaryService
 {
+    using System.IO;
+    using System.Threading.Tasks;
+
+    using CloudinaryDotNet;
+    using CloudinaryDotNet.Actions;
+    using Microsoft.AspNetCore.Http;
+
     public class CloudinaryService : ICloudinaryService
     {
         private readonly Cloudinary cloudinaryUtility;

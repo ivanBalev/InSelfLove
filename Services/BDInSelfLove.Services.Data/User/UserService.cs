@@ -1,17 +1,14 @@
-﻿using BDInSelfLove.Data.Common.Repositories;
-using BDInSelfLove.Data.Models;
-using BDInSelfLove.Services.Models.User;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Data.Comment;
-
-namespace BDInSelfLove.Services.Data.User
+﻿namespace BDInSelfLove.Services.Data.User
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Data.Common.Repositories;
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Models.User;
+    using Microsoft.EntityFrameworkCore;
+
     public class UserService : IUserService
     {
         private const int UserBanThreshold = 3;

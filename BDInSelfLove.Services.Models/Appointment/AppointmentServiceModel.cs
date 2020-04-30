@@ -1,11 +1,9 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.User;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Services.Models.Appointment
+﻿namespace BDInSelfLove.Services.Models.Appointment
 {
+    using System;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.User;
+
     public class AppointmentServiceModel : IMapFrom<Data.Models.Appointment>, IMapTo<Data.Models.Appointment>
     {
         public int Id { get; set; }

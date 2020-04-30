@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using AutoMapper;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
     using BDInSelfLove.Services.Models.Comment;

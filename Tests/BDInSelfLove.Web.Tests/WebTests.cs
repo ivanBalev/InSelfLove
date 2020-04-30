@@ -1,16 +1,7 @@
 ﻿namespace BDInSelfLove.Web.Tests
 {
-    using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
-    using BDInSelfLove.Data;
-    using BDInSelfLove.Data.Common.Repositories;
-    using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Data.Repositories;
-    using BDInSelfLove.Services.Data;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc.Testing;
-    using Microsoft.EntityFrameworkCore;
     using Xunit;
 
     public class WebTests : IClassFixture<WebApplicationFactory<Startup>>
@@ -44,8 +35,6 @@
         {
             // At present, this test will work correctly only with the default seeded data.
             var client = this.server.CreateClient();
-
-          
 
             var response = await client.GetAsync("/");
             var responseContent = await response.Content.ReadAsStringAsync();

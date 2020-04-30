@@ -1,6 +1,5 @@
 ﻿namespace BDInSelfLove.Services.Data.Comment
 {
-    using System.Collections;
     using System.Linq;
     using System.Threading.Tasks;
 
