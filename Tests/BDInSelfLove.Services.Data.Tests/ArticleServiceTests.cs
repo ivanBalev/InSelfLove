@@ -1,20 +1,17 @@
 ﻿namespace BDInSelfLove.Services.Data.Tests
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data;
-    using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Services.Models.Article;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Infrastructure;
-    using Moq;
     using Xunit;
 
     public class ArticleServiceTests : IDisposable
@@ -27,6 +24,8 @@
         private DbConnection Connection { get; set; }
 
         private DbContextOptions<ApplicationDbContext> ContextOptions { get; set; }
+
+        public void Dispose() => this.Connection?.Dispose();
 
         [Theory]
         [InlineData(1, 1)]
@@ -186,8 +185,6 @@
             var articleId = await articleService.CreateAsync(articleToAdd);
             Assert.True(articleId != 0);
         }
-
-        public void Dispose() => this.Connection?.Dispose();
 
         private static DbConnection CreateInMemoryDatabase()
         {

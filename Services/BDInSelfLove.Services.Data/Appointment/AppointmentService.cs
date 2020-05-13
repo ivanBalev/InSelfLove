@@ -46,14 +46,14 @@
 
         public async Task<bool> Delete(int appointmentId)
         {
-            var dbArticle = await this.appointmentRepository.All().FirstOrDefaultAsync(a => a.Id == appointmentId);
+            var dbAppointment = await this.appointmentRepository.All().FirstOrDefaultAsync(a => a.Id == appointmentId);
 
-            if (dbArticle == null)
+            if (dbAppointment == null)
             {
-                throw new ArgumentNullException(nameof(dbArticle));
+                throw new ArgumentNullException(nameof(dbAppointment));
             }
 
-            this.appointmentRepository.Delete(dbArticle);
+            this.appointmentRepository.Delete(dbAppointment);
             int result = await this.appointmentRepository.SaveChangesAsync();
 
             return result > 0;
