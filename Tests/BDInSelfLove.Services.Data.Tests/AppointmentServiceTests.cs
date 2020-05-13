@@ -40,9 +40,9 @@
                 {
                     var repository = new EfDeletableEntityRepository<Appointment>(context);
 
-                    var user1 = context.Users.Add(new ApplicationUser { Id = "1" });
-                    var user2 = context.Users.Add(new ApplicationUser { Id = "2" });
-                    var user3 = context.Users.Add(new ApplicationUser { Id = "3" });
+                    context.Users.Add(new ApplicationUser { Id = "1" });
+                    context.Users.Add(new ApplicationUser { Id = "2" });
+                    context.Users.Add(new ApplicationUser { Id = "3" });
 
                     await repository.SaveChangesAsync();
 

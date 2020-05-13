@@ -24,7 +24,7 @@
             var article = AutoMapperConfig.MapperInstance.Map<Article>(articleServiceModel);
 
             await this.articleRepository.AddAsync(article);
-            var result = await this.articleRepository.SaveChangesAsync();
+            await this.articleRepository.SaveChangesAsync();
 
             return article.Id;
         }
