@@ -1,41 +1,33 @@
 ﻿namespace BDInSelfLove.Services.Data.Tests
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data;
-    using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Services.Data.Calendar;
-    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Data.Tests.Common.Seeders;
     using BDInSelfLove.Services.Models.Appointment;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Infrastructure;
-    using Moq;
     using Xunit;
 
-    public class AppointmentServiceTests : IDisposable
+    public class AppointmentServiceTests : SqliteSetup
     {
         public AppointmentServiceTests()
         {
             MapperInitializer.InitializeMapper();
         }
 
-        private DbConnection Connection { get; set; }
-
-        private DbContextOptions<ApplicationDbContext> ContextOptions { get; set; }
-
-        public void Dispose() => this.Connection?.Dispose();
-
         [Fact]
         public async Task GetAllShouldReturnAllAppointmentsWithoutParameters()
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -61,7 +53,8 @@
         [InlineData("asd")]
         public async Task GetAllShouldReturnOnlyCurrentUserAppointmentsWithParameters(string userId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -85,7 +78,8 @@
         [InlineData(3)]
         public async Task GetByIdShouldReturnCorrectAppointment(int appointmentId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -102,7 +96,8 @@
         [InlineData(5)]
         public async Task GetByIdShouldReturnNullWithNonExistentId(int appointmentId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -116,7 +111,8 @@
         [Fact]
         public async Task CreateShouldWorkCorrectly()
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -133,7 +129,8 @@
         [InlineData(3)]
         public async Task DeleteShouldWorkCorrectly(int appointmentId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -150,7 +147,8 @@
         [InlineData(0)]
         public async Task DeleteShouldThrowExceptionsCorrectly(int appointmentId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -158,7 +156,6 @@
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => appointmentService.Delete(appointmentId));
         }
-
 
         [Theory]
         [InlineData(1)]
@@ -168,7 +165,8 @@
         [InlineData(0)]
         public async Task GetAllByDateShouldWorkCorrectly(int daysToRemove)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Appointment>(context);
@@ -192,22 +190,11 @@
             }
         }
 
-        private static DbConnection CreateInMemoryDatabase()
-        {
-            var connection = new SqliteConnection("Filename=:memory:");
-            connection.Open();
-            return connection;
-        }
-
-        private async Task Seed()
+        private async Task SeedDatabase()
         {
             using var context = new ApplicationDbContext(this.ContextOptions);
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
 
-            await context.Users.AddRangeAsync(this.GetTestUsers());
-            await context.SaveChangesAsync();
-
+            await context.Users.AddRangeAsync(UserCreator.GetTestUsers());
             await context.Appointments.AddRangeAsync(this.GetTestAppointments());
             await context.SaveChangesAsync();
         }
@@ -241,26 +228,6 @@
                         Id = 3,
                     },
                 };
-        }
-
-        private ApplicationUser[] GetTestUsers()
-        {
-            return new ApplicationUser[]
-            {
-                new ApplicationUser { Id = "1" },
-                new ApplicationUser { Id = "2" },
-                new ApplicationUser { Id = "3" },
-            };
-        }
-
-        private async Task SetupSqlite()
-        {
-            this.ContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-              .UseSqlite(CreateInMemoryDatabase())
-              .Options;
-
-            this.Connection = RelationalOptionsExtension.Extract(this.ContextOptions).Connection;
-            await this.Seed();
         }
     }
 }

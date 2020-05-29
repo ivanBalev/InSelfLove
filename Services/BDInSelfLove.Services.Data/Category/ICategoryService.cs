@@ -15,8 +15,6 @@
 
         IQueryable<CategoryServiceModel> GetHomeCategoryInfo();
 
-        Dictionary<string, List<string>> GetAvailableSortingCriteria();
-
         IQueryable<CategoryServiceModel> Search(string searchTerm);
     }
 }

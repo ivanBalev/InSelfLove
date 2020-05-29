@@ -7,6 +7,7 @@
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Category;
+    using BDInSelfLove.Services.Data.Category.CategorySorting;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
     using BDInSelfLove.Web.InputModels.Administration.Category;
@@ -37,14 +38,12 @@
             var categoryServiceModel = await this.categoryService.GetById(id, sortingModel);
             var categoryViewModel = AutoMapperConfig.MapperInstance.Map<CategoryViewModel>(categoryServiceModel);
 
-            var availableSortingCriteria = this.categoryService.GetAvailableSortingCriteria();
-
             categoryViewModel.CategorySorting = new CategorySortingInputModel
             {
                 CategoryId = id,
-                TimeCriteria = new List<SelectListItem>(availableSortingCriteria["TimeCriteria"].Select(x => new SelectListItem { Text = x, Value = x })),
-                GroupingCriteria = new List<SelectListItem>(availableSortingCriteria["GroupingCriteria"].Select(x => new SelectListItem { Text = x, Value = x })),
-                OrderingCriteria = new List<SelectListItem>(availableSortingCriteria["OrderingCriteria"].Select(x => new SelectListItem { Text = x, Value = x })),
+                TimeCriteria = new List<SelectListItem>(CategorySortingValues.TimeCriteria.GetAll().Select(x => new SelectListItem { Text = x, Value = x })),
+                GroupingCriteria = new List<SelectListItem>(CategorySortingValues.GroupingCriteria.GetAll().Select(x => new SelectListItem { Text = x, Value = x })),
+                OrderingCriteria = new List<SelectListItem>(CategorySortingValues.OrderingCriteria.GetAll().Select(x => new SelectListItem { Text = x, Value = x })),
             };
 
             return this.View(categoryViewModel);

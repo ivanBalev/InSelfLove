@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Common.Repositories;
+    using BDInSelfLove.Services.Data.Category.CategorySorting;
     using BDInSelfLove.Services.Data.Comment;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Category;
@@ -19,13 +20,6 @@
         private readonly IDeletableEntityRepository<BDInSelfLove.Data.Models.Category> categoryRepository;
         private readonly ICommentService commentService;
 
-        private Dictionary<string, List<string>> availableSortingCriteria = new Dictionary<string, List<string>>
-            {
-                { "TimeCriteria", new List<string> { "all posts", "day", "month", "year" } },
-                { "GroupingCriteria",  new List<string> { "date created", "author", "replies", "topic" } },
-                { "OrderingCriteria", new List<string> { "descending", "ascending" } },
-            };
-
         public CategoryService(IDeletableEntityRepository<BDInSelfLove.Data.Models.Category> categoryRepository, ICommentService commentService)
         {
             this.categoryRepository = categoryRepository;
@@ -38,6 +32,8 @@
 
             var categories = this.categoryRepository.All();
 
+            IQueryable<CategoryServiceModel> result = Enumerable.Empty<CategoryServiceModel>().AsQueryable();
+
             foreach (var item in searchItems)
             {
                 categories = categories.Where(p =>
@@ -49,11 +45,6 @@
                 .Distinct()
                 .OrderByDescending(p => p.CreatedOn)
                 .To<CategoryServiceModel>();
-        }
-
-        public Dictionary<string, List<string>> GetAvailableSortingCriteria()
-        {
-            return this.availableSortingCriteria;
         }
 
         public async Task<int> Create(CategoryServiceModel categoryServiceModel)
@@ -121,10 +112,15 @@
         }
 
         private static ICollection<PostServiceModel> GetCurrentDayPosts(ICollection<PostServiceModel> posts) =>
-            posts.Where(c => c.CreatedOn.Day == DateTime.UtcNow.Day).ToList();
+            posts.Where(c => c.CreatedOn.Day == DateTime.UtcNow.Day &&
+                             c.CreatedOn.Month == DateTime.UtcNow.Month &&
+                             c.CreatedOn.Year == DateTime.UtcNow.Year)
+            .ToList();
 
         private static ICollection<PostServiceModel> GetCurrentMonthPosts(ICollection<PostServiceModel> posts) =>
-            posts.Where(c => c.CreatedOn.Month == DateTime.UtcNow.Month).ToList();
+            posts.Where(c => c.CreatedOn.Month == DateTime.UtcNow.Month &&
+                             c.CreatedOn.Year == DateTime.UtcNow.Year)
+            .ToList();
 
         private static ICollection<PostServiceModel> GetCurrentYearPosts(ICollection<PostServiceModel> query) =>
             query.Where(c => c.CreatedOn.Year == DateTime.UtcNow.Year).ToList();
@@ -155,39 +151,42 @@
 
         private static ICollection<PostServiceModel> SortPosts(ICollection<PostServiceModel> posts, CategorySortingInputModel sortingModel)
         {
-            if (sortingModel.CategoryId != 0)
+            if (sortingModel?.CategoryId == 0)
             {
-                switch (sortingModel.TimeCriterion)
-                {
-                    case "day": posts = GetCurrentDayPosts(posts); break;
-                    case "month": posts = GetCurrentMonthPosts(posts); break;
-                    case "year": posts = GetCurrentYearPosts(posts); break;
-                }
+                return posts;
+            }
 
-                switch (sortingModel.OrderingCriterion)
-                {
-                    case "descending":
-                        switch (sortingModel.GroupingCriterion)
-                        {
-                            case "date created": posts = OrderByDateCreatedDescending(posts); break;
-                            case "author": posts = OrderByAuthorDescending(posts); break;
-                            case "replies": posts = OrderByRepliesDescending(posts); break;
-                            case "topic": posts = OrderByTopicDescending(posts); break;
-                        }
+            switch (sortingModel.TimeCriterion)
+            {
+                case CategorySortingValues.TimeCriteria.AllPosts: break;
+                case CategorySortingValues.TimeCriteria.Day: posts = GetCurrentDayPosts(posts); break;
+                case CategorySortingValues.TimeCriteria.Month: posts = GetCurrentMonthPosts(posts); break;
+                case CategorySortingValues.TimeCriteria.Year: posts = GetCurrentYearPosts(posts); break;
+            }
 
-                        break;
+            switch (sortingModel.OrderingCriterion)
+            {
+                case CategorySortingValues.OrderingCriteria.Descending:
+                    switch (sortingModel.GroupingCriterion)
+                    {
+                        case CategorySortingValues.GroupingCriteria.DateCreated: posts = OrderByDateCreatedDescending(posts); break;
+                        case CategorySortingValues.GroupingCriteria.Author: posts = OrderByAuthorDescending(posts); break;
+                        case CategorySortingValues.GroupingCriteria.Replies: posts = OrderByRepliesDescending(posts); break;
+                        case CategorySortingValues.GroupingCriteria.Topic: posts = OrderByTopicDescending(posts); break;
+                    }
 
-                    case "ascending":
-                        switch (sortingModel.GroupingCriterion)
-                        {
-                            case "date created": posts = OrderByDateCreatedAscending(posts); break;
-                            case "author": posts = OrderByAuthorAscending(posts); break;
-                            case "replies": posts = OrderByRepliesAscending(posts); break;
-                            case "topic": posts = OrderByTopicAscending(posts); break;
-                        }
+                    break;
 
-                        break;
-                }
+                case CategorySortingValues.OrderingCriteria.Ascending:
+                    switch (sortingModel.GroupingCriterion)
+                    {
+                        case CategorySortingValues.GroupingCriteria.DateCreated: posts = OrderByDateCreatedAscending(posts); break;
+                        case CategorySortingValues.GroupingCriteria.Author: posts = OrderByAuthorAscending(posts); break;
+                        case CategorySortingValues.GroupingCriteria.Replies: posts = OrderByRepliesAscending(posts); break;
+                        case CategorySortingValues.GroupingCriteria.Topic: posts = OrderByTopicAscending(posts); break;
+                    }
+
+                    break;
             }
 
             return posts;

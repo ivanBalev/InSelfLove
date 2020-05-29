@@ -1,31 +1,23 @@
 ﻿namespace BDInSelfLove.Services.Data.Tests
 {
     using System;
-    using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Data.Repositories;
+    using BDInSelfLove.Services.Data.Tests.Common.Seeders;
     using BDInSelfLove.Services.Models.Article;
-    using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
     using Xunit;
 
-    public class ArticleServiceTests : IDisposable
+    public class ArticleServiceTests : SqliteSetup
     {
         public ArticleServiceTests()
         {
             MapperInitializer.InitializeMapper();
         }
-
-        private DbConnection Connection { get; set; }
-
-        private DbContextOptions<ApplicationDbContext> ContextOptions { get; set; }
-
-        public void Dispose() => this.Connection?.Dispose();
 
         [Theory]
         [InlineData(1, 1)]
@@ -33,7 +25,8 @@
         [InlineData(3, 3)]
         public async Task GetByIdShouldReturnCorrectArticle(int input, int expected)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -51,7 +44,8 @@
         [InlineData(6, null)]
         public async Task GetByIdShouldReturnNullWithNonExistingId(int input, int? expected)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -65,7 +59,8 @@
         [Fact]
         public async Task GetAllShouldReturnAllArticlesInCorrectOrder()
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -86,7 +81,8 @@
         [InlineData(2)]
         public async Task GetAllShouldReturnOnlyRequestedNumberOfArticles(int count)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -100,7 +96,8 @@
         [Fact]
         public async Task EditShouldExecuteSuccessfully()
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -123,7 +120,8 @@
         [InlineData(6)]
         public async Task EditShouldThrowExceptionsSuccessfully(int articleId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -140,7 +138,8 @@
         [InlineData(3)]
         public async Task DeleteShouldExecuteSuccessfully(int articleId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -156,7 +155,8 @@
         [InlineData(6)]
         public async Task DeleteShouldThrowExceptionsSuccessfully(int articleId)
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -168,7 +168,8 @@
         [Fact]
         public async Task CreateShouldAddArticleToDatabaseSuccessfully()
         {
-            await this.SetupSqlite();
+            this.SetupSqlite();
+            await this.SeedDatabase();
             using var context = new ApplicationDbContext(this.ContextOptions);
 
             var repository = new EfDeletableEntityRepository<Article>(context);
@@ -186,22 +187,11 @@
             Assert.True(articleId != 0);
         }
 
-        private static DbConnection CreateInMemoryDatabase()
-        {
-            var connection = new SqliteConnection("Filename=:memory:");
-            connection.Open();
-            return connection;
-        }
-
-        private async Task Seed()
+        private async Task SeedDatabase()
         {
             using var context = new ApplicationDbContext(this.ContextOptions);
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
 
-            await context.Users.AddRangeAsync(this.GetTestUsers());
-            await context.SaveChangesAsync();
-
+            await context.Users.AddRangeAsync(UserCreator.GetTestUsers());
             await context.Articles.AddRangeAsync(this.GetTestArticles());
             await context.SaveChangesAsync();
         }
@@ -235,26 +225,6 @@
                         Id = 3,
                     },
                 };
-        }
-
-        private ApplicationUser[] GetTestUsers()
-        {
-            return new ApplicationUser[]
-            {
-                new ApplicationUser { Id = "1" },
-                new ApplicationUser { Id = "2" },
-                new ApplicationUser { Id = "3" },
-            };
-        }
-
-        private async Task SetupSqlite()
-        {
-            this.ContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-              .UseSqlite(CreateInMemoryDatabase())
-              .Options;
-
-            this.Connection = RelationalOptionsExtension.Extract(this.ContextOptions).Connection;
-            await this.Seed();
         }
     }
 }
