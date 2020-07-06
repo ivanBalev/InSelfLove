@@ -28,17 +28,7 @@
 
         public DbSet<Video> Videos { get; set; }
 
-        public DbSet<Comment> Comments { get; set; }
-
-        public DbSet<Category> Categories { get; set; }
-
-        public DbSet<Post> Posts { get; set; }
-
         public DbSet<Appointment> Appointments { get; set; }
-
-        public DbSet<Report> Reports { get; set; }
-
-        public DbSet<Ban> Bans { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 
@@ -98,24 +88,6 @@
         private void ConfigureUserIdentityRelations(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
-
-            builder.Entity<Comment>()
-                .HasMany(c => c.SubComments)
-                .WithOne(r => r.ParentComment)
-                .HasForeignKey(c => c.ParentCommentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<ApplicationUser>()
-                .HasMany(u => u.ReportsSubmitted)
-                .WithOne(r => r.Submitter)
-                .HasForeignKey(r => r.SubmitterId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<ApplicationUser>()
-                .HasMany(u => u.ReportsReceived)
-                .WithOne(r => r.Offender)
-                .HasForeignKey(r => r.OffenderId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void ApplyAuditInfoRules()

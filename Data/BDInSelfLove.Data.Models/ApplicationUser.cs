@@ -16,11 +16,7 @@ namespace BDInSelfLove.Data.Models
             this.Roles = new HashSet<IdentityUserRole<string>>();
             this.Claims = new HashSet<IdentityUserClaim<string>>();
             this.Logins = new HashSet<IdentityUserLogin<string>>();
-            this.Comments = new HashSet<Comment>();
             this.Appointments = new HashSet<Appointment>();
-            this.ReportsSubmitted = new HashSet<Report>();
-            this.ReportsReceived = new HashSet<Report>();
-            this.Bans = new HashSet<Ban>();
         }
 
         // Audit info
@@ -41,18 +37,8 @@ namespace BDInSelfLove.Data.Models
 
         public string ProfilePhoto { get; set; }
 
-        public virtual ICollection<Comment> Comments { get; set; }
-
-        public virtual ICollection<Post> Posts { get; set; }
-
         public virtual ICollection<Appointment> Appointments { get; set; }
 
-        public virtual ICollection<Report> ReportsSubmitted { get; set; }
-
-        public virtual ICollection<Report> ReportsReceived { get; set; }
-
         public bool IsBanned { get; set; }
-
-        public virtual ICollection<Ban> Bans { get; set; }
     }
 }

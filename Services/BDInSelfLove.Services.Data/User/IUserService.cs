@@ -12,9 +12,5 @@
         Task<bool> SetProfilePicture(ApplicationUser user, string profilePicture);
 
         Task<ApplicationUserServiceModel> GetProfileInfo(string username);
-
-        Task CheckIfUserNeedsToBeBanned(string userId, int reportsCount);
-
-        Task<bool> CheckIfBanNeedsToBeLifted(string userId);
     }
 }

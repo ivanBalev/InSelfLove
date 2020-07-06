@@ -30,9 +30,6 @@
                               new AdminSeeder(),
                               new ArticleSeeder(),
                               new VideoSeeder(),
-                              new CategorySeeder(),
-                              new PostSeeder(),
-                              new CommentSeeder(),
                           };
 
             foreach (var seeder in seeders)

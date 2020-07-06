@@ -10,10 +10,7 @@
     using BDInSelfLove.Data.Seeding;
     using BDInSelfLove.Services.Data;
     using BDInSelfLove.Services.Data.Calendar;
-    using BDInSelfLove.Services.Data.Category;
     using BDInSelfLove.Services.Data.CloudinaryService;
-    using BDInSelfLove.Services.Data.Comment;
-    using BDInSelfLove.Services.Data.Post;
     using BDInSelfLove.Services.Data.User;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
@@ -90,8 +87,6 @@
                configure.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
            });
 
-            // Breadcrumbs
-            services.UseBreadcrumbs(this.GetType().Assembly);
 
             services.AddAntiforgery(options =>
             {
@@ -115,9 +110,6 @@
             services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
             services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IVideoService, VideoService>();
-            services.AddTransient<ICategoryService, CategoryService>();
-            services.AddTransient<IPostService, PostService>();
-            services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICloudinaryService, CloudinaryService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAppointmentService, AppointmentService>();
