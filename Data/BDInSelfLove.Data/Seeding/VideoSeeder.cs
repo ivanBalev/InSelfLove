@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Models;
@@ -13,7 +14,7 @@
     {
         public async Task SeedAsync(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
         {
-            if (dbContext.Videos.Any())
+            if (dbContext.Videos.Count() > 0)
             {
                 return;
             }
