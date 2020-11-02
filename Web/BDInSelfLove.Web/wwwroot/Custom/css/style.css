@@ -163,3 +163,7 @@ body {
 a .card img {
     height: 200px;
 }
+
+.dailyTimeSlot {
+    cursor: pointer;
+}

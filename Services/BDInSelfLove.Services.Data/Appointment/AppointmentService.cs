@@ -4,7 +4,7 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
@@ -20,11 +20,11 @@
             this.appointmentRepository = appointmentRepository;
         }
 
-        public IQueryable<AppointmentServiceModel> GetAll(string userId = null)
+        public IQueryable<AppointmentServiceModel> GetAll(string userId = GlobalConstants.AdministratorRoleName)
         {
             var query = this.appointmentRepository.All().To<AppointmentServiceModel>();
 
-            return userId == null ? query : query.Where(a => a.UserId == userId);
+            return userId == GlobalConstants.AdministratorRoleName ? query : query.Where(a => a.UserId == userId);
         }
 
         public async Task<AppointmentServiceModel> GetById(int id)
@@ -45,7 +45,7 @@
             return appointment.Id;
         }
 
-        public async Task<bool> Delete(int appointmentId)
+        public async Task<AppointmentServiceModel> Delete(int appointmentId)
         {
             var dbAppointment = await this.appointmentRepository.All().FirstOrDefaultAsync(a => a.Id == appointmentId);
 
@@ -57,7 +57,7 @@
             this.appointmentRepository.Delete(dbAppointment);
             int result = await this.appointmentRepository.SaveChangesAsync();
 
-            return result > 0;
+            return AutoMapperConfig.MapperInstance.Map<AppointmentServiceModel>(dbAppointment);
         }
 
         public IQueryable<AppointmentServiceModel> GetAllByDate(DateTime date)

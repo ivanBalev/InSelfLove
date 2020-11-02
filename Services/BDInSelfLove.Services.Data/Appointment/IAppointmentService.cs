@@ -14,7 +14,7 @@
 
         Task<int> Create(AppointmentServiceModel appointmentServiceModel);
 
-        Task<bool> Delete(int appointmentId);
+        Task<AppointmentServiceModel> Delete(int appointmentId);
 
         IQueryable<AppointmentServiceModel> GetAllByDate(DateTime date);
     }

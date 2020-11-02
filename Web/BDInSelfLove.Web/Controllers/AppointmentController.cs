@@ -14,6 +14,7 @@
     using BDInSelfLove.Web.Areas.Administration;
     using BDInSelfLove.Web.Infrastructure.ModelBinders;
     using BDInSelfLove.Web.InputModels.Appointment;
+    using BDInSelfLove.Web.InputModels.WorkingHours;
     using BDInSelfLove.Web.ViewModels.Appointment;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
@@ -26,7 +27,8 @@
     public class AppointmentController : ControllerBase
     {
         private const string AppointmentEmailSubject = "Appointment";
-        private const string AppointmentDeleteEmailBody = "The client opted to cancel their appointment";
+        private const string AppointmentDeleteEmailBody = "Patient opted to cancel their appointment";
+        private const string AppointmentConfirmation = "Your appointment is confirmed. See you soon!";
 
         private readonly IAppointmentService appointmentService;
         private readonly UserManager<ApplicationUser> userManager;
@@ -47,7 +49,7 @@
         public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAll()
         {
             string userId = this.User.IsInRole(GlobalConstants.AdministratorRoleName) ?
-                null : this.userManager.GetUserId(this.User);
+                GlobalConstants.AdministratorRoleName : this.userManager.GetUserId(this.User);
 
             var appointmentViewModel = await this.appointmentService.GetAll(userId)
                 .To<AppointmentViewModel>()
@@ -58,8 +60,9 @@
 
         [HttpPost]
         [Route("Save")]
-        public async Task<IActionResult> Save([FromForm]AppointmentInputModel inputModel)
+        public async Task<IActionResult> Save([FromForm] AppointmentInputModel inputModel)
         {
+            // Create model for service
             var serviceModel = AutoMapperConfig.MapperInstance.Map<AppointmentServiceModel>(inputModel);
 
             // Validation
@@ -72,23 +75,33 @@
                 return this.BadRequest(new { status = false });
             }
 
+            // Set up model for service
             var user = await this.userManager.GetUserAsync(this.User);
             serviceModel.UserId = user.Id;
 
+            // Create appointment in server
             await this.appointmentService.Create(serviceModel);
+
+            // Send emails to owner & patient
             await this.emailSender.SendEmailAsync(
                                         user.Email,
                                         user.UserName,
                                         GlobalConstants.SystemEmail,
-                                        GlobalConstants.SystemName + " " + AppointmentEmailSubject,
-                                        serviceModel.Start.ToString("dd MMMM HH:mm") + "<br>" + serviceModel.Description);
+                                        this.GetEmailSubject(serviceModel.Start),
+                                        @$"<br><h3>{serviceModel.Description.Replace("\n", "<br>")}</h3>");
+            await this.emailSender.SendEmailAsync(
+                                        GlobalConstants.SystemEmail,
+                                        GlobalConstants.SystemName,
+                                        user.Email,
+                                        this.GetEmailSubject(serviceModel.Start),
+                                        @$"<br><h2>{AppointmentConfirmation}</h2>");
 
             return this.Ok(new { status = true });
         }
 
         [HttpDelete]
         [Route("Delete")]
-        public async Task<IActionResult> Delete([FromForm]int id)
+        public async Task<IActionResult> Delete([FromForm] int id)
         {
             var creatorId = (await this.appointmentService.GetById(id)).UserId;
             var currentUser = await this.userManager.GetUserAsync(this.User);
@@ -98,21 +111,27 @@
                 return this.BadRequest(new { status = false });
             }
 
-            await this.appointmentService.Delete(id);
+            var appointment = await this.appointmentService.Delete(id);
 
-            await this.emailSender.SendEmailAsync(
+            // Send email to owner only if appointment is upcoming
+            if (appointment.Start.Month >= DateTime.Now.Month && appointment.Start.Year >= DateTime.Now.Year &&
+                ((appointment.Start.Day > DateTime.Now.Day && appointment.Start.Month >= DateTime.Now.Month) ||
+                (appointment.Start.Day <= DateTime.Now.Day && appointment.Start.Month > DateTime.Now.Month)))
+            {
+                await this.emailSender.SendEmailAsync(
                                         currentUser.Email,
                                         currentUser.UserName,
                                         GlobalConstants.SystemEmail,
-                                        GlobalConstants.SystemName + " " + AppointmentEmailSubject,
+                                        this.GetEmailSubject(appointment.Start),
                                         AppointmentDeleteEmailBody);
+            }
 
             return this.Ok(new { status = true });
         }
 
         [HttpGet]
         [Route("GetAppointmentsByDate")]
-        public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAppointmentsByDate([ModelBinder(typeof(AppointmentDateBinder))]DateTime date)
+        public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAppointmentsByDate([ModelBinder(typeof(AppointmentDateBinder))] DateTime date)
         {
             if (DateTime.Compare(date, DateTime.UtcNow) <= 0)
             {
@@ -142,12 +161,26 @@
 
         [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
         [Route("SetWorkingHours")]
-        public ActionResult SetWorkingHours([FromForm]string startHour, [FromForm]string endHour)
+        public ActionResult SetWorkingHours([FromForm] string startHour, [FromForm] string endHour)
         {
             GlobalAdminValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
             GlobalAdminValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);
 
             return this.Ok(new { status = true });
         }
+
+        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        [Route("GetWorkingHours")]
+        public ActionResult<int[]> GetWorkingHours() => new int[] { GlobalAdminValues.WorkDayStart, GlobalAdminValues.WorkDayEnd };
+
+        [Route("SubmitDailyAvailability")]
+        public async Task<IActionResult> SubmitDailyAvailability([FromForm] ICollection<string> timeSlots)
+        {
+            ;
+
+            return this.Ok();
+        }
+
+        private string GetEmailSubject(DateTime start) => $"{GlobalConstants.SystemName} {AppointmentEmailSubject} on {start.ToString("dd MMMM HH:mm")}";
     }
 }
