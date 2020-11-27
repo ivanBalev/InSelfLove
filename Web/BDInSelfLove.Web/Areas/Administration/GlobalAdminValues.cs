@@ -5,5 +5,7 @@
         public static int WorkDayStart = 9;
 
         public static int WorkDayEnd = 17;
+
+        public const int AvailabilitySpanInDays = 7;
     }
 }

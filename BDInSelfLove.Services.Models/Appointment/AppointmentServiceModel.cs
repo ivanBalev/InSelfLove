@@ -17,5 +17,7 @@
         public string UserId { get; set; }
 
         public bool IsApproved { get; set; }
+
+        public string PhoneNumber { get; set; }
     }
 }

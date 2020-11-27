@@ -17,117 +17,188 @@
     {
         <button id="btnWorkingHours" class="btn btn-block btn-outline-warning mb-2">Set Standard Working Hours</button>
     }
-    <div id="calendar"></div>
+    <div id="calendar" workingHours="@GlobalAdminValues.WorkDayStart-@GlobalAdminValues.WorkDayEnd"></div>
 
-    <div id="myModal" class="modal fade" role="dialog">
+    <div id="ownAppointmentModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title"><span id="eventTitle"></span></h4>
+                <div class="modal-header justify-content-center">
+                    <h4 class="modal-title"><span id="eventTitle">Appointment Details</span></h4>
                 </div>
                 <div class="modal-body">
-                    @if (!this.User.IsInRole(GlobalConstants.AdministratorRoleName))
-                    {
-                        <button id="btnDelete" class="btn btn-outline-danger btn-sm mb-3 float-right">
-                            <span><i class="fas fa-trash"></i></span> Cancel Appointment
-                        </button>
-                    }
-                    <br />
-                    <p id="pDetails"></p>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label class="text-center text-black-50  border-bottom">Date:</label>
+                            <div class="date"></div>
+                        </div>
+                        <div class="form-group col">
+                            <label class="text-center text-black-50  border-bottom">Start:</label>
+                            <div class="start"></div>
+                        </div>
+                        <div class="form-group col">
+                            <label class="text-center text-black-50  border-bottom">End:</label>
+                            <div class="end"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6 usernameGroup">
+                            <label class="text-black-50 border-bottom">Username:</label>
+                            <span class="username"></span>
+                        </div>
+                        <div class="form-group col-6 statusGroup">
+                            <label class="text-center text-black-50  border-bottom statusLabel">Status: </label>
+                            <span class="status font-weight-bold"></span>
+                        </div>
+                    </div>
+                    <div class="form-group detailsGroup">
+                        <label class="text-center text-black-50  border-bottom">Details: </label>
+                        <p class="details" style="word-wrap: break-word;"></p>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary btn-block" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-secondary btn-block closeDetailsModal" data-dismiss="modal">Close</button>
+                    <button id="btnDelete" class="btn btn-outline-danger btn-block">Cancel Appointment</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="myModalSave" class="modal fade" role="dialog">
-    @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
-    {
-        <div class="modal-dialog" id="dailyHoursSetter">
-            <div class="modal-content">
-                <div class="modal-header justify-content-center py-2">
-                    <h4 class="modal-title">Set Daily Availability</h4>
+<div id="bookAppointmentModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="eventTitle">Book Appointment</span></h4>
+            </div>
+            <div class="modal-body">
+                <p class="details"></p>
+                <div class="text-center form-group issueDescription">
+                    <label>Please describe your condition in a few sentences.</label>
+                    <label>(This information will be shared only with your therapist.)</label>
+                    <textarea id="patientIssueDescription" rows="3" class="form-control px-2"></textarea>
                 </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row justify-content-start ml-5">
+                @if ((await this.UserManager.GetUserAsync(this.User)).PhoneNumber == null)
+                {
+                    <div class="text-center form-group">
+                        <label>Can I have you phone number, please?</label>
+                        <div>
+                            <input id="userPhoneNumber" />
+                        </div>
+                    </div>
+                }
+            </div>
 
-                            @{
-                                for (int i = GlobalAdminValues.WorkDayStart; i <= GlobalAdminValues.WorkDayEnd; i++)
-                                {
-                                    <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1"  style="border-color:#aa5584;">
-                                        @(i.ToString() + ":00")
-                                    </div>
-                                }
-                            }
-                        </div>
-                    </div>
-                    <div class="row justify-content-center mt-1 mb-0 pb-0">
-                            <button type="button" id="submitDailyAvailability" class="btn btn-outline-success ml-3">Save</button>
-                            <button type="button" id="closeDailyAvailability" class="btn btn-outline-danger ml-2" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-success btn-block sendAppointment">Send</button>
+                <button type="button" class="btn btn-outline-secondary btn-block closeAppointmentDetailsModal" data-dismiss="modal">Close</button>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Schedule Appointment</h4>
+    </div>
+</div>
+
+<div id="appointmentApproval" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="text-black-50 border-bottom">Username:</label>
+                    <p class="username"></p>
                 </div>
-                <div class="modal-body">
-                    <form class="form-horizontal">
-                        <input type="hidden" id="hdEventID" value="0" />
-                        <div class="form-group">
-                            <label>Available time slots</label>
-                            <div class="input-group date" id="dtp1">
-                                <select class="form-control" id="txtStart">
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Please briefly describe your issue.(At least 30 characters)</label>
-                            <textarea id="txtDescription" rows="3" class="form-control"></textarea>
-                        </div>
-                        <button type="button" id="btnSave" class="btn btn-success">Save</button>
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                    </form>
+                <br />
+                <div class="form-group">
+                    <label class="text-center text-black-50  border-bottom">Issue description:</label>
+                    <p class="description" style="word-wrap: break-word;"></p>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label class="text-black-50  border-bottom">Phone number:</label>
+                    <p class="phone"></p>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-block" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-success btn-block approveAppointment">Approve</button>
+                <button type="button" class="btn btn-outline-danger btn-block declineAppointment" data-dismiss="modal">Decline</button>
+            </div>
         </div>
-    }
+    </div>
+</div>
+<div id="declineAppointmentConfirm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h4 class="modal-title">Confirm Decline</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="text-black-50 border-bottom">If you find it necessary, please let me know what happened.</label>
+                    <textarea id="declineReasoning" rows="3" class="form-control px-2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger btn-block confirmDeclineAppointment">Confirm</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
+<div id="dailyAvailabilityModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center py-2">
+                <h4 class="modal-title">Set Daily Availability</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        @{
+                            for (int i = GlobalAdminValues.WorkDayStart; i < GlobalAdminValues.WorkDayEnd; i++)
+                            {
+                                <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1" style="border-color:#aa5584;">
+                                    @(i.ToString() + ":00")
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-1 mb-0 pb-0">
+                    <button type="button" id="submitDailyAvailability" class="btn btn-outline-success ml-3">Save</button>
+                    <button type="button" class="btn btn-outline-danger ml-2" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="workingHours" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Set Standard Working Hours</h4>
+            <div class="modal-header justify-content-center">
+                <h4 class="modal-title text-center">Set Standard Working Hours</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
-                    <div class="form-group">
-                        <label>Start Time</label>
-                        <div class="input-group date">
-                            <input type="time" id="startHour" name="startHour" required>
+                    <div class="row">
+                        <div class="form-group col ml-5">
+                            <label>Start Time</label>
+                            <div class="input-group date">
+                                <input type="time" id="startHour" name="startHour" required>
+                            </div>
+                        </div>
+                        <div class="form-group col ml-5">
+                            <label>End Time</label>
+                            <div class="input-group date">
+                                <input type="time" id="endHour" name="endHour" required>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>End Time</label>
-                        <div class="input-group date">
-                            <input type="time" id="endHour" name="endHour" required>
-                        </div>
-                    </div>
-                    <button type="button" id="workingHoursSubmitBtn" class="btn btn-success">Save</button>
-                    <button type="button" class="btn btn-outline-warning" data-dismiss="modal">Close</button>
+
+                    <button type="button" id="workingHoursSubmitBtn" class="btn btn-success btn-block">Save</button>
+                    <button type="button" class="btn btn-outline-warning btn-block" data-dismiss="modal">Close</button>
                 </form>
             </div>
         </div>

@@ -103,10 +103,12 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var profilePicture = await this.cloudinaryService.UploadPicture(
+            if (this.Input.ProfilePicture != null)
+            {
+                var profilePicture = await this.cloudinaryService.UploadPicture(
                 this.Input.ProfilePicture, $"{user.Id}_profile-picture");
-
-            await this.userService.SetProfilePicture(user, profilePicture);
+                await this.userService.SetProfilePicture(user, profilePicture);
+            }
 
             await this._signInManager.RefreshSignInAsync(user);
             this.StatusMessage = "Your profile has been updated";

@@ -64,6 +64,11 @@
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Phone]
+            [Display(Name = "Phone number")]
+            [DataType(DataType.PhoneNumber)]
+            public string PhoneNumber { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -78,7 +83,13 @@
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (this.ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email };
+                if (await this._userManager.FindByEmailAsync(this.Input.Email) != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid email address, please try again.");
+                    return Page();
+                }
+
+                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email, PhoneNumber = this.Input.PhoneNumber };
                 var result = await this._userManager.CreateAsync(user, this.Input.Password);
                 if (result.Succeeded)
                 {
@@ -105,6 +116,7 @@
                         return LocalRedirect(returnUrl);
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);

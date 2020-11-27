@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -12,9 +13,7 @@
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Appointment;
     using BDInSelfLove.Web.Areas.Administration;
-    using BDInSelfLove.Web.Infrastructure.ModelBinders;
     using BDInSelfLove.Web.InputModels.Appointment;
-    using BDInSelfLove.Web.InputModels.WorkingHours;
     using BDInSelfLove.Web.ViewModels.Appointment;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
@@ -27,8 +26,9 @@
     public class AppointmentController : ControllerBase
     {
         private const string AppointmentEmailSubject = "Appointment";
-        private const string AppointmentDeleteEmailBody = "Patient opted to cancel their appointment";
-        private const string AppointmentConfirmation = "Your appointment is confirmed. See you soon!";
+        private const string AppointmentCancellationIntro = "I'm deeply sorry but I'm going to have to cancel the appointment.";
+        private const string AppointmentConfirmationString = "Your appointment has been confirmed. See you soon!";
+        private const string AppointmentAwaitingApprovalText = "Your request for an appointment has been received. Please wait for approval.";
 
         private readonly IAppointmentService appointmentService;
         private readonly UserManager<ApplicationUser> userManager;
@@ -45,18 +45,49 @@
         }
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAll()
+        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        [Route("AdminAppointments")]
+        public async Task<ActionResult<ICollection<AppointmentViewModel>>> AdminAppointments()
         {
-            string userId = this.User.IsInRole(GlobalConstants.AdministratorRoleName) ?
-                GlobalConstants.AdministratorRoleName : this.userManager.GetUserId(this.User);
+            // Is user admin?
+            if (!this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            {
+                return this.BadRequest();
+            }
 
-            var appointmentViewModel = await this.appointmentService.GetAll(userId)
+            // Get all appointments and wrap for client
+            var appointmentViewList = await this.appointmentService.GetAll(GlobalConstants.AdministratorRoleName)
                 .To<AppointmentViewModel>()
                 .ToListAsync();
 
-            return appointmentViewModel;
+            var currentUserUserName = this.userManager.GetUserName(this.User);
+            this.MarkOwnAppointments(appointmentViewList, currentUserUserName);
+
+            return appointmentViewList;
         }
+
+        [HttpGet]
+        [Route("AvailableAppointments")]
+        public async Task<ActionResult<ICollection<AppointmentViewModel>>> AvailableAppointments()
+        {
+            var currentUserUserName = this.userManager.GetUserName(this.User);
+
+            // Get all appointments from db
+            var appointmentViewList = await this.appointmentService
+                .GetAllForDaysAhead(GlobalAdminValues.AvailabilitySpanInDays, currentUserUserName)
+                .To<AppointmentViewModel>()
+                .ToListAsync();
+
+            var today = DateTime.Today;
+            this.MarkOwnAppointments(appointmentViewList, currentUserUserName);
+            var appointments = this.GetAvailableSlots(appointmentViewList.Where(a => a.Start.Date >= today.Date && a.Start.Date <= today.AddDays(GlobalAdminValues.AvailabilitySpanInDays).Date).ToList());
+
+            // Include user's own appointments in response
+            appointments.AddRange(appointmentViewList.Where(a => a.IsOwn));
+
+            return appointments;
+        }
+
 
         [HttpPost]
         [Route("Save")]
@@ -65,14 +96,14 @@
             // Create model for service
             var serviceModel = AutoMapperConfig.MapperInstance.Map<AppointmentServiceModel>(inputModel);
 
-            // Validation
+            // Validate
             var appointmentSlotIsOccupied = await this.appointmentService
                                                       .GetAllByDate(serviceModel.Start)
                                                       .Where(a => a.Start.Hour == serviceModel.Start.Hour)
                                                       .FirstOrDefaultAsync();
             if (appointmentSlotIsOccupied != null)
             {
-                return this.BadRequest(new { status = false });
+                return this.BadRequest();
             }
 
             // Set up model for service
@@ -80,107 +111,174 @@
             serviceModel.UserId = user.Id;
 
             // Create appointment in server
-            await this.appointmentService.Create(serviceModel);
+            var appointmentId = await this.appointmentService.Create(serviceModel);
 
-            // Send emails to owner & patient
-            await this.emailSender.SendEmailAsync(
-                                        user.Email,
-                                        user.UserName,
-                                        GlobalConstants.SystemEmail,
-                                        this.GetEmailSubject(serviceModel.Start),
-                                        @$"<br><h3>{serviceModel.Description.Replace("\n", "<br>")}</h3>");
-            await this.emailSender.SendEmailAsync(
-                                        GlobalConstants.SystemEmail,
-                                        GlobalConstants.SystemName,
-                                        user.Email,
-                                        this.GetEmailSubject(serviceModel.Start),
-                                        @$"<br><h2>{AppointmentConfirmation}</h2>");
+            // Enter user phone number, if provided
+            if (!string.IsNullOrEmpty(serviceModel.PhoneNumber) && (await this.userManager.GetPhoneNumberAsync(user)) == null)
+            {
+                await this.userManager.SetPhoneNumberAsync(user, serviceModel.PhoneNumber);
+            }
 
-            return this.Ok(new { status = true });
+            var urlElement = "<a href=\"https://localhost:44319/home/appointment\"><h3>Appointment Details and Approval</h3></a>";
+            var adminEmailText = $"<div>Hello, </div> <div></div> <div>You have a new appointment. Have a look below:</div><div></div><div>{urlElement}</div><div></div><div>Thank you!</div>";
+            var userEmailText = $"<div>Hello, </div> <div></div> <div>{AppointmentAwaitingApprovalText}</div><div>Thank you!</div>";
+
+            // Send emails to admin
+            await this.emailSender.SendEmailAsync(user.Email, user.UserName, GlobalConstants.SystemEmail, this.GetEmailSubject(serviceModel.Start), adminEmailText);
+
+            await this.emailSender.SendEmailAsync(GlobalConstants.SystemEmail, GlobalConstants.SystemName, user.Email, this.GetEmailSubject(serviceModel.Start), userEmailText);
+            return this.Ok();
         }
 
-        [HttpDelete]
-        [Route("Delete")]
-        public async Task<IActionResult> Delete([FromForm] int id)
+        [HttpPost]
+        [Route("Approve")]
+        public async Task<ActionResult> Approve([FromForm] bool evaluation, [FromForm] int id, [FromForm] string declineReasoning)
         {
-            var creatorId = (await this.appointmentService.GetById(id)).UserId;
+            var appointmentFromDb = await this.appointmentService.GetById(id);
+            var appointmentUser = await this.userManager.FindByIdAsync(appointmentFromDb.UserId);
             var currentUser = await this.userManager.GetUserAsync(this.User);
 
-            if (creatorId != currentUser.Id)
+            if (evaluation)
             {
-                return this.BadRequest(new { status = false });
+                // Appointment is approved
+                var emailContent = $"<div>Hello, </div> <div></div> <div>{AppointmentConfirmationString}</div><div>Thanks!</div>";
+                await this.emailSender.SendEmailAsync(GlobalConstants.SystemEmail, GlobalConstants.SystemName, appointmentUser.Email, this.GetEmailSubject(appointmentFromDb.Start), emailContent);
+                await this.appointmentService.Approve(id);
+                return this.Ok();
             }
 
-            var appointment = await this.appointmentService.Delete(id);
-
-            // Send email to owner only if appointment is upcoming
-            if (appointment.Start.Month >= DateTime.Now.Month && appointment.Start.Year >= DateTime.Now.Year &&
-                ((appointment.Start.Day > DateTime.Now.Day && appointment.Start.Month >= DateTime.Now.Month) ||
-                (appointment.Start.Day <= DateTime.Now.Day && appointment.Start.Month > DateTime.Now.Month)))
+            // Appointment is declined or cancelled
+            // Allow only admin to cancel others' appointments
+            if (appointmentFromDb.UserId != currentUser.Id && (!this.User.IsInRole(GlobalConstants.AdministratorRoleName)))
             {
-                await this.emailSender.SendEmailAsync(
-                                        currentUser.Email,
-                                        currentUser.UserName,
-                                        GlobalConstants.SystemEmail,
-                                        this.GetEmailSubject(appointment.Start),
-                                        AppointmentDeleteEmailBody);
+                return this.BadRequest();
             }
 
-            return this.Ok(new { status = true });
+            await this.appointmentService.Delete(id);
+
+            // Don't send emails if admin cancels their own appointment(unavailability slot)
+            if (currentUser.Id == appointmentFromDb.UserId && this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            {
+                return this.Ok();
+            }
+
+            var emailText = $"<div>Hello, </div> <div></div> <div>{AppointmentCancellationIntro}</div> <div>{declineReasoning.Replace("\n", "<br>")}</div> <div>Thank you.</div>";
+
+            // TODO: system email needs to be set by admin
+            // Send email to user if admin cancels or vice versa
+            if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            {
+                await this.emailSender.SendEmailAsync(GlobalConstants.SystemEmail, GlobalConstants.SystemName, appointmentUser.Email, this.GetEmailSubject(appointmentFromDb.Start), emailText);
+            }
+            else
+            {
+                await this.emailSender.SendEmailAsync(appointmentUser.Email, appointmentUser.UserName, GlobalConstants.SystemEmail, this.GetEmailSubject(appointmentFromDb.Start), emailText);
+            }
+
+            return this.Ok();
         }
 
-        [HttpGet]
-        [Route("GetAppointmentsByDate")]
-        public async Task<ActionResult<ICollection<AppointmentViewModel>>> GetAppointmentsByDate([ModelBinder(typeof(AppointmentDateBinder))] DateTime date)
-        {
-            if (DateTime.Compare(date, DateTime.UtcNow) <= 0)
-            {
-                return this.BadRequest(new { status = false });
-            }
-
-            var currentDayAppointments = await this.appointmentService.GetAllByDate(date)
-                .To<AppointmentViewModel>()
-                .ToListAsync();
-
-            var availableHours = Enumerable.Range(GlobalAdminValues.WorkDayStart, GlobalAdminValues.WorkDayEnd - GlobalAdminValues.WorkDayStart);
-
-            var returnList = new List<AppointmentViewModel>();
-
-            foreach (var hour in availableHours)
-            {
-                if (currentDayAppointments.Any(a => a.Start.Hour == hour))
-                {
-                    continue;
-                }
-
-                returnList.Add(new AppointmentViewModel { Start = new DateTime(date.Year, date.Month, date.Day, hour, 0, 0) });
-            }
-
-            return returnList;
-        }
-
+        [HttpPost]
         [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
         [Route("SetWorkingHours")]
         public ActionResult SetWorkingHours([FromForm] string startHour, [FromForm] string endHour)
         {
             GlobalAdminValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
             GlobalAdminValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);
-
-            return this.Ok(new { status = true });
+            return this.Ok();
         }
 
+        [HttpGet]
         [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
         [Route("GetWorkingHours")]
         public ActionResult<int[]> GetWorkingHours() => new int[] { GlobalAdminValues.WorkDayStart, GlobalAdminValues.WorkDayEnd };
 
+        [HttpPost]
         [Route("SubmitDailyAvailability")]
-        public async Task<IActionResult> SubmitDailyAvailability([FromForm] ICollection<string> timeSlots)
+        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        public async Task<IActionResult> SubmitDailyAvailability([FromForm] AvailabilityInputModel availabilityInput)
         {
-            ;
+            // Get only the required part of the strings to create datetime objects for db
+            List<string> timeSlotsInput = new List<string>();
+            for (int i = 0; i < availabilityInput.TimeSlots?.Count; i++)
+            {
+                var currentSlot = availabilityInput.TimeSlots[i];
+                var stringToAdd = string.Join(' ', currentSlot.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1).Take(4));
+                timeSlotsInput.Add(stringToAdd);
+            }
 
+            var dateString = string.Join(' ', availabilityInput.Date.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1).Take(4));
+            var date = DateTime.ParseExact(dateString, "MMM dd yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+
+            // Set up and parse to integers for comparison between old and new availability
+            var newAvailabilityHours = timeSlotsInput.Select(ts => int.Parse(ts.Split(' ')[3].Split(':')[0]));
+            var regularAvailabilityHours = Enumerable.Range(GlobalAdminValues.WorkDayStart, GlobalAdminValues.WorkDayEnd - GlobalAdminValues.WorkDayStart);
+
+            var dummyAppointments = new List<AppointmentServiceModel>();
+            var admin = await this.userManager.GetUserAsync(this.User);
+
+            // Create dummy appointments for all unavailable slots
+            foreach (var slot in regularAvailabilityHours.Where(rah => !newAvailabilityHours.Any(nah => nah == rah)))
+            {
+                var slotDateTime = new DateTime(date.Year, date.Month, date.Day, slot, 0, 0);
+                dummyAppointments.Add(new AppointmentServiceModel()
+                {
+                    Start = slotDateTime,
+                    UserId = admin.Id,
+                });
+            }
+
+            await this.appointmentService.SubmitDailyWorkingHours(dummyAppointments, date, this.userManager.GetUserId(this.User));
             return this.Ok();
         }
 
-        private string GetEmailSubject(DateTime start) => $"{GlobalConstants.SystemName} {AppointmentEmailSubject} on {start.ToString("dd MMMM HH:mm")}";
+        private string GetEmailSubject(DateTime start) => $"{GlobalConstants.SystemName} {AppointmentEmailSubject} on {start:dd MMMM HH:mm}";
+
+        private void MarkOwnAppointments(List<AppointmentViewModel> appointmentViewList, string currentUserUserName)
+        {
+            for (int i = 0; i < appointmentViewList.Count; i++)
+            {
+                appointmentViewList[i].IsOwn = currentUserUserName == appointmentViewList[i].UserUserName;
+            }
+        }
+
+        private List<AppointmentViewModel> GetAvailableSlots(List<AppointmentViewModel> appointmentViewList)
+        {
+            var currentLocalTime = DateTime.UtcNow.AddHours(2);
+            var availableAppointmentSlots = new List<AppointmentViewModel>();
+
+            for (int dayOfAvailability = 0; dayOfAvailability <= GlobalAdminValues.AvailabilitySpanInDays; dayOfAvailability++)
+            {
+                // Fix this to work for days that are not today(disregard hours)
+                var currentAvailableDay = currentLocalTime.AddDays(dayOfAvailability);
+
+                List<AppointmentViewModel> currentDayAppointments = appointmentViewList
+                    .Where(a => a.Start.Date == currentAvailableDay.Date).ToList();
+
+                // Create available slot for all unoccupied current day slots
+                for (int currentHour = GlobalAdminValues.WorkDayStart; currentHour < GlobalAdminValues.WorkDayEnd; currentHour++)
+                {
+                    if (dayOfAvailability == 0 && currentHour <= currentLocalTime.Hour)
+                    {
+                        continue;
+                    }
+
+                    if (!currentDayAppointments.Any(a => a.Start.Hour == currentHour))
+                    {
+                        // Remove UTC indication for client
+                        DateTime availableSlot = DateTime.Parse(currentAvailableDay.Date.ToString().Trim('Z'));
+                        availableSlot = availableSlot.AddHours(currentHour);
+
+                        availableAppointmentSlots.Add(new AppointmentViewModel()
+                        {
+                            Start = availableSlot,
+                            IsApproved = true,
+                        });
+                    }
+                }
+            }
+
+            return availableAppointmentSlots;
+        }
     }
 }

@@ -4,7 +4,7 @@
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using BDInSelfLove.Common;
     using BDInSelfLove.Data;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Data.Repositories;
@@ -33,7 +33,7 @@
             var repository = new EfDeletableEntityRepository<Appointment>(context);
             var appointmentService = new AppointmentService(repository);
 
-            var appointmentsFromDb = await appointmentService.GetAll().ToListAsync();
+            var appointmentsFromDb = await appointmentService.GetAll(GlobalConstants.AdministratorRoleName).ToListAsync();
 
             var generatedAppointments = this.GetTestAppointments();
 
@@ -138,7 +138,7 @@
 
             var deleteResult = await appointmentService.Delete(appointmentId);
 
-            Assert.True(deleteResult);
+            Assert.True(deleteResult != null);
         }
 
         [Theory]

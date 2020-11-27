@@ -1,17 +1,14 @@
 ﻿$(document).ready(function () {
-    var events = [];
-    var selectedEvent = null;
-    var availableDailySlots = [];
-    var token = $("#csfrToken input[name=__RequestVerificationToken]").val();
-    var themeColor = {
-        RGB: "rgb(170, 85, 132)",
-        
-    }
-    fetchEventAndRenderCalendar();
+    const token = $("#csfrToken input[name=__RequestVerificationToken]").val();
+    const themeColor = "rgb(170, 85, 132)";
 
-    //Add listeners for daily working hours
-    if (document.getElementById('dailyHoursSetter')) {
-        let date = document.getElementById('myModalSave').getAttribute('date');
+    var appointments = [];
+    var selectedAppointment = null;
+    var availableDailySlots = [];
+    var userIsAdmin = document.getElementById('btnWorkingHours') !== null;
+    var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    const setUpDailyWorkingHours = () => {
         let slots = document.getElementsByClassName('dailyTimeSlot');
 
         for (let i = 0; i < slots.length; i++) {
@@ -20,33 +17,51 @@
             slot.addEventListener('click', function (e) {
                 let slotTime = slot.innerHTML.trim();
 
+                // Add leading zero to single digit hours
+                if (slotTime.split(':')[0].length === 1) {
+                    slotTime = '0' + slotTime;
+                }
+
+                // Add or remove from dailySlots collection
                 if (availableDailySlots.includes(slotTime)) {
                     availableDailySlots = availableDailySlots.filter(s => s !== slotTime);
                     e.target.style.backgroundColor = "white";
                 } else {
                     availableDailySlots.push(slotTime);
-                    e.target.style.backgroundColor = "rgb(170, 85, 132)";
+                    e.target.style.backgroundColor = themeColor;
                 }
             })
         }
-    }
+    };
 
-    async function fetchEventAndRenderCalendar() {
-        events = [];
-        await $.ajax({
+    const fetchEventAndRenderCalendar = () => {
+        appointments = [];
+        var endPoint = userIsAdmin ? 'AdminAppointments' : 'AvailableAppointments';
+
+        $.ajax({
             type: "GET",
-            url: "/api/appointment/GetAll",
+            url: "/api/appointment/" + endPoint,
             success: function (dbEvents) {
                 $.each(dbEvents, function (i, currentEvent) {
-                    events.push({
+                    let currentAppointment = {
                         id: currentEvent.id,
                         start: moment(currentEvent.start),
                         end: moment(currentEvent.start).add(1, 'hours'),
-                        clientName: 'Pesho',
-                    });
-                })
+                        userUserName: currentEvent.userUserName,
+                        userEmail: currentEvent.userEmail,
+                        isOwn: currentEvent.isOwn,
+                        isApproved: currentEvent.isApproved,
+                        description: currentEvent.description,
+                        userPhoneNumber: currentEvent.userPhoneNumber,
+                    }
 
-                GenerateCalendar(events);
+                    // add additional info if appointment isn't approved for admin approval modal.
+                    if (!currentEvent.isApproved) {
+                    }
+
+                    appointments.push(currentAppointment);
+                });
+                GenerateCalendar(appointments);
             },
             error: function (request, textStatus, error) {
                 if (request.getResponseHeader('location') != undefined) {
@@ -54,104 +69,189 @@
                 } else {
                     alert('Error');
                 }
-
             }
         })
-    }
+    };
 
-    function GenerateCalendar(events) {
+    const GenerateCalendar = (events) => {
         $('#calendar').fullCalendar('destroy');
         $('#calendar').fullCalendar({
             contentHeight: 700,
             defaultDate: new Date(),
-            timeFormat: 'h:mm',
+            timeFormat: 'H:mm',
+            columnFormat: 'ddd',
             header: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'agendaWeek month'
+                right: 'agendaWeek',
             },
             eventLimit: true,
-            eventColor: '#aa5584',
+            eventColor: 'white',
+            minTime: '7:00:00',
+            maxTime: '20:00:00',
+            firstDay: () => {
+                let today = moment()._d.split(' ')[0];
+                return daysOfWeek.find(d => d.startsWith(today));
+            },
             defaultView: 'agendaWeek',
-            eventTextColor: 'white',
+            eventTextColor: 'black',
+            eventBorderColor: themeColor,
             displayEventTime: true,
             events: events,
-            eventClick: eventClickFunc,
+            eventClick: eventClick,
             selectable: true,
-            eventRender: (eventObj, $el) => {
-                $el[0].innerText =  eventObj.clientName;
+            allDaySlot: false,
+            eventMouseover: function (event, jsEvent, view) {
+                this.style.backgroundColor = this.style.color;
+                this.style.color = 'black';
             },
-            eventAfterRender: (event, $el, view) => {
-                $el[0].setAttribute('style', $el[0].getAttribute('style') + ' text-align: center;');
-                console.log($el[0].getAttribute('class'));
+            eventMouseout: function (event, jsEvent, view) {
+                this.style.color = this.style.backgroundColor;
+                this.style.backgroundColor = 'white';
+            },
+            eventRender: (eventObj, $el) => {
+                let eventElement = $el[0];
+                const style = 'style';
+                const initialStyleState = eventElement.getAttribute(style).split(';')[0];
+
+                if (!eventObj.isApproved) {
+                    eventElement.setAttribute(style, initialStyleState + '; border-color: #ffc107; color: #ffc107;');
+                    eventElement.innerText = userIsAdmin ? eventElement.innerText.split(' - ')[0] : 'My Appointment';
+
+                } else if (!eventObj.isOwn) {
+                    eventElement.setAttribute(style, initialStyleState + '; border-color:#28a745; color:#28a745;');
+                    eventElement.innerText = eventElement.innerText.split(' - ')[0];
+
+                } else if (eventObj.isOwn) {
+                    eventElement.setAttribute(style, initialStyleState + '; border-color:' + themeColor + '; color:' + themeColor + ';');
+                    eventElement.innerText = userIsAdmin ? 'Unavailable' : eventElement.innerText.split(' - ')[0];
+                }
+                eventElement.setAttribute('style', eventElement.getAttribute('style') + ' text-align: center;');
+                $el[0] = eventElement;
             },
             select: (start) => {
-                if (start.isBefore(moment())) {
+                // Disregard past slots
+                if (start.isBefore(moment()) || !userIsAdmin) {
                     $('#calendar').fullCalendar('unselect');
-                    return false;
+                    return;
                 }
-
-                selectedEvent = {
+                // Clear selected appointment
+                selectedAppointment = {
                     id: 0,
                     description: '',
                     start: '',
                 };
-                if (document.getElementById('dailyHoursSetter')) {
-                    openDailyHoursForm(start._d);
-                } else {
-                    openAddForm(start._d);
-                }
+                clearDailyAvailability();
+
+                openDailyHoursForm(start._d);
                 $('#calendar').fullCalendar('unselect');
             },
             selectLongPressDelay: 0,
         })
     }
 
-    const eventClickFunc = (calEvent, jsEvent, view) => {
-        selectedEvent = calEvent;
-        $('#myModal #eventTitle').text(calEvent.title);
-        var $description = $('<div/>');
+    fetchEventAndRenderCalendar();
 
-        $description.append($('<p/>').html('<b>Start: </b>' + calEvent.start.format("DD/MM/YYYY HH:mm A")));
-        $description.append($('<p/>').html('<b>End: </b>' + calEvent.end.format("DD/MM/YYYY HH:mm A")));
+    userIsAdmin ? setUpDailyWorkingHours() : null;
 
-        $('#myModal #pDetails').empty().html($description);
+    const eventClick = (calEvent) => {
+        selectedAppointment = calEvent;
+        if (calEvent.userUserName === null) {
+            // available appointment
+            $('#bookAppointmentModal').modal();
+            return;
+        }
 
-        $('#myModal').modal();
+        // Remove cancellation functionality for past events
+        if (calEvent.start.isBefore(moment())) {
+            $('#appointmentApproval .modal-footer .approveAppointment').hide();
+            $('#appointmentApproval .modal-footer .declineAppointment').hide();
+            $('#ownAppointmentModal #btnDelete').hide();
+        } else {
+            $('#appointmentApproval .modal-footer .approveAppointment').show();
+            $('#appointmentApproval .modal-footer .declineAppointment').show();
+            $('#ownAppointmentModal #btnDelete').show();
+        }
+
+        if (userIsAdmin && !calEvent.isApproved) {
+            // appointment awaiting approval
+            $('#appointmentApproval .username')[0].innerText = calEvent.userUserName;
+            $('#appointmentApproval .description')[0].innerText = calEvent.description;
+            $('#appointmentApproval .phone')[0].innerText = calEvent.userPhoneNumber;
+            $('#appointmentApproval .modal-title')[0].innerText = 'Appointment Evaluation';
+            $('#appointmentApproval').modal();
+            return;
+        }
+
+        // own appointment
+        $('#ownAppointmentModal .date')[0].innerText = calEvent.start.format("DD/MM/YYYY");
+        $('#ownAppointmentModal .start')[0].innerText = calEvent.start.format("HH:mm");
+        $('#ownAppointmentModal .end')[0].innerText = calEvent.end.format("HH:mm");
+        $('#ownAppointmentModal .details')[0].innerText = calEvent.description ? calEvent.description : '';
+        $('#ownAppointmentModal .username')[0].innerText = calEvent.userUserName;
+
+        if (!calEvent.isApproved) {
+            $('#ownAppointmentModal .status')[0].innerText = 'Awaiting approval';
+            $('#ownAppointmentModal .status').css('color', '#ffc107');
+        } else if (calEvent.isApproved) {
+            $('#ownAppointmentModal .status')[0].innerText = 'Approved';
+            $('#ownAppointmentModal .status').css('color', '#28a745');
+        }
+
+        if (calEvent.isOwn && userIsAdmin) {
+            $('#ownAppointmentModal #btnDelete').show();
+            $('#ownAppointmentModal .statusGroup').hide();
+            $('#ownAppointmentModal .detailsGroup').hide();
+            $('#ownAppointmentModal .usernameGroup').hide();
+        } else if (!calEvent.isOwn && userIsAdmin && calEvent.start.isBefore(moment())) {
+            $('#ownAppointmentModal #btnDelete').hide();
+            $('#ownAppointmentModal .statusGroup').show();
+            $('#ownAppointmentModal .detailsGroup').show();
+            $('#ownAppointmentModal .usernameGroup').show();
+        } else if (!calEvent.isOwn && userIsAdmin) {
+            $('#ownAppointmentModal #btnDelete').show();
+            $('#ownAppointmentModal .statusGroup').show();
+            $('#ownAppointmentModal .detailsGroup').show();
+            $('#ownAppointmentModal .usernameGroup').show();
+        }
+
+        $('#ownAppointmentModal').modal();
     }
 
     const openDailyHoursForm = (date) => {
-        //For each element
-        //on click
-        //make background certain colour if no colour or remove colour 
-        //and, more importantly
-        //add the text to a collection which will later be sent to server
-
-        //IN DB!! - just create fake appointments for unavailable slots
-
-        document.getElementById('myModalSave').setAttribute('date', date);
-
-
-
-        //check if date exists in dailyTimeSlots
-        //submitDailyAvailability must trigger clearing of availableDailySlots and colors in table
-
-        $('#myModalSave').modal();
+        document.getElementById('dailyAvailabilityModal').setAttribute('date', date);
+        $('#dailyAvailabilityModal').modal();
     }
 
-    $('#closeDailyAvailability').click(function () {
+    const clearDailyAvailability = () => {
+        availableDailySlots = [];
         let slots = document.getElementsByClassName('dailyTimeSlot');
-
         for (let i = 0; i < slots.length; i++) {
             slots[i].style.backgroundColor = "white";
         }
+    }
 
-        availableDailySlots = [];
-    })
+    const SaveEvent = async function (data) {
+        $.ajax({
+            type: "POST",
+            url: '/api/appointment/Save',
+            data: data,
+            headers: { 'X-CSRF-TOKEN': token },
+            success: function (data) {
+                fetchEventAndRenderCalendar();
+                $('#dailyAvailabilityModal').modal('hide');
+                // Clear input fields
+                $('#patientIssueDescription').val('');
+            },
+            error: function () {
+                alert('Error');
+            }
+        })
+    }
 
     $('#submitDailyAvailability').click(function () {
 
-        let date = document.getElementById('myModalSave').getAttribute('date');
+        let date = document.getElementById('dailyAvailabilityModal').getAttribute('date');
 
         let slots = [];
 
@@ -162,57 +262,23 @@
             slots[i] = dateArray.join(' ');
         }
 
-        console.log(slots);
-
         $.ajax({
             type: 'POST',
             data: {
+                date: date,
                 timeSlots: slots,
             },
             url: '/api/appointment/SubmitDailyAvailability',
             headers: { 'X-CSRF-TOKEN': token },
             success: function (data) {
-                $('#workingHours').modal('hide');
-
-                let slots = document.getElementsByClassName('dailyTimeSlot');
-                for (let i = 0; i < slots.length; i++) {
-                    slots[i].style.backgroundColor = "white";
-                }
-                availableDailySlots = [];
-                $('#myModalSave').modal('hide');
+                $('#dailyAvailabilityModal').modal('hide');
+                fetchEventAndRenderCalendar();
             },
             error: function (message) {
-                console.log(message);
                 $('#workingHours').modal('hide');
             }
         })
     })
-
-    const openAddForm = (date) => {
-        $.ajax({
-            type: "GET",
-            data: { date: date },
-            url: "/api/appointment/GetAppointmentsByDate",
-            success: function (appointments) {
-
-                var select = document.getElementById("txtStart");
-                select.innerHTML = '';
-
-                $.each(appointments, function (i, v) {
-                    var option = document.createElement("option");
-                    option.text = moment(v.start).format("HH:mm");
-                    option.value = moment(v.start).format("DD.MM.YYYY HH:mm");
-                    select.appendChild(option);
-                })
-
-                $('#myModal').modal('hide');
-                $('#myModalSave').modal();
-            },
-            error: function (error) {
-                alert('Error');
-            }
-        })
-    }
 
     $('#btnWorkingHours').click(function () {
 
@@ -220,9 +286,6 @@
             type: "GET",
             url: '/api/appointment/GetWorkingHours',
             success: function (data) {
-
-
-
                 $('#workingHours').modal('hide');
             },
             error: function () {
@@ -235,7 +298,7 @@
     })
 
     $('#workingHoursSubmitBtn').click(function () {
-        // VALIDATE
+        // TODO: VALIDATE
 
         let startHour = document.querySelector('#startHour').value;
         let endHour = document.querySelector('#endHour').value;
@@ -260,68 +323,124 @@
     })
 
     $('#btnDelete').click(function () {
-        if (selectedEvent != null && confirm('Are you sure?')) {
+        if (userIsAdmin && selectedAppointment.isOwn) {
+            let data = {
+                id: selectedAppointment.id,
+                evaluation: false,
+            }
+
             $.ajax({
-                type: "DELETE",
-                url: '/api/appointment/Delete',
-                data: { 'id': selectedEvent.id },
+                type: "POST",
+                url: '/api/appointment/Approve',
+                data: data,
                 headers: { 'X-CSRF-TOKEN': token },
                 success: function (data) {
-                    if (data.status) {
-                        //Refresh the calender
-                        fetchEventAndRenderCalendar();
-                        $('#myModal').modal('hide');
-                    }
+                    $('#appointmentApproval').modal('hide');
+                    fetchEventAndRenderCalendar();
                 },
-                error: function () {
+                error: function (err) {
                     alert('Error');
                 }
             })
-        }
-    })
 
-    $('#btnSave').click(function () {
-        //Validation/
-        if ($('#txtStart').val().trim() == "") {
-            alert('Start date required');
+            $('#ownAppointmentModal').modal('hide');
             return;
         }
-        if ($('#txtDescription').val().trim() == "" || $('#txtDescription').val().trim().length < 30) {
-            alert('Description longer than 30 symbols required.')
+        $('#ownAppointmentModal').modal('hide');
+        $('#declineAppointmentConfirm #declineReasoning').val('');
+        $('#declineAppointmentConfirm').modal();
+    })
+
+    $('.sendAppointment').click(function () {
+        // Validate description
+        let userIssueDescription = $('#patientIssueDescription').val().trim();
+        if (userIssueDescription == '' || userIssueDescription.length < 30) {
+            alert('Please write more than 30 symbols.')
             return;
         }
-
-        var time = document.getElementById("txtStart");
-
-        var data = {
-            Id: $('#hdEventID').val(),
-            Start: time.options[time.selectedIndex].value,
-            Description: $('#txtDescription').val(),
+        // Validate phone number
+        let allowedPhoneNumberSymbols = '0123456789+';
+        let userPhoneNumber;
+        userPhoneNumber = $('#userPhoneNumber').val() !== undefined ? $('#userPhoneNumber').val().trim() : null;
+        if (userPhoneNumber !== null && userPhoneNumber !== '') {
+            if (userPhoneNumber.includes(char => !allowedPhoneNumberSymbols.includes(char)) ||
+                userPhoneNumber.length < 8) {
+                alert('Please provide a valid phone number or no phone number at all.');
+                return;
+            }
         }
 
-        SaveEvent(data);
+        let data = {
+            Start: selectedAppointment.start._i,
+            Description: $('#patientIssueDescription').val(),
+            PhoneNumber: userPhoneNumber,
+        }
 
-
-    })
-    const SaveEvent = async function(data) {
         $.ajax({
             type: "POST",
             url: '/api/appointment/Save',
             data: data,
             headers: { 'X-CSRF-TOKEN': token },
-            success: async function (data) {
-                if (data.status) {
-                    await fetchEventAndRenderCalendar();
-                    $('#myModalSave').modal('hide');
-                    // Clear input fields
-                    $('#txtDescription').val("");
-                }
+            success: function (data) {
+                $('#bookAppointmentModal').modal('hide');
+                $('#patientIssueDescription').val('');
+                fetchEventAndRenderCalendar();
             },
-            error: function () {
+            error: function (err) {
                 alert('Error');
             }
         })
-    }
+    })
+
+    $('#appointmentApproval .approveAppointment').click(function () {
+        let data = {
+            id: selectedAppointment.id,
+            evaluation: true,
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '/api/appointment/Approve',
+            data: data,
+            headers: { 'X-CSRF-TOKEN': token },
+            success: function (data) {
+                $('#appointmentApproval').modal('hide');
+                fetchEventAndRenderCalendar();
+            },
+            error: function (err) {
+                alert('Error');
+            }
+        })
+    });
+
+    $('#appointmentApproval .declineAppointment').click(function () {
+
+        $('#declineReasoning')[0].textContent = '';
+        $('#declineAppointmentConfirm').modal();
+    });
+
+    $('#declineAppointmentConfirm .confirmDeclineAppointment').click(function () {
+        let data = {
+            id: selectedAppointment.id,
+            evaluation: false,
+            declineReasoning: $('#declineReasoning').val(),
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '/api/appointment/Approve',
+            data: data,
+            headers: { 'X-CSRF-TOKEN': token },
+            success: function (data) {
+                $('#declineAppointmentConfirm').modal('hide');
+                $('#declineReasoning').val('');
+                fetchEventAndRenderCalendar();
+            },
+            error: function (err) {
+                alert('Error');
+            }
+        })
+    });
 })
 
 

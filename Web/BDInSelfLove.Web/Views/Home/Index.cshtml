@@ -10,11 +10,11 @@
             <div class="row mt-4 pt-4">
                 <div class="col text-center mt-5 pt-5">
                     <div class="showcase-wrapper">
-                        <h5 class="font-weight-light">Featured Article</h5>
-                        <h1>
+                        <h5 class="font-weight-light  featured-article">Featured Article</h5>
+                        <h1 class=" featured-article">
                             @Model.FeaturedArticle.Title
                         </h1>
-                        <a asp-controller="Article" asp-action="Single" asp-route-id="@Model.FeaturedArticle.Id" class="btn btn-outline-secondary btn-md text-white mt-2">
+                        <a asp-controller="Article" asp-action="Single" asp-route-id="@Model.FeaturedArticle.Id" class=" btn btn-outline-secondary btn-md text-dark mt-2">
                             Read More
                         </a>
                     </div>
