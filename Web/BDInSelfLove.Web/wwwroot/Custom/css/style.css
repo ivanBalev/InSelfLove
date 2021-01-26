@@ -88,6 +88,14 @@ body {
     margin-left: -15%;
 }
 
+.comment-box {
+    display: none;
+}
+
+.edit-comment {
+    display: none;
+}
+
 #videoCarousel .carousel-control-next {
     margin-right: -15%;
 }
@@ -108,7 +116,7 @@ body {
     object-fit: cover;
 }
 
-#videoGallery .col {
+#videoGallery .video {
     padding-bottom: 2%;
     border-bottom: 1px #f083c1 solid;
 }
@@ -160,6 +168,16 @@ body {
     min-height: 150px;
 }
 
+.btn-subcomments {
+    color: #f083c1;
+    border-color: #f083c1;
+}
+
+.btn-pink {
+    color: #f083c1;
+    border-color: #f083c1;
+}
+
 a .card img {
     height: 200px;
 }
@@ -175,4 +193,13 @@ a .card img {
 .fc-event {
     margin-top: 3px;
     margin-bottom: 3px;
+}
+
+.active .page-link {
+    background-color: #f083c1 !important;
+    border-color: #f083c1 !important;
+}
+
+.page-link {
+    color: grey;
 }

@@ -1,5 +1,11 @@
-﻿@model BDInSelfLove.Web.ViewComponents.Models.Video.AllHomeVideoViewModel
+﻿@model BDInSelfLove.Web.ViewModels.Video.VideoPaginationViewModel
 @using BDInSelfLove.Common
+@using Microsoft.AspNetCore.Identity
+@using BDInSelfLove.Data.Models
+@using BDInSelfLove.Web.InputModels.VideoComment
+
+
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "All Videos";
@@ -11,7 +17,7 @@
     <div class="container">
         @foreach (var video in Model.Videos)
         {
-            <div class="row mb-4">
+            <div class="row mb-4 video">
                 <div class="col">
                     <div class="embed-responsive embed-responsive-21by9">
                         <iframe class="embed-responsive-item" src="@video.Url"></iframe>
@@ -24,9 +30,198 @@
                         </div>
                     }
 
-                    <partial name="_CommentsPartial" />
+                    <h5 class="mt-2">Add New Comment</h5>
+                    <div class="row">
+                        <div class="col new-comment">
+                            @if (!this.SignInManager.IsSignedIn(this.User))
+                            {
+                                <partial name="_PostLoginPartial" model="null" /> }
+                            else
+                            {
+                                <partial name="_AddVideoCommentPartial" model="@(new VideoCommentInputModel {
+                                                                VideoId = video.Id, ParentCommentId = null })" />}
+                        </div>
+                    </div>
+                        <h5 class="mb-3 text-center">Comments</h5>
+                    @if (video.VideoComments.Any())
+                    {
+                        <div class="comments border">
+                            @foreach (var comment in video.VideoComments)
+                            {
+                                this.ViewData["width"] = "64";
+                                this.ViewData["height"] = "64";
+                                <div class="main-comment">
+                                    <partial name="_CommentsPartial" model="@comment" />
+                                </div>
+                            }
+                            <div class="row mb-2">
+                                <div class="col text-center">
+                                    <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">Load More Comments</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         }
+
+        @*Pagination*@
+        <div class="mb-3 clearfix">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    @if (this.Model.CurrentPage == 1)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Previous</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-controller="Video"
+                               asp-action="All"
+                               asp-route-page="@(this.Model.CurrentPage - 1)">Previous</a>
+                        </li>
+                    }
+
+                    @{
+                        var startPage = Model.CurrentPage > 6 ? Model.CurrentPage - 5 : 1;
+                        var endPage = Model.CurrentPage + 4 > Model.PagesCount ? Model.PagesCount : Model.CurrentPage + 4;
+
+                        for (int i = startPage; i <= endPage; i++)
+                        {
+                            var active = i == this.Model.CurrentPage ? "active" : string.Empty;
+                            <li class="page-item @active">
+                                <a class="page-link"
+                                   asp-controller="Video"
+                                   asp-action="All"
+                                   asp-route-page="@i">@i</a>
+                            </li>
+                        }
+                    }
+
+                    @if (this.Model.CurrentPage == this.Model.PagesCount)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-controller="Video"
+                               asp-action="All"
+                               asp-route-page="@(this.Model.CurrentPage + 1)">Next</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+
     </div>
 </section>
+
+
+@section Scripts
+{
+    <script>
+        // Display Add comment box if user is signed in
+        let addCommentElement = document.querySelector('.comment-box');
+
+        // Add reply buttons funcitonality if user is logged in
+        if (addCommentElement != undefined) {
+            document.querySelectorAll('.comment .reply-button').forEach(btn => {
+                // Hide/show text box
+                btn.addEventListener('click', e => {
+                    //  Hide comment boxes and display all reply buttons
+                    document.querySelectorAll('.comment-box').forEach(cb => cb.style.display = "none");
+                    document.querySelectorAll('.comment .reply-button').forEach(cb => cb.style.display = "block");
+
+                    // Hide reply button
+                    e.target.style.display = 'none';
+
+                    // Display comment form
+                    btn.parentElement.parentElement.parentElement
+                        .firstElementChild.nextElementSibling.firstElementChild.style.display = "block";
+                })
+            })
+            // Hide reply buttons otherwise
+        } else {
+            document.querySelectorAll('.comment .reply-button').forEach(btn => {
+                btn.style.display = 'none';
+            });
+        }
+
+
+        // Hide last comments TODO: fix with foreach targeting each .comments section
+        const mainCommentsPerPage = 3;
+        var currentPage = 1;
+        var visualisedCommentsCount = 0;
+
+        document.querySelectorAll('.comments').forEach(c => {
+            c.querySelectorAll('.main-comment').forEach((c, i) => {
+                if ((i + 1) > mainCommentsPerPage) {
+                    c.style.display = 'none';
+                }
+            });
+        });
+
+
+        // Load next batch of comments
+        document.querySelectorAll('.loadCommentsBtn').forEach(b => b.addEventListener('click', e => {
+            currentPage++;
+
+            e.target.parentElement.parentElement.parentElement
+                .querySelectorAll('.main-comment').forEach((c, i) => {
+                    if (c.style.display === 'none' && visualisedCommentsCount < mainCommentsPerPage) {
+                        c.style.display = 'block';
+                        visualisedCommentsCount++;
+                    }
+                })
+
+            visualisedCommentsCount = 0;
+
+            // Hide loadCommentsBtn if all comments are already visible
+            if (!Array.from(e.target.parentElement.parentElement.parentElement
+                .querySelectorAll('.main-comment')).some(c => c.style.display === 'none')) {
+                b.style.display = 'none';
+            }
+        }));
+
+        // Initial hide of subcomments
+        document.querySelectorAll('.main-subcomment').forEach(sc => sc.style.display = 'none');
+
+        // Show subcomments
+        document.querySelectorAll('.btn-subcomments').forEach(btn => btn.addEventListener('click', e => {
+            e.target.parentElement.parentElement.parentElement.parentElement
+                .children[2].style.display = 'block';
+        }))
+
+        // Hide subcomments
+        document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListener('click', e => {
+            // TODO: Error Why??
+            e.target.parentElement.style.display = 'none'
+        }));
+
+        // Edit comment
+        $('.edit-comment-btn').click(function (e) {
+            console.log(e);
+
+
+            //$.ajax({
+            //    type: "POST",
+            //    url: '/api/EditComment',
+            //    data: {
+
+            //    },
+            //    success: function (data) {
+            //    },
+            //    error: function () {
+            //    }
+            //})
+        })
+
+    </script>
+}

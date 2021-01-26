@@ -1,0 +1,12 @@
+﻿@model BDInSelfLove.Web.InputModels.ArticleComment.ArticleCommentInputModel
+
+<form class="mb-3 comment-box" asp-controller="ArticleComment" asp-action="Create">
+    <input type="hidden" asp-for="@Model.ArticleId" value="@Model.ArticleId" />
+    <input type="hidden" asp-for="@Model.ParentCommentId" value="@Model.ParentCommentId" />
+    <div class="form-group">
+        <textarea asp-for="@Model.Content" class="form-control" rows="2" placeholder="Write your reply here."></textarea>
+    </div>
+    <div class="col-md-2 m-0 p-0">
+        <button type="submit" class="btn btn-outline-secondary btn-block btn-sm">Reply</button>
+    </div>
+</form>

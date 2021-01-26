@@ -1,6 +1,10 @@
 ﻿@using BDInSelfLove.Common
+@using Microsoft.AspNetCore.Identity
+@using BDInSelfLove.Data.Models
+@using BDInSelfLove.Web.InputModels.ArticleComment
 @model BDInSelfLove.Web.ViewModels.Article.ArticleViewModel
 
+@inject SignInManager<ApplicationUser> SignInManager
 
 <div class="container">
     <div id="singleArticle">
@@ -22,12 +26,172 @@
                 </div>
                 <div class="row justify-content-around">
                     <div class="col-md-8">
-                        @Html.Raw(Model.SanitizedContent)
+                        @(Html.Raw(Model.SanitizedContent))
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <h5>Add New Comment</h5>
+    <div class="row">
+        <div class="col">
+            @if (!this.SignInManager.IsSignedIn(this.User))
+            {
+                <partial name="_PostLoginPartial" model="null" /> }
+            else
+            {
+                <partial name="_AddCommentPartial" model="@(new ArticleCommentInputModel {
+                                                                ArticleId = Model.Id, ParentCommentId = null })" />}
+        </div>
+    </div>
+
+    <h5 class="mb-3 text-center">Comments</h5>
+    <div class="comments border">
+        @foreach (var comment in Model.ArticleComments)
+        {
+            this.ViewData["width"] = "64";
+            this.ViewData["height"] = "64";
+            <div class="main-comment">
+                <partial name="_RecursiveCommentsPartial" model="@comment" />
+            </div>
+        }
+        <div class="row mb-2">
+            <div class="col text-center">
+                <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">Load More Comments</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<partial name="_CommentsPartial" />
+@section Scripts
+{
+    <script>
+        // Edit comment scripts
+
+    </script>
+
+
+
+    <script>
+        // Display 'Add comment box if user is signed in'
+        let addCommentElement = document.querySelector('.comment-box');
+        if (addCommentElement != undefined) {
+            document.querySelector('.comment-box').style.display = 'block';
+        }
+
+        // Add reply buttons funcitonality is user is logged in
+        if (addCommentElement != undefined) {
+            document.querySelectorAll('.comment .reply-button').forEach(btn => {
+                // Hide/show text box
+                btn.addEventListener('click', e => {
+                    //  Hide comment boxes and display all reply buttons
+                    document.querySelectorAll('.comment-box').forEach((cb, i) => i > 0 ? cb.style.display = "none" : null);
+                    document.querySelectorAll('.comment .reply-button').forEach(cb => cb.style.display = "block");
+
+                    var test = btn.parentElement.parentElement.parentElement;
+
+                    // Hide reply button
+                    e.target.style.display = 'none';
+
+                    // Display comment form
+                    btn.parentElement.parentElement.parentElement
+                        .querySelector('.comment-box').style.display = 'block';
+                })
+            })
+            // Hide reply buttons otherwise
+        } else {
+            document.querySelectorAll('.comment .reply-button').forEach(btn => {
+                btn.style.display = 'none';
+            });
+        }
+
+
+        // Hide last comments
+        const mainCommentsPerPage = 3;
+        var currentPage = 1;
+
+        document.querySelectorAll('.main-comment').forEach((c, i) => {
+            if ((i + 1) > mainCommentsPerPage) {
+                c.style.display = 'none';
+            }
+        })
+
+        // Load next batch of comments
+        document.querySelector('.loadCommentsBtn').addEventListener('click', e => {
+            currentPage++;
+            let visualisedCommentsCount = 0;
+
+            document.querySelectorAll('.main-comment').forEach((c, i) => {
+                if ((i + 1) > (currentPage - 1) * mainCommentsPerPage &&
+                    (i + 1) <= currentPage * mainCommentsPerPage) {
+                    c.style.display = 'block';
+                    visualisedCommentsCount++;
+                }
+            })
+
+            // Hide loadCommentsBtn if all comments are already visible
+            if (!Array.from(document.querySelectorAll('.main-comment')).some(c => c.style.display === 'none')) {
+                document.querySelector('.loadCommentsBtn').style.display = 'none';
+            }
+        })
+
+        // Initial hide of subcomments
+        document.querySelectorAll('.main-subcomment').forEach(sc => sc.style.display = 'none');
+
+        // Show subcomments
+        document.querySelectorAll('.btn-subcomments').forEach(btn => btn.addEventListener('click', e => {
+            e.target.parentElement.parentElement.parentElement.parentElement
+                .querySelector('.main-subcomment').style.display = 'block';
+        }))
+
+        // Hide subcomments
+        document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListener('click', e => {
+            // TODO: Error Why??
+            e.target.parentElement.style.display = 'none'
+        }));
+
+        // Edit comment
+        document.querySelectorAll('.edit-comment-btn').forEach(b => b.addEventListener('click', (e) => {
+            e.target.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
+            e.target.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
+            e.target.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
+        }));
+
+        $('.save-edit-btn').click(function (e) {
+            let token = e.target.parentElement.parentElement.parentElement.parentElement
+                .querySelector('input[name=__RequestVerificationToken]').value;
+            let commentId = e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+                .id;
+            let content = e.target.parentElement.parentElement.querySelector('#Content').value;
+            let articleId = e.target.parentElement.parentElement.querySelector('#ArticleId').value;
+
+
+            $.ajax({
+                type: "POST",
+                url: '/api/EditComment',
+                data: {
+                    Id: commentId,
+                    Content: content,
+                    ArticleId: articleId,
+                },
+                headers: { 'X-CSRF-TOKEN': token },
+                success: function (data) {
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').textContent = content;
+
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'none';
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'block';
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'block';
+                },
+                error: function () {
+                    console.log('error')
+                }
+            })
+        })
+
+    </script>
+
+
+
+
+}

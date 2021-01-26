@@ -9,6 +9,8 @@
     {
         IQueryable<ArticleServiceModel> GetAll(int? count = null);
 
+        IQueryable<ArticleServiceModel> GetAllPagination(int take, int skip = 0);
+
         Task<int> CreateAsync(ArticleServiceModel articleServiceModel);
 
         Task<ArticleServiceModel> GetById(int id);

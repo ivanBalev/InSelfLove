@@ -103,7 +103,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if (this.Input.ProfilePicture != null)
+            if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length < 1048576)
             {
                 var profilePicture = await this.cloudinaryService.UploadPicture(
                 this.Input.ProfilePicture, $"{user.Id}_profile-picture");

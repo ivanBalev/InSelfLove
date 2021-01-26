@@ -1,4 +1,4 @@
-﻿@model IEnumerable< BDInSelfLove.Web.ViewModels.Article.ArticleViewModel> 
+﻿@model BDInSelfLove.Web.ViewModels.Article.ArticlePaginationViewModel
 @{
     ViewData["Title"] = "All Articles";
 }
@@ -8,7 +8,76 @@
 <section id="allArticles" class="py-4">
     <div class="container">
         <div class="row">
-            <partial name="_ArticlesPartial" model="@Model" />
+            <partial name="_ArticlesPartial" model="@Model.Articles" />
+        </div>
+        <div class="mb-3 clearfix">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    @if (this.Model.CurrentPage == 1)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Previous</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-controller="Article"
+                               asp-action="All"
+                               asp-route-page="@(this.Model.CurrentPage - 1)">Previous</a>
+                        </li>
+                    }
+
+                    @{
+                        var startPage = Model.CurrentPage > 6 ? Model.CurrentPage - 5 : 1;
+                        var endPage = Model.CurrentPage + 4 > Model.PagesCount ? Model.PagesCount : Model.CurrentPage + 4;
+
+                        for (int i = startPage; i <= endPage; i++)
+                        {
+                            var active = i == this.Model.CurrentPage ? "active" : string.Empty;
+                            <li class="page-item @active">
+                                <a class="page-link"
+                                   asp-controller="Article"
+                                   asp-action="All"
+                                   asp-route-page="@i">@i</a>
+                            </li>
+                        }
+                    }
+
+                    @if (this.Model.CurrentPage == this.Model.PagesCount)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-controller="Article"
+                               asp-action="All"
+                               asp-route-page="@(this.Model.CurrentPage + 1)">Next</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
         </div>
     </div>
 </section>
+
+
+<script>
+    let DOMelements = document.querySelectorAll('.card');
+    let elements = Array.from(DOMelements);
+    let randomElementHeight = elements[0].offsetHeight;
+
+    if (elements.some(e => e.offsetHeight != randomElementHeight)) {
+        let maxHeight = 0;
+        elements.forEach(e => e.offsetHeight > maxHeight ? maxHeight = e.offsetHeight : null);
+
+        for (let i = 0; i < elements.length; i++) {
+            DOMelements[i].style.height = maxHeight + 'px';
+        }
+    }
+</script>

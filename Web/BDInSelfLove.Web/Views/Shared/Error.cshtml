@@ -3,8 +3,11 @@
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
 
+@{ var data = this.Html.ViewContext;
+                var indexModel = @Model; }
+
 <div class="text-center my-2">
-    <img src="~/Custom/img/wonder.png" height="300"/>
+    <img src="~/Custom/img/wonder.png" height="300" />
     <h5>Please try one of the links below:</h5>
 
     <a class="btn btn-outline-secondary" href="/">Home</a>

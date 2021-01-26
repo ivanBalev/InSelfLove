@@ -1,8 +1,10 @@
 ﻿namespace BDInSelfLove.Services.Models.Article
 {
     using System;
+    using System.Collections.Generic;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.ArticleComment;
     using BDInSelfLove.Services.Models.User;
 
     public class ArticleServiceModel : IMapTo<Article>, IMapFrom<Article>
@@ -20,5 +22,7 @@
         public string UserId { get; set; }
 
         public ApplicationUserServiceModel User { get; set; }
+
+        public ICollection<ArticleCommentServiceModel> ArticleComments { get; set; }
     }
 }

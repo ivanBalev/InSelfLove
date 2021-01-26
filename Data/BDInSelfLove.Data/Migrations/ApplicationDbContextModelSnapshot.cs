@@ -229,6 +229,50 @@ namespace BDInSelfLove.Data.Migrations
                     b.ToTable("Articles");
                 });
 
+            modelBuilder.Entity("BDInSelfLove.Data.Models.ArticleComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ArticleComments");
+                });
+
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
                 {
                     b.Property<int>("Id")
@@ -263,6 +307,50 @@ namespace BDInSelfLove.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Videos");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.VideoComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("VideoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("VideoId");
+
+                    b.ToTable("VideoComments");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -385,11 +473,47 @@ namespace BDInSelfLove.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BDInSelfLove.Data.Models.ArticleComment", b =>
+                {
+                    b.HasOne("BDInSelfLove.Data.Models.Article", "Article")
+                        .WithMany("ArticleComments")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BDInSelfLove.Data.Models.ArticleComment", "ParentComment")
+                        .WithMany("SubComments")
+                        .HasForeignKey("ParentCommentId");
+
+                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "User")
+                        .WithMany("ArticleComments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
                 {
                     b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.VideoComment", b =>
+                {
+                    b.HasOne("BDInSelfLove.Data.Models.VideoComment", "ParentComment")
+                        .WithMany("SubComments")
+                        .HasForeignKey("ParentCommentId");
+
+                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", "User")
+                        .WithMany("VideoComments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BDInSelfLove.Data.Models.Video", "Video")
+                        .WithMany("VideoComments")
+                        .HasForeignKey("VideoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

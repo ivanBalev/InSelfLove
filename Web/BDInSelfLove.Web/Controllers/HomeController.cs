@@ -26,15 +26,18 @@
 
         public async Task<IActionResult> Index()
         {
-            var lastArticles = await this.articleService
-               .GetAll(IndexArticlesCount)
-               .To<ArticleViewModel>()
-               .ToListAsync();
+            // Get data
+            var serviceData = await this.articleService
+               .GetAll(IndexArticlesCount).ToListAsync();
 
+            // Parse
+            var lastArticles = serviceData.Select(x => AutoMapperConfig.MapperInstance.Map<BriefArticleInfoViewModel>(x)).ToList();
+
+            // Create view model
             var viewModel = new HomeViewModel
             {
-                LastArticles = lastArticles.Skip(1),
                 FeaturedArticle = lastArticles[0],
+                LastArticles = lastArticles.Skip(1).ToList(),
             };
 
             return this.View(viewModel);
@@ -59,9 +62,10 @@
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            var context = this.HttpContext;
+
             return this.View(
                 new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
         }
-
     }
 }

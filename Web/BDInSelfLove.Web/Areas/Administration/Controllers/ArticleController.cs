@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Web.Areas.Administration.Controllers
 {
+    using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Models;
@@ -11,6 +12,7 @@
     using BDInSelfLove.Web.ViewModels.Administration.Article;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
 
     public class ArticleController : AdministrationController
     {
@@ -102,7 +104,7 @@
 
         [HttpPost]
         [Route("/Administration/Article/Delete/{id}")]
-        public async Task<IActionResult> DeletePost(int id)
+        public async Task<IActionResult> ConfirmedDelete(int id)
         {
             await this.articleService.Delete(id);
             return this.Redirect("/");

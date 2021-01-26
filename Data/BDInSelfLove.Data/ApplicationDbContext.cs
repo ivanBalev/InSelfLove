@@ -30,6 +30,10 @@
 
         public DbSet<Appointment> Appointments { get; set; }
 
+        public DbSet<ArticleComment> ArticleComments { get; set; }
+
+        public DbSet<VideoComment> VideoComments { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
@@ -88,6 +92,30 @@
         private void ConfigureUserIdentityRelations(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+
+            builder.Entity<ArticleComment>()
+                .HasOne(ac => ac.User)
+                .WithMany(u => u.ArticleComments)
+                .HasForeignKey(ac => ac.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ArticleComment>()
+                .HasOne(ac => ac.Article)
+                .WithMany(a => a.ArticleComments)
+                .HasForeignKey(ac => ac.ArticleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<VideoComment>()
+                .HasOne(vc => vc.User)
+                .WithMany(u => u.VideoComments)
+                .HasForeignKey(vc => vc.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<VideoComment>()
+                .HasOne(vc => vc.Video)
+                .WithMany(v => v.VideoComments)
+                .HasForeignKey(ac => ac.VideoId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void ApplyAuditInfoRules()

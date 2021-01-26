@@ -12,6 +12,8 @@
 
     public class ArticleService : IArticleService
     {
+        private const int DefaultArticlesPerPage = 6;
+
         private readonly IDeletableEntityRepository<Article> articleRepository;
 
         public ArticleService(IDeletableEntityRepository<Article> articleRepository)
@@ -75,11 +77,44 @@
             return query.To<ArticleServiceModel>();
         }
 
+        public IQueryable<ArticleServiceModel> GetAllPagination(int take = DefaultArticlesPerPage, int skip = 0)
+        {
+            var articles = this.articleRepository
+                               .All()
+                               .OrderByDescending(a => a.CreatedOn)
+                               .Skip(skip)
+                               .Take(take)
+                               .To<ArticleServiceModel>();
+
+            return articles;
+        }
+
         public async Task<ArticleServiceModel> GetById(int id)
         {
-            return await this.articleRepository.All()
+            var article = await this.articleRepository.All()
+               .Where(a => a.Id == id)
+               .Include(a => a.User)
+               .Include(a => a.ArticleComments)
                .To<ArticleServiceModel>()
-               .SingleOrDefaultAsync(article => article.Id == id);
+               .FirstOrDefaultAsync();
+
+            foreach (var comment in article.ArticleComments)
+            {
+                comment.SubComments.Clear();
+            }
+
+            foreach (var comment in article.ArticleComments)
+            {
+                if (comment.ParentCommentId != null)
+                {
+                    var parentComment = article.ArticleComments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+                    parentComment.SubComments.Add(comment);
+                }
+            }
+
+            article.ArticleComments = article.ArticleComments.Where(c => c.ParentCommentId == null).ToList();
+
+            return article;
         }
     }
 }

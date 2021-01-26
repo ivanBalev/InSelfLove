@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BDInSelfLove.Web.ViewModels.Article.ArticleViewModel>
+﻿@model ICollection<BDInSelfLove.Web.ViewModels.Home.BriefArticleInfoViewModel>
 
 @foreach (var article in Model)
 {
@@ -7,11 +7,11 @@
             <div class="card">
                 <img src=@article.ImageUrl alt="" class="img-fluid card-img-top">
                 <div class="card-body bg-light text-center">
-                    <div class="card-title">@article.Title</div>
+                    <div class="card-title"><span>@article.Title</span></div>
                     <small class="text-muted">Posted by @article.UserUsername on @article.CreatedOn.ToString("MMMM dd")</small>
                     <hr>
-                    <p class="card-text">
-                        @article.PreviewContent
+                    <p class="card-text text-left">
+                        <span>@(article.PreviewContent)</span>
                     </p>
                 </div>
             </div>

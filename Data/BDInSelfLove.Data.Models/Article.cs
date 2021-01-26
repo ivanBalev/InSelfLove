@@ -1,6 +1,7 @@
 ﻿namespace BDInSelfLove.Data.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     using BDInSelfLove.Data.Common.Models;
@@ -10,6 +11,7 @@
         public Article()
         {
             this.CreatedOn = DateTime.UtcNow;
+            this.ArticleComments = new HashSet<ArticleComment>();
         }
 
         [Required]
@@ -25,5 +27,7 @@
         public string UserId { get; set; }
 
         public virtual ApplicationUser User { get; set; }
+
+        public virtual ICollection<ArticleComment> ArticleComments { get; set; }
     }
 }

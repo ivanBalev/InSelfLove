@@ -5,11 +5,11 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav ml-auto">
-    <li class="nav-item dropdown">
+    <li class="nav-item dropdown pl-5">
         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-user"></i>
         </a>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu mb-2">
             @if (this.SignInManager.IsSignedIn(this.User))
             {
                 <li>

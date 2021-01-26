@@ -1,6 +1,7 @@
 ﻿namespace BDInSelfLove.Services.Data.Video
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -12,6 +13,8 @@
 
     public class VideoService : IVideoService
     {
+        private const int DefaultVideosPerPage = 3;
+
         private readonly IDeletableEntityRepository<Video> videosRepository;
 
         public VideoService(IDeletableEntityRepository<Video> videosRepository)
@@ -41,6 +44,37 @@
             }
 
             return query.To<VideoServiceModel>();
+        }
+
+        public async Task<ICollection<VideoServiceModel>> GetAllPagination(int take = DefaultVideosPerPage, int skip = 0)
+        {
+            var videos = await this.videosRepository
+                               .All()
+                               .Include(a => a.User)
+                               .Include(a => a.VideoComments)
+                               .OrderByDescending(a => a.CreatedOn)
+                               .Skip(skip)
+                               .Take(take)
+                               .To<VideoServiceModel>()
+                               .ToListAsync();
+
+            foreach (var video in videos)
+            {
+                foreach (var comment in video.VideoComments)
+                {
+                    comment.SubComments.Clear();
+
+                    if (comment.ParentCommentId != null)
+                    {
+                        var parentComment = video.VideoComments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+                        parentComment.SubComments.Add(comment);
+                    }
+                }
+
+                video.VideoComments = video.VideoComments.Where(vc => vc.ParentCommentId == null).ToList();
+            }
+
+            return videos;
         }
 
         public async Task<bool> Delete(int id)
