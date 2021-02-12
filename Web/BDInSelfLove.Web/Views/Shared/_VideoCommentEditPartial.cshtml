@@ -1,7 +1,6 @@
-﻿@model BDInSelfLove.Web.InputModels.ArticleComment.ArticleCommentEditInputModel
+﻿@model BDInSelfLove.Web.InputModels.VideoComment.VideoCommentEditInputModel
 
 <form class="mb-3 edit-comment">
-    <input type="hidden" asp-for="@Model.ArticleId" value="@Model.ArticleId" />
     <input type="hidden" asp-for="@Model.Id" value="@Model.Id" />
     <div class="form-group">
         <textarea asp-for="@Model.Content" class="form-control" rows="2"></textarea>

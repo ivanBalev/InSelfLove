@@ -12,6 +12,7 @@
     using BDInSelfLove.Services.Data.ArticleComment;
     using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Data.CloudinaryService;
+    using BDInSelfLove.Services.Data.Search;
     using BDInSelfLove.Services.Data.User;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Data.VideoComment;
@@ -116,6 +117,7 @@
             services.AddTransient<IAppointmentService, AppointmentService>();
             services.AddTransient<IArticleCommentService, ArticleCommentService>();
             services.AddTransient<IVideoCommentService, VideoCommentService>();
+            services.AddTransient<ISearchService, SearchService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

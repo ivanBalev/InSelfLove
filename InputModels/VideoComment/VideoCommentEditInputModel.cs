@@ -7,15 +7,13 @@ using System.Text;
 
 namespace BDInSelfLove.Web.InputModels.VideoComment
 {
-    public class VideoCommentInputModel : IMapTo<VideoCommentServiceModel>
+    public class VideoCommentEditInputModel : IMapTo<VideoCommentServiceModel>
     {
         [Required]
-        [MinLength(2, ErrorMessage = "Comment must be longer than 2 symbols")]
-        public string Content { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public int VideoId { get; set; }
-
-        public int? ParentCommentId { get; set; }
+        [MinLength(2, ErrorMessage = "Comment must be longer than 2 symbols.")]
+        public string Content { get; set; }
     }
 }

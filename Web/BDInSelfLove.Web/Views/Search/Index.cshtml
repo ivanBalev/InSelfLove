@@ -1,0 +1,244 @@
+﻿@model BDInSelfLove.Web.ViewModels.Search.IndexSearchViewModel
+
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
+@* Search term stored for ajax requests *@
+<input type="hidden" id="search-term" name="search-term" value="@Model.SearchTerm">
+<div class="col text-center pt-5 pb-2 info-header">
+    <h1 class="display-4">Articles</h1>
+</div>
+
+<partial name="_ArticlesPagination" model="@Model.ArticlesPagination" />
+
+
+<div class="col text-center pt-5 pb-2 info-header">
+    <h1 class="display-4">Videos</h1>
+</div>
+
+
+<partial name="_VideosPagination" model="@Model.VideosPagination" />
+
+@section Scripts {
+    @*Articles Scripts*@
+    <script>
+        const articleScripts = function () {
+            let DOMelements = document.querySelectorAll('.article-card');
+            let elements = Array.from(DOMelements);
+            let randomElementHeight = elements[0].offsetHeight;
+
+            if (elements.some(e => e.offsetHeight != randomElementHeight)) {
+                let maxHeight = 0;
+                elements.forEach(e => e.offsetHeight > maxHeight ? maxHeight = e.offsetHeight : null);
+
+                for (let i = 0; i < elements.length; i++) {
+                    DOMelements[i].style.height = maxHeight + 'px';
+                }
+            }
+        }
+        articleScripts();
+    </script>
+
+    @*Pagination scripts*@
+    <script>
+        const paginationScripts = function (refresherId) {
+            if (refresherId === undefined) {
+                refresherId = '';
+            }
+
+            document.querySelectorAll(refresherId +' .page-link').forEach(pl => pl.addEventListener('click', e => {
+                e.preventDefault();
+                let hrefArray = e.target.getAttribute('href').split('/');
+
+                let searchTerm = document.querySelector('#search-term').value;
+                let page = hrefArray[2].split('=')[1];
+                let controller = hrefArray[1];
+
+                $.ajax({
+                    type: "GET",
+                    url: '/api/Search/' + controller,
+                    data: {
+                        page: page,
+                        searchTerm: searchTerm,
+                    },
+                    success: function (data) {
+                        if (controller === "Video") {
+                            $('#videoGallery').replaceWith(data);
+                            videoScripts();
+                            paginationScripts('#videoGallery');
+                        } else {
+                            $('#allArticles').replaceWith(data);
+                            articleScripts();
+                            paginationScripts('#allArticles');
+                        }
+                    },
+                    error: function (err) {
+                        alert('Error');
+                    }
+                })
+            }));
+        }
+        paginationScripts();
+    </script>
+
+    @*Videos scripts*@
+    <script>
+        const videoScripts = function () {
+            // Display Add comment box if user is signed in
+            let addCommentElement = document.querySelector('.comment-box');
+
+            // Add reply buttons funcitonality if user is logged in
+            if (addCommentElement != undefined) {
+                document.querySelectorAll('.comment .reply-button').forEach(btn => {
+                    // Hide/show text box
+                    btn.addEventListener('click', e => {
+                        //  Hide comment boxes and display all reply buttons
+                        document.querySelectorAll('.comment-box').forEach((cb, i) => cb.style.display = "none");
+                        document.querySelectorAll('.comment-buttons').forEach(cb => cb.style.display = "flex");
+                        // Hide reply and edit buttons
+                        e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
+
+                        // Display comment form
+                        btn.parentElement.parentElement.parentElement.parentElement.parentElement
+                            .querySelector('.comment-box').style.display = 'block';
+                    })
+                })
+                // Hide reply buttons otherwise
+            } else {
+                document.querySelectorAll('.comment .reply-button').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
+
+            const mainCommentsPerPage = 3;
+            var currentPage = 1;
+            var visualisedCommentsCount = 0;
+
+            document.querySelectorAll('.comments').forEach(c => {
+                c.querySelectorAll('.main-comment').forEach((c, i) => {
+                    if ((i + 1) > mainCommentsPerPage) {
+                        c.style.display = 'none';
+                    }
+                });
+            });
+
+
+            // Load next batch of comments
+            document.querySelectorAll('.loadCommentsBtn').forEach(b => b.addEventListener('click', e => {
+                currentPage++;
+
+                e.target.parentElement.parentElement.parentElement
+                    .querySelectorAll('.main-comment').forEach((c, i) => {
+                        if (c.style.display === 'none' && visualisedCommentsCount < mainCommentsPerPage) {
+                            c.style.display = 'block';
+                            visualisedCommentsCount++;
+                        }
+                    })
+
+                visualisedCommentsCount = 0;
+
+                // Hide loadCommentsBtn if all comments are already visible
+                if (!Array.from(e.target.parentElement.parentElement.parentElement
+                    .querySelectorAll('.main-comment')).some(c => c.style.display === 'none')) {
+                    b.style.display = 'none';
+                }
+            }));
+
+            // Initial hide of subcomments
+            document.querySelectorAll('.main-subcomment').forEach(sc => sc.style.display = 'none');
+
+            // Show subcomments
+            document.querySelectorAll('.btn-subcomments').forEach(btn => btn.addEventListener('click', e => {
+                e.target.parentElement.parentElement.parentElement.parentElement
+                    .parentElement.parentElement.children[2].style.display = 'block';
+            }))
+
+            // Hide subcomments
+            document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListener('click', e => {
+                e.target.parentElement.style.display = 'none'
+            }));
+
+            // Edit comment
+            document.querySelectorAll('.edit-comment-btn').forEach(b => b.addEventListener('click', (e) => {
+                // Show edit comment box and hide reply, edit comment buttons and comment content box
+                e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
+                e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
+                e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
+            }));
+
+            $('.save-edit-btn').click(function (e) {
+                // Gather data
+                let token = e.target.parentElement.parentElement.parentElement
+                    .querySelector('input[name=__RequestVerificationToken]').value;
+                let commentId = e.target.parentElement.parentElement.parentElement
+                    .querySelector('.edit-comment').querySelector('#Id').value;
+                let content = e.target.parentElement.parentElement.parentElement
+                    .querySelector('.edit-comment').querySelector('#Content').value;
+
+                $.ajax({
+                    type: "POST",
+                    url: '/api/EditVideoComment',
+                    data: {
+                        Id: commentId,
+                        Content: content,
+                    },
+                    headers: { 'X-CSRF-TOKEN': token },
+                    success: function () {
+                        // Update comment content and return to default view
+                        e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').textContent = content;
+                        e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'none';
+                        e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'flex';
+                        e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'block';
+                    },
+                    error: function () {
+                        console.log('error')
+                    }
+                })
+            })
+
+            // Delete comment
+            document.querySelectorAll('.delete-comment-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                // Get comment id
+                let commentId = e.target.parentElement.parentElement.parentElement.parentElement
+                    .parentElement.parentElement.parentElement.parentElement.parentElement.id;
+                // Add id to confirm button classlist to use after confirmation
+                document.querySelector('.delete-comment-confirm-btn').classList.add(commentId);
+                $('#confirm-comment-delete').modal();
+            }));
+
+            document.querySelector('.delete-comment-confirm-btn').addEventListener('click', (e) => {
+                let commentId = e.target.classList[e.target.classList.length - 1];
+                let token = document.querySelector('input[name=__RequestVerificationToken]').value;
+                // Return btn classlist to default state
+                e.target.classList.remove(commentId);
+
+                $.ajax({
+                    type: "POST",
+                    url: '/api/DeleteVideoComment',
+                    data: {
+                        Id: commentId,
+                    },
+                    headers: { 'X-CSRF-TOKEN': token },
+                    success: function () {
+                        // Hide deleted comment which will be removed entirely once page reloads
+                        $('#' + commentId).hide();
+                    },
+                    error: function () {
+                        console.log('error')
+                    }
+                })
+
+                $('#confirm-comment-delete').modal('hide');
+            })
+        }
+        videoScripts();
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+

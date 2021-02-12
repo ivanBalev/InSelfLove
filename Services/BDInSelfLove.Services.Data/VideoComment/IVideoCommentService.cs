@@ -12,5 +12,11 @@ namespace BDInSelfLove.Services.Data.VideoComment
         Task<int> Create(VideoCommentServiceModel videoCommentServiceModel);
 
         IQueryable<VideoCommentServiceModel> GetAllByVideoId(int videoId);
+
+        Task<int> Delete(int commentId);
+
+        Task<int> Edit(VideoCommentServiceModel serviceModel);
+
+        IQueryable<VideoCommentServiceModel> GetById(int commentId);
     }
 }

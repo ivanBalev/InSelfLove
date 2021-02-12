@@ -6,6 +6,10 @@
 
 @inject SignInManager<ApplicationUser> SignInManager
 
+@{ 
+    var mainCommentsPerPage = 3;
+}
+
 <div class="container">
     <div id="singleArticle">
         <div class="card mb-4">
@@ -16,7 +20,6 @@
                     <div class="row mb-4">
                         <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">Edit</a></div>
                         <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">Delete</a></div>
-
                     </div>
                 }
                 <h4 class="card-title text-center mb-2">@Model.Title</h4>
@@ -32,6 +35,8 @@
             </div>
         </div>
     </div>
+
+    @*Add new comment section*@
     <h5>Add New Comment</h5>
     <div class="row">
         <div class="col">
@@ -45,34 +50,50 @@
         </div>
     </div>
 
-    <h5 class="mb-3 text-center">Comments</h5>
-    <div class="comments border">
-        @foreach (var comment in Model.ArticleComments)
-        {
-            this.ViewData["width"] = "64";
-            this.ViewData["height"] = "64";
-            <div class="main-comment">
-                <partial name="_RecursiveCommentsPartial" model="@comment" />
-            </div>
-        }
-        <div class="row mb-2">
-            <div class="col text-center">
-                <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">Load More Comments</button>
+    @*All comments section*@
+    @if (Model.ArticleComments.Count > 0)
+    {
+        <h5 class="mb-3 text-center">Comments</h5>
+        <div class="comments border">
+            @foreach (var comment in Model.ArticleComments)
+            {
+                this.ViewData["width"] = "64";
+                this.ViewData["height"] = "64";
+                <div class="main-comment">
+                    <partial name="_RecursiveCommentsPartial" model="@comment" />
+                </div>
+            }
+
+            @*Load more comments button*@
+
+            @if (Model.ArticleComments.Count > mainCommentsPerPage)
+            {
+                <div class="row mb-2">
+                    <div class="col text-center">
+                        <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">Load More Comments</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @*Delete comment confirmation modal*@
+    <div id="confirm-comment-delete" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h4 class="modal-title">Are you sure?</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger btn-block delete-comment-confirm-btn">Confirm</button>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 @section Scripts
 {
-    <script>
-        // Edit comment scripts
-
-    </script>
-
-
-
     <script>
         // Display 'Add comment box if user is signed in'
         let addCommentElement = document.querySelector('.comment-box');
@@ -80,22 +101,19 @@
             document.querySelector('.comment-box').style.display = 'block';
         }
 
-        // Add reply buttons funcitonality is user is logged in
+        // Add reply buttons funcitonality if user is logged in
         if (addCommentElement != undefined) {
             document.querySelectorAll('.comment .reply-button').forEach(btn => {
                 // Hide/show text box
                 btn.addEventListener('click', e => {
                     //  Hide comment boxes and display all reply buttons
                     document.querySelectorAll('.comment-box').forEach((cb, i) => i > 0 ? cb.style.display = "none" : null);
-                    document.querySelectorAll('.comment .reply-button').forEach(cb => cb.style.display = "block");
-
-                    var test = btn.parentElement.parentElement.parentElement;
-
-                    // Hide reply button
-                    e.target.style.display = 'none';
+                    document.querySelectorAll('.comment-buttons').forEach(cb => cb.style.display = "flex");
+                    // Hide reply and edit buttons
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
 
                     // Display comment form
-                    btn.parentElement.parentElement.parentElement
+                    btn.parentElement.parentElement.parentElement.parentElement.parentElement
                         .querySelector('.comment-box').style.display = 'block';
                 })
             })
@@ -105,7 +123,6 @@
                 btn.style.display = 'none';
             });
         }
-
 
         // Hide last comments
         const mainCommentsPerPage = 3;
@@ -120,13 +137,11 @@
         // Load next batch of comments
         document.querySelector('.loadCommentsBtn').addEventListener('click', e => {
             currentPage++;
-            let visualisedCommentsCount = 0;
 
             document.querySelectorAll('.main-comment').forEach((c, i) => {
                 if ((i + 1) > (currentPage - 1) * mainCommentsPerPage &&
                     (i + 1) <= currentPage * mainCommentsPerPage) {
                     c.style.display = 'block';
-                    visualisedCommentsCount++;
                 }
             })
 
@@ -141,7 +156,7 @@
 
         // Show subcomments
         document.querySelectorAll('.btn-subcomments').forEach(btn => btn.addEventListener('click', e => {
-            e.target.parentElement.parentElement.parentElement.parentElement
+            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
                 .querySelector('.main-subcomment').style.display = 'block';
         }))
 
@@ -153,16 +168,17 @@
 
         // Edit comment
         document.querySelectorAll('.edit-comment-btn').forEach(b => b.addEventListener('click', (e) => {
-            e.target.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
-            e.target.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
-            e.target.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
+            // Show edit comment box and hide reply, edit comment buttons and comment content box
+            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
+            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
+            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
         }));
 
         $('.save-edit-btn').click(function (e) {
+            // Gather data
             let token = e.target.parentElement.parentElement.parentElement.parentElement
                 .querySelector('input[name=__RequestVerificationToken]').value;
-            let commentId = e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
-                .id;
+            let commentId = e.target.parentElement.parentElement.querySelector('#Id').value;
             let content = e.target.parentElement.parentElement.querySelector('#Content').value;
             let articleId = e.target.parentElement.parentElement.querySelector('#ArticleId').value;
 
@@ -176,11 +192,11 @@
                     ArticleId: articleId,
                 },
                 headers: { 'X-CSRF-TOKEN': token },
-                success: function (data) {
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').textContent = content;
-
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'none';
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'block';
+                success: function () {
+                    // Update comment content and return to default view
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').textContent = content;
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'none';
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'flex';
                     e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'block';
                 },
                 error: function () {
@@ -189,9 +205,41 @@
             })
         })
 
+        // Delete comment
+        document.querySelectorAll('.delete-comment-btn').forEach(btn => btn.addEventListener('click', (e) => {
+            // Get comment id
+            let commentId = e.target.parentElement.parentElement.parentElement.parentElement
+                .parentElement.parentElement.parentElement.parentElement.parentElement.id;
+            // Add id to confirm button classlist to use after confirmation
+            document.querySelector('.delete-comment-confirm-btn').classList.add(commentId);
+            $('#confirm-comment-delete').modal();
+        }));
+
+        document.querySelector('.delete-comment-confirm-btn').addEventListener('click', (e) => {
+            let commentId = e.target.classList[e.target.classList.length - 1];
+            let token = document.querySelector('input[name=__RequestVerificationToken]').value;
+            // Return btn classlist to default state
+            e.target.classList.remove(commentId);
+
+            $.ajax({
+                type: "POST",
+                url: '/api/DeleteComment',
+                data: {
+                    Id: commentId,
+                },
+                headers: { 'X-CSRF-TOKEN': token },
+                success: function () {
+                    // Hide deleted comment which will be removed entirely once page reloads
+                    $('#' + commentId).hide();
+                },
+                error: function () {
+                    console.log('error')
+                }
+            })
+
+            $('#confirm-comment-delete').modal('hide');
+        })
     </script>
 
-
-
-
+    <partial name="_ValidationScriptsPartial" />
 }

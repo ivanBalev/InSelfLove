@@ -68,6 +68,38 @@ namespace BDInSelfLove.Services.Data.ArticleComment
             return result;
         }
 
+        public async Task<int> Delete(int commentId)
+        {
+            var secondLevelComments = await this.articleCommentRepository.All().Where(c => c.ParentCommentId == commentId).ToListAsync();
+
+            foreach (var comment in secondLevelComments)
+            {
+                // Delete most deeply nested comments
+                var thirdLevelComments = await this.articleCommentRepository.All().Where(c => c.ParentCommentId == comment.Id).ToListAsync();
+                foreach (var lastLevelComment in thirdLevelComments)
+                {
+                    this.articleCommentRepository.Delete(lastLevelComment);
+                }
+
+                // Delete second level comments
+                this.articleCommentRepository.Delete(comment);
+            }
+
+            // Delete selected comment
+            var selectedComment = await this.articleCommentRepository.All().SingleOrDefaultAsync(c => c.Id == commentId);
+
+            // Check whether invalid comment id was entered manually by user
+            if (selectedComment == null)
+            {
+                return 0;
+            }
+
+            this.articleCommentRepository.Delete(selectedComment);
+            int result = await this.articleCommentRepository.SaveChangesAsync();
+
+            return result;
+        }
+
         private async Task<int> CheckCommentDepth(int? parentCommentId, int depthLevel = 1)
         {
             var parentComment = await this.articleCommentRepository.All().Where(c => c.Id == parentCommentId).FirstOrDefaultAsync();

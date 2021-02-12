@@ -21,5 +21,8 @@
 
         public ICollection<VideoCommentServiceModel> VideoComments { get; set; }
 
+        public string Title { get; set; }
+
+        public string AssociatedTerms { get; set; }
     }
 }

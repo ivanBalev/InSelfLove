@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BDInSelfLove.Web.InputModels.VideoComment;
+using Microsoft.EntityFrameworkCore;
 
 namespace BDInSelfLove.Web.Controllers
 {
@@ -30,13 +31,7 @@ namespace BDInSelfLove.Web.Controllers
         {
             if (!this.ModelState.IsValid)
             {
-                this.TempData["Error"] = "Error";
                 return this.RedirectToAction("All", "Video");
-            }
-
-            if (!inputModel.Content.StartsWith('<'))
-            {
-                inputModel.Content = $"<p>{inputModel.Content}</p>";
             }
 
             var user = await this.userManager.GetUserAsync(this.User);
@@ -53,6 +48,58 @@ namespace BDInSelfLove.Web.Controllers
 
             // TODO: Send email to admin when new comment added
             return this.RedirectToAction("All", "Video");
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/EditVideoComment")]
+        public async Task<IActionResult> Edit(VideoCommentEditInputModel inputModel)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest();
+            }
+
+            // Check if creator is same as editor
+            var dbCommentUserId = await this.videoCommentService.GetById(inputModel.Id)
+                .Select(c => c.UserId).SingleOrDefaultAsync();
+
+            if (dbCommentUserId != this.userManager.GetUserId(this.User))
+            {
+                return this.BadRequest();
+            }
+
+            var serviceModel = AutoMapperConfig.MapperInstance.Map<VideoCommentServiceModel>(inputModel);
+
+            // Send data to service
+            var result = await this.videoCommentService.Edit(serviceModel);
+
+            return (result > 0 ? this.Ok() : this.BadRequest());
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/DeleteVideoComment")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id < 1)
+            {
+                return this.BadRequest();
+            }
+
+            // Check if creator is same as editor
+            var dbCommentUserId = await this.videoCommentService.GetById(id)
+                .Select(c => c.UserId).SingleOrDefaultAsync();
+
+            if (dbCommentUserId != this.userManager.GetUserId(this.User))
+            {
+                return this.BadRequest();
+            }
+
+            // Send data to service
+            var result = await this.videoCommentService.Delete(id);
+
+            return (result > 0 ? this.Ok() : this.BadRequest());
         }
     }
 }

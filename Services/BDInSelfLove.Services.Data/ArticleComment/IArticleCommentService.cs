@@ -16,5 +16,8 @@ namespace BDInSelfLove.Services.Data.ArticleComment
         IQueryable<ArticleCommentServiceModel> GetById(int commentId);
 
         Task<int> Edit(ArticleCommentServiceModel serviceModel);
+
+        Task<int> Delete(int commentId);
+
     }
 }

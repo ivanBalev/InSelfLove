@@ -5,6 +5,7 @@
     <input type="hidden" asp-for="@Model.ParentCommentId" value="@Model.ParentCommentId" />
     <div class="form-group">
         <textarea asp-for="@Model.Content" class="form-control" rows="2" placeholder="Write your reply here."></textarea>
+        <span asp-validation-for="@Model.Content" class="text-danger"></span>
     </div>
     <div class="col-md-2 m-0 p-0">
         <button type="submit" class="btn btn-outline-secondary btn-block btn-sm">Reply</button>

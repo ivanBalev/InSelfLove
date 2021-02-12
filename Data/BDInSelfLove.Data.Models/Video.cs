@@ -22,5 +22,9 @@
         public virtual ApplicationUser User { get; set; }
 
         public virtual ICollection<VideoComment> VideoComments { get; set; }
+
+        public string Title { get; set; }
+
+        public string AssociatedTerms { get; set; }
     }
 }

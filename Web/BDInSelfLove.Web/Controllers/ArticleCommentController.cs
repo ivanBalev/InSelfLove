@@ -31,7 +31,6 @@ namespace BDInSelfLove.Web.Controllers
         {
             if (!this.ModelState.IsValid)
             {
-                this.TempData["Error"] = "Error";
                 return this.RedirectToAction("Single", "Article", new { id = inputModel.ArticleId });
             }
 
@@ -39,13 +38,7 @@ namespace BDInSelfLove.Web.Controllers
             var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleCommentServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
 
-            var commentId = await this.articleCommentService.Create(serviceModel);
-
-            if (commentId == 0)
-            {
-                this.TempData["Error"] = "Error";
-                return this.RedirectToAction("Single", "Article", new { id = inputModel.ArticleId });
-            }
+            await this.articleCommentService.Create(serviceModel);
 
             // TODO: Send email to admin when new comment added
             return this.RedirectToAction("Single", "Article", new { id = inputModel.ArticleId });
@@ -58,8 +51,7 @@ namespace BDInSelfLove.Web.Controllers
         {
             if (!this.ModelState.IsValid)
             {
-                this.TempData["Error"] = "Error";
-                return this.RedirectToAction("Single", "Article", new { id = inputModel.ArticleId });
+                return this.BadRequest();
             }
 
             // Check if creator is same as editor
@@ -68,14 +60,38 @@ namespace BDInSelfLove.Web.Controllers
 
             if (dbCommentUserId != this.userManager.GetUserId(this.User))
             {
-                this.TempData["Error"] = "Error";
-                return this.RedirectToAction("Single", "Article", new { id = inputModel.ArticleId });
+                return this.BadRequest();
             }
 
             var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleCommentServiceModel>(inputModel);
 
             // Send data to service
             var result = await this.articleCommentService.Edit(serviceModel);
+
+            return (result > 0 ? this.Ok() : this.BadRequest());
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/DeleteComment")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id < 1)
+            {
+                return this.BadRequest();
+            }
+
+            // Check if creator is same as editor
+            var dbCommentUserId = await this.articleCommentService.GetById(id)
+                .Select(c => c.UserId).SingleOrDefaultAsync();
+
+            if (dbCommentUserId != this.userManager.GetUserId(this.User))
+            {
+                return this.BadRequest();
+            }
+
+            // Send data to service
+            var result = await this.articleCommentService.Delete(id);
 
             return (result > 0 ? this.Ok() : this.BadRequest());
         }

@@ -2,10 +2,14 @@
 @using Microsoft.AspNetCore.Identity
 @using BDInSelfLove.Data.Models
 @using BDInSelfLove.Web.InputModels.VideoComment 
+@using BDInSelfLove.Common
+
 
 @model BDInSelfLove.Web.ViewModels.VideoComment.VideoCommentViewModel
 
 @inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
 
 <div class="comment" id="@Model.Id">
     <div class="row">
@@ -23,57 +27,88 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @Html.Raw(Model.SanitizedContent)
+                    <p class="comment-content">
+                        @Html.Raw(Model.SanitizedContent)
+                    </p>
                     <div class="row">
-                        <div class="col comment-box">
+                        <div class="col">
                             @if (this.SignInManager.IsSignedIn(this.User))
-                            {
-                        <partial name="_AddVideoCommentPartial" model="@(new VideoCommentInputModel {
+                             {
+                                 <partial name="_AddVideoCommentPartial" model="@(new VideoCommentInputModel {
                                                                 VideoId = Model.VideoId, ParentCommentId = Model.Id })" />
-                            }
+                                 <partial name="_VideoCommentEditPartial" model="@(new VideoCommentEditInputModel {
+                                                     Id = Model.Id, Content = Model.SanitizedContent})" />
+                             }
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-2 m-0 mx-3 p-0">
-                            <button type="button" class="btn btn-outline-secondary btn-sm reply-button btn-block">
-                                Reply
-                            </button>
+                    <div class="row comment-buttons justify-content-between">
+                        <div class="col-sm-7">
+                            <div class="row">
+                                <div class="col-3 m-0 mx-2 p-0">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm reply-button px-4">
+                                        Reply
+                                    </button>
+                                </div>
+                                @if (Model.SubComments.Count > 0 && Model.ParentCommentId == null)
+                                {
+                                    <div class="col-6 ml-2 m-0 p-0">
+                                        <button class="btn btn-outline-secondary border-0 btn-sm btn-subcomments">
+                                            See Subcomments
+                                        </button>
+                                    </div>
+                                }
+                            </div>
                         </div>
-                        @if (Model.SubComments.Count > 0 && Model.ParentCommentId == null)
-                        {
-            <div class="col-md-3 ml-2 m-0 p-0">
-                <button class="btn btn-outline-secondary border-0 btn-sm btn-subcomments">
-                    See Subcomments
-                </button>
-            </div> } @*<div class="col-md-2 p-0">
-                <a asp-controller="Comment" asp-action="Report" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm btn-block">
-                    <i class="ion ion-md-create"></i>Report
-                </a>
-            </div>*@
+
+                        @if (this.UserManager.GetUserId(this.User) == Model.UserId || this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                         {
+                            <div class="col-sm-3">
+                                <div class="row">
+                                    @*Edit button only for user's own comments*@
+                                    @if (this.UserManager.GetUserId(this.User) == Model.UserId)
+                                     {
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-warning btn-sm edit-comment-btn border-0">
+                                                Edit
+                                            </button>
+                                        </div>
+                                     }
+                                    @*Delete comment for user and admin*@
+                                    <div class="col-5">
+                                        <button class="btn btn-outline-danger btn-sm delete-comment-btn border-0">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                         }
                     </div>
                 </div>
 
                 @if (@Model.SubComments.Count > 0)
-                {
+                 {
                     this.ViewData["width"] = "40";
                     this.ViewData["height"] = "40";
 
                     // Make profile pic even smaller when we have 2nd level subcomment
-    @if (Model.ParentCommentId != null)
-    {
-        this.ViewData["width"] = "30";
-        this.ViewData["height"] = "30";
-    } this.ViewData["subcomment"] = true;
+                    @if (Model.ParentCommentId != null)
+                     {
+                        this.ViewData["width"] = "30";
+                        this.ViewData["height"] = "30";
+                     } 
+                    this.ViewData["subcomment"] = true;
 
-<div class="align-self-end @(this.ViewData["width"].ToString() == "40" ? "main-subcomment" : null)" style="width: 90%">
-
-    @foreach (var item in Model.SubComments)
-    {
-<partial name="_CommentsPartial" model="@item" />}
-    @if (Model.ParentCommentId == null)
-    {
-<button class="btn btn-outline-secondary btn-sm border-0 btn-subcomments hide-subcomments">Hide subcomments</button>}
-</div>}
+                    <div class="align-self-end @(this.ViewData["width"].ToString() == "40" ? "main-subcomment" : null)" style="width: 90%">
+                        @foreach (var item in Model.SubComments)
+                         {
+                            <partial name="_CommentsPartial" model="@item" />
+                         }
+                        @if (Model.ParentCommentId == null)
+                         {
+                             <button class="btn btn-outline-secondary btn-sm border-0 btn-subcomments hide-subcomments">Hide subcomments</button>
+                         }
+                    </div>
+                 }
             </div>
         </div>
     </div>

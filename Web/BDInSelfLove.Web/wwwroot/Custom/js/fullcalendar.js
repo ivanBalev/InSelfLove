@@ -80,6 +80,7 @@
             defaultDate: new Date(),
             timeFormat: 'H:mm',
             columnFormat: 'ddd',
+            slotLabelFormat: ['H:mm'],
             header: {
                 left: 'prev,next today',
                 center: 'title',
@@ -93,6 +94,10 @@
                 let today = moment()._d.split(' ')[0];
                 return daysOfWeek.find(d => d.startsWith(today));
             },
+            monthNames: ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'],
+            monthNamesShort: ['Яну', 'Фев', 'Мар', 'Апр', 'Май', 'Юни', 'Юли', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'],
+            dayNames: ['Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота', 'Неделя'],
+            dayNamesShort: ['Пон', 'Вт', 'Сря', 'Четв', 'Пет', 'Съб', 'Нед'],
             defaultView: 'agendaWeek',
             eventTextColor: 'black',
             eventBorderColor: themeColor,

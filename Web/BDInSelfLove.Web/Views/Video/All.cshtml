@@ -9,120 +9,12 @@
 
 @{
     ViewData["Title"] = "All Videos";
+    var mainCommentsPerPage = 3;
 }
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
 
-<section id="videoGallery" class="py-4">
-    <div class="container">
-        @foreach (var video in Model.Videos)
-        {
-            <div class="row mb-4 video">
-                <div class="col">
-                    <div class="embed-responsive embed-responsive-21by9">
-                        <iframe class="embed-responsive-item" src="@video.Url"></iframe>
-                    </div>
-
-                    @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
-                    {
-                        <div class="row mt-2">
-                            <div class="col"><a asp-area="Administration" asp-controller="Video" asp-action="Delete" asp-route-id="@video.Id" class="btn btn-block btn-outline-danger">Delete</a></div>
-                        </div>
-                    }
-
-                    <h5 class="mt-2">Add New Comment</h5>
-                    <div class="row">
-                        <div class="col new-comment">
-                            @if (!this.SignInManager.IsSignedIn(this.User))
-                            {
-                                <partial name="_PostLoginPartial" model="null" /> }
-                            else
-                            {
-                                <partial name="_AddVideoCommentPartial" model="@(new VideoCommentInputModel {
-                                                                VideoId = video.Id, ParentCommentId = null })" />}
-                        </div>
-                    </div>
-                        <h5 class="mb-3 text-center">Comments</h5>
-                    @if (video.VideoComments.Any())
-                    {
-                        <div class="comments border">
-                            @foreach (var comment in video.VideoComments)
-                            {
-                                this.ViewData["width"] = "64";
-                                this.ViewData["height"] = "64";
-                                <div class="main-comment">
-                                    <partial name="_CommentsPartial" model="@comment" />
-                                </div>
-                            }
-                            <div class="row mb-2">
-                                <div class="col text-center">
-                                    <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">Load More Comments</button>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-
-        @*Pagination*@
-        <div class="mb-3 clearfix">
-            <nav>
-                <ul class="pagination justify-content-center">
-                    @if (this.Model.CurrentPage == 1)
-                    {
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">Previous</a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="page-item">
-                            <a class="page-link"
-                               asp-controller="Video"
-                               asp-action="All"
-                               asp-route-page="@(this.Model.CurrentPage - 1)">Previous</a>
-                        </li>
-                    }
-
-                    @{
-                        var startPage = Model.CurrentPage > 6 ? Model.CurrentPage - 5 : 1;
-                        var endPage = Model.CurrentPage + 4 > Model.PagesCount ? Model.PagesCount : Model.CurrentPage + 4;
-
-                        for (int i = startPage; i <= endPage; i++)
-                        {
-                            var active = i == this.Model.CurrentPage ? "active" : string.Empty;
-                            <li class="page-item @active">
-                                <a class="page-link"
-                                   asp-controller="Video"
-                                   asp-action="All"
-                                   asp-route-page="@i">@i</a>
-                            </li>
-                        }
-                    }
-
-                    @if (this.Model.CurrentPage == this.Model.PagesCount)
-                    {
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="page-item">
-                            <a class="page-link"
-                               asp-controller="Video"
-                               asp-action="All"
-                               asp-route-page="@(this.Model.CurrentPage + 1)">Next</a>
-                        </li>
-                    }
-                </ul>
-            </nav>
-        </div>
-
-    </div>
-</section>
-
+<partial name="_VideosPagination" model="@Model" />
 
 @section Scripts
 {
@@ -136,15 +28,14 @@
                 // Hide/show text box
                 btn.addEventListener('click', e => {
                     //  Hide comment boxes and display all reply buttons
-                    document.querySelectorAll('.comment-box').forEach(cb => cb.style.display = "none");
-                    document.querySelectorAll('.comment .reply-button').forEach(cb => cb.style.display = "block");
-
-                    // Hide reply button
-                    e.target.style.display = 'none';
+                    document.querySelectorAll('.comment-box').forEach((cb, i) => cb.style.display = "none");
+                    document.querySelectorAll('.comment-buttons').forEach(cb => cb.style.display = "flex");
+                    // Hide reply and edit buttons
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
 
                     // Display comment form
-                    btn.parentElement.parentElement.parentElement
-                        .firstElementChild.nextElementSibling.firstElementChild.style.display = "block";
+                    btn.parentElement.parentElement.parentElement.parentElement.parentElement
+                        .querySelector('.comment-box').style.display = 'block';
                 })
             })
             // Hide reply buttons otherwise
@@ -154,8 +45,6 @@
             });
         }
 
-
-        // Hide last comments TODO: fix with foreach targeting each .comments section
         const mainCommentsPerPage = 3;
         var currentPage = 1;
         var visualisedCommentsCount = 0;
@@ -196,32 +85,88 @@
         // Show subcomments
         document.querySelectorAll('.btn-subcomments').forEach(btn => btn.addEventListener('click', e => {
             e.target.parentElement.parentElement.parentElement.parentElement
-                .children[2].style.display = 'block';
+                .parentElement.parentElement.children[2].style.display = 'block';
         }))
 
         // Hide subcomments
         document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListener('click', e => {
-            // TODO: Error Why??
             e.target.parentElement.style.display = 'none'
         }));
 
         // Edit comment
-        $('.edit-comment-btn').click(function (e) {
-            console.log(e);
+        document.querySelectorAll('.edit-comment-btn').forEach(b => b.addEventListener('click', (e) => {
+            // Show edit comment box and hide reply, edit comment buttons and comment content box
+            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
+            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
+            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
+        }));
 
+        $('.save-edit-btn').click(function (e) {
+            // Gather data
+            let token = e.target.parentElement.parentElement.parentElement
+                .querySelector('input[name=__RequestVerificationToken]').value;
+            let commentId = e.target.parentElement.parentElement.parentElement
+                .querySelector('.edit-comment').querySelector('#Id').value;
+            let content = e.target.parentElement.parentElement.parentElement
+                .querySelector('.edit-comment').querySelector('#Content').value;
 
-            //$.ajax({
-            //    type: "POST",
-            //    url: '/api/EditComment',
-            //    data: {
+            $.ajax({
+                type: "POST",
+                url: '/api/EditVideoComment',
+                data: {
+                    Id: commentId,
+                    Content: content,
+                },
+                headers: { 'X-CSRF-TOKEN': token },
+                success: function () {
+                    // Update comment content and return to default view
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').textContent = content;
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'none';
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'flex';
+                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'block';
+                },
+                error: function () {
+                    console.log('error')
+                }
+            })
+        })
 
-            //    },
-            //    success: function (data) {
-            //    },
-            //    error: function () {
-            //    }
-            //})
+        // Delete comment
+        document.querySelectorAll('.delete-comment-btn').forEach(btn => btn.addEventListener('click', (e) => {
+            // Get comment id
+            let commentId = e.target.parentElement.parentElement.parentElement.parentElement
+                .parentElement.parentElement.parentElement.parentElement.parentElement.id;
+            // Add id to confirm button classlist to use after confirmation
+            document.querySelector('.delete-comment-confirm-btn').classList.add(commentId);
+            $('#confirm-comment-delete').modal();
+        }));
+
+        document.querySelector('.delete-comment-confirm-btn').addEventListener('click', (e) => {
+            let commentId = e.target.classList[e.target.classList.length - 1];
+            let token = document.querySelector('input[name=__RequestVerificationToken]').value;
+            // Return btn classlist to default state
+            e.target.classList.remove(commentId);
+
+            $.ajax({
+                type: "POST",
+                url: '/api/DeleteVideoComment',
+                data: {
+                    Id: commentId,
+                },
+                headers: { 'X-CSRF-TOKEN': token },
+                success: function () {
+                    // Hide deleted comment which will be removed entirely once page reloads
+                    $('#' + commentId).hide();
+                },
+                error: function () {
+                    console.log('error')
+                }
+            })
+
+            $('#confirm-comment-delete').modal('hide');
         })
 
     </script>
+
+    <partial name="_ValidationScriptsPartial" />
 }

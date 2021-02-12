@@ -161,7 +161,7 @@
             {
                 return this.Ok();
             }
-
+            // TODO: Below gives error when reasoning is NULL
             var emailText = $"<div>Hello, </div> <div></div> <div>{AppointmentCancellationIntro}</div> <div>{declineReasoning.Replace("\n", "<br>")}</div> <div>Thank you.</div>";
 
             // TODO: system email needs to be set by admin

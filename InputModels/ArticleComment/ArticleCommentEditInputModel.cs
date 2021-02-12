@@ -14,6 +14,7 @@ namespace BDInSelfLove.Web.InputModels.ArticleComment
         public int Id { get; set; }
 
         [Required]
+        [MinLength(2, ErrorMessage = "Comment must be longer than 2 symbols.")]
         public string Content { get; set; }
 
         [Required]
