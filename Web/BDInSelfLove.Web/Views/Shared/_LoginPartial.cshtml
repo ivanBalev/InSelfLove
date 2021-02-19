@@ -3,10 +3,11 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-<ul class="navbar-nav ml-auto">
-    <li class="nav-item dropdown pl-5">
-        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+<ul class="navbar-nav">
+    <li class="nav-item dropdown ml-4">
+        <a href="#" class="nav-link dropdown-toggle p-0" data-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-user"></i>
         </a>
         <ul class="dropdown-menu mb-2">
@@ -14,7 +15,7 @@
             {
                 <li>
                     <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
-                        Profile
+                        @localizer["Profile"]
                     </a>
                 </li>
 
@@ -22,29 +23,29 @@
                 {
                     <li>
                         <a class="dropdown-item" asp-area="Administration" asp-controller="Article" asp-action="Create">
-                            Create Article
+                            @localizer["Create Article"]
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" asp-area="Administration" asp-controller="Video" asp-action="Create">
-                            Create Video
+                            @localizer["Create Video"]
                         </a>
                     </li>
                 }
 
                 <li>
                     <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Context.Request.Path">
-                        Logout
+                        @localizer["Logout"]
                     </a>
                 </li>
             }
             else
             {
                 <li>
-                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">@localizer["Register"]</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">@localizer["Login"]</a>
                 </li>
             }
         </ul>

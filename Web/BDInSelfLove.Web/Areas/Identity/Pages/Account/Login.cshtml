@@ -1,8 +1,9 @@
 ﻿@page
 @model LoginModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = localizer["Login"].Value;
 }
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
@@ -15,12 +16,12 @@
                     <form id="account" method="post">
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div class="form-group">
-                            <label asp-for="Input.Username"></label>
+                            <label>@localizer["Username"]</label>
                             <input asp-for="Input.Username" class="form-control" />
                             <span asp-validation-for="Input.Username" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Input.Password"></label>
+                            <label>@localizer["Password"]</label>
                             <input asp-for="Input.Password" class="form-control" />
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
@@ -28,16 +29,16 @@
                             <div class="checkbox d-inline">
                                 <label asp-for="Input.RememberMe">
                                     <input asp-for="Input.RememberMe" />
-                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                    @localizer["Remember me?"]
                                 </label>
                             </div>
                             <span>
-                                <span> <a class="btn btn-outline-light btn-sm" id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>  </span>
-                                <span class="ml-3 btn btn-outline-light btn-sm"> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>  </span>
+                                <span> <a class="btn btn-outline-light btn-sm" id="forgot-password" asp-page="./ForgotPassword">@localizer["Forgot your password?"]</a>  </span>
+                                <span class="ml-3 btn btn-outline-light btn-sm"> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@localizer["Register as a new user"]</a>  </span>
                             </span>
                         </div>
                         <div class="form-group">
-                            <button type="submit" class="btn btn-outline-secondary w-50 btn-sm mt-3">Log in</button>
+                            <button type="submit" class="btn btn-outline-secondary w-50 btn-sm mt-3">@localizer["Log in"]</button>
                         </div>
                     </form>
                 </section>
@@ -62,11 +63,11 @@
                                         {
                                             if (provider.Name == "Google")
                                             {
-                                                <button type="submit" class="btn btn-outline-secondary btn-sm mx-3" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="fab fa-google fa-fw text-danger"></i> Login with @provider.DisplayName</button>
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm mx-3" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="fab fa-google fa-fw text-danger"></i> @localizer["Login with Google"]</button>
                                             }
                                             else if (provider.Name == "Facebook")
                                             {
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="fab fa-facebook-f fa-fw text-primary"></i> Login with @provider.DisplayName</button>
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="fab fa-facebook-f fa-fw text-primary"></i> @localizer["Login with Facebook"]</button>
                                             }
                                         }
                                     </p>

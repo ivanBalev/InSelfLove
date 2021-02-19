@@ -1,5 +1,8 @@
 ﻿namespace BDInSelfLove.Web
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Reflection;
 
     using BDInSelfLove.Data;
@@ -19,6 +22,7 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Article;
+    using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
     using BDInSelfLove.Web.InputModels.Administration.Article;
     using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels;
@@ -27,11 +31,13 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
     using SmartBreadcrumbs;
 
     public class Startup
@@ -46,6 +52,29 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var cultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("bg"),
+                };
+                options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("bg");
+                options.SupportedCultures = cultures;
+                options.SupportedUICultures = cultures;
+                options.RequestCultureProviders = new List<IRequestCultureProvider>
+                    {
+                        new CookieRequestCultureProvider(),
+                        new QueryStringRequestCultureProvider(),
+                    };
+            });
+
+            services.AddMvc()
+                .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization();
+
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
 
@@ -61,6 +90,8 @@
             Cloudinary cloudinaryUtility = new Cloudinary(cloudinaryCredentials);
 
             services.AddSingleton(cloudinaryUtility);
+
+            services.AddResponseCaching();
 
             // External Logins
             services.AddAuthentication()
@@ -80,10 +111,17 @@
 
             services.Configure<CookiePolicyOptions>(
                 options =>
-                    {
-                        options.CheckConsentNeeded = context => true;
-                        options.MinimumSameSitePolicy = SameSiteMode.None;
-                    });
+                {
+                    options.CheckConsentNeeded = context => true;
+                });
+
+            var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions()
+            {
+                Path = "/",
+                HttpOnly = false,
+                IsEssential = true,
+                Expires = DateTime.Now.AddMonths(1),
+            };
 
             services.AddControllersWithViews(configure =>
            {
@@ -123,6 +161,8 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
             AutoMapperConfig.RegisterMappings(
                 typeof(ErrorViewModel).GetTypeInfo().Assembly,
                 typeof(ArticleServiceModel).GetTypeInfo().Assembly,
@@ -155,13 +195,14 @@
             }
 
             app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
-            
+
             app.UseHttpsRedirection();
             app.UseResponseCompression();
             app.UseResponseCaching();
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
 
             app.UseRouting();
 

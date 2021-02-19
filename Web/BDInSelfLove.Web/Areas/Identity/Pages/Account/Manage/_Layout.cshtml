@@ -1,6 +1,8 @@
-﻿@{
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{
     Layout = "/Views/Shared/_Layout.cshtml";
-    var title = "Manage your account";
+    var title = localizer["Manage your account"].Value;
 }
 
 <partial name="_SlimShowcasePartial" model="@title" />
@@ -9,7 +11,7 @@
     <h1 class="text-center"></h1>
     <div class="mb-3 mt-4">
         <div class="row">
-            <div class="col-md-3" id="manageNav" >
+            <div class="col-md-3" id="manageNav">
                 <partial name="_ManageNav" />
             </div>
             <div class="col-md-9 navBody">

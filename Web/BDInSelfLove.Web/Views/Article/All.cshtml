@@ -1,6 +1,9 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Article.ArticlePaginationViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+
 @{
-    ViewData["Title"] = "All Articles";
+    ViewData["Title"] = @localizer["All Articles"].Value;
 }
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />

@@ -6,6 +6,7 @@
 
     using BDInSelfLove.Services.Data;
     using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
     using BDInSelfLove.Web.ViewModels;
     using BDInSelfLove.Web.ViewModels.Article;
     using BDInSelfLove.Web.ViewModels.Home;

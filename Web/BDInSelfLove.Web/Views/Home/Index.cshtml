@@ -1,7 +1,10 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Home.HomeViewModel
+
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
 @{
-    this.ViewData["Title"] = "Home Page";
-}
+            this.ViewData["Title"] = localizer["Home Page"].Value;
+    }
 
 <!-- SHOWCASE -->
 <section id="showcase" class="py-5">
@@ -10,12 +13,12 @@
             <div class="row mt-4 pt-4">
                 <div class="col text-center mt-5 pt-5">
                     <div class="showcase-wrapper">
-                        <h5 class="font-weight-light  featured-article">Featured Article</h5>
-                        <h1 class=" featured-article">
+                        <h1 class="font-weight-light featured-article display-4">@localizer["FeaturedArticle"]</h1>
+                        <h2 class=" featured-article">
                             @Model.FeaturedArticle.Title
-                        </h1>
+                        </h2>
                         <a asp-controller="Article" asp-action="Single" asp-route-id="@Model.FeaturedArticle.Id" class=" btn btn-outline-secondary btn-md text-dark mt-2">
-                            Read More
+                            @localizer["ReadMore"]
                         </a>
                     </div>
                 </div>
@@ -29,11 +32,11 @@
     <div class="container">
         <div class="row">
             <div class="col text-center pt-5 pb-2 info-header">
-                <h1 class="display-4">Explore My Articles</h1>
-                <p class="lead">
+                <h1 class="display-4">@localizer["Explore My Articles"]</h1>
+                @*<p class="lead">
                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum ullam dolor culpa et at
                     exercitationem possimus sunt, vitae quasi reiciendis!
-                </p>
+                </p>*@
             </div>
         </div>
     </div>
@@ -46,7 +49,7 @@
             <partial name="_ArticlesPartial" model="@Model.LastArticles" />
         </div>
 
-        <a asp-controller="Article" asp-action="All" class="btn btn-outline-secondary btn-block mt-2">Check Them All Out</a>
+        <a asp-controller="Article" asp-action="All" class="btn btn-outline-secondary btn-block mt-2">@localizer["Check Them All Out"]</a>
 
     </div>
 </section>
@@ -56,11 +59,11 @@
     <div class="container">
         <div class="row">
             <div class="col text-center pt-5 pb-2 info-header">
-                <h1 class="display-4">See My Videos</h1>
-                <p class="lead">
+                <h1 class="display-4">@localizer["See My Videos"]</h1>
+                @*<p class="lead">
                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum ullam dolor culpa et at
                     exercitationem possimus sunt, vitae quasi reiciendis!
-                </p>
+                </p>*@
             </div>
         </div>
     </div>
@@ -87,17 +90,32 @@
                     </div>
 
                     <!-- CONTROLS -->
-                    <a href="#slider2" class="carousel-control-prev" data-slide="prev">
+                    <a href="#slider2" class="carousel-control-prev mt-5" data-slide="prev" aria-label="previous video">
                         <span class="carousel-control-prev-icon"></span>
                     </a>
 
-                    <a href="#slider2" class="carousel-control-next" data-slide="next">
+                    <a href="#slider2" class="carousel-control-next mt-5" data-slide="next" aria-label="next video">
                         <span class="carousel-control-next-icon"></span>
                     </a>
                 </div>
             </div>
         </div>
-        <a asp-controller="Video" asp-action="All" class="btn btn-outline-secondary btn-block my-4">See All My Videos</a>
+        <a asp-controller="Video" asp-action="All" class="btn btn-outline-secondary btn-block my-4">@localizer["See All My Videos"]</a>
     </div>
 </section>
 
+
+<script>
+    let DOMelements = document.querySelectorAll('.article-card');
+    let elements = Array.from(DOMelements);
+    let randomElementHeight = elements[0].offsetHeight;
+
+    if (elements.some(e => e.offsetHeight != randomElementHeight)) {
+        let maxHeight = 0;
+        elements.forEach(e => e.offsetHeight > maxHeight ? maxHeight = e.offsetHeight : null);
+
+        for (let i = 0; i < elements.length; i++) {
+            DOMelements[i].style.height = maxHeight + 'px';
+        }
+    }
+</script>

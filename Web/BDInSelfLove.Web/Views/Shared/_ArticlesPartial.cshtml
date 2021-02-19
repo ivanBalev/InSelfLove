@@ -1,14 +1,17 @@
 ﻿@model ICollection<BDInSelfLove.Web.ViewModels.Home.BriefArticleInfoViewModel>
 
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+
 @foreach (var article in Model)
 {
-    <div class="col-lg-4 col-md-6 mb-4">
+    <div class="col-lg-4 col-md-6 mb-4" itemscope itemtype="http://schema.org/Article">
         <a asp-area="" asp-controller="Article" asp-action="Single" asp-route-id="@article.Id">
             <div class="card article-card">
-                <img src=@article.ImageUrl alt="" class="img-fluid card-img-top">
+                <img src=@article.ImageUrl alt="Article image chosen by author" class="img-fluid card-img-top">
                 <div class="card-body bg-light text-center">
                     <div class="card-title"><span>@article.Title</span></div>
-                    <small class="text-muted">Posted by @article.UserUsername on @article.CreatedOn.ToString("MMMM dd")</small>
+                    <small>@localizer["Posted by"] @article.UserUsername @localizer["on"] @article.CreatedOn.ToString("dd MMMM yyyy")</small>
                     <hr>
                     <p class="card-text text-left">
                         <span>@(article.PreviewContent)</span>

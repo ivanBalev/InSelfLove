@@ -1,5 +1,7 @@
 ﻿@model BDInSelfLove.Web.Areas.Identity.Pages.Account.LoginModel.InputModel
 
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
 <div id="postLogin">
     <div class="d-lg-flex align-items-lg-center mb-3">
         <form asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="form-inline d-block d-sm-flex mr-2 mb-3 mb-lg-0" method="post">
@@ -14,9 +16,9 @@
                 <input asp-for="@Model.Password" class="form-control" />
                 <span asp-validation-for="@Model.Password" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-outline-secondary btn-pink border-0">Log in</button>
+            <button type="submit" class="btn btn-outline-secondary btn-pink border-0">@localizer["Log in"]</button>
         </form>
-        <span class="mr-0">or ...</span>
-        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-success border-0 mb-0 ml-0">Create account</a>
+        <span class="mr-0">@localizer["or ..."]</span>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-success border-0 mb-0 ml-0">@localizer["Create account"]</a>
     </div>
 </div>

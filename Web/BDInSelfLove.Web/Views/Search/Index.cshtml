@@ -1,21 +1,23 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Search.IndexSearchViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
 
 @{
-    ViewData["Title"] = "Search Results";
+    ViewData["Title"] = @localizer["Search Results"].Value;
 }
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
 @* Search term stored for ajax requests *@
 <input type="hidden" id="search-term" name="search-term" value="@Model.SearchTerm">
 <div class="col text-center pt-5 pb-2 info-header">
-    <h1 class="display-4">Articles</h1>
+    <h1 class="display-4">@localizer["Articles"]</h1>
 </div>
 
 <partial name="_ArticlesPagination" model="@Model.ArticlesPagination" />
 
 
 <div class="col text-center pt-5 pb-2 info-header">
-    <h1 class="display-4">Videos</h1>
+    <h1 class="display-4">@localizer["Videos"]</h1>
 </div>
 
 

@@ -1,12 +1,37 @@
 ﻿$(document).ready(function () {
     const token = $("#csfrToken input[name=__RequestVerificationToken]").val();
     const themeColor = "rgb(170, 85, 132)";
+    const culture = document.cookie.match('Culture').input.substr(-2);
+    const cultureIsEn = culture === 'en';
 
-    var appointments = [];
-    var selectedAppointment = null;
-    var availableDailySlots = [];
-    var userIsAdmin = document.getElementById('btnWorkingHours') !== null;
-    var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let appointments = [];
+    let selectedAppointment = null;
+    let availableDailySlots = [];
+    const userIsAdmin = document.getElementById('btnWorkingHours') !== null;
+
+    // Strings
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayNamesShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    const monthNamesBG = ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни',
+        'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'];
+    const monthNamesBGShort = ['Яну', 'Фев', 'Мар', 'Апр', 'Май', 'Юни', 'Юли', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
+    const dayNamesBG = ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'];
+    const dayNamesBGShort = ['Нед', 'Пон', 'Вт', 'Сря', 'Четв', 'Пет', 'Съб'];
+
+    const myAppointment = cultureIsEn ? 'My Appointment' : 'Моят час'
+    const appointmentEvaluation = cultureIsEn ? 'Appointment Evaluation' : 'Оценка на час'
+    const approved = cultureIsEn ? 'Approved' : 'Одобрен';
+    const awaitingApproval = cultureIsEn ? 'Awaiting approval' : 'Очаква одобрение';
+    const genericError = cultureIsEn ? 'Error' : 'Грешка';
+    const phoneNumberError = cultureIsEn ? 'Please provide a valid phone number or no phone number at all.' :
+        'Моля, въведи валиден телефонен номер или остави полето празно.'
+    const appointmentDescriptionError = cultureIsEn ? 'Please write more than 30 symbols.' : 'Моля, въведи повече от 30 букви.'
+
 
     const setUpDailyWorkingHours = () => {
         let slots = document.getElementsByClassName('dailyTimeSlot');
@@ -67,7 +92,7 @@
                 if (request.getResponseHeader('location') != undefined) {
                     window.location.href = request.getResponseHeader('location');
                 } else {
-                    alert('Error');
+                    alert(genericError);
                 }
             }
         })
@@ -90,14 +115,11 @@
             eventColor: 'white',
             minTime: '7:00:00',
             maxTime: '20:00:00',
-            firstDay: () => {
-                let today = moment()._d.split(' ')[0];
-                return daysOfWeek.find(d => d.startsWith(today));
-            },
-            monthNames: ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'],
-            monthNamesShort: ['Яну', 'Фев', 'Мар', 'Апр', 'Май', 'Юни', 'Юли', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'],
-            dayNames: ['Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота', 'Неделя'],
-            dayNamesShort: ['Пон', 'Вт', 'Сря', 'Четв', 'Пет', 'Съб', 'Нед'],
+            firstDay: cultureIsEn ? 0 : 1,
+            monthNames: cultureIsEn ? monthNames : monthNamesBG,
+            monthNamesShort: cultureIsEn ? monthNamesShort : monthNamesBGShort,
+            dayNames: cultureIsEn ? dayNames : dayNamesBG,
+            dayNamesShort: cultureIsEn ? dayNamesShort : dayNamesBGShort,
             defaultView: 'agendaWeek',
             eventTextColor: 'black',
             eventBorderColor: themeColor,
@@ -121,7 +143,7 @@
 
                 if (!eventObj.isApproved) {
                     eventElement.setAttribute(style, initialStyleState + '; border-color: #ffc107; color: #ffc107;');
-                    eventElement.innerText = userIsAdmin ? eventElement.innerText.split(' - ')[0] : 'My Appointment';
+                    eventElement.innerText = userIsAdmin ? eventElement.innerText.split(' - ')[0] : myAppointment;
 
                 } else if (!eventObj.isOwn) {
                     eventElement.setAttribute(style, initialStyleState + '; border-color:#28a745; color:#28a745;');
@@ -183,7 +205,7 @@
             $('#appointmentApproval .username')[0].innerText = calEvent.userUserName;
             $('#appointmentApproval .description')[0].innerText = calEvent.description;
             $('#appointmentApproval .phone')[0].innerText = calEvent.userPhoneNumber;
-            $('#appointmentApproval .modal-title')[0].innerText = 'Appointment Evaluation';
+            $('#appointmentApproval .modal-title')[0].innerText = appointmentEvaluation;
             $('#appointmentApproval').modal();
             return;
         }
@@ -196,10 +218,10 @@
         $('#ownAppointmentModal .username')[0].innerText = calEvent.userUserName;
 
         if (!calEvent.isApproved) {
-            $('#ownAppointmentModal .status')[0].innerText = 'Awaiting approval';
+            $('#ownAppointmentModal .status')[0].innerText = awaitingApproval;
             $('#ownAppointmentModal .status').css('color', '#ffc107');
         } else if (calEvent.isApproved) {
-            $('#ownAppointmentModal .status')[0].innerText = 'Approved';
+            $('#ownAppointmentModal .status')[0].innerText = approved;
             $('#ownAppointmentModal .status').css('color', '#28a745');
         }
 
@@ -249,7 +271,7 @@
                 $('#patientIssueDescription').val('');
             },
             error: function () {
-                alert('Error');
+                alert(genericError);
             }
         })
     }
@@ -279,7 +301,8 @@
                 $('#dailyAvailabilityModal').modal('hide');
                 fetchEventAndRenderCalendar();
             },
-            error: function (message) {
+            error: function () {
+                alert(genericError);
                 $('#workingHours').modal('hide');
             }
         })
@@ -294,7 +317,7 @@
                 $('#workingHours').modal('hide');
             },
             error: function () {
-                alert('Error');
+                alert(genericError);
                 $('#workingHours').modal('hide');
             }
         })
@@ -321,7 +344,7 @@
                 $('#workingHours').modal('hide');
             },
             error: function () {
-                alert('Error');
+                alert(genericError);
                 $('#workingHours').modal('hide');
             }
         })
@@ -339,12 +362,12 @@
                 url: '/api/appointment/Approve',
                 data: data,
                 headers: { 'X-CSRF-TOKEN': token },
-                success: function (data) {
+                success: function () {
                     $('#appointmentApproval').modal('hide');
                     fetchEventAndRenderCalendar();
                 },
-                error: function (err) {
-                    alert('Error');
+                error: function () {
+                    alert(genericError);
                 }
             })
 
@@ -360,7 +383,7 @@
         // Validate description
         let userIssueDescription = $('#patientIssueDescription').val().trim();
         if (userIssueDescription == '' || userIssueDescription.length < 30) {
-            alert('Please write more than 30 symbols.')
+            alert(appointmentDescriptionError)
             return;
         }
         // Validate phone number
@@ -370,7 +393,7 @@
         if (userPhoneNumber !== null && userPhoneNumber !== '') {
             if (userPhoneNumber.includes(char => !allowedPhoneNumberSymbols.includes(char)) ||
                 userPhoneNumber.length < 8) {
-                alert('Please provide a valid phone number or no phone number at all.');
+                alert(phoneNumberError);
                 return;
             }
         }
@@ -391,8 +414,8 @@
                 $('#patientIssueDescription').val('');
                 fetchEventAndRenderCalendar();
             },
-            error: function (err) {
-                alert('Error');
+            error: function () {
+                alert(genericError);
             }
         })
     })
@@ -412,8 +435,8 @@
                 $('#appointmentApproval').modal('hide');
                 fetchEventAndRenderCalendar();
             },
-            error: function (err) {
-                alert('Error');
+            error: function () {
+                alert(genericError);
             }
         })
     });
@@ -436,13 +459,13 @@
             url: '/api/appointment/Approve',
             data: data,
             headers: { 'X-CSRF-TOKEN': token },
-            success: function (data) {
+            success: function () {
                 $('#declineAppointmentConfirm').modal('hide');
                 $('#declineReasoning').val('');
                 fetchEventAndRenderCalendar();
             },
-            error: function (err) {
-                alert('Error');
+            error: function () {
+                alert(genericError);
             }
         })
     });

@@ -6,10 +6,11 @@
 
 
 @inject SignInManager<ApplicationUser> SignInManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
 
 @{
-    ViewData["Title"] = "All Videos";
-    var mainCommentsPerPage = 3;
+    ViewData["Title"] = @localizer["All Videos"].Value;
 }
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />

@@ -5,27 +5,32 @@
 @model BDInSelfLove.Web.ViewModels.Article.ArticleViewModel
 
 @inject SignInManager<ApplicationUser> SignInManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
 
 @{ 
     var mainCommentsPerPage = 3;
+    ViewData["Title"] = Model.Title;
 }
 
 <div class="container">
     <div id="singleArticle">
         <div class="card mb-4">
-            <img class="card-img-top" src="@Model.ImageUrl" alt="">
+            <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
             <div class="card-body">
                 @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
                 {
                     <div class="row mb-4">
-                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">Edit</a></div>
-                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">Delete</a></div>
+                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Edit"
+                                            asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">@localizer["Edit"]</a></div>
+                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Delete"
+                                            asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a></div>
                     </div>
                 }
                 <h4 class="card-title text-center mb-2">@Model.Title</h4>
 
                 <div class="text-center">
-                    <small class="text-muted text-center">Posted on @Model.CreatedOn.ToString("MMMM dd, yyyy") at @Model.CreatedOn.ToString("HH:mm") by @Model.UserUsername</small>
+                    <small class="text-muted text-center">@localizer["Posted on"] @Model.CreatedOn.ToString("dd MMMM, yyyy") @localizer["at"] @Model.CreatedOn.ToString("HH:mm") @localizer["by"] @Model.UserUsername</small>
                 </div>
                 <div class="row justify-content-around">
                     <div class="col-md-8">
@@ -37,7 +42,7 @@
     </div>
 
     @*Add new comment section*@
-    <h5>Add New Comment</h5>
+    <h5>@localizer["Add New Comment"]</h5>
     <div class="row">
         <div class="col">
             @if (!this.SignInManager.IsSignedIn(this.User))
@@ -53,7 +58,7 @@
     @*All comments section*@
     @if (Model.ArticleComments.Count > 0)
     {
-        <h5 class="mb-3 text-center">Comments</h5>
+        <h5 class="mb-3 text-center">@localizer["Comments"]</h5>
         <div class="comments border">
             @foreach (var comment in Model.ArticleComments)
             {
@@ -70,7 +75,7 @@
             {
                 <div class="row mb-2">
                     <div class="col text-center">
-                        <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">Load More Comments</button>
+                        <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">@localizer["Load More Comments"]</button>
                     </div>
                 </div>
             }
@@ -82,10 +87,10 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header justify-content-center">
-                    <h4 class="modal-title">Are you sure?</h4>
+                    <h4 class="modal-title">@localizer["Are you sure?"]</h4>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-danger btn-block delete-comment-confirm-btn">Confirm</button>
+                    <button type="button" class="btn btn-outline-danger btn-block delete-comment-confirm-btn">@localizer["Confirm"]</button>
                 </div>
             </div>
         </div>
