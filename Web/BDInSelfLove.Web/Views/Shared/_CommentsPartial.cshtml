@@ -46,13 +46,13 @@
                         <div class="col-sm-7">
                             <div class="row">
                                 <div class="col-3 m-0 mx-2 p-0">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm reply-button px-4">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm reply-button px-2">
                                         @localizer["Reply"]
                                     </button>
                                 </div>
                                 @if (Model.SubComments.Count > 0 && Model.ParentCommentId == null)
                                 {
-                                    <div class="col-6 ml-2 m-0 p-0">
+                                    <div class="col-6 ml-3 m-0 p-0">
                                         <button class="btn btn-outline-secondary border-0 btn-sm btn-subcomments">
                                             @localizer["See Subcomments"]
                                         </button>
@@ -106,7 +106,7 @@
                          }
                         @if (Model.ParentCommentId == null)
                          {
-                             <button class="btn btn-outline-secondary btn-sm border-0 btn-subcomments hide-subcomments">@localizer["Hide subcomments"]</button>
+                             <button class="btn btn-outline-secondary btn-sm border-0 hide-subcomments">@localizer["Hide subcomments"]</button>
                          }
                     </div>
                  }

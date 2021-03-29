@@ -126,4 +126,28 @@
   <data name="Email" xml:space="preserve">
     <value>Имейл</value>
   </data>
+  <data name="First Name" xml:space="preserve">
+    <value>Име</value>
+  </data>
+  <data name="Last Name" xml:space="preserve">
+    <value>Фамилия</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Съобщение</value>
+  </data>
+  <data name="Phone number" xml:space="preserve">
+    <value>Телефон</value>
+  </data>
+  <data name="Please fill out this form to contact me." xml:space="preserve">
+    <value>Моля, попълни формата, за да се свържеш с мен.</value>
+  </data>
+  <data name="Social Media" xml:space="preserve">
+    <value>Социални Мрежи</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Изпрати</value>
+  </data>
+  <data name="Zvanika 1 - 3, Sofia" xml:space="preserve">
+    <value>Звъника 1 - 3, София</value>
+  </data>
 </root>

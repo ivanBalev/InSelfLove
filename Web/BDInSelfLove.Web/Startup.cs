@@ -196,7 +196,6 @@
 
             app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
-            app.UseHttpsRedirection();
             app.UseResponseCompression();
             app.UseResponseCaching();
 

@@ -129,6 +129,9 @@
   <data name="Phone Number" xml:space="preserve">
     <value>Phone Number (not required)</value>
   </data>
+  <data name="Profile picture" xml:space="preserve">
+    <value>Profile picture</value>
+  </data>
   <data name="Register" xml:space="preserve">
     <value>Register</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="Register with Google" xml:space="preserve">
     <value>Register with Google</value>
+  </data>
+  <data name="Upload profile picture" xml:space="preserve">
+    <value>Upload profile picture</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Username</value>

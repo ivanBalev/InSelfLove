@@ -60,7 +60,7 @@
 
 
         // Load next batch of comments
-        document.querySelectorAll('.loadCommentsBtn').forEach(b => b.addEventListener('click', e => {
+        document.querySelectorAll('.loadCommentsBtn')?.forEach(b => b.addEventListener('click', e => {
             currentPage++;
 
             e.target.parentElement.parentElement.parentElement

@@ -47,7 +47,7 @@ namespace BDInSelfLove.Web.Controllers
         [HttpPost]
         [Authorize]
         [Route("api/EditComment")]
-        public async Task<IActionResult> Edit(ArticleCommentEditInputModel inputModel)
+        public async Task<ActionResult> Edit(ArticleCommentEditInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
             {
@@ -68,13 +68,13 @@ namespace BDInSelfLove.Web.Controllers
             // Send data to service
             var result = await this.articleCommentService.Edit(serviceModel);
 
-            return (result > 0 ? this.Ok() : this.BadRequest());
+            return (result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest());
         }
 
         [HttpPost]
         [Authorize]
         [Route("api/DeleteComment")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             if (id < 1)
             {
@@ -93,7 +93,7 @@ namespace BDInSelfLove.Web.Controllers
             // Send data to service
             var result = await this.articleCommentService.Delete(id);
 
-            return (result > 0 ? this.Ok() : this.BadRequest());
+            return (result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest());
         }
     }
 }

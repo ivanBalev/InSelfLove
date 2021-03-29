@@ -1,0 +1,36 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{
+    ViewData["Title"] = @localizer["About"].Value;
+}
+
+<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
+
+<section id="about" class="pt-3">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 border rounded">
+                <div class="float-left p-3 pr-5 profile-image-wrapper">
+                    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1615058365/popetoCircle_gk8b5i.jpg"
+                         class="img-fluid rounded-circle profile-image" alt="Owner image" />
+                </div>
+                <div class="p-3 content-wrapper">
+                    <p class="mb-0">
+                        Мъдрите хора са казали, че най-важната връзка е тази, която имаме със себе си. По време на
+                        дългото ми обучение за психолог и психотерапевт, тази мисъл постоянно изскачаше в моите
+                        анализи и работа. Осъзнавах, че колкото и да изучавам психичните разстройства, техните
+                        симптоми и особености, винаги накрая се стигаше до връзката, която човек има със себе си. И
+                        в случая, когато в тази връзка нямаше честност, уважение, разбиране, съчувствие, търпение и
+                        лоялност, винаги се стигаше до някаква патология. Когато човек оправеше отношението към
+                        себе си, той оздравяваше и си връщаше естествеността и радостта. Психотерапията, през
+                        моите очи, е точно този начин да се върнем обратно към себе си, да се приемем и обикнем за
+                        да можем да се наслаждаваме на живота и отношенията ни с другите.
+                    </p>
+                </div>
+                    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1615060833/IMG_3226_ssshdi.jpg"
+                         class="bottomRight" alt="Office image" />
+            </div>
+        </div>
+        
+    </div>
+</section>

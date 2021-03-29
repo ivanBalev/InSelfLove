@@ -13,10 +13,12 @@
     ViewData["Title"] = Model.Title;
 }
 
-<div class="container">
+<div class="container border">
     <div id="singleArticle">
-        <div class="card mb-4">
-            <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
+        <div class="card mb-4 border-left-0 border-right-0 pt-3">
+            <div class="img-wrapper text-center">
+                <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
+            </div>
             <div class="card-body">
                 @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
                 {
@@ -30,10 +32,10 @@
                 <h4 class="card-title text-center mb-2">@Model.Title</h4>
 
                 <div class="text-center">
-                    <small class="text-muted text-center">@localizer["Posted on"] @Model.CreatedOn.ToString("dd MMMM, yyyy") @localizer["at"] @Model.CreatedOn.ToString("HH:mm") @localizer["by"] @Model.UserUsername</small>
+                    <span class="text-muted text-center article-date">@localizer["Posted on"] @Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
                 </div>
-                <div class="row justify-content-around">
-                    <div class="col-md-8">
+                <div class="row justify-content-around mt-2">
+                    <div class="col-md-10">
                         @(Html.Raw(Model.SanitizedContent))
                     </div>
                 </div>
@@ -42,7 +44,10 @@
     </div>
 
     @*Add new comment section*@
-    <h5>@localizer["Add New Comment"]</h5>
+     @if (this.SignInManager.IsSignedIn(this.User))
+     {
+        <h5>@localizer["Add New Comment"]</h5>
+     }
     <div class="row">
         <div class="col">
             @if (!this.SignInManager.IsSignedIn(this.User))
@@ -58,8 +63,8 @@
     @*All comments section*@
     @if (Model.ArticleComments.Count > 0)
     {
-        <h5 class="mb-3 text-center">@localizer["Comments"]</h5>
-        <div class="comments border">
+        <h5 class="mb-3 text-center comments-sign">@localizer["Comments"]</h5>
+        <div class="comments">
             @foreach (var comment in Model.ArticleComments)
             {
                 this.ViewData["width"] = "64";
@@ -140,7 +145,7 @@
         })
 
         // Load next batch of comments
-        document.querySelector('.loadCommentsBtn').addEventListener('click', e => {
+        document.querySelector('.loadCommentsBtn')?.addEventListener('click', e => {
             currentPage++;
 
             document.querySelectorAll('.main-comment').forEach((c, i) => {

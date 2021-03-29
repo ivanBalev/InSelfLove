@@ -13,6 +13,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20210119072617_test-changes.cs" />
     <Compile Remove="Migrations\20210119072617_test-changes.Designer.cs" />
+    <Compile Remove="Migrations\20210219221438_updatedUserEntityToAccommodateUserDeletion.cs" />
+    <Compile Remove="Migrations\20210219221438_updatedUserEntityToAccommodateUserDeletion.Designer.cs" />
+    <Compile Remove="Migrations\20210219223001_SetNullToFKWhenDeletingUser1.cs" />
+    <Compile Remove="Migrations\20210219223001_SetNullToFKWhenDeletingUser1.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

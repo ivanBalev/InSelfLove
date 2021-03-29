@@ -1,9 +1,113 @@
+/* montserrat-300 - latin_cyrillic */
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 300;
+    src: url('../fonts/montserrat-v15-latin_cyrillic-300.eot'); /* IE9 Compat Modes */
+    src: local(''), url('../fonts/montserrat-v15-latin_cyrillic-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/montserrat-v15-latin_cyrillic-300.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/montserrat-v15-latin_cyrillic-300.woff') format('woff'), /* Modern Browsers */
+    url('../fonts/montserrat-v15-latin_cyrillic-300.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/montserrat-v15-latin_cyrillic-300.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+/* montserrat-regular - latin_cyrillic */
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/montserrat-v15-latin_cyrillic-regular.eot'); /* IE9 Compat Modes */
+    src: local(''), url('../fonts/montserrat-v15-latin_cyrillic-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/montserrat-v15-latin_cyrillic-regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/montserrat-v15-latin_cyrillic-regular.woff') format('woff'), /* Modern Browsers */
+    url('../fonts/montserrat-v15-latin_cyrillic-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/montserrat-v15-latin_cyrillic-regular.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+
+/*Showcase fix for iOS - fixed background unsupported */
+@supports (-webkit-touch-callout: none) {
+    #slimShowcase, #showcase {
+        background-attachment: scroll !important;
+    }
+}
+
+/*Lower article font size for smaller screens*/
+@media screen and (max-width: 500px) {
+    #singleArticle .card-body p {
+        font-size: 17px !important;
+    }
+
+    .article-date {
+        font-size: 12px !important;
+    }
+
+    #about p {
+        font-size: 13px !important;
+    }
+
+    #about .profile-image-wrapper {
+        padding-right: 17px !important;
+        padding-bottom: 0px !important;
+    }
+
+    #about .row {
+        margin-left: 0vmin !important;
+        margin-right: 0vmin !important;
+    }
+}
+
+@font-face {
+    font-display: optional;
+}
+
 body {
     margin-top: 45px;
 }
 
-@font-face {
-    font-display: swap;
+html, body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+#singleArticle h4 {
+    font-weight: 900;
+    font-size: 31px;
+}
+
+#singleArticle span {
+    font-size: 15px;
+}
+
+#singleArticle .card-img-top {
+    height: 60vmin;
+    max-height: 100%;
+    max-width: 75%;
+    width: auto;
+}
+
+#singleArticle .card-body p {
+    font-size: 22px;
+    text-align: justify;
+}
+
+#allArticles .card-title {
+    font-weight: bolder;
+    font-size: 21px;
+}
+
+#allArticles small {
+    font-size: 11px;
+}
+
+#allArticles a {
+    color: inherit;
+    text-decoration: none;
+}
+
+#allArticles .card-text {
+    text-align: justify;
+}
+
+#allArticles .card:hover {
+    opacity: 0.6;
 }
 
 .navbar {
@@ -12,32 +116,48 @@ body {
     background: #fff;
 }
 
-    .navbar .nav-item {
-        font-size: 1.2rem !important;
-        padding-right: 1.2rem;
-    }
+.navbar .nav-item {
+    font-size: 1.2rem !important;
+    padding-right: 1.2rem;
+}
 
-        .navbar .nav-item button {
-            font-size: 1.2rem !important;
-            margin-top: -1px;
-        }
+.navbar .nav-item button {
+    font-size: 1.2rem !important;
+    margin-top: -1px;
+}
+
+#navbarCollapse .nav-link {
+    white-space: nowrap;
+}
 
 #showcase {
     position: relative;
     background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1613661144/ttttt_cqyaap.jpg");
-    min-height: 600px;
+    height: 400px;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
     background-position: center center;
 }
 
-    #showcase .showcase-wrapper {
-        width: 75%;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 5%;
-    }
+#showcase .showcase-wrapper {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+}
+
+.showcase-wrapper h1 {
+    font-size: 3vmin;
+    font-weight: bolder;
+    color: black;
+}
+
+.showcase-wrapper h2 {
+    font-size: 5vmin;
+    font-weight: 400;
+    color: black;
+}
 
 #slimShowcase {
     position: relative;
@@ -49,11 +169,11 @@ body {
     background-position: center center;
 }
 
-    #slimShowcase .slimShowcase-wrapper {
-        width: 75%;
-        margin-left: auto;
-        margin-right: auto;
-    }
+#slimShowcase .slimShowcase-wrapper {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .dark-overlay {
     background: rgba(255, 255, 255, 0.3);
@@ -71,19 +191,6 @@ body {
 
 #blog .card:hover {
     opacity: 0.6;
-}
-
-#allArticles a {
-    color: inherit;
-    text-decoration: none;
-}
-
-#allArticles .card:hover {
-    opacity: 0.6;
-}
-
-#navbarCollapse .nav-link {
-    white-space: nowrap;
 }
 
 .info-header {
@@ -121,19 +228,28 @@ body {
 }
 
 .title-text {
-    font-size: 9vmin;
+    font-size: 7.5vmin;
     color: black;
 }
 
-#singleArticle .card-img-top {
-    width: 100%;
-    height: 30vw;
-    object-fit: cover;
+#explore-videos-section h1 {
+    font-size: 7vmin;
+    white-space: nowrap;
 }
+
+#explore-head-section h1 {
+    font-size: 7vmin;
+    white-space: nowrap;
+}
+
 
 #videoGallery .video {
     padding-bottom: 2%;
     border-bottom: 1px #f083c1 solid;
+}
+
+#videoGallery .card-header {
+    cursor: pointer;
 }
 
 #comments #accordion .card-header {
@@ -142,10 +258,6 @@ body {
 
 #comments hr {
     border-color: #f083c1;
-}
-
-#videoGallery .card-header {
-    cursor: pointer;
 }
 
 .lang-flag {
@@ -169,10 +281,21 @@ body {
 }
 
 .socialMedia a {
-    color: #000000 !important;
-    text-decoration: none !important;
     padding: 0px !important;
     margin: 0px;
+    position: relative;
+}
+
+.fa-facebook-f {
+    color: #3b5998 !important;
+    font-size: 1.2rem !important;
+}
+
+.fa-instagram {
+    color: #cd486b !important;
+    font-size: 1.5rem !important;
+    position: absolute;
+    margin-top: -20px;
 }
 
 #manageNav li a {
@@ -181,17 +304,18 @@ body {
     background-color: transparent;
 }
 
-    #manageNav li a.active {
-        background-color: #e9ecef;
-    }
+#manageNav li a.active {
+    background-color: #e9ecef;
+}
 
 .card-text {
     min-height: 150px;
 }
 
-.btn-subcomments {
+.btn-subcomments, .hide-subcomments {
     color: #f083c1;
     border-color: #f083c1;
+    white-space: nowrap;
 }
 
 .btn-pink {
@@ -201,15 +325,18 @@ body {
 
 a .card img {
     height: 200px;
+    max-height: 100%;
+    width: auto;
 }
 
 .dailyTimeSlot {
     cursor: pointer;
 }
 
-.featured-article {
-    font-size: 5vmin;
-    color: black;
+
+.comments-sign {
+    font-size: 28px;
+    font-weight: bolder;
 }
 
 .fc-event {
@@ -228,4 +355,49 @@ a .card img {
 
 .search {
     cursor: pointer;
+}
+
+.fc-today-button, .fc-agendaWeek-button {
+    display: none;
+}
+
+.fc-prev-button, .fc-next-button {
+    width: 15vw;
+}
+
+.fc-center h2 {
+    font-size: 1.6em;
+}
+
+#calendar {
+    min-height: 700px;
+}
+
+.email-contact h3 {
+    font-size: 24px;
+}
+
+#about .profile-image {
+    max-width: 40vmin;
+    margin-top: -10vmin;
+    margin-left: -10vmin;
+}
+
+#about p {
+    font-size: 22px;
+    text-align: justify;
+}
+
+#about .row {
+    margin-top: 7vmin !important;
+    margin-bottom: 10vmin !important;
+}
+
+.bottomRight {
+    width: 100%;
+    border-radius: 0.25rem !important;
+}
+
+#about .content-wrapper {
+    padding-bottom: 0px !important;
 }

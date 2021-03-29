@@ -18,18 +18,15 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUserService userService;
-        private readonly ICloudinaryService cloudinaryService;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IUserService userService,
-            ICloudinaryService cloudinaryService)
+            IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             this.userService = userService;
-            this.cloudinaryService = cloudinaryService;
         }
 
         public string Username { get; set; }
@@ -48,7 +45,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
-            public IFormFile ProfilePicture { get; set; }
+            public string ProfilePicture { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -103,11 +100,9 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length < 1048576)
+            if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)
             {
-                var profilePicture = await this.cloudinaryService.UploadPicture(
-                this.Input.ProfilePicture, $"{user.Id}_profile-picture");
-                await this.userService.SetProfilePicture(user, profilePicture);
+                await this.userService.SetProfilePicture(user, this.Input.ProfilePicture);
             }
 
             await this._signInManager.RefreshSignInAsync(user);

@@ -7,10 +7,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using BDInSelfLove.Data.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using BDInSelfLove.Services.Messaging;
+using BDInSelfLove.Common;
 
 namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -99,7 +100,10 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                     pageHandler: null,
                     values: new { userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
+                var adminEmail = (await this._userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault().Email;
                 await _emailSender.SendEmailAsync(
+                    adminEmail,
+                    GlobalConstants.SystemName,
                     Input.NewEmail,
                     "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -135,7 +139,11 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
+            var adminEmail = (await this._userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault().Email;
+
             await _emailSender.SendEmailAsync(
+                adminEmail,
+                GlobalConstants.SystemName,
                 email,
                 "Confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");

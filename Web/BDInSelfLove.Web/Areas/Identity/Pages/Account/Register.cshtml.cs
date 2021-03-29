@@ -65,10 +65,7 @@
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            [Phone]
-            [Display(Name = "Phone number")]
-            [DataType(DataType.PhoneNumber)]
-            public string PhoneNumber { get; set; }
+            public string ProfilePicture { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -89,7 +86,13 @@
                     return Page();
                 }
 
-                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email, PhoneNumber = this.Input.PhoneNumber };
+                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email };
+
+                if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)
+                {
+                    user.ProfilePhoto = this.Input.ProfilePicture;
+                }
+
                 var result = await this._userManager.CreateAsync(user, this.Input.Password);
                 if (result.Succeeded)
                 {

@@ -80,7 +80,7 @@
 
             var today = DateTime.Today;
             this.MarkOwnAppointments(appointmentViewList, currentUserUserName);
-            var appointments = this.GetAvailableSlots(appointmentViewList.Where(a => a.Start.Date >= today.Date && a.Start.Date <= today.AddDays(GlobalAdminValues.AvailabilitySpanInDays).Date).ToList());
+            var appointments = await this.GetAvailableSlots(appointmentViewList.Where(a => a.Start.Date >= today.Date && a.Start.Date <= today.AddDays(GlobalAdminValues.AvailabilitySpanInDays).Date).ToList());
 
             // Include user's own appointments in response
             appointments.AddRange(appointmentViewList.Where(a => a.IsOwn));
@@ -119,14 +119,20 @@
                 await this.userManager.SetPhoneNumberAsync(user, serviceModel.PhoneNumber);
             }
 
-            var urlElement = "<a href=\"https://localhost:44319/home/appointment\"><h3>Appointment Details and Approval</h3></a>";
+            var scheme = this.HttpContext.Request.Scheme;
+            var baseUrl = this.HttpContext.Request.Host.Value;
+
+            //TODO: Translate messages into Bulgarian
+            var urlElement = $"<a href=\"{scheme}://{baseUrl}/home/appointment\"><h3>Appointment Details and Approval</h3></a>";
             var adminEmailText = $"<div>Hello, </div> <div></div> <div>You have a new appointment. Have a look below:</div><div></div><div>{urlElement}</div><div></div><div>Thank you!</div>";
             var userEmailText = $"<div>Hello, </div> <div></div> <div>{AppointmentAwaitingApprovalText}</div><div>Thank you!</div>";
 
-            // Send emails to admin
-            await this.emailSender.SendEmailAsync(user.Email, user.UserName, GlobalConstants.SystemEmail, this.GetEmailSubject(serviceModel.Start), adminEmailText);
+            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault().Email;
 
-            await this.emailSender.SendEmailAsync(GlobalConstants.SystemEmail, GlobalConstants.SystemName, user.Email, this.GetEmailSubject(serviceModel.Start), userEmailText);
+            // Send emails to admin and user
+            await this.emailSender.SendEmailAsync(user.Email, user.UserName, adminEmail, this.GetEmailSubject(serviceModel.Start), adminEmailText);
+
+            await this.emailSender.SendEmailAsync(adminEmail, GlobalConstants.SystemName, user.Email, this.GetEmailSubject(serviceModel.Start), userEmailText);
             return this.Ok();
         }
 
@@ -138,11 +144,13 @@
             var appointmentUser = await this.userManager.FindByIdAsync(appointmentFromDb.UserId);
             var currentUser = await this.userManager.GetUserAsync(this.User);
 
+            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault().Email;
+
             if (evaluation)
             {
                 // Appointment is approved
                 var emailContent = $"<div>Hello, </div> <div></div> <div>{AppointmentConfirmationString}</div><div>Thanks!</div>";
-                await this.emailSender.SendEmailAsync(GlobalConstants.SystemEmail, GlobalConstants.SystemName, appointmentUser.Email, this.GetEmailSubject(appointmentFromDb.Start), emailContent);
+                await this.emailSender.SendEmailAsync(adminEmail, GlobalConstants.SystemName, appointmentUser.Email, this.GetEmailSubject(appointmentFromDb.Start), emailContent);
                 await this.appointmentService.Approve(id);
                 return this.Ok();
             }
@@ -161,18 +169,17 @@
             {
                 return this.Ok();
             }
-            // TODO: Below gives error when reasoning is NULL
-            var emailText = $"<div>Hello, </div> <div></div> <div>{AppointmentCancellationIntro}</div> <div>{declineReasoning.Replace("\n", "<br>")}</div> <div>Thank you.</div>";
 
-            // TODO: system email needs to be set by admin
+            var emailText = $"<div>Hello, </div> <div></div> <div>{AppointmentCancellationIntro}</div> <div>{declineReasoning?.Replace("\n", "<br>")}</div> <div>Thank you.</div>";
+
             // Send email to user if admin cancels or vice versa
             if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
             {
-                await this.emailSender.SendEmailAsync(GlobalConstants.SystemEmail, GlobalConstants.SystemName, appointmentUser.Email, this.GetEmailSubject(appointmentFromDb.Start), emailText);
+                await this.emailSender.SendEmailAsync(adminEmail, GlobalConstants.SystemName, appointmentUser.Email, this.GetEmailSubject(appointmentFromDb.Start), emailText);
             }
             else
             {
-                await this.emailSender.SendEmailAsync(appointmentUser.Email, appointmentUser.UserName, GlobalConstants.SystemEmail, this.GetEmailSubject(appointmentFromDb.Start), emailText);
+                await this.emailSender.SendEmailAsync(appointmentUser.Email, appointmentUser.UserName, adminEmail, this.GetEmailSubject(appointmentFromDb.Start), emailText);
             }
 
             return this.Ok();
@@ -242,7 +249,7 @@
             }
         }
 
-        private List<AppointmentViewModel> GetAvailableSlots(List<AppointmentViewModel> appointmentViewList)
+        private async Task<List<AppointmentViewModel>> GetAvailableSlots(List<AppointmentViewModel> appointmentViewList)
         {
             var currentLocalTime = DateTime.UtcNow.AddHours(2);
             var availableAppointmentSlots = new List<AppointmentViewModel>();
@@ -255,25 +262,32 @@
                 List<AppointmentViewModel> currentDayAppointments = appointmentViewList
                     .Where(a => a.Start.Date == currentAvailableDay.Date).ToList();
 
-                // Create available slot for all unoccupied current day slots
-                for (int currentHour = GlobalAdminValues.WorkDayStart; currentHour < GlobalAdminValues.WorkDayEnd; currentHour++)
+                var adminUsername = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName))[0].UserName;
+
+                // Create available slots only if admin has submitted availability for that day. If not, default
+                // behaviour is to lis all slots as unavailable.
+                if (currentDayAppointments.Any(a => string.Compare(a.UserUserName, adminUsername) == 0))
                 {
-                    if (dayOfAvailability == 0 && currentHour <= currentLocalTime.Hour)
+                    // Create available slot for all unoccupied current day slots
+                    for (int currentHour = GlobalAdminValues.WorkDayStart; currentHour < GlobalAdminValues.WorkDayEnd; currentHour++)
                     {
-                        continue;
-                    }
-
-                    if (!currentDayAppointments.Any(a => a.Start.Hour == currentHour))
-                    {
-                        // Remove UTC indication for client
-                        DateTime availableSlot = DateTime.Parse(currentAvailableDay.Date.ToString().Trim('Z'));
-                        availableSlot = availableSlot.AddHours(currentHour);
-
-                        availableAppointmentSlots.Add(new AppointmentViewModel()
+                        if (dayOfAvailability == 0 && currentHour <= currentLocalTime.Hour)
                         {
-                            Start = availableSlot,
-                            IsApproved = true,
-                        });
+                            continue;
+                        }
+
+                        if (!currentDayAppointments.Any(a => a.Start.Hour == currentHour))
+                        {
+                            // Remove UTC indication for client
+                            DateTime availableSlot = DateTime.Parse(currentAvailableDay.Date.ToString().Trim('Z'));
+                            availableSlot = availableSlot.AddHours(currentHour);
+
+                            availableAppointmentSlots.Add(new AppointmentViewModel()
+                            {
+                                Start = availableSlot,
+                                IsApproved = true,
+                            });
+                        }
                     }
                 }
             }

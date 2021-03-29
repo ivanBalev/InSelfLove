@@ -123,7 +123,10 @@
   <data name="Log in" xml:space="preserve">
     <value>Влез</value>
   </data>
-  <data name="or ..." xml:space="preserve">
-    <value>или ...</value>
+  <data name="or" xml:space="preserve">
+    <value>или</value>
+  </data>
+  <data name="to add a new comment" xml:space="preserve">
+    <value>за да добавиш нов коментар</value>
   </data>
 </root>

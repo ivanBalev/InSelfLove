@@ -28,6 +28,24 @@
                 .HasForeignKey(e => e.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+
+            appUser
+                .HasMany(e => e.Appointments)
+                .WithOne(a => a.User)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            appUser
+                .HasMany(e => e.ArticleComments)
+                .WithOne(a => a.User)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            appUser
+                .HasMany(e => e.VideoComments)
+                .WithOne(vc => vc.User)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

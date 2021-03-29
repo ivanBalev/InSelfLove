@@ -1,7 +1,7 @@
 ﻿$(document).ready(function () {
     const token = $("#csfrToken input[name=__RequestVerificationToken]").val();
     const themeColor = "rgb(170, 85, 132)";
-    const culture = document.cookie.match('Culture').input.substr(-2);
+    const culture = document.cookie.match('Culture')?.input.substr(-2);
     const cultureIsEn = culture === 'en';
 
     let appointments = [];
@@ -80,10 +80,6 @@
                         userPhoneNumber: currentEvent.userPhoneNumber,
                     }
 
-                    // add additional info if appointment isn't approved for admin approval modal.
-                    if (!currentEvent.isApproved) {
-                    }
-
                     appointments.push(currentAppointment);
                 });
                 GenerateCalendar(appointments);
@@ -104,18 +100,22 @@
             contentHeight: 700,
             defaultDate: new Date(),
             timeFormat: 'H:mm',
+            titleFormat: 'MMM D',
             columnFormat: 'ddd',
             slotLabelFormat: ['H:mm'],
             header: {
-                left: 'prev,next today',
+                left: 'prev',
                 center: 'title',
-                right: 'agendaWeek',
+                right: 'next',
             },
             eventLimit: true,
             eventColor: 'white',
             minTime: '7:00:00',
             maxTime: '20:00:00',
-            firstDay: cultureIsEn ? 0 : 1,
+            firstDay: () => {
+                let today = moment()._d.split(' ')[0];
+                return daysOfWeek.find(d => d.startsWith(today));
+            },
             monthNames: cultureIsEn ? monthNames : monthNamesBG,
             monthNamesShort: cultureIsEn ? monthNamesShort : monthNamesBGShort,
             dayNames: cultureIsEn ? dayNames : dayNamesBG,

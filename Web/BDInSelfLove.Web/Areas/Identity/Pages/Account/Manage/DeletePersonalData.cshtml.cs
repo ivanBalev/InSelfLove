@@ -2,9 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using BDInSelfLove.Data.Models;
+using BDInSelfLove.Services.Data.Calendar;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
@@ -14,15 +16,18 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly IAppointmentService appointmentService;
 
         public DeletePersonalDataModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<DeletePersonalDataModel> logger)
+            ILogger<DeletePersonalDataModel> logger,
+            IAppointmentService appointmentService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            this.appointmentService = appointmentService;
         }
 
         [BindProperty]
@@ -67,7 +72,16 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var result = await _userManager.DeleteAsync(user);
+            var userAppointments = await this.appointmentService.GetAll(user.Id).ToListAsync();
+            foreach (var appointment in userAppointments)
+            {
+                await this.appointmentService.Delete(appointment.Id);
+            }
+
+            user.IsDeleted = true;
+            user.DeletedOn = DateTime.UtcNow;
+            var result = await this._userManager.UpdateAsync(user);
+
             var userId = await _userManager.GetUserIdAsync(user);
             if (!result.Succeeded)
             {

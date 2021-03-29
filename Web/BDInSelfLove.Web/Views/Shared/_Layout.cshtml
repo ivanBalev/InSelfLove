@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Мария Маринова е холистичен психолог и психотерапевт, практикуващ в София. Завършила 
+    <meta name="description" content="Мария Мариьа е холистичен психолог и психотерапевт, практикуващ в София. Завършила
           е психология в чужбина. Има опит в лечението на депресия, тревожност, хранителни разстройства, емоционална
           зависимост, травма от изоставяне, травма от отхвърляне, хипохондрия, телесна дисморфия, зависимости.
           Работи с клиенти, които искат да подобрят самочувствието си и междуличностните отношения. Учи хората да обичат себе си.">
@@ -23,11 +23,11 @@
     <link rel="stylesheet" href="~/Custom/css/bootstrap.css">
     <link rel="stylesheet" href="~/Custom/css/style.css">
     @this.RenderSection("HeadScripts", required: false)
-<title>@(this.ViewData["Title"]) Психотерапия - Мария Маринова | Психолог и психотерапевт София</title>
+    <title>@(this.ViewData["Title"]) Психотерапия - Мария Маринова | Психолог и психотерапевт София</title>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top py-0" id="main-nav">
+    <nav class="navbar navbar-expand-xl navbar-light fixed-top py-0" id="main-nav">
         <div class="container">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand ml-3 pl-2">
                 <h3 font-awesome-icon="fab fa-pagelines" brand-name="In.Self.Love" class="d-inline"></h3>
@@ -35,21 +35,21 @@
             <button class="navbar-toggler" data-toggle="collapse" aria-label="expand site navigation" data-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div id="navbarCollapse" class="collapse navbar-collapse ml-4">
+            <div id="navbarCollapse" class="collapse navbar-collapse">
                 <ul class="navbar-nav ml-4">
-                    <li class="nav-item">
+                    <li class="nav-item font-weight-bolder">
                         <a asp-area="" asp-controller="Article" asp-action="All" class="nav-link">@localizer["Articles"]</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item font-weight-bolder">
                         <a asp-area="" asp-controller="Video" asp-action="All" class="nav-link">@localizer["Videos"]</a>
                     </li>
-                    <li class="nav-item">
-                        <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">@localizer["About"]</a>
+                    <li class="nav-item font-weight-bolder">
+                        <a asp-area="" asp-controller="Home" asp-action="About" class="nav-link">@localizer["About"]</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item font-weight-bolder">
                         <a asp-area="" asp-controller="Home" asp-action="Contact" class="nav-link">@localizer["Contact"]</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item font-weight-bolder">
                         <a asp-area="" asp-controller="Home" asp-action="Appointment" class="nav-link">@localizer["Appointment"]</a>
                     </li>
 
@@ -71,8 +71,8 @@
                     <a href="https://www.facebook.com/in.self.love/" target="_blank" class="d-inline-block p-3"
                        rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
                 </li>
-                <li class="nav-item pr-0">
-                    <a href="https://www.instagram.com/in.self.love/" class="d-inline-block p-3" target="_blank"
+                <li class="nav-item pr-2">
+                    <a href="https://www.instagram.com/in.self.love/" class="d-inline-block mr-3 mt-3" target="_blank"
                        rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
                 </li>
             </ul>
@@ -80,6 +80,8 @@
     </nav>
 
     <partial name="_CookieConsentPartial" />
+    <partial name="_StatusMessagePartial" model="@this.TempData["StatusMessage"]?.ToString()" />
+
     <main>
         <div id="content">
             @this.RenderBody()
@@ -115,7 +117,7 @@
         </div>
     </div>
 
-     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="~/lib/popper.js/umd/popper.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>

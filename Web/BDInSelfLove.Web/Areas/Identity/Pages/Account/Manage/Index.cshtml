@@ -8,7 +8,6 @@
 }
 
 
-<partial name="_StatusMessage" model="Model.StatusMessage" />
 <div class="container">
     <div class="row">
         <div class="col-md-6">
@@ -25,9 +24,9 @@
                 </div>
                 <div class="form-group">
                     <label>@localizer["Profile picture"]</label>
-                    <label asp-for="Input.ProfilePicture" class="btn btn-outline-warning text-black-50 mt-4 btn-block" style="margin-top: 0px !important">
+                    <label for="originalProfilePic" class="btn btn-outline-warning text-black-50 mt-4 btn-block" style="margin-top: 0px !important">
                         @localizer["Upload new profile picture"]
-                        <input type="file" asp-for="Input.ProfilePicture" hidden>
+                        <input type="file" id="originalProfilePic" hidden>
                     </label>
                     <span class='label label-info' id="upload-file-info"></span>
                     <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
@@ -44,16 +43,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/Custom/js/profilePictureCompression.js"></script>
 }
 
-<script>
-    var uploadField = document.getElementById("Input_ProfilePicture");
-
-    uploadField.onchange = function () {
-        $('#upload-file-info').html(this.files[0].name);
-        if (this.files[0].size > 1048576) {
-            alert("File is too big, please lower image quality to less than 1 MB.");
-            this.value = "";
-        };
-    };
-</script>

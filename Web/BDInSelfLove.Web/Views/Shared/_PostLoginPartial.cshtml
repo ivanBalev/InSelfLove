@@ -2,23 +2,14 @@
 
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-<div id="postLogin">
-    <div class="d-lg-flex align-items-lg-center mb-3">
-        <form asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="form-inline d-block d-sm-flex mr-2 mb-3 mb-lg-0" method="post">
-            <div class="form-group mr-2 mb-3 mb-md-0">
-                <label asp-for="@Model.Username" class="mr-2"></label>
-                <input asp-for="@Model.Username" class="form-control">
-                <span asp-validation-for="@Model.Username" class="text-danger"></span>
+@{ 
+    var searchQuery = this.Context.Request.Query["searchTerm"].ToString();
+    var searchTermString = searchQuery == "" ? null : ("?searchTerm=" + searchQuery);
+}
 
-            </div>
-            <div class="form-group mr-2">
-                <label asp-for="@Model.Password" class="mr-2"></label>
-                <input asp-for="@Model.Password" class="form-control" />
-                <span asp-validation-for="@Model.Password" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-outline-secondary btn-pink border-0">@localizer["Log in"]</button>
-        </form>
-        <span class="mr-0">@localizer["or ..."]</span>
-        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-success border-0 mb-0 ml-0">@localizer["Create account"]</a>
+<div id="postLogin">
+    <div class="d-lg-flex align-items-lg-center mb-3 justify-content-center">
+        <a class="btn btn-outline-success pt-1 px-1 mr-1 py-1" asp-route-returnUrl="@(Context.Request.Path + searchTermString)" asp-area="Identity" asp-page="/Account/Login">@localizer["Log in"]</a>
+        <span class="mr-0">@localizer["to add a new comment"]</span>
     </div>
 </div>

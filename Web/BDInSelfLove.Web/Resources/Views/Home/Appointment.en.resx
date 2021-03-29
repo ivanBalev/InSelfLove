@@ -133,7 +133,7 @@
     <value>Book Appointment</value>
   </data>
   <data name="Can I have you phone number, please?" xml:space="preserve">
-    <value>Can I have you phone number, please? (not required)</value>
+    <value>Please leave a phone numbe I can contact you on. (not required)</value>
   </data>
   <data name="Cancel Appointment" xml:space="preserve">
     <value>Cancel Appointment</value>

@@ -8,13 +8,15 @@
     <div class="col-lg-4 col-md-6 mb-4" itemscope itemtype="http://schema.org/Article">
         <a asp-area="" asp-controller="Article" asp-action="Single" asp-route-id="@article.Id">
             <div class="card article-card">
-                <img src=@article.ImageUrl alt="Article image chosen by author" class="img-fluid card-img-top">
+                <div class="text-center">
+                    <img src=@article.ImageUrl alt="Article image chosen by author" class="img-fluid card-img-top">
+                </div>
                 <div class="card-body bg-light text-center">
-                    <div class="card-title"><span>@article.Title</span></div>
-                    <small>@localizer["Posted by"] @article.UserUsername @localizer["on"] @article.CreatedOn.ToString("dd MMMM yyyy")</small>
+                    <div class="card-title mb-1">@article.Title</div>
+                    <small>@localizer["Posted by"] @localizer["on"] @article.CreatedOn.ToString("dd MMMM yyyy")</small>
                     <hr>
                     <p class="card-text text-left">
-                        <span>@(article.PreviewContent)</span>
+                        @(article.PreviewContent)
                     </p>
                 </div>
             </div>

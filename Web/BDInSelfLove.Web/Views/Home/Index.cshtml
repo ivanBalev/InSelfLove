@@ -11,10 +11,10 @@
     <div class="dark-overlay text-white">
         <div class="container">
             <div class="row mt-4 pt-4">
-                <div class="col text-center mt-5 pt-5">
+                <div class="col text-center mt-4 pt-4">
                     <div class="showcase-wrapper">
-                        <h1 class="font-weight-light featured-article display-4">@localizer["FeaturedArticle"]</h1>
-                        <h2 class=" featured-article">
+                        <h1>@localizer["FeaturedArticle"]</h1>
+                        <h2>
                             @Model.FeaturedArticle.Title
                         </h2>
                         <a asp-controller="Article" asp-action="Single" asp-route-id="@Model.FeaturedArticle.Id" class=" btn btn-outline-secondary btn-md text-dark mt-2">
@@ -32,7 +32,7 @@
     <div class="container">
         <div class="row">
             <div class="col text-center pt-5 pb-2 info-header">
-                <h1 class="display-4">@localizer["Explore My Articles"]</h1>
+                <h1>@localizer["Explore My Articles"]</h1>
                 @*<p class="lead">
                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum ullam dolor culpa et at
                     exercitationem possimus sunt, vitae quasi reiciendis!
@@ -59,7 +59,7 @@
     <div class="container">
         <div class="row">
             <div class="col text-center pt-5 pb-2 info-header">
-                <h1 class="display-4">@localizer["See My Videos"]</h1>
+                <h1>@localizer["See My Videos"]</h1>
                 @*<p class="lead">
                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum ullam dolor culpa et at
                     exercitationem possimus sunt, vitae quasi reiciendis!

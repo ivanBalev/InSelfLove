@@ -53,7 +53,7 @@ namespace BDInSelfLove.Web.Controllers
         [HttpPost]
         [Authorize]
         [Route("api/EditVideoComment")]
-        public async Task<IActionResult> Edit(VideoCommentEditInputModel inputModel)
+        public async Task<ActionResult> Edit(VideoCommentEditInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
             {
@@ -74,13 +74,13 @@ namespace BDInSelfLove.Web.Controllers
             // Send data to service
             var result = await this.videoCommentService.Edit(serviceModel);
 
-            return (result > 0 ? this.Ok() : this.BadRequest());
+            return (result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest());
         }
 
         [HttpPost]
         [Authorize]
         [Route("api/DeleteVideoComment")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             if (id < 1)
             {
@@ -99,7 +99,7 @@ namespace BDInSelfLove.Web.Controllers
             // Send data to service
             var result = await this.videoCommentService.Delete(id);
 
-            return (result > 0 ? this.Ok() : this.BadRequest());
+            return (result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest());
         }
     }
 }

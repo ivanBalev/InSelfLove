@@ -17,7 +17,7 @@
     <div class="container">
         @foreach (var video in Model.Videos)
         {
-            <div class="row mb-4 video" itemscope itemtype="http://schema.org/Movie">
+            <div class="row mb-5 pt-3 video border" itemscope itemtype="http://schema.org/Movie">
                 <div class="col">
                     <div class="embed-responsive embed-responsive-21by9">
                         <iframe title="Psychotherapy video" class="embed-responsive-item" src="@video.Url"></iframe>
@@ -33,9 +33,12 @@
                         </div>
                     }
 
-                    <h5 class="mt-2">@localizer["Add New Comment"]</h5>
+                    @if (this.SignInManager.IsSignedIn(this.User))
+                    {
+                        <h5 class="mt-3">@localizer["Add New Comment"]</h5>
+                    }
                     <div class="row">
-                        <div class="col new-comment">
+                        <div class="col new-comment mt-1">
                             @if (!this.SignInManager.IsSignedIn(this.User))
                             {
                                 <partial name="_PostLoginPartial" model="null" /> }
@@ -47,8 +50,8 @@
                     </div>
                     @if (video.VideoComments.Any())
                     {
-                        <h5 class="mb-3 text-center">@localizer["Comments"]</h5>
-                        <div class="comments border">
+                        <h5 class="mb-3 text-center comments-sign">@localizer["Comments"]</h5>
+                        <div class="comments">
                             @foreach (var comment in video.VideoComments)
                             {
                                 this.ViewData["width"] = "64";
