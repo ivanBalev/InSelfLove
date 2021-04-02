@@ -8,8 +8,8 @@
     <div class="col-lg-4 col-md-6 mb-4" itemscope itemtype="http://schema.org/Article">
         <a asp-area="" asp-controller="Article" asp-action="Single" asp-route-id="@article.Id">
             <div class="card article-card">
-                <div class="text-center">
-                    <img src=@article.ImageUrl alt="Article image chosen by author" class="img-fluid card-img-top">
+                <div class="text-center article-image-container">
+                    <img  class="card-img-top img-fluid" src=@article.ImageUrl alt="Article image">
                 </div>
                 <div class="card-body bg-light text-center">
                     <div class="card-title mb-1">@article.Title</div>

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BDInSelfLove.Web.InputModels.VideoComment;
 using Microsoft.EntityFrameworkCore;
+using BDInSelfLove.Common;
 
 namespace BDInSelfLove.Web.Controllers
 {
@@ -91,7 +92,7 @@ namespace BDInSelfLove.Web.Controllers
             var dbCommentUserId = await this.videoCommentService.GetById(id)
                 .Select(c => c.UserId).SingleOrDefaultAsync();
 
-            if (dbCommentUserId != this.userManager.GetUserId(this.User))
+            if (dbCommentUserId != this.userManager.GetUserId(this.User) && !this.User.IsInRole(GlobalConstants.AdministratorRoleName))
             {
                 return this.BadRequest();
             }

@@ -35,7 +35,10 @@
             referrerpolicy="origin"></script>
     <script>
         tinymce.init({
-            selector: '#mytextarea'
+            selector: '#mytextarea',
+            plugins: "paste",
+            paste_as_text: true,
+            paste_webkit_styles: 'none',
         });
     </script>
 }

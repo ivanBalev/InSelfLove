@@ -36,13 +36,14 @@
             get
             {
                 var noHtmlTags = Regex.Replace(this.Content, @"<[^>]+>", string.Empty);
+                noHtmlTags = WebUtility.HtmlDecode(noHtmlTags);
 
                 if ((noHtmlTags + this.Title.Length).Length > 200)
                 {
                     noHtmlTags = noHtmlTags.Substring(0, 200 - this.Title.Length) + "...";
                 }
 
-                return WebUtility.HtmlDecode(noHtmlTags);
+                return noHtmlTags;
             }
         }
 

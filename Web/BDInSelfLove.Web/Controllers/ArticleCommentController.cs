@@ -1,4 +1,5 @@
-﻿using BDInSelfLove.Data.Models;
+﻿using BDInSelfLove.Common;
+using BDInSelfLove.Data.Models;
 using BDInSelfLove.Services.Data.ArticleComment;
 using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.ArticleComment;
@@ -85,7 +86,7 @@ namespace BDInSelfLove.Web.Controllers
             var dbCommentUserId = await this.articleCommentService.GetById(id)
                 .Select(c => c.UserId).SingleOrDefaultAsync();
 
-            if (dbCommentUserId != this.userManager.GetUserId(this.User))
+            if (dbCommentUserId != this.userManager.GetUserId(this.User) && !this.User.IsInRole(GlobalConstants.AdministratorRoleName))
             {
                 return this.BadRequest();
             }

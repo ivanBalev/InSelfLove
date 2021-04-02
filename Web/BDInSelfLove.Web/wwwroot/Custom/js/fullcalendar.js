@@ -7,6 +7,10 @@
     let appointments = [];
     let selectedAppointment = null;
     let availableDailySlots = [];
+    let standardWorkingHours = {
+        start: '',
+        end: '',
+    };
     const userIsAdmin = document.getElementById('btnWorkingHours') !== null;
 
     // Strings
@@ -21,9 +25,8 @@
         'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'];
     const monthNamesBGShort = ['Яну', 'Фев', 'Мар', 'Апр', 'Май', 'Юни', 'Юли', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
     const dayNamesBG = ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'];
-    const dayNamesBGShort = ['Нед', 'Пон', 'Вт', 'Сря', 'Четв', 'Пет', 'Съб'];
+    const dayNamesBGShort = ['Нед', 'Пон', 'Вт', 'Сря', 'Чет', 'Пет', 'Съб'];
 
-    const myAppointment = cultureIsEn ? 'My Appointment' : 'Моят час'
     const appointmentEvaluation = cultureIsEn ? 'Appointment Evaluation' : 'Оценка на час'
     const approved = cultureIsEn ? 'Approved' : 'Одобрен';
     const awaitingApproval = cultureIsEn ? 'Awaiting approval' : 'Очаква одобрение';
@@ -97,7 +100,7 @@
     const GenerateCalendar = (events) => {
         $('#calendar').fullCalendar('destroy');
         $('#calendar').fullCalendar({
-            contentHeight: 700,
+            height: 'auto',
             defaultDate: new Date(),
             timeFormat: 'H:mm',
             titleFormat: 'MMM D',
@@ -110,8 +113,8 @@
             },
             eventLimit: true,
             eventColor: 'white',
-            minTime: '7:00:00',
-            maxTime: '20:00:00',
+            minTime: standardWorkingHours.start + ':00:00',
+            maxTime: standardWorkingHours.end + ':00:00',
             firstDay: () => {
                 let today = moment()._d.split(' ')[0];
                 return daysOfWeek.find(d => d.startsWith(today));
@@ -143,16 +146,17 @@
 
                 if (!eventObj.isApproved) {
                     eventElement.setAttribute(style, initialStyleState + '; border-color: #ffc107; color: #ffc107;');
-                    eventElement.innerText = userIsAdmin ? eventElement.innerText.split(' - ')[0] : myAppointment;
+                    eventElement.innerText = eventElement.innerText.split(' - ')[0];
 
                 } else if (!eventObj.isOwn) {
                     eventElement.setAttribute(style, initialStyleState + '; border-color:#28a745; color:#28a745;');
-                    eventElement.innerText = eventElement.innerText.split(' - ')[0];
-
+                    eventElement.innerText = '+';
                 } else if (eventObj.isOwn) {
                     eventElement.setAttribute(style, initialStyleState + '; border-color:' + themeColor + '; color:' + themeColor + ';');
                     eventElement.innerText = userIsAdmin ? 'Unavailable' : eventElement.innerText.split(' - ')[0];
                 }
+                eventElement.style.paddingTop = '12px';
+                eventElement.style.fontSize = '16px';
                 eventElement.setAttribute('style', eventElement.getAttribute('style') + ' text-align: center;');
                 $el[0] = eventElement;
             },
@@ -176,6 +180,21 @@
             selectLongPressDelay: 0,
         })
     }
+
+    (function getStandardWorkingHours() {
+        $.ajax({
+            type: "GET",
+            url: '/api/appointment/GetWorkingHours',
+            success: function (data) {
+                standardWorkingHours.start = data[0];
+                standardWorkingHours.end = data[1];
+            },
+            error: function () {
+                alert(genericError);
+                $('#workingHours').modal('hide');
+            }
+        })
+    })();
 
     fetchEventAndRenderCalendar();
 
@@ -276,6 +295,10 @@
         })
     }
 
+    $('#btnWorkingHours').click(function () {
+        $('#workingHours').modal();
+    })
+
     $('#submitDailyAvailability').click(function () {
 
         let date = document.getElementById('dailyAvailabilityModal').getAttribute('date');
@@ -306,23 +329,6 @@
                 $('#workingHours').modal('hide');
             }
         })
-    })
-
-    $('#btnWorkingHours').click(function () {
-
-        $.ajax({
-            type: "GET",
-            url: '/api/appointment/GetWorkingHours',
-            success: function (data) {
-                $('#workingHours').modal('hide');
-            },
-            error: function () {
-                alert(genericError);
-                $('#workingHours').modal('hide');
-            }
-        })
-
-        $('#workingHours').modal();
     })
 
     $('#workingHoursSubmitBtn').click(function () {

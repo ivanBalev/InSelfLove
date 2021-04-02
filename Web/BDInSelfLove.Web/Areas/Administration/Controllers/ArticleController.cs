@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Web.Areas.Administration.Controllers
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -54,7 +55,7 @@
 
             if (inputModel.Image != null)
             {
-                var imageUrl = await this.cloudinaryService.UploadPicture(inputModel.Image, inputModel.Title);
+                var imageUrl = await this.cloudinaryService.UploadPicture(inputModel.Image, Guid.NewGuid().ToString());
                 serviceModel.ImageUrl = imageUrl;
             }
 

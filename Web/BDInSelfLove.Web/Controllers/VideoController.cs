@@ -22,18 +22,21 @@
             this.videoService = videoService;
         }
 
-        //public async Task<IActionResult> All()
-        //{
-        //    var viewModel = new AllHomeVideoViewModel
-        //    {
-        //        Videos = await this.videoService
-        //      .GetAll()
-        //      .To<HomeVideoViewModel>()
-        //      .ToListAsync(),
-        //    };
+        public async Task<IActionResult> Single()
+        {
+            var serviceModel = await this.videoService
+                .GetAllPagination(1);
 
-        //    return this.View(viewModel);
-        //}
+            var viewModel = new VideoPaginationViewModel()
+            {
+                Videos = serviceModel.Select(a => AutoMapperConfig.MapperInstance.Map<VideoViewModel>(a))
+                .ToList(),
+                PagesCount = 1,
+                CurrentPage = 1,
+            };
+
+            return this.View("All", viewModel);
+        }
 
         public async Task<IActionResult> All(int page = 1)
         {

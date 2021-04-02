@@ -36,6 +36,10 @@
         font-size: 17px !important;
     }
 
+    #singleArticle .card-title {
+        font-size: 17px !important;
+    }
+
     .article-date {
         font-size: 12px !important;
     }
@@ -67,20 +71,17 @@ html, body {
     font-family: 'Montserrat', sans-serif;
 }
 
-#singleArticle h4 {
+#singleArticle .card-title {
     font-weight: 900;
     font-size: 31px;
 }
-
 #singleArticle span {
     font-size: 15px;
 }
 
 #singleArticle .card-img-top {
-    height: 60vmin;
-    max-height: 100%;
-    max-width: 75%;
-    width: auto;
+    object-fit: contain;
+    max-height: 909px;
 }
 
 #singleArticle .card-body p {
@@ -104,6 +105,11 @@ html, body {
 
 #allArticles .card-text {
     text-align: justify;
+}
+
+#allArticles .card-img-top {
+    min-width: 85%;
+    object-fit: cover;
 }
 
 #allArticles .card:hover {
@@ -362,7 +368,7 @@ a .card img {
 }
 
 .fc-prev-button, .fc-next-button {
-    width: 15vw;
+    width: 14vw;
 }
 
 .fc-center h2 {

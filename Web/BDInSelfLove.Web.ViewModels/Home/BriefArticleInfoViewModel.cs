@@ -25,14 +25,14 @@ namespace BDInSelfLove.Web.ViewModels.Home
             get
             {
                 var noHtmlTags = Regex.Replace(this.Content, @"<[^>]+>", string.Empty);
-                noHtmlTags = Regex.Replace(noHtmlTags, @"&nbsp;", string.Empty);
+                noHtmlTags = WebUtility.HtmlDecode(noHtmlTags);
 
                 if ((noHtmlTags + this.Title).Length > 180)
                 {
                     noHtmlTags = noHtmlTags.Substring(0, 180 - this.Title.Length) + "...";
                 }
                 //TODO: This needs to work but with array spliy by space, not single characters. Otherwise - BUGS when visualizing
-                return WebUtility.HtmlDecode(noHtmlTags);
+                return noHtmlTags;
             }
         }
 

@@ -1,11 +1,13 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
+    using System;
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
@@ -13,6 +15,7 @@
     using BDInSelfLove.Web.ViewModels;
     using BDInSelfLove.Web.ViewModels.Article;
     using BDInSelfLove.Web.ViewModels.Home;
+    using BDInSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Localization;
@@ -24,12 +27,18 @@
         private const int IndexArticlesCount = 4;
 
         private readonly IArticleService articleService;
+        private readonly IVideoService videoService;
         private readonly IEmailSender emailSender;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public HomeController(IArticleService articleService, IEmailSender emailSender, UserManager<ApplicationUser> userManager)
+        public HomeController(
+            IArticleService articleService,
+            IVideoService videoService,
+            IEmailSender emailSender,
+            UserManager<ApplicationUser> userManager)
         {
             this.articleService = articleService;
+            this.videoService = videoService;
             this.emailSender = emailSender;
             this.userManager = userManager;
         }
@@ -41,13 +50,19 @@
                .GetAll(IndexArticlesCount).ToListAsync();
 
             // Parse
-            var lastArticles = serviceData.Select(x => AutoMapperConfig.MapperInstance.Map<BriefArticleInfoViewModel>(x)).ToList();
+            var lastArticles = serviceData.Select(x =>
+            AutoMapperConfig.MapperInstance.Map<BriefArticleInfoViewModel>(x)).ToList();
+
+            var lastVideo = await this.videoService.GetAll(1).FirstOrDefaultAsync();
+
+            var videoisLatest = DateTime.Compare(lastArticles[0].CreatedOn, lastVideo.CreatedOn) == -1;
 
             // Create view model
             var viewModel = new HomeViewModel
             {
-                FeaturedArticle = lastArticles[0],
+                FeaturedArticle = videoisLatest ? null : lastArticles[0],
                 LastArticles = lastArticles.Skip(1).ToList(),
+                FeaturedVideo = videoisLatest ? AutoMapperConfig.MapperInstance.Map<VideoViewModel>(lastVideo) : null,
             };
 
             return this.View(viewModel);

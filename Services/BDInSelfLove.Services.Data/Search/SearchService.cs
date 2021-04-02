@@ -51,13 +51,17 @@ namespace BDInSelfLove.Services.Data.Search
                 p.Title.ToLower().Contains(tempItem));
             }
 
-            return new IndexSearchServiceModel
+            var serviceModel = new IndexSearchServiceModel
             {
                 Articles = await articles.Distinct().Take(DefaultArticlesPerPage).To<ArticleServiceModel>().ToListAsync(),
                 Videos = await videos.Distinct().Take(DefaultVideosPerPage).To<VideoServiceModel>().ToListAsync(),
                 ArticlesCount = await articles.CountAsync(),
                 VideosCount = await videos.CountAsync(),
             };
+
+            this.SortOutCommentHierarchy(serviceModel.Videos);
+
+            return serviceModel;
         }
 
         public async Task<ArticlesSearchServiceModel> GetArticles(string searchTerm, int take = DefaultArticlesPerPage, int skip = 0)
@@ -125,6 +129,17 @@ namespace BDInSelfLove.Services.Data.Search
                                .To<VideoServiceModel>()
                                .ToListAsync();
 
+            this.SortOutCommentHierarchy(videos);
+
+            return new VideosSearchServiceModel
+            {
+                Videos = videos,
+                VideosCount = videosCount,
+            };
+        }
+
+        private void SortOutCommentHierarchy(List<VideoServiceModel> videos)
+        {
             foreach (var video in videos)
             {
                 foreach (var comment in video.VideoComments)
@@ -140,12 +155,6 @@ namespace BDInSelfLove.Services.Data.Search
 
                 video.VideoComments = video.VideoComments.Where(vc => vc.ParentCommentId == null).ToList();
             }
-
-            return new VideosSearchServiceModel
-            {
-                Videos = videos,
-                VideosCount = videosCount,
-            };
         }
     }
 }

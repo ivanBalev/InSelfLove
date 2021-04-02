@@ -15,25 +15,28 @@
 
 <div class="container border">
     <div id="singleArticle">
-        <div class="card mb-4 border-left-0 border-right-0 pt-3">
-            <div class="img-wrapper text-center">
-                <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
-            </div>
+        <div class="card mb-4 border-left-0 border-right-0">
             <div class="card-body">
+                <h4 class="card-title text-center mb-1">@Model.Title</h4>
+                <div class="text-center mb-2">
+                    <span class="text-muted text-center article-date">@localizer["Posted on"] @Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
+                </div>
+                <div class="img-wrapper text-center">
+                    <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
+                </div>
                 @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
                 {
                     <div class="row mb-4">
-                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Edit"
-                                            asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">@localizer["Edit"]</a></div>
-                        <div class="col"><a asp-area="Administration" asp-controller="Article" asp-action="Delete"
-                                            asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a></div>
+                        <div class="col">
+                            <a asp-area="Administration" asp-controller="Article" asp-action="Edit"
+                               asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">@localizer["Edit"]</a>
+                        </div>
+                        <div class="col">
+                            <a asp-area="Administration" asp-controller="Article" asp-action="Delete"
+                               asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a>
+                        </div>
                     </div>
                 }
-                <h4 class="card-title text-center mb-2">@Model.Title</h4>
-
-                <div class="text-center">
-                    <span class="text-muted text-center article-date">@localizer["Posted on"] @Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
-                </div>
                 <div class="row justify-content-around mt-2">
                     <div class="col-md-10">
                         @(Html.Raw(Model.SanitizedContent))

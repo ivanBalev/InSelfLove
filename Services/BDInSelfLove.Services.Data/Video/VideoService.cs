@@ -86,7 +86,7 @@
                 throw new ArgumentNullException(nameof(dbVideo));
             }
 
-            this.videosRepository.HardDelete(dbVideo);
+            this.videosRepository.Delete(dbVideo);
             int result = await this.videosRepository.SaveChangesAsync();
 
             return result > 0;

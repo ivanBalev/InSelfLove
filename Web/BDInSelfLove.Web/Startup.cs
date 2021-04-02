@@ -38,7 +38,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Options;
-    using SmartBreadcrumbs;
 
     public class Startup
     {
@@ -146,6 +145,7 @@
                 options.EnableForHttps = true;
             });
 
+
             // Application services
             services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
             services.AddTransient<IArticleService, ArticleService>();
@@ -204,6 +204,7 @@
 
 
             app.UseRouting();
+            //TODO: REMOVE HTTPS REDIRECTION FOR AZURE BUT ADD WHEN DEPLOYING ELSEWHERE!
 
             app.UseAuthentication();
             app.UseAuthorization();

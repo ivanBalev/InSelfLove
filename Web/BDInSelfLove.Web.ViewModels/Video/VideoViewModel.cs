@@ -15,5 +15,6 @@ namespace BDInSelfLove.Web.ViewModels.Video
 
         public ICollection<VideoCommentViewModel> VideoComments { get; set; }
 
+        public string Title { get; set; }
     }
 }
