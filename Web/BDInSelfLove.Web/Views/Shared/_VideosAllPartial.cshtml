@@ -1,0 +1,21 @@
+﻿@model BDInSelfLove.Web.ViewModels.Video.VideoPaginationViewModel
+
+@* Remove layout when using search (REST API Ajax Request) *@
+@if (this.ViewContext.RouteData.Values["controller"].ToString() == "Search")
+{
+    this.Layout = null;
+}
+
+<div id="all-videos" class="py-4">
+    <div class="container">
+        <div class="row">
+            @foreach (var video in Model.Videos)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <partial name="_VideoPreviewPartial" model="@video" />
+                </div>
+            }
+        </div>
+        <partial name="_PaginationPartial" model="@Model.PaginationInfo" />
+    </div>
+</div>

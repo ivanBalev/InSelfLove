@@ -36,14 +36,8 @@
                 .OnDelete(DeleteBehavior.Cascade);
 
             appUser
-                .HasMany(e => e.ArticleComments)
+                .HasMany(e => e.Comments)
                 .WithOne(a => a.User)
-                .HasForeignKey(e => e.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            appUser
-                .HasMany(e => e.VideoComments)
-                .WithOne(vc => vc.User)
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
         }

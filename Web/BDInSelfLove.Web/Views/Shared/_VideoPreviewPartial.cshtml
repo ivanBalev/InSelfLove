@@ -1,0 +1,15 @@
+﻿@model BDInSelfLove.Web.ViewModels.Video.VideoPreviewViewModel
+
+@{ 
+    const string youtubeApiLink = "https://img.youtube.com/vi/";
+    const string youtubeApiEnd = "/maxresdefault.jpg";
+}
+
+<div class="video-preview">
+    <a asp-area="" asp-controller="Video" asp-action="Single" asp-route-id="@Model.Id">
+        <div class="pb-1">
+            <img class="img-fluid w-100" src="@(youtubeApiLink + @Model.Url.Split('/').Last() + youtubeApiEnd)" />
+            <h1 class="mx-4 mb-3 mt-1">@Model.Title</h1>
+        </div>
+    </a>
+</div>

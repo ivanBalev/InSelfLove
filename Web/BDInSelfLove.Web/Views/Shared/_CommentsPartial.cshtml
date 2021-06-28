@@ -1,116 +1,65 @@
-﻿@using BDInSelfLove.Web.InputModels.ArticleComment
-@using Microsoft.AspNetCore.Identity
+﻿@model BDInSelfLove.Web.ViewModels.Comment.CommentsAllViewModel
+
 @using BDInSelfLove.Data.Models
-@using BDInSelfLove.Web.InputModels.VideoComment 
-@using BDInSelfLove.Common
-
-
-@model BDInSelfLove.Web.ViewModels.VideoComment.VideoCommentViewModel
+@using Microsoft.AspNetCore.Identity
+@using BDInSelfLove.Web.InputModels.Comment
 
 @inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
+@{
+    const int mainCommentsPerPage = 3;
+}
 
-<div class="comment" id="@Model.Id">
-    <div class="row">
-        <div class="col-md-12 mb-0">
-            <div class="card  border-0" id="@Model.Id">
-                <div class="card-header bg-white border-0">
-                    <div class="media flex-wrap w-100 align-items-center">
-                        <img src="@(Model.UserProfilePhoto == null ? "https://res.cloudinary.com/dzcajpx0y/image/upload/c_scale,w_64/v1610826038/User-Profile-PNG-Free-Image_d3npde.png" : Model.UserProfilePhoto)"
-                             width="@ViewData["width"]" height="@ViewData["height"]"
-                             class="d-block rounded-circle" alt="User profile picture">
-                        <div class="media-body ml-3">
-                            <div><span class="userName">@Model.UserUserName</span></div>
-                            <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="comment-content">
-                        @Html.Raw(Model.SanitizedContent)
-                    </p>
-                    <div class="row">
-                        <div class="col">
-                            @if (this.SignInManager.IsSignedIn(this.User))
-                             {
-                                 <partial name="_AddVideoCommentPartial" model="@(new VideoCommentInputModel {
-                                                                VideoId = Model.VideoId, ParentCommentId = Model.Id })" />
-                                 <partial name="_VideoCommentEditPartial" model="@(new VideoCommentEditInputModel {
-                                                     Id = Model.Id, Content = Model.SanitizedContent})" />
-                             }
-                        </div>
-                    </div>
-                    <div class="row comment-buttons justify-content-between">
-                        <div class="col-sm-7">
-                            <div class="row">
-                                <div class="col-3 m-0 mx-2 p-0">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm reply-button px-2">
-                                        @localizer["Reply"]
-                                    </button>
-                                </div>
-                                @if (Model.SubComments.Count > 0 && Model.ParentCommentId == null)
-                                {
-                                    <div class="col-6 ml-3 m-0 p-0">
-                                        <button class="btn btn-outline-secondary border-0 btn-sm btn-subcomments">
-                                            @localizer["See Subcomments"]
-                                        </button>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        @if (this.UserManager.GetUserId(this.User) == Model.UserId || this.User.IsInRole(GlobalConstants.AdministratorRoleName))
-                         {
-                            <div class="col-sm-3">
-                                <div class="row">
-                                    @*Edit button only for user's own comments*@
-                                    @if (this.UserManager.GetUserId(this.User) == Model.UserId)
-                                     {
-                                        <div class="col-4">
-                                            <button class="btn btn-outline-warning btn-sm edit-comment-btn border-0">
-                                                @localizer["Edit"]
-                                            </button>
-                                        </div>
-                                     }
-                                    @*Delete comment for user and admin*@
-                                    <div class="col-5">
-                                        <button class="btn btn-outline-danger btn-sm delete-comment-btn border-0">
-                                            @localizer["Delete"]
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                         }
-                    </div>
-                </div>
-
-                @if (@Model.SubComments.Count > 0)
-                 {
-                    this.ViewData["width"] = "40";
-                    this.ViewData["height"] = "40";
-
-                    // Make profile pic even smaller when we have 2nd level subcomment
-                    @if (Model.ParentCommentId != null)
-                     {
-                        this.ViewData["width"] = "30";
-                        this.ViewData["height"] = "30";
-                     } 
-                    this.ViewData["subcomment"] = true;
-
-                    <div class="align-self-end @(this.ViewData["width"].ToString() == "40" ? "main-subcomment" : null)" style="width: 90%">
-                        @foreach (var item in Model.SubComments)
-                         {
-                            <partial name="_CommentsPartial" model="@item" />
-                         }
-                        @if (Model.ParentCommentId == null)
-                         {
-                             <button class="btn btn-outline-secondary btn-sm border-0 hide-subcomments">@localizer["Hide subcomments"]</button>
-                         }
-                    </div>
-                 }
+<div id="comments">
+    <!-- Add new comment -->
+    @if (!this.SignInManager.IsSignedIn(this.User))
+    {
+        <div class="row">
+            <div class="col">
+                <partial name="_PostLoginPartial" model="null" />
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <h5 class="mt-5">@localizer["Add new comment"]</h5>
+        <div class="row">
+            <div class="col">
+                <partial name="_CommentAddPartial" model="@(new CommentInputModel
+                            {
+                                ArticleId = Model.ArticleId,
+                                VideoId = Model.VideoId,
+                                ParentCommentId = null,
+                            })" />
+            </div>
+        </div>
+    }
+
+    <!-- All comments -->
+    @if (Model.Comments.Count > 0)
+    {
+        <h5 class="mb-2 mt-5">@localizer["Comments"]</h5>
+        <div class="mb-4">
+            @foreach (var comment in Model.Comments)
+            {
+                this.ViewData["width"] = "64";
+                this.ViewData["height"] = "64";
+                <div class="main-comment">
+                    <partial name="_CommentSinglePartial" model="@comment" />
+                </div>
+            }
+            <!-- Load more comments button -->
+            @if (Model.Comments.Count > mainCommentsPerPage)
+            {
+                <div class="row mb-2">
+                    <div class="col text-center">
+                        <button id="load-comments-btn" class="btn btn-outline-secondary btn-sm">@localizer["Load More Comments"]</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <!-- Comment delete confirmation modal -->
+    <partial name="_CommentDeleteConfirmPartial" />
 </div>

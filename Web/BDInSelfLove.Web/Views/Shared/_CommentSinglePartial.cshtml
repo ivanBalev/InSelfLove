@@ -1,0 +1,118 @@
+﻿@using BDInSelfLove.Web.InputModels.Comment
+@using Microsoft.AspNetCore.Identity
+@using BDInSelfLove.Data.Models
+@using BDInSelfLove.Common
+
+@model BDInSelfLove.Web.ViewModels.Comment.CommentViewModel
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{ 
+    string defaultProfilePicture = "https://res.cloudinary.com/dzcajpx0y/image/upload/c_scale,w_64/v1610826038/User-Profile-PNG-Free-Image_d3npde.png";
+}
+
+<div id="@Model.Id" class="comment">
+    <div class="row">
+        <div class="col-md-12 mb-0">
+            <div class="card border-0">
+                <div class="card-header bg-white border-0">
+                    <div class="media flex-wrap w-100 align-items-center">
+                        <img src="@(Model.UserProfilePhoto == null ? defaultProfilePicture : Model.UserProfilePhoto)"
+                             width="@ViewData["width"]" height="@ViewData["height"]"
+                             class="d-block rounded-circle" alt="User profile photo">
+                        <div class="media-body mx-3">
+                            <div><span class="userName">@Model.UserUserName</span></div>
+                            <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="comment-content">
+                        @Html.Raw(Model.ContentWithNoTags)
+                    </p>
+                    <div class="row">
+                        <div class="col">
+                            @if (this.SignInManager.IsSignedIn(this.User))
+                            {
+                                <partial name="_CommentAddPartial" model="@(new CommentInputModel {
+                                                                    ArticleId = Model.ArticleId, VideoId = Model.VideoId, ParentCommentId = Model.Id })" />
+
+                                <partial name="_CommentEditPartial" model="@(new CommentEditInputModel {
+                                                    ArticleId = Model.ArticleId, VideoId = Model.VideoId,  Id = Model.Id, Content = Model.ContentWithNoTags})" />
+                            }
+                        </div>
+                    </div>
+                    <div class="row comment-buttons justify-content-between">
+                        <div class="col-sm-7">
+                            <div class="row">
+                                <div class="col-sm-4 m-0 mx-2 p-0">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm reply-button px-2">
+                                        @localizer["Reply"]
+                                    </button>
+                                </div>
+                                @if (Model.SubComments.Count > 0 && Model.ParentCommentId == null)
+                                {
+                                    <div class="col-sm-6 ml-2 m-0 p-0">
+                                        <button class="btn btn-outline-secondary btn-sm btn-subcomments">
+                                            @localizer["See Subcomments"]
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (this.UserManager.GetUserId(this.User) == Model.UserId || this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                        {
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <!-- Edit button only for user's own comments -->
+                                    @if (this.UserManager.GetUserId(this.User) == Model.UserId)
+                                    {
+                                        <div class="col-4 text-right">
+                                            <i class="fas fa-edit edit-comment-btn"></i>
+                                        </div>
+                                    }
+                                    <!-- Delete comment for user and admin -->
+                                    <div class="col-5 text-left">
+                                        <i class="fas fa-trash delete-comment-btn"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @if (@Model.SubComments.Count > 0)
+                {
+                    <!-- This apples to 1st level subcomments due to recursion -->
+                    this.ViewData["width"] = "40";
+                    this.ViewData["height"] = "40";
+
+                    <!-- Make profile pic even smaller when we have 2nd level subcomment -->
+                    @if (Model.ParentCommentId != null)
+                    {
+                        this.ViewData["width"] = "30";
+                        this.ViewData["height"] = "30";
+                    }
+
+                    <div class="align-self-end @(this.ViewData["width"].ToString() == "40" ? "main-subcomment" : null)" style="width: 90%">
+                        @foreach (var item in Model.SubComments)
+                        {
+                            <partial name="_CommentSinglePartial" model="@item" />
+                        }
+
+                        <!-- Append 'Hide Subcomments' button at the end of main comment element -->
+                        @if (Model.ParentCommentId == null)
+                        {
+                            <button class="btn btn-outline-secondary btn-sm hide-subcomments mb-3">
+                                @localizer["Hide subcomments"]
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
     const token = $("#csfrToken input[name=__RequestVerificationToken]").val();
-    const themeColor = "rgb(170, 85, 132)";
+    const themeColor = "rgb(146,171,149)";
     const culture = document.cookie.match('Culture')?.input.substr(-2);
     const cultureIsEn = culture === 'en';
 
@@ -31,9 +31,7 @@
     const approved = cultureIsEn ? 'Approved' : 'Одобрен';
     const awaitingApproval = cultureIsEn ? 'Awaiting approval' : 'Очаква одобрение';
     const genericError = cultureIsEn ? 'Error' : 'Грешка';
-    const phoneNumberError = cultureIsEn ? 'Please provide a valid phone number or no phone number at all.' :
-        'Моля, въведи валиден телефонен номер или остави полето празно.'
-    const appointmentDescriptionError = cultureIsEn ? 'Please write more than 30 symbols.' : 'Моля, въведи повече от 30 букви.'
+    const appointmentDescriptionError = cultureIsEn ? 'Please enter more than 30 characters.' : 'Моля, въведи повече от 30 символа.'
 
 
     const setUpDailyWorkingHours = () => {
@@ -80,7 +78,6 @@
                         isOwn: currentEvent.isOwn,
                         isApproved: currentEvent.isApproved,
                         description: currentEvent.description,
-                        userPhoneNumber: currentEvent.userPhoneNumber,
                     }
 
                     appointments.push(currentAppointment);
@@ -146,14 +143,17 @@
 
                 if (!eventObj.isApproved) {
                     eventElement.setAttribute(style, initialStyleState + '; border-color: #ffc107; color: #ffc107;');
-                    eventElement.innerText = eventElement.innerText.split(' - ')[0];
+                    eventElement.innerText = '\u2b6e';
 
-                } else if (!eventObj.isOwn) {
-                    eventElement.setAttribute(style, initialStyleState + '; border-color:#28a745; color:#28a745;');
+                } else if (!eventObj.isOwn && !userIsAdmin) {
+                    eventElement.setAttribute(style, initialStyleState + '; border-color:#92ab95; color:#92ab95;');
                     eventElement.innerText = '+';
+                } else if (!eventObj.isOwn && userIsAdmin) {
+                    eventElement.setAttribute(style, initialStyleState + '; border-color:' + themeColor + '; color:' + themeColor + ';');
+                    eventElement.innerText = '\u2713';
                 } else if (eventObj.isOwn) {
                     eventElement.setAttribute(style, initialStyleState + '; border-color:' + themeColor + '; color:' + themeColor + ';');
-                    eventElement.innerText = userIsAdmin ? 'Unavailable' : eventElement.innerText.split(' - ')[0];
+                    eventElement.innerText = userIsAdmin ? 'x' : '\u2713';
                 }
                 eventElement.style.paddingTop = '12px';
                 eventElement.style.fontSize = '16px';
@@ -223,7 +223,6 @@
             // appointment awaiting approval
             $('#appointmentApproval .username')[0].innerText = calEvent.userUserName;
             $('#appointmentApproval .description')[0].innerText = calEvent.description;
-            $('#appointmentApproval .phone')[0].innerText = calEvent.userPhoneNumber;
             $('#appointmentApproval .modal-title')[0].innerText = appointmentEvaluation;
             $('#appointmentApproval').modal();
             return;
@@ -241,7 +240,7 @@
             $('#ownAppointmentModal .status').css('color', '#ffc107');
         } else if (calEvent.isApproved) {
             $('#ownAppointmentModal .status')[0].innerText = approved;
-            $('#ownAppointmentModal .status').css('color', '#28a745');
+            $('#ownAppointmentModal .status').css('color', themeColor);
         }
 
         if (calEvent.isOwn && userIsAdmin) {
@@ -385,29 +384,17 @@
         $('#declineAppointmentConfirm').modal();
     })
 
-    $('.sendAppointment').click(function () {
+    $('#sendAppointment').click(function () {
         // Validate description
         let userIssueDescription = $('#patientIssueDescription').val().trim();
         if (userIssueDescription == '' || userIssueDescription.length < 30) {
             alert(appointmentDescriptionError)
             return;
         }
-        // Validate phone number
-        let allowedPhoneNumberSymbols = '0123456789+';
-        let userPhoneNumber;
-        userPhoneNumber = $('#userPhoneNumber').val() !== undefined ? $('#userPhoneNumber').val().trim() : null;
-        if (userPhoneNumber !== null && userPhoneNumber !== '') {
-            if (userPhoneNumber.includes(char => !allowedPhoneNumberSymbols.includes(char)) ||
-                userPhoneNumber.length < 8) {
-                alert(phoneNumberError);
-                return;
-            }
-        }
 
         let data = {
             Start: selectedAppointment.start._i,
             Description: $('#patientIssueDescription').val(),
-            PhoneNumber: userPhoneNumber,
         }
 
         $.ajax({

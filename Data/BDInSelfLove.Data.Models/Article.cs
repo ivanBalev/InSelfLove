@@ -11,7 +11,6 @@
         public Article()
         {
             this.CreatedOn = DateTime.UtcNow;
-            this.ArticleComments = new HashSet<ArticleComment>();
         }
 
         [Required]
@@ -28,6 +27,6 @@
 
         public virtual ApplicationUser User { get; set; }
 
-        public virtual ICollection<ArticleComment> ArticleComments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }

@@ -1,0 +1,14 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+<div id="confirm-comment-delete" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h4 class="modal-title">@localizer["Are you sure?"]</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger btn-block delete-comment-confirm-btn">@localizer["Confirm"]</button>
+            </div>
+        </div>
+    </div>
+</div>

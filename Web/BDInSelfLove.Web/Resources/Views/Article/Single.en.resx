@@ -117,34 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Add New Comment" xml:space="preserve">
-    <value>Add New Comment</value>
-  </data>
-  <data name="Are you sure?" xml:space="preserve">
-    <value>Are you sure?</value>
-  </data>
-  <data name="at" xml:space="preserve">
-    <value>at</value>
-  </data>
-  <data name="by" xml:space="preserve">
-    <value>by</value>
-  </data>
-  <data name="Comments" xml:space="preserve">
-    <value>Comments</value>
-  </data>
-  <data name="Confirm" xml:space="preserve">
-    <value>Confirm</value>
-  </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
-  </data>
-  <data name="Load More Comments" xml:space="preserve">
-    <value>Load More Comments</value>
-  </data>
-  <data name="Posted on" xml:space="preserve">
-    <value>Posted on</value>
   </data>
 </root>

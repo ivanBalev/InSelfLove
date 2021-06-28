@@ -17,7 +17,7 @@ namespace BDInSelfLove.Data.Models
             this.Claims = new HashSet<IdentityUserClaim<string>>();
             this.Logins = new HashSet<IdentityUserLogin<string>>();
             this.Appointments = new HashSet<Appointment>();
-            this.ArticleComments = new HashSet<ArticleComment>();
+            this.Comments = new HashSet<Comment>();
         }
 
         // Audit info
@@ -40,9 +40,7 @@ namespace BDInSelfLove.Data.Models
 
         public virtual ICollection<Appointment> Appointments { get; set; }
 
-        public virtual ICollection<ArticleComment> ArticleComments { get; set; }
-
-        public virtual ICollection<VideoComment> VideoComments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
 
         public bool IsBanned { get; set; }
     }

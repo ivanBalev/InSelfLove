@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.ArticleComment;
+    using BDInSelfLove.Services.Models.Comment;
     using BDInSelfLove.Services.Models.User;
 
     public class ArticleServiceModel : IMapTo<Article>, IMapFrom<Article>
@@ -23,6 +23,6 @@
 
         public ApplicationUserServiceModel User { get; set; }
 
-        public ICollection<ArticleCommentServiceModel> ArticleComments { get; set; }
+        public ICollection<CommentServiceModel> Comments { get; set; }
     }
 }

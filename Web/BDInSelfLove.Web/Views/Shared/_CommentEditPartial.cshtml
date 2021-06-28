@@ -1,0 +1,17 @@
+﻿@model BDInSelfLove.Web.InputModels.Comment.CommentEditInputModel
+
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+
+<form class="mb-3 edit-comment">
+    <input type="hidden" asp-for="@Model.ArticleId" value="@Model.ArticleId" />
+    <input type="hidden" asp-for="@Model.VideoId" value="@Model.VideoId" />
+    <input type="hidden" asp-for="@Model.Id" value="@Model.Id" />
+    <div class="form-group">
+        <textarea asp-for="@Model.Content" class="form-control" rows="2"></textarea>
+        <span asp-validation-for="@Model.Content" class="text-danger"></span>
+    </div>
+    <div class="col-md-2 m-0 p-0">
+        <a class="btn btn-outline-success btn-block btn-sm save-edit-btn">@localizer["Save"]</a>
+    </div>
+</form>

@@ -7,7 +7,7 @@ namespace BDInSelfLove.Services.Models.Search
 {
     public class ArticlesSearchServiceModel
     {
-        public ICollection<ArticleServiceModel> Articles { get; set; }
+        public ICollection<ArticlePreviewServiceModel> Articles { get; set; }
 
         public int ArticlesCount { get; set; }
     }

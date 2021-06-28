@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Services.Data
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@
     {
         IQueryable<ArticleServiceModel> GetAll(int? count = null);
 
-        IQueryable<ArticleServiceModel> GetAllPagination(int take, int skip = 0);
+        IQueryable<ArticlePreviewServiceModel> GetAllPagination(int take, int skip = 0);
 
         Task<int> CreateAsync(ArticleServiceModel articleServiceModel);
 
@@ -18,5 +19,7 @@
         Task<int> Edit(ArticleServiceModel productServiceModel);
 
         Task<bool> Delete(int id);
+
+        IQueryable<ArticlePreviewServiceModel> GetSideArticles(int articlesCount, int articleId = 0);
     }
 }

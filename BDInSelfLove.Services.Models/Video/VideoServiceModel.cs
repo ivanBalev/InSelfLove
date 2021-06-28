@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Comment;
     using BDInSelfLove.Services.Models.User;
-    using BDInSelfLove.Services.Models.VideoComment;
 
     public class VideoServiceModel : IMapTo<Video>, IMapFrom<Video>
     {
@@ -21,7 +21,7 @@
 
         public ApplicationUserServiceModel User { get; set; }
 
-        public ICollection<VideoCommentServiceModel> VideoComments { get; set; }
+        public ICollection<CommentServiceModel> Comments { get; set; }
 
         public string Title { get; set; }
 

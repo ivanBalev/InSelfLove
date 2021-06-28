@@ -5,9 +5,9 @@
 
     public class HomeViewModel
     {
-        public IEnumerable<BriefArticleInfoViewModel> LastArticles { get; set; }
+        public IEnumerable<ArticlePreviewViewModel> LastArticles { get; set; }
 
-        public BriefArticleInfoViewModel FeaturedArticle { get; set; }
+        public ArticlePreviewViewModel FeaturedArticle { get; set; }
 
         public VideoViewModel FeaturedVideo { get; set; }
     }

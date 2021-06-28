@@ -5,6 +5,7 @@
 @{
     this.ViewData["Title"] = localizer["Home Page"].Value;
 
+    // Determine featured item content
     string featuredItemTitle = "";
     string featuredItemController = "";
     int featuredItemId = 0;
@@ -23,116 +24,82 @@
     }
 }
 
-<!-- SHOWCASE -->
-<section id="showcase" class="py-5">
-    <div class="dark-overlay text-white">
+<!-- Showcase -->
+<div id="showcase">
+    <div class="dark-overlay text-white py-5">
         <div class="container">
             <div class="row mt-4 pt-4">
-                <div class="col text-center mt-4 pt-4">
+                <div class="col text-center mt-0 pt-4">
                     <div class="showcase-wrapper">
-                        <h1>@localizer["FeaturedArticle"]</h1>
+                        <h1>@localizer["FEATURED POST"]</h1>
                         <h2>
                             @featuredItemTitle
                         </h2>
-                        <a asp-controller="@featuredItemController" asp-action="Single" asp-route-id="@featuredItemId" class=" btn btn-outline-secondary btn-sm text-dark mt-2">
-                            @localizer["ReadMore"]
+                        <a asp-controller="@featuredItemController" asp-action="Single" asp-route-id="@featuredItemId" class="btn btn-outline-light btn-md text-white mt-2 see-more-feature-btn">
+                            @localizer["SEE MORE"]
                         </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<!-- EXPLORE HEAD -->
-<section id="explore-head-section">
-    <div class="container">
+<div class="main-content">
+    <!-- Info Header -->
+    <div id="info-header" class="row text-center pt-5 mt-5 mb-2">
+        <h1 class="col">@localizer["POSTS"]</h1>
+    </div>
+    <!-- Articles -->
+    <div id="home-articles" class="container py-4">
         <div class="row">
-            <div class="col text-center pt-5 pb-2 info-header">
-                <h1>@localizer["Explore My Articles"]</h1>
-                @*<p class="lead">
-                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum ullam dolor culpa et at
-                        exercitationem possimus sunt, vitae quasi reiciendis!
-                    </p>*@
-            </div>
+            @foreach (var article in Model.LastArticles)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <partial name="_ArticlePreviewPartial" model="@article" />
+                </div>
+            }
+        </div>
+        <div class="text-center">
+            <a asp-controller="Article" asp-action="All" class="btn btn-outline-secondary mt-2 see-more-btn">
+                @localizer["SEE MORE"]
+            </a>
         </div>
     </div>
-</section>
-
-<!-- BLOG SECTION -->
-<section id="blog" class="py-4">
-    <div class="container">
-        <div class="row">
-            <partial name="_ArticlesPartial" model="@Model.LastArticles" />
-        </div>
-
-        <a asp-controller="Article" asp-action="All" class="btn btn-outline-secondary btn-block mt-2">@localizer["Check Them All Out"]</a>
-
-    </div>
-</section>
-
-<!-- SEE VIDEOS -->
-<section id="explore-videos-section">
-    <div class="container">
-        <div class="row">
-            <div class="col text-center pt-5 pb-2 info-header">
-                <h1>@localizer["See My Videos"]</h1>
-                @*<p class="lead">
-                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum ullam dolor culpa et at
-                        exercitationem possimus sunt, vitae quasi reiciendis!
-                    </p>*@
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- VIDEOS SECTION -->
-
-<section id="videos" class=" pt-4">
-    <div id="videoCarousel" class="container">
+    <!-- Videos -->
+    <div id="video-carousel" class="container pt-4">
         <div class="row">
             <div class="col-sm-8 m-auto">
-
-                <!-- SLIDER WITH CONTROLS -->
-                <div id="slider2" class="carousel slide" data-ride="carousel">
-                    <!-- CONTROLS BELOW -->
-                    <ol class="carousel-indicators">
-                        <li class="active" data-target="#slider2" data-slide-to="0"></li>
-                        <li data-target="#slider2" data-slide-to="1"></li>
-                        <li data-target="#slider2" data-slide-to="2"></li>
-                    </ol>
-
+                <div id="slider" class="carousel slide" data-ride="carousel">
+                    <!-- Arrow controls -->
+                    <a href="#slider" class="carousel-control-prev mt-5" data-slide="prev" aria-label="previous video">
+                        <span class="carousel-control-prev-icon"></span>
+                    </a>
+                    <a href="#slider" class="carousel-control-next mt-5" data-slide="next" aria-label="next video">
+                        <span class="carousel-control-next-icon"></span>
+                    </a>
+                    <!-- Videos -->
                     <div class="carousel-inner">
                         <vc:home-video></vc:home-video>
                     </div>
-
-                    <!-- CONTROLS -->
-                    <a href="#slider2" class="carousel-control-prev mt-5" data-slide="prev" aria-label="previous video">
-                        <span class="carousel-control-prev-icon"></span>
-                    </a>
-
-                    <a href="#slider2" class="carousel-control-next mt-5" data-slide="next" aria-label="next video">
-                        <span class="carousel-control-next-icon"></span>
-                    </a>
+                    <!-- Bottom controls -->
+                    <ol class="carousel-indicators">
+                        <li class="active" data-target="#slider" data-slide-to="0"></li>
+                        <li data-target="#slider" data-slide-to="1"></li>
+                        <li data-target="#slider" data-slide-to="2"></li>
+                    </ol>
                 </div>
             </div>
         </div>
-        <a asp-controller="Video" asp-action="All" class="btn btn-outline-secondary btn-block my-4">@localizer["See All My Videos"]</a>
+        <div class="text-center">
+            <a asp-controller="Video" asp-action="All" class="
+                   btn btn-outline-secondary my-4 see-more-btn">
+                @localizer["SEE MORE"]
+            </a>
+        </div>
     </div>
-</section>
+</div>
 
-
-<script>
-    let DOMelements = document.querySelectorAll('.article-card');
-    let elements = Array.from(DOMelements);
-    let randomElementHeight = elements[0].offsetHeight;
-
-    if (elements.some(e => e.offsetHeight != randomElementHeight)) {
-        let maxHeight = 0;
-        elements.forEach(e => e.offsetHeight > maxHeight ? maxHeight = e.offsetHeight : null);
-
-        for (let i = 0; i < elements.length; i++) {
-            DOMelements[i].style.height = maxHeight + 'px';
-        }
-    }
-</script>
+@section Scripts {
+    <script src="~/Custom/js/previewArticleHeightEqualize.js"></script>
+}

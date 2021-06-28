@@ -30,9 +30,7 @@
 
         public DbSet<Appointment> Appointments { get; set; }
 
-        public DbSet<ArticleComment> ArticleComments { get; set; }
-
-        public DbSet<VideoComment> VideoComments { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 
@@ -93,27 +91,21 @@
         {
             builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
 
-            builder.Entity<ArticleComment>()
+            builder.Entity<Comment>()
                 .HasOne(ac => ac.User)
-                .WithMany(u => u.ArticleComments)
+                .WithMany(u => u.Comments)
                 .HasForeignKey(ac => ac.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<ArticleComment>()
+            builder.Entity<Comment>()
                 .HasOne(ac => ac.Article)
-                .WithMany(a => a.ArticleComments)
+                .WithMany(a => a.Comments)
                 .HasForeignKey(ac => ac.ArticleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<VideoComment>()
-                .HasOne(vc => vc.User)
-                .WithMany(u => u.VideoComments)
-                .HasForeignKey(vc => vc.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<VideoComment>()
+            builder.Entity<Comment>()
                 .HasOne(vc => vc.Video)
-                .WithMany(v => v.VideoComments)
+                .WithMany(v => v.Comments)
                 .HasForeignKey(ac => ac.VideoId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

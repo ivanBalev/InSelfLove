@@ -21,7 +21,7 @@
 
         public virtual ApplicationUser User { get; set; }
 
-        public virtual ICollection<VideoComment> VideoComments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
 
         public string Title { get; set; }
 

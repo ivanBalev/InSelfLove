@@ -8,6 +8,7 @@
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Video;
     using BDInSelfLove.Services.Models.Videos;
     using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,34 @@
             return video.Id;
         }
 
+        public async Task<VideoServiceModel> GetById(int id)
+        {
+            var video = await this.videosRepository.All()
+               .Where(a => a.Id == id)
+               .Include(v => v.User)
+               .Include(v => v.Comments)
+               .To<VideoServiceModel>()
+               .FirstOrDefaultAsync();
+
+            foreach (var comment in video.Comments)
+            {
+                comment.SubComments.Clear();
+            }
+
+            foreach (var comment in video.Comments)
+            {
+                if (comment.ParentCommentId != null)
+                {
+                    var parentComment = video.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+                    parentComment.SubComments.Add(comment);
+                }
+            }
+
+            video.Comments = video.Comments.Where(v => v.ParentCommentId == null).ToList();
+
+            return video;
+        }
+
         public IQueryable<VideoServiceModel> GetAll(int? latestVideosCount = null)
         {
             IQueryable<Video> query = this.videosRepository.AllAsNoTracking();
@@ -46,33 +75,17 @@
             return query.To<VideoServiceModel>();
         }
 
-        public async Task<ICollection<VideoServiceModel>> GetAllPagination(int take = DefaultVideosPerPage, int skip = 0)
+        public async Task<ICollection<VideoPreviewServiceModel>> GetAllPagination(int take = DefaultVideosPerPage, int skip = 0)
         {
             var videos = await this.videosRepository
                                .All()
                                .Include(a => a.User)
-                               .Include(a => a.VideoComments)
+                               .Include(a => a.Comments)
                                .OrderByDescending(a => a.CreatedOn)
                                .Skip(skip)
                                .Take(take)
-                               .To<VideoServiceModel>()
+                               .To<VideoPreviewServiceModel>()
                                .ToListAsync();
-
-            foreach (var video in videos)
-            {
-                foreach (var comment in video.VideoComments)
-                {
-                    comment.SubComments.Clear();
-
-                    if (comment.ParentCommentId != null)
-                    {
-                        var parentComment = video.VideoComments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
-                        parentComment.SubComments.Add(comment);
-                    }
-                }
-
-                video.VideoComments = video.VideoComments.Where(vc => vc.ParentCommentId == null).ToList();
-            }
 
             return videos;
         }
@@ -90,6 +103,17 @@
             int result = await this.videosRepository.SaveChangesAsync();
 
             return result > 0;
+        }
+
+        public IQueryable<VideoPreviewServiceModel> GetSideVideos(int videosCount, int videoId = 0)
+        {
+            var videos = this.videosRepository.All()
+               .Where(v => v.Id != videoId)
+               .OrderByDescending(a => a.CreatedOn)
+               .Take(videosCount)
+               .To<VideoPreviewServiceModel>();
+
+            return videos;
         }
     }
 }

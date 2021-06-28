@@ -1,0 +1,21 @@
+﻿@model BDInSelfLove.Web.ViewModels.Article.ArticlePaginationViewModel
+
+@* Remove layout when using search (REST API Ajax Request) *@
+@if(this.ViewContext.RouteData.Values["controller"].ToString() == "Search")
+{
+    this.Layout = null;
+}
+
+<div id="all-articles" class="py-4">
+    <div class="container">
+        <div class="row">
+            @foreach (var article in Model.Articles)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <partial name="_ArticlePreviewPartial" model="@article" />
+                </div>
+            }
+        </div>
+        <partial name="_PaginationPartial" model="@Model.PaginationInfo" />
+    </div>
+</div>

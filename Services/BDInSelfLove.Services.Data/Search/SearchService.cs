@@ -4,6 +4,7 @@ using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Article;
 using BDInSelfLove.Services.Models.Search;
 using BDInSelfLove.Services.Models.User;
+using BDInSelfLove.Services.Models.Video;
 using BDInSelfLove.Services.Models.Videos;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -53,13 +54,11 @@ namespace BDInSelfLove.Services.Data.Search
 
             var serviceModel = new IndexSearchServiceModel
             {
-                Articles = await articles.Distinct().Take(DefaultArticlesPerPage).To<ArticleServiceModel>().ToListAsync(),
-                Videos = await videos.Distinct().Take(DefaultVideosPerPage).To<VideoServiceModel>().ToListAsync(),
+                Articles = await articles.Distinct().Take(DefaultArticlesPerPage).To<ArticlePreviewServiceModel>().ToListAsync(),
+                Videos = await videos.Distinct().Take(DefaultVideosPerPage).To<VideoPreviewServiceModel>().ToListAsync(),
                 ArticlesCount = await articles.CountAsync(),
                 VideosCount = await videos.CountAsync(),
             };
-
-            this.SortOutCommentHierarchy(serviceModel.Videos);
 
             return serviceModel;
         }
@@ -80,19 +79,13 @@ namespace BDInSelfLove.Services.Data.Search
             }
 
             var articlesCount = await articlesQuery.CountAsync();
-            var articles = await articlesQuery
-                               .Skip(skip)
-                               .Take(take)
-                               .Select(a => new ArticleServiceModel
+            var articles = await articlesQuery.Skip(skip).Take(take)
+                               .Select(a => new ArticlePreviewServiceModel
                                {
                                   Id = a.Id,
                                   Title = a.Title,
                                   CreatedOn = a.CreatedOn,
                                   Content = a.Content,
-                                  User = new ApplicationUserServiceModel
-                                  {
-                                    UserName = a.User.UserName,
-                                  },
                                   ImageUrl = a.ImageUrl,
                                })
                                .ToListAsync();
@@ -120,41 +113,15 @@ namespace BDInSelfLove.Services.Data.Search
             }
 
             var videosCount = await videosQuery.Distinct().CountAsync();
-            // TODO: Why does distinct create error in below query?? now working fine but distinct blows up 
-            var videos = await videosQuery
-                               .Include(a => a.User)
-                               .Include(a => a.VideoComments)
-                               .Skip(skip)
-                               .Take(take)
-                               .To<VideoServiceModel>()
+            var videos = await videosQuery.Skip(skip).Take(take)
+                               .To<VideoPreviewServiceModel>()
                                .ToListAsync();
-
-            this.SortOutCommentHierarchy(videos);
 
             return new VideosSearchServiceModel
             {
                 Videos = videos,
                 VideosCount = videosCount,
             };
-        }
-
-        private void SortOutCommentHierarchy(List<VideoServiceModel> videos)
-        {
-            foreach (var video in videos)
-            {
-                foreach (var comment in video.VideoComments)
-                {
-                    comment.SubComments.Clear();
-
-                    if (comment.ParentCommentId != null)
-                    {
-                        var parentComment = video.VideoComments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
-                        parentComment.SubComments.Add(comment);
-                    }
-                }
-
-                video.VideoComments = video.VideoComments.Where(vc => vc.ParentCommentId == null).ToList();
-            }
         }
     }
 }

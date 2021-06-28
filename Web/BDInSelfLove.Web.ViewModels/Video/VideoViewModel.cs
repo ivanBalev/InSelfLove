@@ -1,6 +1,6 @@
 ﻿using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Videos;
-using BDInSelfLove.Web.ViewModels.VideoComment;
+using BDInSelfLove.Web.ViewModels.Comment;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,8 +13,10 @@ namespace BDInSelfLove.Web.ViewModels.Video
 
         public string Url { get; set; }
 
-        public ICollection<VideoCommentViewModel> VideoComments { get; set; }
+        public ICollection<CommentViewModel> Comments { get; set; }
 
         public string Title { get; set; }
+
+        public DateTime CreatedOn { get; set; }
     }
 }

@@ -1,0 +1,25 @@
+﻿@model BDInSelfLove.Web.ViewComponents.Models.Sidebar.SuggestedViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{
+    bool isSingleArticlePage = Model.Articles.Count != 0;
+    int publcationsCount = isSingleArticlePage ? Model.Articles.Count : Model.Videos.Count;
+    string elementTitle = isSingleArticlePage ? localizer["More articles"].Value : localizer["More videos"].Value;
+}
+
+<div id="sidebar" class="col-lg-3 p-4">
+    <h1 id="title" class="mb-3">@localizer[elementTitle]</h1>
+    @for (int i = 0; i < publcationsCount; i++)
+    {
+        <div class="row mb-4">
+            @if (@Model.Articles.Count != 0)
+            {
+                <partial name="_ArticlePreviewPartial" model="@Model.Articles[i]" />
+            }
+            else
+            {
+                <partial name="_VideoPreviewPartial" model="@Model.Videos[i]" />
+            }
+        </div>
+    }
+</div>

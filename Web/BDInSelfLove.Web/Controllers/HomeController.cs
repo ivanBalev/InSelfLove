@@ -25,6 +25,7 @@
     public class HomeController : BaseController
     {
         private const int IndexArticlesCount = 4;
+        private const int NonFeaturedArticlesCount = 3;
 
         private readonly IArticleService articleService;
         private readonly IVideoService videoService;
@@ -45,25 +46,29 @@
 
         public async Task<IActionResult> Index()
         {
-            // Get data
-            var serviceData = await this.articleService
-               .GetAll(IndexArticlesCount).ToListAsync();
+            // Get articles
+            var serviceData = await this.articleService.GetAll(IndexArticlesCount).ToListAsync();
 
-            // Parse
+            // Parse articles
             var lastArticles = serviceData.Select(x =>
-            AutoMapperConfig.MapperInstance.Map<BriefArticleInfoViewModel>(x)).ToList();
+            AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(x)).ToList();
 
+            // Get last video and check whether it's posted after latest article
             var lastVideo = await this.videoService.GetAll(1).FirstOrDefaultAsync();
-
             var videoisLatest = DateTime.Compare(lastArticles[0].CreatedOn, lastVideo.CreatedOn) == -1;
 
-            // Create view model
-            var viewModel = new HomeViewModel
+            // Populate view model depending on whether we have a featured video or article
+            var viewModel = new HomeViewModel();
+            if (videoisLatest)
             {
-                FeaturedArticle = videoisLatest ? null : lastArticles[0],
-                LastArticles = lastArticles.Skip(1).ToList(),
-                FeaturedVideo = videoisLatest ? AutoMapperConfig.MapperInstance.Map<VideoViewModel>(lastVideo) : null,
-            };
+                viewModel.FeaturedVideo = AutoMapperConfig.MapperInstance.Map<VideoViewModel>(lastVideo);
+                viewModel.LastArticles = lastArticles.Take(NonFeaturedArticlesCount);
+            }
+            else
+            {
+                viewModel.FeaturedArticle = lastArticles[0];
+                viewModel.LastArticles = lastArticles.Skip(1).ToList();
+            }
 
             return this.View(viewModel);
         }

@@ -1,13 +1,11 @@
-﻿using BDInSelfLove.Services.Models.Videos;
-using System;
+﻿using BDInSelfLove.Services.Models.Video;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BDInSelfLove.Services.Models.Search
 {
     public class VideosSearchServiceModel
     {
-        public ICollection<VideoServiceModel> Videos { get; set; }
+        public ICollection<VideoPreviewServiceModel> Videos { get; set; }
 
         public int VideosCount { get; set; }
     }

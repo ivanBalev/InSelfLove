@@ -117,25 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Check Them All Out" xml:space="preserve">
-    <value>Check Them All Out</value>
+  <data name="CHECK THEM OUT" xml:space="preserve">
+    <value>CHECK THEM OUT</value>
   </data>
-  <data name="Explore My Articles" xml:space="preserve">
-    <value>Explore My Articles</value>
+  <data name="FEATURED POST" xml:space="preserve">
+    <value>FEATURED POST</value>
   </data>
-  <data name="FeaturedArticle" xml:space="preserve">
-    <value>Featured Article</value>
+  <data name="HOME PAGE" xml:space="preserve">
+    <value>HOME PAGE</value>
   </data>
-  <data name="Home Page" xml:space="preserve">
-    <value>Home Page</value>
+  <data name="POSTS" xml:space="preserve">
+    <value>POSTS</value>
   </data>
-  <data name="ReadMore" xml:space="preserve">
-    <value>See it</value>
-  </data>
-  <data name="See All My Videos" xml:space="preserve">
-    <value>See All My Videos</value>
-  </data>
-  <data name="See My Videos" xml:space="preserve">
-    <value>See My Videos</value>
+  <data name="SEE MORE" xml:space="preserve">
+    <value>SEE MORE</value>
   </data>
 </root>

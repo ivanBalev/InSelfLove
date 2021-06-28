@@ -117,19 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Delete" xml:space="preserve">
-    <value>Изтрий</value>
+  <data name="Add new comment" xml:space="preserve">
+    <value>Добави нов коментар</value>
   </data>
-  <data name="Edit" xml:space="preserve">
-    <value>Промени</value>
+  <data name="Comments" xml:space="preserve">
+    <value>Коментари</value>
   </data>
-  <data name="Hide subcomments" xml:space="preserve">
-    <value>Скрий подкоментарите</value>
-  </data>
-  <data name="Reply" xml:space="preserve">
-    <value>Отговори</value>
-  </data>
-  <data name="See Subcomments" xml:space="preserve">
-    <value>Виж подкоментарите</value>
+  <data name="Load More Comments" xml:space="preserve">
+    <value>Зареди още коментари</value>
   </data>
 </root>

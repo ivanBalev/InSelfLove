@@ -113,12 +113,6 @@
             // Create appointment in server
             var appointmentId = await this.appointmentService.Create(serviceModel);
 
-            // Enter user phone number, if provided
-            if (!string.IsNullOrEmpty(serviceModel.PhoneNumber) && (await this.userManager.GetPhoneNumberAsync(user)) == null)
-            {
-                await this.userManager.SetPhoneNumberAsync(user, serviceModel.PhoneNumber);
-            }
-
             var scheme = this.HttpContext.Request.Scheme;
             var baseUrl = this.HttpContext.Request.Host.Value;
 
@@ -196,7 +190,6 @@
         }
 
         [HttpGet]
-        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
         [Route("GetWorkingHours")]
         public ActionResult<int[]> GetWorkingHours() => new int[] { GlobalAdminValues.WorkDayStart, GlobalAdminValues.WorkDayEnd };
 

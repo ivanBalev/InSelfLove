@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Create Article" xml:space="preserve">
-    <value>Create Article</value>
+    <value>Create article</value>
   </data>
   <data name="Create Video" xml:space="preserve">
     <value>Create Video</value>

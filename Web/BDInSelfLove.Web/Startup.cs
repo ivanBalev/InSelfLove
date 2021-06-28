@@ -12,13 +12,12 @@
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Data.Seeding;
     using BDInSelfLove.Services.Data;
-    using BDInSelfLove.Services.Data.ArticleComment;
     using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Data.CloudinaryService;
+    using BDInSelfLove.Services.Data.CommentService;
     using BDInSelfLove.Services.Data.Search;
     using BDInSelfLove.Services.Data.User;
     using BDInSelfLove.Services.Data.Video;
-    using BDInSelfLove.Services.Data.VideoComment;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Article;
@@ -153,8 +152,7 @@
             services.AddTransient<ICloudinaryService, CloudinaryService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAppointmentService, AppointmentService>();
-            services.AddTransient<IArticleCommentService, ArticleCommentService>();
-            services.AddTransient<IVideoCommentService, VideoCommentService>();
+            services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ISearchService, SearchService>();
         }
 

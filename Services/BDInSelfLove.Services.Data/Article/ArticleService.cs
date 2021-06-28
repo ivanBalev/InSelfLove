@@ -1,6 +1,7 @@
 ﻿namespace BDInSelfLove.Services.Data
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -77,14 +78,14 @@
             return query.To<ArticleServiceModel>();
         }
 
-        public IQueryable<ArticleServiceModel> GetAllPagination(int take = DefaultArticlesPerPage, int skip = 0)
+        public IQueryable<ArticlePreviewServiceModel> GetAllPagination(int take = DefaultArticlesPerPage, int skip = 0)
         {
             var articles = this.articleRepository
                                .All()
                                .OrderByDescending(a => a.CreatedOn)
                                .Skip(skip)
                                .Take(take)
-                               .To<ArticleServiceModel>();
+                               .To<ArticlePreviewServiceModel>();
 
             return articles;
         }
@@ -94,27 +95,38 @@
             var article = await this.articleRepository.All()
                .Where(a => a.Id == id)
                .Include(a => a.User)
-               .Include(a => a.ArticleComments)
+               .Include(a => a.Comments)
                .To<ArticleServiceModel>()
                .FirstOrDefaultAsync();
 
-            foreach (var comment in article.ArticleComments)
+            foreach (var comment in article.Comments)
             {
                 comment.SubComments.Clear();
             }
 
-            foreach (var comment in article.ArticleComments)
+            foreach (var comment in article.Comments)
             {
                 if (comment.ParentCommentId != null)
                 {
-                    var parentComment = article.ArticleComments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+                    var parentComment = article.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
                     parentComment.SubComments.Add(comment);
                 }
             }
 
-            article.ArticleComments = article.ArticleComments.Where(c => c.ParentCommentId == null).ToList();
+            article.Comments = article.Comments.Where(c => c.ParentCommentId == null).ToList();
 
             return article;
+        }
+
+        public IQueryable<ArticlePreviewServiceModel> GetSideArticles(int articlesCount, int articleId = 0)
+        {
+            var articles = this.articleRepository.All()
+               .Where(a => a.Id != articleId)
+               .OrderByDescending(a => a.CreatedOn)
+               .Take(articlesCount)
+               .To<ArticlePreviewServiceModel>();
+
+            return articles;
         }
     }
 }

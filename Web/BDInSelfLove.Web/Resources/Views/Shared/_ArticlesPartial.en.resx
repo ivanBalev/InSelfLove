@@ -117,10 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="on" xml:space="preserve">
-    <value>on</value>
-  </data>
-  <data name="Posted by" xml:space="preserve">
-    <value>Posted by</value>
+  <data name="Posted on" xml:space="preserve">
+    <value>Posted on</value>
   </data>
 </root>

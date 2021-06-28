@@ -5,28 +5,13 @@
 
 @foreach (var video in Model.Videos)
 {
-    if (index == 0)
-    {
-        <div class="carousel-item active">
-            <div class="embed-responsive embed-responsive-16by9">
-                <iframe title="Home psychotherapy video" width="560" height="315" src="@video.Url" frameborder="0"
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                </iframe>
-            </div>
+    <div class="carousel-item @(index == 0 ? "active" : "")" itemscope itemtype="http://schema.org/Movie">
+        <div class="embed-responsive embed-responsive-16by9">
+            <iframe title="Home psychotherapy video" width="560" height="315" src="@video.Url" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
         </div>
-
-        @(index++);
-    }
-    else
-    {
-        <div class="carousel-item">
-            <div class="embed-responsive embed-responsive-16by9">
-                <iframe title="Home psychotherapy video" width="560" height="315" src="@video.Url" frameborder="0"
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                </iframe>
-            </div>
-        </div>
-    }
+    </div>
+    @(index++);
 }

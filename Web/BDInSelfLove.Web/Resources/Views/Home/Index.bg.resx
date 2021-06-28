@@ -117,25 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Check Them All Out" xml:space="preserve">
-    <value>Погледни всички статии</value>
+  <data name="CHECK THEM OUT" xml:space="preserve">
+    <value>ВИЖ ВСИЧКИ</value>
   </data>
-  <data name="Explore My Articles" xml:space="preserve">
-    <value>Разгледай статиите</value>
+  <data name="FEATURED POST" xml:space="preserve">
+    <value>ПОСЛЕДНА ПУБЛИКАЦИЯ</value>
   </data>
-  <data name="FeaturedArticle" xml:space="preserve">
-    <value>Последна публикация</value>
+  <data name="HOME PAGE" xml:space="preserve">
+    <value>НАЧАЛНА СТРАНИЦА</value>
   </data>
-  <data name="Home Page" xml:space="preserve">
-    <value>Начална страница</value>
+  <data name="POSTS" xml:space="preserve">
+    <value>ПУБЛИКАЦИИ</value>
   </data>
-  <data name="ReadMore" xml:space="preserve">
-    <value>Виж я</value>
-  </data>
-  <data name="See All My Videos" xml:space="preserve">
-    <value>Виж всички видеа</value>
-  </data>
-  <data name="See My Videos" xml:space="preserve">
-    <value>Виж видеата</value>
+  <data name="SEE MORE" xml:space="preserve">
+    <value>ВИЖ ПОВЕЧЕ</value>
   </data>
 </root>

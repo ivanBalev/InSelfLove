@@ -1,14 +1,12 @@
-﻿using BDInSelfLove.Services.Data;
-using BDInSelfLove.Services.Data.Search;
-using BDInSelfLove.Services.Data.Video;
+﻿using BDInSelfLove.Services.Data.Search;
 using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Web.ViewModels.Article;
 using BDInSelfLove.Web.ViewModels.Home;
+using BDInSelfLove.Web.ViewModels.Pagination;
 using BDInSelfLove.Web.ViewModels.Search;
 using BDInSelfLove.Web.ViewModels.Video;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,10 +16,10 @@ namespace BDInSelfLove.Web.Controllers
     {
         private const int ArticlesPerPage = 6;
         private const int VideosPerPage = 3;
-
+        private const string ArticleControllerName = "Article";
+        private const string VideoControllerName = "Video";
 
         private ISearchService searchService;
-
 
         public SearchController(ISearchService searchService)
         {
@@ -45,21 +43,28 @@ namespace BDInSelfLove.Web.Controllers
                 SearchTerm = searchTerm,
                 ArticlesPagination = new ArticlePaginationViewModel
                 {
-                    CurrentPage = 1,
-                    PagesCount = articlePagesCount,
-                    Articles = serviceModel.Articles.Select(a => AutoMapperConfig.MapperInstance.Map<BriefArticleInfoViewModel>(a)).ToList(),
+                    PaginationInfo = new PaginationViewModel
+                    {
+                        ControllerName = ArticleControllerName,
+                        PagesCount = articlePagesCount,
+                        CurrentPage = 1,
+                    },
+                    Articles = serviceModel.Articles.Select(a => AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(a)).ToList(),
                 },
                 VideosPagination = new VideoPaginationViewModel
                 {
-                    CurrentPage = 1,
-                    PagesCount = videoPagesCount,
-                    Videos = serviceModel.Videos.Select(v => AutoMapperConfig.MapperInstance.Map<VideoViewModel>(v)).ToList(),
+                    Videos = serviceModel.Videos.Select(v => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(v)).ToList(),
+                    PaginationInfo = new PaginationViewModel
+                    {
+                        ControllerName = VideoControllerName,
+                        CurrentPage = 1,
+                        PagesCount = videoPagesCount,
+                    },
                 },
             };
 
             return this.View(viewModel);
         }
-
 
         [Route("api/Search/Article")]
         public async Task<IActionResult> Article(int page, string searchTerm)
@@ -71,12 +76,16 @@ namespace BDInSelfLove.Web.Controllers
 
             var viewModel = new ArticlePaginationViewModel
             {
-                Articles = serviceModel.Articles.Select(a => AutoMapperConfig.MapperInstance.Map<BriefArticleInfoViewModel>(a)).ToList(),
-                PagesCount = pagesCount == 0 ? 1 : pagesCount,
-                CurrentPage = page,
+                Articles = serviceModel.Articles.Select(a => AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(a)).ToList(),
+                PaginationInfo = new PaginationViewModel
+                {
+                    ControllerName = ArticleControllerName,
+                    PagesCount = pagesCount == 0 ? 1 : pagesCount,
+                    CurrentPage = page,
+                },
             };
 
-            return this.View(viewModel);
+            return this.View("_ArticlesAllPartial", viewModel);
         }
 
         [Route("api/Search/Video")]
@@ -89,12 +98,16 @@ namespace BDInSelfLove.Web.Controllers
 
             var viewModel = new VideoPaginationViewModel
             {
-                Videos = serviceModel.Videos.Select(v => AutoMapperConfig.MapperInstance.Map<VideoViewModel>(v)).ToList(),
-                PagesCount = pagesCount == 0 ? 1 : pagesCount,
-                CurrentPage = page,
+                Videos = serviceModel.Videos.Select(v => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(v)).ToList(),
+                PaginationInfo = new PaginationViewModel
+                {
+                    ControllerName = VideoControllerName,
+                    PagesCount = pagesCount == 0 ? 1 : pagesCount,
+                    CurrentPage = page,
+                },
             };
 
-            return this.View(viewModel);
+            return this.View("_VideosAllPartial", viewModel);
         }
     }
 }

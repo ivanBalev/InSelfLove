@@ -16,8 +16,6 @@ namespace BDInSelfLove.Web.InputModels.Appointment
         [MinLength(30)]
         public string Description { get; set; }
 
-        public string PhoneNumber { get; set; }
-
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<AppointmentInputModel, AppointmentServiceModel>().ForMember(

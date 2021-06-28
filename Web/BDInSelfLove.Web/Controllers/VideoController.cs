@@ -7,13 +7,14 @@
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.ViewComponents.Models.Video;
+    using BDInSelfLove.Web.ViewModels.Pagination;
     using BDInSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
     public class VideoController : BaseController
     {
-        private const int VideosPerPage = 3;
+        private const int VideosPerPage = 6;
 
         private readonly IVideoService videoService;
 
@@ -22,20 +23,13 @@
             this.videoService = videoService;
         }
 
-        public async Task<IActionResult> Single()
+        public async Task<IActionResult> Single(int id)
         {
-            var serviceModel = await this.videoService
-                .GetAllPagination(1);
+            var viewModel = AutoMapperConfig.MapperInstance
+                .Map<VideoViewModel>(await this.videoService
+                .GetById(id));
 
-            var viewModel = new VideoPaginationViewModel()
-            {
-                Videos = serviceModel.Select(a => AutoMapperConfig.MapperInstance.Map<VideoViewModel>(a))
-                .ToList(),
-                PagesCount = 1,
-                CurrentPage = 1,
-            };
-
-            return this.View("All", viewModel);
+            return this.View(viewModel);
         }
 
         public async Task<IActionResult> All(int page = 1)
@@ -46,10 +40,14 @@
             var pagesCount = (int)Math.Ceiling(this.videoService.GetAll().Count() / (decimal)VideosPerPage);
             var viewModel = new VideoPaginationViewModel()
             {
-                Videos = serviceModel.Select(a => AutoMapperConfig.MapperInstance.Map<VideoViewModel>(a))
+                Videos = serviceModel.Select(a => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(a))
                 .ToList(),
-                PagesCount = pagesCount == 0 ? 1 : pagesCount,
-                CurrentPage = page,
+                PaginationInfo = new PaginationViewModel
+                {
+                    ControllerName = this.ControllerContext.RouteData.Values["controller"].ToString(),
+                    PagesCount = pagesCount == 0 ? 1 : pagesCount,
+                    CurrentPage = page,
+                },
             };
 
             return this.View(viewModel);

@@ -1,258 +1,72 @@
 ﻿@using BDInSelfLove.Common
 @using Microsoft.AspNetCore.Identity
 @using BDInSelfLove.Data.Models
-@using BDInSelfLove.Web.InputModels.ArticleComment
+@using BDInSelfLove.Web.ViewModels.Comment
+
 @model BDInSelfLove.Web.ViewModels.Article.ArticleViewModel
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 
-@{ 
-    var mainCommentsPerPage = 3;
+@{
     ViewData["Title"] = Model.Title;
 }
 
-<div class="container border">
-    <div id="singleArticle">
-        <div class="card mb-4 border-left-0 border-right-0">
-            <div class="card-body">
-                <h4 class="card-title text-center mb-1">@Model.Title</h4>
-                <div class="text-center mb-2">
-                    <span class="text-muted text-center article-date">@localizer["Posted on"] @Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
-                </div>
-                <div class="img-wrapper text-center">
-                    <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
-                </div>
-                @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
-                {
-                    <div class="row mb-4">
-                        <div class="col">
-                            <a asp-area="Administration" asp-controller="Article" asp-action="Edit"
-                               asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">@localizer["Edit"]</a>
-                        </div>
-                        <div class="col">
-                            <a asp-area="Administration" asp-controller="Article" asp-action="Delete"
-                               asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a>
-                        </div>
-                    </div>
-                }
-                <div class="row justify-content-around mt-2">
-                    <div class="col-md-10">
-                        @(Html.Raw(Model.SanitizedContent))
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @*Add new comment section*@
-     @if (this.SignInManager.IsSignedIn(this.User))
-     {
-        <h5>@localizer["Add New Comment"]</h5>
-     }
+<div id="single-article-container">
     <div class="row">
-        <div class="col">
-            @if (!this.SignInManager.IsSignedIn(this.User))
-            {
-                <partial name="_PostLoginPartial" model="null" /> }
-            else
-            {
-                <partial name="_AddCommentPartial" model="@(new ArticleCommentInputModel {
-                                                                ArticleId = Model.Id, ParentCommentId = null })" />}
-        </div>
-    </div>
-
-    @*All comments section*@
-    @if (Model.ArticleComments.Count > 0)
-    {
-        <h5 class="mb-3 text-center comments-sign">@localizer["Comments"]</h5>
-        <div class="comments">
-            @foreach (var comment in Model.ArticleComments)
-            {
-                this.ViewData["width"] = "64";
-                this.ViewData["height"] = "64";
-                <div class="main-comment">
-                    <partial name="_RecursiveCommentsPartial" model="@comment" />
-                </div>
-            }
-
-            @*Load more comments button*@
-
-            @if (Model.ArticleComments.Count > mainCommentsPerPage)
-            {
-                <div class="row mb-2">
-                    <div class="col text-center">
-                        <button class="btn btn-outline-secondary btn-sm loadCommentsBtn">@localizer["Load More Comments"]</button>
+        <div class="col-lg-9">
+            <!-- Article -->
+            <div id="single-article" itemscope itemtype="http://schema.org/Article">
+                <div class="card mb-4 border-left-0 border-right-0">
+                    <div class="card-body">
+                        <h4 class="card-title text-center mb-1">@Model.Title</h4>
+                        <div class="text-center mb-2">
+                            <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
+                        </div>
+                        <div class="img-wrapper text-center">
+                            <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
+                        </div>
+                        <!-- Edit and Delete buttons if user is admin -->
+                        @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                        {
+                            <div class="row mb-4">
+                                <div class="col">
+                                    <a asp-area="Administration" asp-controller="Article" asp-action="Edit"
+                                       asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">@localizer["Edit"]</a>
+                                </div>
+                                <div class="col">
+                                    <a asp-area="Administration" asp-controller="Article" asp-action="Delete"
+                                       asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a>
+                                </div>
+                            </div>
+                        }
+                        <!-- Content -->
+                        <div class="row justify-content-around mt-2 ">
+                            <div class="col-md-10" id="single-article-content">
+                                @(Html.Raw(Model.SanitizedContent))
+                            </div>
+                        </div>
                     </div>
                 </div>
-            }
-        </div>
-    }
-
-    @*Delete comment confirmation modal*@
-    <div id="confirm-comment-delete" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header justify-content-center">
-                    <h4 class="modal-title">@localizer["Are you sure?"]</h4>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-danger btn-block delete-comment-confirm-btn">@localizer["Confirm"]</button>
-                </div>
             </div>
+            <partial name="_CommentsPartial" model="new CommentsAllViewModel {
+                                                    ArticleId = Model.Id,
+                                                    Comments = Model.Comments,
+                     }" />
         </div>
+        <!-- Suggested articles -->
+        <vc:sidebar article-id="@Model.Id" video-id="0"></vc:sidebar>
     </div>
+    <!-- Suggested videos -->
+    <vc:bottombar is-article="true"></vc:bottombar>
 </div>
 
 @section Scripts
 {
-    <script>
-        // Display 'Add comment box if user is signed in'
-        let addCommentElement = document.querySelector('.comment-box');
-        if (addCommentElement != undefined) {
-            document.querySelector('.comment-box').style.display = 'block';
-        }
-
-        // Add reply buttons funcitonality if user is logged in
-        if (addCommentElement != undefined) {
-            document.querySelectorAll('.comment .reply-button').forEach(btn => {
-                // Hide/show text box
-                btn.addEventListener('click', e => {
-                    //  Hide comment boxes and display all reply buttons
-                    document.querySelectorAll('.comment-box').forEach((cb, i) => i > 0 ? cb.style.display = "none" : null);
-                    document.querySelectorAll('.comment-buttons').forEach(cb => cb.style.display = "flex");
-                    // Hide reply and edit buttons
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
-
-                    // Display comment form
-                    btn.parentElement.parentElement.parentElement.parentElement.parentElement
-                        .querySelector('.comment-box').style.display = 'block';
-                })
-            })
-            // Hide reply buttons otherwise
-        } else {
-            document.querySelectorAll('.comment .reply-button').forEach(btn => {
-                btn.style.display = 'none';
-            });
-        }
-
-        // Hide last comments
-        const mainCommentsPerPage = 3;
-        var currentPage = 1;
-
-        document.querySelectorAll('.main-comment').forEach((c, i) => {
-            if ((i + 1) > mainCommentsPerPage) {
-                c.style.display = 'none';
-            }
-        })
-
-        // Load next batch of comments
-        document.querySelector('.loadCommentsBtn')?.addEventListener('click', e => {
-            currentPage++;
-
-            document.querySelectorAll('.main-comment').forEach((c, i) => {
-                if ((i + 1) > (currentPage - 1) * mainCommentsPerPage &&
-                    (i + 1) <= currentPage * mainCommentsPerPage) {
-                    c.style.display = 'block';
-                }
-            })
-
-            // Hide loadCommentsBtn if all comments are already visible
-            if (!Array.from(document.querySelectorAll('.main-comment')).some(c => c.style.display === 'none')) {
-                document.querySelector('.loadCommentsBtn').style.display = 'none';
-            }
-        })
-
-        // Initial hide of subcomments
-        document.querySelectorAll('.main-subcomment').forEach(sc => sc.style.display = 'none');
-
-        // Show subcomments
-        document.querySelectorAll('.btn-subcomments').forEach(btn => btn.addEventListener('click', e => {
-            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
-                .querySelector('.main-subcomment').style.display = 'block';
-        }))
-
-        // Hide subcomments
-        document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListener('click', e => {
-            // TODO: Error Why??
-            e.target.parentElement.style.display = 'none'
-        }));
-
-        // Edit comment
-        document.querySelectorAll('.edit-comment-btn').forEach(b => b.addEventListener('click', (e) => {
-            // Show edit comment box and hide reply, edit comment buttons and comment content box
-            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
-            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
-            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
-        }));
-
-        $('.save-edit-btn').click(function (e) {
-            // Gather data
-            let token = e.target.parentElement.parentElement.parentElement.parentElement
-                .querySelector('input[name=__RequestVerificationToken]').value;
-            let commentId = e.target.parentElement.parentElement.querySelector('#Id').value;
-            let content = e.target.parentElement.parentElement.querySelector('#Content').value;
-            let articleId = e.target.parentElement.parentElement.querySelector('#ArticleId').value;
-
-
-            $.ajax({
-                type: "POST",
-                url: '/api/EditComment',
-                data: {
-                    Id: commentId,
-                    Content: content,
-                    ArticleId: articleId,
-                },
-                headers: { 'X-CSRF-TOKEN': token },
-                success: function () {
-                    // Update comment content and return to default view
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').textContent = content;
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'none';
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'flex';
-                    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'block';
-                },
-                error: function () {
-                    console.log('error')
-                }
-            })
-        })
-
-        // Delete comment
-        document.querySelectorAll('.delete-comment-btn').forEach(btn => btn.addEventListener('click', (e) => {
-            // Get comment id
-            let commentId = e.target.parentElement.parentElement.parentElement.parentElement
-                .parentElement.parentElement.parentElement.parentElement.parentElement.id;
-            // Add id to confirm button classlist to use after confirmation
-            document.querySelector('.delete-comment-confirm-btn').classList.add(commentId);
-            $('#confirm-comment-delete').modal();
-        }));
-
-        document.querySelector('.delete-comment-confirm-btn').addEventListener('click', (e) => {
-            let commentId = e.target.classList[e.target.classList.length - 1];
-            let token = document.querySelector('input[name=__RequestVerificationToken]').value;
-            // Return btn classlist to default state
-            e.target.classList.remove(commentId);
-
-            $.ajax({
-                type: "POST",
-                url: '/api/DeleteComment',
-                data: {
-                    Id: commentId,
-                },
-                headers: { 'X-CSRF-TOKEN': token },
-                success: function () {
-                    // Hide deleted comment which will be removed entirely once page reloads
-                    $('#' + commentId).hide();
-                },
-                error: function () {
-                    console.log('error')
-                }
-            })
-
-            $('#confirm-comment-delete').modal('hide');
-        })
-    </script>
-
+    <script src="~/Custom/js/previewVideoHeightEqualize.js"></script>
+    <script src="~/Custom/js/commentsHideDisplayItems.js"></script>
+    <script src="~/Custom/js/editComment.js"></script>
+    <script src="~/Custom/js/deleteComment.js"></script>
     <partial name="_ValidationScriptsPartial" />
 }

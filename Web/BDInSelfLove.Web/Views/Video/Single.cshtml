@@ -1,0 +1,48 @@
+﻿@model BDInSelfLove.Web.ViewModels.Video.VideoViewModel
+@using BDInSelfLove.Common
+@using Microsoft.AspNetCore.Identity
+@using BDInSelfLove.Data.Models
+@using BDInSelfLove.Web.ViewModels.Comment
+
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+<div id="single-video-container">
+    <div class="row">
+        <div class="col-lg-9 pt-4">
+            <div id="single-video" itemscope itemtype="http://schema.org/Movie">
+                <div class="embed-responsive embed-responsive-21by9">
+                    <iframe title="Psychotherapy video" class="embed-responsive-item" src="@Model.Url"></iframe>
+                </div>
+                <!-- Delete button if user is admin -->
+                @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                {
+                    <div class="row mt-2">
+                        <div class="col">
+                            <a asp-area="Administration" asp-controller="Video" asp-action="Delete"
+                               asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a>
+                        </div>
+                    </div>
+                }
+            </div>
+            <partial name="_CommentsPartial" model="new CommentsAllViewModel {
+                                                    VideoId = Model.Id,
+                                                    Comments = Model.Comments,
+                     }" />
+        </div>
+        <!-- Suggested videos -->
+        <vc:sidebar article-id="0" video-id="@Model.Id"></vc:sidebar>
+    </div>
+    <!-- Suggested articles -->
+    <vc:bottombar is-article="false"></vc:bottombar>
+</div>
+
+@section Scripts
+{
+    <script src="~/Custom/js/previewArticleHeightEqualize.js"></script>
+    <script src="~/Custom/js/commentsHideDisplayItems.js"></script>
+    <script src="~/Custom/js/editComment.js"></script>
+    <script src="~/Custom/js/deleteComment.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -2,25 +2,9 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 
-@{
-    ViewData["Title"] = @localizer["All Articles"].Value;
+<partial name="_SlimShowcasePartial" model="@localizer["Articles"].Value" />
+<partial name="_ArticlesAllPartial" model="@Model" />
+
+@section Scripts {
+    <script src="~/Custom/js/previewArticleHeightEqualize.js"></script>
 }
-
-<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
-
-<partial name="_ArticlesPagination" model="@Model" />
-
-<script>
-    let DOMelements = document.querySelectorAll('.article-card');
-    let elements = Array.from(DOMelements);
-    let randomElementHeight = elements[0].offsetHeight;
-
-    if (elements.some(e => e.offsetHeight != randomElementHeight)) {
-        let maxHeight = 0;
-        elements.forEach(e => e.offsetHeight > maxHeight ? maxHeight = e.offsetHeight : null);
-
-        for (let i = 0; i < elements.length; i++) {
-            DOMelements[i].style.height = maxHeight + 'px';
-        }
-    }
-</script>

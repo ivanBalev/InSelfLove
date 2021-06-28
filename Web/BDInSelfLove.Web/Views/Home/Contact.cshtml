@@ -13,7 +13,6 @@
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
 
-<!-- CONTACT SECTION -->
 <section id="contact" class="py-3">
     <div class="container">
         <div class="row">
@@ -100,12 +99,11 @@
 
 
 @section Links {
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-          crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
 }
 
 @section Scripts {
-    <partial name="_MapScriptsPartial" />
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    <script src="~/Custom/js/leaflet.js"></script>
     <partial name="_ValidationScriptsPartial" />
 }

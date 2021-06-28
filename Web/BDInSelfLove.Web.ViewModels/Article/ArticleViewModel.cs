@@ -2,19 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Net;
-    using System.Text.RegularExpressions;
 
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Article;
-    using BDInSelfLove.Web.ViewModels.ArticleComment;
+    using BDInSelfLove.Web.ViewModels.Comment;
     using Ganss.XSS;
 
     public class ArticleViewModel : IMapFrom<ArticleServiceModel>
     {
         public ArticleViewModel()
         {
-            this.ArticleComments = new List<ArticleCommentViewModel>();
+            this.Comments = new List<CommentViewModel>();
         }
 
         public int Id { get; set; }
@@ -31,22 +29,6 @@
 
         public string ImageUrl { get; set; }
 
-        public string PreviewContent
-        {
-            get
-            {
-                var noHtmlTags = Regex.Replace(this.Content, @"<[^>]+>", string.Empty);
-                noHtmlTags = WebUtility.HtmlDecode(noHtmlTags);
-
-                if ((noHtmlTags + this.Title.Length).Length > 200)
-                {
-                    noHtmlTags = noHtmlTags.Substring(0, 200 - this.Title.Length) + "...";
-                }
-
-                return noHtmlTags;
-            }
-        }
-
-        public ICollection<ArticleCommentViewModel> ArticleComments { get; set; }
+        public ICollection<CommentViewModel> Comments { get; set; }
     }
 }
