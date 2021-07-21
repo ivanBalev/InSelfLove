@@ -107,6 +107,7 @@
                     facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
                 });
 
+            // Cookies setup
             services.Configure<CookiePolicyOptions>(
                 options =>
                 {
@@ -122,9 +123,9 @@
             };
 
             services.AddControllersWithViews(configure =>
-           {
-               configure.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-           });
+            {
+                configure.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
 
             services.AddAntiforgery(options =>
             {

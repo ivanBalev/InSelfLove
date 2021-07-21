@@ -10,14 +10,12 @@
 
         public string Description { get; set; }
 
-        public DateTime Start { get; set; }
+        public DateTime UtcStart { get; set; }
 
         public ApplicationUserServiceModel User { get; set; }
 
         public string UserId { get; set; }
 
         public bool IsApproved { get; set; }
-
-        public string PhoneNumber { get; set; }
     }
 }

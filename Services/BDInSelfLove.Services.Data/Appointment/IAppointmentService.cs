@@ -10,19 +10,17 @@
 
     public interface IAppointmentService
     {
-        IQueryable<AppointmentServiceModel> GetAll(string userId = null);
+        Task<AppointmentServiceModel[]> GetAll(string userId);
+
+        Task<int> Book(AppointmentServiceModel clientAppointment);
 
         Task<AppointmentServiceModel> GetById(int id);
 
-        Task<int> Create(AppointmentServiceModel appointmentServiceModel);
+        Task<int> Create(List<AppointmentServiceModel> appointmentServiceModels);
 
         Task<AppointmentServiceModel> Delete(int appointmentId);
 
         IQueryable<AppointmentServiceModel> GetAllByDate(DateTime date);
-
-        Task<int> SubmitDailyWorkingHours(ICollection<AppointmentServiceModel> availableTimeSlots, DateTime date, string adminId);
-
-        IQueryable<AppointmentServiceModel> GetAllForDaysAhead(int daysAhead, string userUserName);
 
         Task<int> Approve(int appointmentId);
     }

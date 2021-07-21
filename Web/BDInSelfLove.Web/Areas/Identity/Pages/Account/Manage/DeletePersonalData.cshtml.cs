@@ -72,7 +72,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var userAppointments = await this.appointmentService.GetAll(user.Id).ToListAsync();
+            var userAppointments = await this.appointmentService.GetAll(user.Id);
             foreach (var appointment in userAppointments)
             {
                 await this.appointmentService.Delete(appointment.Id);

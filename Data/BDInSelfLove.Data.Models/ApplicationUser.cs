@@ -43,5 +43,7 @@ namespace BDInSelfLove.Data.Models
         public virtual ICollection<Comment> Comments { get; set; }
 
         public bool IsBanned { get; set; }
+
+        public string WindowsTimezoneId { get; set; }
     }
 }

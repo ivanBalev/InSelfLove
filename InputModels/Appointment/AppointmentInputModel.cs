@@ -18,9 +18,9 @@ namespace BDInSelfLove.Web.InputModels.Appointment
 
         public void CreateMappings(IProfileExpression configuration)
         {
-            configuration.CreateMap<AppointmentInputModel, AppointmentServiceModel>().ForMember(
-                m => m.Start,
-                opt => opt.MapFrom(x => DateTime.ParseExact(x.Start, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)));
+            //configuration.CreateMap<AppointmentInputModel, AppointmentServiceModel>().ForMember(
+            //    m => m.UtcStart,
+            //    opt => opt.MapFrom(x => DateTime.ParseExact(x.Start, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)));
         }
     }
 }

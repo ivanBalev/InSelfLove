@@ -6,11 +6,9 @@
 
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels.Pagination;
     using BDInSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     public class VideoController : BaseController
     {
@@ -25,6 +23,7 @@
 
         public async Task<IActionResult> Single(int id)
         {
+            // TODO: convert comment times to user local IF COOKIE EXISTS
             var viewModel = AutoMapperConfig.MapperInstance
                 .Map<VideoViewModel>(await this.videoService
                 .GetById(id));

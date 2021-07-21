@@ -9,5 +9,7 @@ namespace BDInSelfLove.Web.InputModels.Appointment
         public string Date { get; set; }
 
         public List<string> TimeSlots { get; set; }
+
+        public string Timezone { get; set; }
     }
 }

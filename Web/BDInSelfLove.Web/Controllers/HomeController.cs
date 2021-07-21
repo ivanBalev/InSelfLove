@@ -10,10 +10,8 @@
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
-    using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
     using BDInSelfLove.Web.InputModels.Contact;
     using BDInSelfLove.Web.ViewModels;
-    using BDInSelfLove.Web.ViewModels.Article;
     using BDInSelfLove.Web.ViewModels.Home;
     using BDInSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Authorization;
@@ -21,11 +19,13 @@
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using TimeZoneConverter;
 
     public class HomeController : BaseController
     {
         private const int IndexArticlesCount = 4;
         private const int NonFeaturedArticlesCount = 3;
+        private const string TimezoneIANACookieName = "timezoneIANA";
 
         private readonly IArticleService articleService;
         private readonly IVideoService videoService;
@@ -108,8 +108,25 @@
         }
 
         [Authorize]
-        public IActionResult Appointment()
+        public async Task<IActionResult> Appointment()
         {
+            // Query value received from client only if timezone cookie is nonexistent or doesn't match current timezone
+            string timezoneIANAQueryValue = this.HttpContext.Request.Query[TimezoneIANACookieName].ToString();
+
+            // Update user db timezone if query value differs from db value
+            if (timezoneIANAQueryValue != string.Empty)
+            {
+                var user = await this.userManager.GetUserAsync(this.User);
+                string timezoneWindowsId = TZConvert.GetTimeZoneInfo(timezoneIANAQueryValue).Id;
+
+                if (user.WindowsTimezoneId == null ||
+                    user.WindowsTimezoneId.ToLower().CompareTo(timezoneWindowsId.ToLower()) != 0)
+                {
+                    user.WindowsTimezoneId = timezoneWindowsId;
+                    await this.userManager.UpdateAsync(user);
+                }
+            }
+
             return this.View();
         }
 

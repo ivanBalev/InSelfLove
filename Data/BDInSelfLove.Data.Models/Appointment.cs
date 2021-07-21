@@ -13,7 +13,7 @@
 
         public string Description { get; set; }
 
-        public DateTime Start { get; set; }
+        public DateTime UtcStart { get; set; }
 
         public ApplicationUser User { get; set; }
 

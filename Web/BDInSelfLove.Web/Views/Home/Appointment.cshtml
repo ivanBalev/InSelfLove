@@ -7,9 +7,13 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 
+@{
+    bool userIsAdmin = this.User.IsInRole(GlobalConstants.AdministratorRoleName);
+}
+
 <div class="container calendar-container mt-4 py-4">
     <form id="csfrToken" method="post"></form>
-    @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+    @if (userIsAdmin)
     {
         <div class="text-center">
             <button id="btnWorkingHours" class="btn btn-outline-secondary mb-3">@localizer["Set Standard Working Hours"]</button>
@@ -18,11 +22,14 @@
     <div id="calendar" workingHours="@GlobalAdminValues.WorkDayStart-@GlobalAdminValues.WorkDayEnd"></div>
 
 
-    <div id="ownAppointmentModal" class="modal fade" role="dialog">
+    <div id="appointmentDetailsModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header justify-content-start pb-0">
                     <h4 class="modal-title">@localizer["Appointment Details"]</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -49,16 +56,19 @@
                             <span class="status font-weight-bold"></span>
                         </div>
                     </div>
-                    <div class="form-group detailsGroup">
+                    <div class="form-group detailsGroup mb-0">
                         <label class="text-center text-black-50  border-bottom">@localizer["Details:"] </label>
-                        <p class="details" style="word-wrap: break-word;"></p>
+                        <p class="details mb-0" style="word-wrap: break-word;"></p>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-start">
+                <div class="modal-footer justify-content-start pt-0">
                     <div class="row">
-                        <div class="col">
-                            <button type="button" class="btn btn-outline-secondary closeDetailsModal" data-dismiss="modal">@localizer["Close"]</button>
-                        </div>
+                        @if (userIsAdmin)
+                        {
+                            <div class="col">
+                                <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
+                            </div>
+                        }
                         <div class="col">
                             <button id="btnDelete" class="btn btn-outline-danger">@localizer["Cancel Appointment"]</button>
                         </div>
@@ -72,9 +82,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body pb-0">
+                    <div class="modal-header p-0 pb-3">
+                        <h4 class="modal-title">@localizer["Briefly describe your issue"]</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     <div class="form-group issueDescription">
-                        <label class="ml-1">@localizer["Please briefly describe your issue."]</label>
-                        <textarea id="patientIssueDescription" rows="3" class="form-control px-2" placeholder="@localizer["This will be shared only with your therapist."]"></textarea>
+                        <textarea id="patientIssueDescription" rows="3" class="form-control px-2" placeholder="@localizer["This will be shared only with your therapist"]"></textarea>
                     </div>
                 </div>
 
@@ -83,61 +98,23 @@
                         <div class="col">
                             <button id="sendAppointment" type="button" class="btn green-btn">@localizer["Send"]</button>
                         </div>
-                        <div class="col">
-                            <button type="button" class="btn btn-outline-secondary closeAppointmentDetailsModal" data-dismiss="modal">@localizer["Close"]</button>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="appointmentApproval" class="modal fade" role="dialog">
+    <div id="cancelAppointmentConfirm" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header justify-content-start pb-0">
-                    <h4 class="modal-title"></h4>
+                <div class="modal-header justify-content-start">
+                    <h4 class="modal-title">@localizer["Are you sure?"]</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="text-black-50 border-bottom">@localizer["Username:"]</label>
-                        <p class="username"></p>
-                    </div>
-                    <div class="form-group">
-                        <label class="text-center text-black-50  border-bottom">@localizer["Issue description:"]</label>
-                        <p class="description mb-0" style="word-wrap: break-word;"></p>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-start">
-                    <div class="row">
-                        <div class="col">
-                            <button type="button" class="btn green-btn approveAppointment">@localizer["Approve"]</button>
-                        </div>
-                        <div class="col">
-                            <button type="button" class="btn btn-outline-danger declineAppointment" data-dismiss="modal">@localizer["Decline"]</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="declineAppointmentConfirm" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header justify-content-start pb-0">
-                    <h4 class="modal-title">@localizer["Confirm Decline"]</h4>
-                </div>
-                <div class="modal-body pb-0">
-                    <div class="form-group">
-                        <label>@localizer["If you find it necessary, please let me know what happened."]</label>
-                        <textarea id="declineReasoning" rows="3" class="form-control px-2"></textarea>
-                    </div>
-                </div>
                 <div class="modal-footer justify-content-start pt-0">
-                    <button type="button" class="btn btn-outline-danger confirmDeclineAppointment">@localizer["Confirm"]</button>
+                    <button type="button" class="btn btn-outline-danger confirmCancelAppointment">@localizer["Confirm"]</button>
                 </div>
             </div>
         </div>
@@ -147,8 +124,11 @@
     <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header justify-content-center py-2">
+                <div class="modal-header justify-content-start pt-3 pb-0 pl-4 ml-4">
                     <h4 class="modal-title">@localizer["Set Daily Availability"]</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="container">
@@ -156,16 +136,15 @@
                             @{
                                 for (int i = GlobalAdminValues.WorkDayStart; i < GlobalAdminValues.WorkDayEnd; i++)
                                 {
-                                    <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1" style="border-color:#aa5584;">
+                                    <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
                                         @(i.ToString() + ":00")
                                     </div>
                                 }
                             }
                         </div>
                     </div>
-                    <div class="row justify-content-center mt-1 mb-0 pb-0">
+                    <div class="row justify-content-start mt-1 mb-0 pb-0 ml-2 pl-2">
                         <button type="button" id="submitDailyAvailability" class="btn green-btn ml-3">@localizer["Save"]</button>
-                        <button type="button" class="btn btn-outline-secondary ml-2" data-dismiss="modal">@localizer["Close"]</button>
                     </div>
                 </div>
             </div>
@@ -198,9 +177,6 @@
                             <div class="col">
                                 <button type="button" id="workingHoursSubmitBtn" class="btn green-btn btn-block">@localizer["Save"]</button>
                             </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-outline-secondary btn-block" data-dismiss="modal">@localizer["Close"]</button>
-                            </div>
                         </div>
                     </form>
                 </div>
@@ -217,7 +193,5 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" integrity="sha256-1hjUhpc44NwiNg8OwMu2QzJXhD8kcj+sJA3aCQZoUjg=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js" integrity="sha256-SYIz/7Qe8avYdBE3w2kKVL1PB/mS05GGgKVn5qa86SY=" crossorigin="anonymous"></script>
-
-
     <script src="~/Custom/js/fullcalendar.js"></script>
 }

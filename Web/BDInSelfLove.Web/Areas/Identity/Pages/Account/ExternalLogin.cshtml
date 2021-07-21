@@ -25,6 +25,7 @@
                         <div class="col-md-6 mx-auto">
                             <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                                 <div asp-validation-summary="All" class="text-danger"></div>
+                                <input class="timezone-IANA" type="hidden" asp-for="Input.TimezoneIANA" />
                                 <div class="form-group">
                                     <label>@localizer["Username"]</label>
                                     <input asp-for="Input.Username" class="form-control" />
@@ -49,4 +50,8 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        let timezoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        Array.from(document.getElementsByClassName('timezone-IANA')).forEach(e => e.value = timezoneIANA);
+    </script>
 }

@@ -18,16 +18,12 @@
     public class ArticleController : BaseController
     {
         private const int ArticlesPerPage = 6;
-        private const int SideArticlesCount = 2;
-        private const int SideVideosCount = 2;
 
         private readonly IArticleService articleService;
-        private readonly IVideoService videoService;
 
-        public ArticleController(IArticleService articleService, IVideoService videoService)
+        public ArticleController(IArticleService articleService)
         {
             this.articleService = articleService;
-            this.videoService = videoService;
         }
 
         public async Task<IActionResult> All(int page = 1)
@@ -54,11 +50,13 @@
 
         public async Task<IActionResult> Single(int id)
         {
-            var viewModel = await this.GetViewModel(id);
+            // TODO: convert comment times to user local IF COOKIE EXISTS
+            var viewModel = AutoMapperConfig.MapperInstance
+                .Map<ArticleViewModel>(await this.articleService
+                .GetById(id));
+
             return this.View(viewModel);
         }
 
-        private async Task<ArticleViewModel> GetViewModel(int id) =>
-            AutoMapperConfig.MapperInstance.Map<ArticleViewModel>(await this.articleService.GetById(id));
     }
 }

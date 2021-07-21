@@ -25,29 +25,31 @@
                         }
                         else
                         {
-                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                                <div>
-                                    <p class="d-flex justify-content-center">
-                                        @foreach (var provider in Model.ExternalLogins)
-                                        {
-                                            if (provider.Name == "Google")
-                                            {
-                                                <button type="submit" class="btn btn-outline-secondary mr-3" name="provider" value="@provider.Name" title="Register using your @provider.DisplayName account"><i class="fab fa-google fa-fw text-danger"></i> @localizer["Register with Google"]</button>
-                                            }
-                                            else if (provider.Name == "Facebook")
-                                            {
-                                                <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name" title="Register using your @provider.DisplayName account"><i class="fab fa-facebook-f fa-fw text-primary"></i> @localizer["Register with Facebook"]</button>
-                                            }
-                                        }
-                                    </p>
-                                </div>
-                            </form>
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    <input class="timezone-IANA" type="hidden" asp-for="Input.TimezoneIANA" />
+                    <div>
+                        <p class="d-flex justify-content-center">
+                            @foreach (var provider in Model.ExternalLogins)
+                            {
+                                if (provider.Name == "Google")
+                                {
+                                    <button type="submit" class="btn btn-outline-secondary mr-3" name="provider" value="@provider.Name" title="Register using your @provider.DisplayName account"><i class="fab fa-google fa-fw text-danger"></i> @localizer["Register with Google"]</button>
+                                }
+                                else if (provider.Name == "Facebook")
+                                {
+                                    <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name" title="Register using your @provider.DisplayName account"><i class="fab fa-facebook-f fa-fw text-primary"></i> @localizer["Register with Facebook"]</button>
+                                }
+                            }
+                        </p>
+                    </div>
+                </form>
                         }
                     }
                     <hr />
                 </section>
                 <form id="profile-form" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                     <div asp-validation-summary="All" class="text-danger"></div>
+                    <input class="timezone-IANA" type="hidden" asp-for="Input.TimezoneIANA" />
                     <div class="form-group">
                         <label>@localizer["Username"]</label>
                         <input asp-for="Input.Username" class="form-control" />
@@ -87,5 +89,9 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        let timezoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        Array.from(document.getElementsByClassName('timezone-IANA')).forEach(e => e.value = timezoneIANA);
+    </script>
     <script src="~/Custom/js/profilePictureCompression.js"></script>
 }

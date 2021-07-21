@@ -2,10 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
-    using AutoMapper.QueryableExtensions;
+
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
@@ -17,17 +16,34 @@
     public class AppointmentService : IAppointmentService
     {
         private readonly IDeletableEntityRepository<Appointment> appointmentRepository;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public AppointmentService(IDeletableEntityRepository<Appointment> appointmentRepository)
+        public AppointmentService(
+            IDeletableEntityRepository<Appointment> appointmentRepository,
+            UserManager<ApplicationUser> userManager)
         {
             this.appointmentRepository = appointmentRepository;
+            this.userManager = userManager;
         }
 
-        public IQueryable<AppointmentServiceModel> GetAll(string userId)
+        public async Task<AppointmentServiceModel[]> GetAll(string userId)
         {
-            var query = this.appointmentRepository.All().To<AppointmentServiceModel>();
+            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault();
+            bool currentUserIsAdmin = admin.Id == userId;
+            var query = this.appointmentRepository.All();
+            if (!currentUserIsAdmin)
+            {
+                // Take only user's own and upcoming available appointments
+                query = query.Where(a => a.UserId == userId ||
+                                        (a.UserId == null && DateTime.Compare(a.UtcStart, DateTime.UtcNow) > 0));
+            }
+            else
+            {
+                // Skip past available appointment slots
+                query = query.Where(a => !(a.UserId == null && DateTime.Compare(a.UtcStart, DateTime.UtcNow) <= 0));
+            }
 
-            return userId == GlobalConstants.AdministratorRoleName ? query : query.Where(a => a.UserId == userId);
+            return await query.To<AppointmentServiceModel>().ToArrayAsync();
         }
 
         public async Task<AppointmentServiceModel> GetById(int id)
@@ -37,58 +53,49 @@
                 .SingleOrDefaultAsync(appointment => appointment.Id == id);
         }
 
-        public async Task<int> Create(AppointmentServiceModel appointmentServiceModel)
+        public async Task<int> Create(List<AppointmentServiceModel> controllerAppointments)
         {
-            var appointment = AutoMapperConfig.MapperInstance.Map<Appointment>(appointmentServiceModel);
+            // Do nothing if collection is empty
+            if (controllerAppointments.Count == 0)
+            {
+                return 0;
+            }
 
-            await this.appointmentRepository.AddAsync(appointment);
-            await this.appointmentRepository.SaveChangesAsync();
+            // Delete same day unoccupied slots
+            DateTime date = controllerAppointments[0].UtcStart.Date;
+            var dbAppointments = await this.appointmentRepository.All()
+                .Where(a => DateTime.Compare(date, a.UtcStart.Date) == 0)
+                .Where(a => a.UserId == null).ToListAsync();
 
-            return appointment.Id;
+            foreach (var dbAppointment in dbAppointments)
+            {
+                this.appointmentRepository.Delete(dbAppointment);
+            }
+
+            // Map to DB entities and add to DB
+            foreach (var controllerAppointment in controllerAppointments)
+            {
+                var appointmentForDB = AutoMapperConfig.MapperInstance.Map<Appointment>(controllerAppointment);
+                await this.appointmentRepository.AddAsync(appointmentForDB);
+            }
+
+            return await this.appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task<int> SubmitDailyWorkingHours(ICollection<AppointmentServiceModel> unavailableTimeSlots, DateTime date, string adminId)
+        public async Task<int> Book(AppointmentServiceModel clientAppointment)
         {
-            // Take all same day entries from db
-            var dbCurrentDayAppointments = await this.appointmentRepository.All()
-                .Where(a => a.Start.Day == date.Day && a.IsApproved).ToListAsync();
-
-            var usersAppointments = new List<Appointment>();
-
-            for (int index = 0; index < dbCurrentDayAppointments.Count; index++)
+            // Check if slot is already occupied
+            var sameSlotAppointmentFromDB = await this.appointmentRepository.All()
+                .FirstOrDefaultAsync(a => DateTime.Compare(a.UtcStart, clientAppointment.UtcStart) == 0);
+            if (sameSlotAppointmentFromDB != null)
             {
-                var appointment = dbCurrentDayAppointments[index];
-
-                // Delete those that are created by admin
-                if (appointment.UserId == adminId)
-                {
-                    this.appointmentRepository.Delete(appointment);
-                    await this.appointmentRepository.SaveChangesAsync();
-                    continue;
-                }
-
-                // Store all users' appointments
-                usersAppointments.Add(appointment);
+                return 0;
             }
 
-            await this.appointmentRepository.SaveChangesAsync();
-
-            // Add new ones only for the timeslots that don't overlap with existing user appointments
-            foreach (var unavailableTimeSlot in unavailableTimeSlots)
-            {
-                if (!usersAppointments.Any(a => a.Start.Hour == unavailableTimeSlot.Start.Hour))
-                {
-                    var slotForDb = AutoMapperConfig.MapperInstance.Map<Appointment>(unavailableTimeSlot);
-
-                    // TODO: Fix this please
-                    slotForDb.IsApproved = true;
-                    await this.appointmentRepository.AddAsync(slotForDb);
-                }
-            }
-
-            var result = await this.appointmentRepository.SaveChangesAsync();
-
-            return result;
+            // Map to DB entity and add to DB
+            var appointmentForDB = AutoMapperConfig.MapperInstance.Map<Appointment>(clientAppointment);
+            await this.appointmentRepository.AddAsync(appointmentForDB);
+            return await this.appointmentRepository.SaveChangesAsync();
         }
 
         public async Task<AppointmentServiceModel> Delete(int appointmentId)
@@ -110,21 +117,10 @@
         {
             return this.appointmentRepository.All()
                 .Where(a => a.IsApproved &&
-                            a.Start.Month == date.Month &&
-                            a.Start.Day == date.Day &&
-                            a.Start.Year == date.Year)
+                            a.UtcStart.Month == date.Month &&
+                            a.UtcStart.Day == date.Day &&
+                            a.UtcStart.Year == date.Year)
                 .To<AppointmentServiceModel>();
-        }
-
-        public IQueryable<AppointmentServiceModel> GetAllForDaysAhead(int daysAhead, string userUserName)
-        {
-            var query = this.appointmentRepository.All();
-
-            var today = DateTime.Today;
-
-            query = query.Where(a => (a.Start.Date >= today.Date && a.Start.Date <= today.AddDays(daysAhead).Date) || a.User.UserName == userUserName);
-
-            return query.To<AppointmentServiceModel>();
         }
 
         public async Task<int> Approve(int appointmentId)

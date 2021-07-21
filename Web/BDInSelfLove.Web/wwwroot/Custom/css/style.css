@@ -579,12 +579,11 @@ a .card img {
     font-size: 15px;
 }
 
-#ownAppointmentModal .modal-title, #appointmentApproval .modal-title,
-#declineAppointmentConfirm .modal-title, #workingHours .modal-title {
+.calendar-container .modal-title {
     font-size: 18px;
     font-weight: 900;
 }
 
-#ownAppointmentModal #btnDelete {
+#appointmentDetailsModal #btnDelete {
     white-space: nowrap;
 }

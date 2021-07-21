@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
 
-    public class AppointmentViewModel : IMapFrom<AppointmentServiceModel>
+    public class AppointmentViewModel : IMapFrom<AppointmentServiceModel>, IHaveCustomMappings
     {
         public int Id { get; set; }
 
@@ -22,8 +22,16 @@
 
         public string UserEmail { get; set; }
 
-        public string UserPhoneNumber { get; set; }
+        public string UserId { get; set; }
+
 
         public string Description { get; set; }
+
+        public void CreateMappings(IProfileExpression configuration)
+        {
+            configuration.CreateMap<AppointmentServiceModel, AppointmentViewModel>().ForMember(
+                m => m.Start,
+                opt => opt.MapFrom(x => x.UtcStart));
+        }
     }
 }

@@ -16,6 +16,7 @@
     using Microsoft.AspNetCore.Mvc.RazorPages;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Logging;
+    using TimeZoneConverter;
 
     [AllowAnonymous]
     public class RegisterModel : PageModel
@@ -66,6 +67,8 @@
             public string ConfirmPassword { get; set; }
 
             public string ProfilePicture { get; set; }
+
+            public string TimezoneIANA { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -86,7 +89,8 @@
                     return Page();
                 }
 
-                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email };
+                string windowsTimezoneId = TZConvert.GetTimeZoneInfo(this.Input.TimezoneIANA).Id;
+                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email, WindowsTimezoneId = windowsTimezoneId };
 
                 if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)
                 {
