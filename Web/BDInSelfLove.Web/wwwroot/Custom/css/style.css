@@ -143,6 +143,9 @@ html, body {
     color: white;
     border-radius: 5px;
 }
+.navbar .contact .nav-link:hover {
+    color: black;
+}
 
 #navbarCollapse .nav-link {
     white-space: nowrap;
@@ -181,16 +184,6 @@ html, body {
 
 .see-more-feature-btn:hover {
     color: rgb(45,70,67) !important;
-}
-
-.see-more-btn {
-    border-color: rgb(146,171,149) !important;
-    color: black !important;
-}
-
-.see-more-btn:hover {
-    color: white !important;
-    background-color: rgb(146,171,149) !important;
 }
 
 #slimShowcase {
@@ -332,7 +325,7 @@ html, body {
 }
 
 #manageNav li a {
-    color: #f083c1;
+    color: #92ab95;
     text-decoration: none;
     background-color: transparent;
 }
@@ -404,7 +397,7 @@ a .card img {
 }
 
 .fc-left .fc-prev-button:hover, .fc-right .fc-next-button:hover {
-    color: #4f584f;
+    color: black;
 }
 
 .calendar-container {
@@ -456,32 +449,12 @@ a .card img {
     background-color: rgb(146,171,149);
 }
 
-.add-comment-btn {
-    color: white;
-    background-color: rgb(146,171,149);
-}
-
-.add-comment-btn:hover {
-    color: black;
-    background-color: rgb(146,171,149);
-}
-
 .edit-comment-btn, .delete-comment-btn {
     color: rgb(146,171,149);
 }
 
 .edit-comment-btn:hover, .delete-comment-btn:hover {
     cursor: pointer;
-}
-
-.reply-button {
-    color: white;
-    background-color: rgb(146,171,149);
-}
-
-.reply-button:hover {
-    color: black;
-    background-color: rgb(146,171,149);
 }
 
 #single-article-container {
@@ -560,14 +533,14 @@ a .card img {
 }
 
 /*FullCalendar*/
-.calendar-container .green-btn {
+.green-btn {
     background-color: rgb(146,171,149);
     color: white;
     border-radius: 5px;
 }
 
-.calendar-container .green-btn:hover {
-        color: #4f584f;
+.green-btn:hover {
+        color: black;
 }
 
 #bookAppointmentModal label {

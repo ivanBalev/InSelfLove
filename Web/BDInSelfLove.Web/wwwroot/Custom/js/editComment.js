@@ -6,6 +6,7 @@
 }));
 
 $('.save-edit-btn').click(function (e) {
+    e.preventDefault();
     // Gather data
     let token = e.target.parentElement.parentElement.parentElement.parentElement
         .querySelector('input[name=__RequestVerificationToken]').value;

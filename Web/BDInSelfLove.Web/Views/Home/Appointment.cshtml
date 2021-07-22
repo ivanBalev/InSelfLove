@@ -16,7 +16,7 @@
     @if (userIsAdmin)
     {
         <div class="text-center">
-            <button id="btnWorkingHours" class="btn btn-outline-secondary mb-3">@localizer["Set Standard Working Hours"]</button>
+            <button id="btnWorkingHours" class="green-btn border-0 btn mb-3">@localizer["Set Standard Working Hours"]</button>
         </div>
     }
     <div id="calendar" workingHours="@GlobalAdminValues.WorkDayStart-@GlobalAdminValues.WorkDayEnd"></div>

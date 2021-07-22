@@ -82,20 +82,24 @@
             return await this.appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task<int> Book(AppointmentServiceModel clientAppointment)
+        public async Task<int> Book(DateTime utcStart, string appointmentDescription, string userId)
         {
             // Check if slot is already occupied
-            var sameSlotAppointmentFromDB = await this.appointmentRepository.All()
-                .FirstOrDefaultAsync(a => DateTime.Compare(a.UtcStart, clientAppointment.UtcStart) == 0);
-            if (sameSlotAppointmentFromDB != null)
+            Appointment dbAppointment = await this.appointmentRepository.All()
+                 .FirstOrDefaultAsync(a => DateTime.Compare(a.UtcStart, utcStart) == 0);
+
+            if (dbAppointment == null || dbAppointment.UserId != null)
             {
                 return 0;
             }
 
-            // Map to DB entity and add to DB
-            var appointmentForDB = AutoMapperConfig.MapperInstance.Map<Appointment>(clientAppointment);
-            await this.appointmentRepository.AddAsync(appointmentForDB);
-            return await this.appointmentRepository.SaveChangesAsync();
+            // Update and save
+            dbAppointment.Description = appointmentDescription;
+            dbAppointment.UserId = userId;
+            this.appointmentRepository.Update(dbAppointment);
+
+            int result = await this.appointmentRepository.SaveChangesAsync();
+            return result;
         }
 
         public async Task<AppointmentServiceModel> Delete(int appointmentId)
@@ -113,16 +117,6 @@
             return AutoMapperConfig.MapperInstance.Map<AppointmentServiceModel>(dbAppointment);
         }
 
-        public IQueryable<AppointmentServiceModel> GetAllByDate(DateTime date)
-        {
-            return this.appointmentRepository.All()
-                .Where(a => a.IsApproved &&
-                            a.UtcStart.Month == date.Month &&
-                            a.UtcStart.Day == date.Day &&
-                            a.UtcStart.Year == date.Year)
-                .To<AppointmentServiceModel>();
-        }
-
         public async Task<int> Approve(int appointmentId)
         {
             var appointment = await this.appointmentRepository.All().SingleOrDefaultAsync(a => a.Id == appointmentId);
@@ -133,6 +127,21 @@
             }
 
             appointment.IsApproved = true;
+            this.appointmentRepository.Update(appointment);
+            return await this.appointmentRepository.SaveChangesAsync();
+        }
+
+        public async Task<int> Cancel(int id)
+        {
+            var appointment = await this.appointmentRepository.All().SingleOrDefaultAsync(a => a.Id == id);
+
+            if (appointment == null)
+            {
+                throw new ArgumentNullException(nameof(appointment));
+            }
+
+            appointment.UserId = null;
+            appointment.Description = null;
             this.appointmentRepository.Update(appointment);
             return await this.appointmentRepository.SaveChangesAsync();
         }

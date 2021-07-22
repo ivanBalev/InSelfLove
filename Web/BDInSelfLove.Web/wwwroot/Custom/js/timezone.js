@@ -1,5 +1,5 @@
 ﻿const targetActionNames = ["Appointment"];
-let timezoneCookieValue = getCookie("timezoneIANA");
+let timezoneCookieValue = decodeURIComponent(getCookie("timezoneIANA"));
 let currentTimezoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
 // If timezone cookie doesn't exist || it doesn't match the current timezone
 if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneIANA) !== 0) {

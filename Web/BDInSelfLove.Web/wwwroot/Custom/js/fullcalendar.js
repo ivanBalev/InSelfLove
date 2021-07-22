@@ -168,19 +168,12 @@
     })
 
     $('#cancelAppointmentConfirm .confirmCancelAppointment').click(function () {
-        let data = {
-            appointment: {
-                id: selectedAppointment.id,
-                userUserName: selectedAppointment.userUserName,
-
-            },
-            isApproved: false,
-        };
-
         $.ajax({
             type: "POST",
             url: '/api/appointment/Cancel',
-            data: data,
+            data: {
+                id: selectedAppointment.id
+            },
             headers: { 'X-CSRF-TOKEN': token },
             success: function () {
                 $('#cancelAppointmentConfirm').modal('hide');
@@ -207,7 +200,7 @@
 
         $.ajax({
             type: "POST",
-            url: '/api/appointment/Save',
+            url: '/api/appointment/Book',
             data: data,
             headers: { 'X-CSRF-TOKEN': token },
             success: function (data) {
@@ -221,20 +214,17 @@
         })
     })
 
-    $('#appointmentApproval #approveAppointment').click(function () {
+    $('#appointmentDetailsModal #approveAppointment').click(function () {
         if (selectedAppointment.start.isBefore(moment())) {
             return;
-        }
-
-        let data = {
-            id: selectedAppointment.id,
-            evaluation: true,
         }
 
         $.ajax({
             type: "POST",
             url: '/api/appointment/Approve',
-            data: data,
+            data: {
+                id: selectedAppointment.id,
+            },
             headers: { 'X-CSRF-TOKEN': token },
             success: function (data) {
                 $('#appointmentApproval').modal('hide');
@@ -337,13 +327,14 @@
         $('#appointmentDetailsModal .end')[0].innerText = appointment.end.format("HH:mm");
 
         if (userIsAdmin && appointment.userUserName === null) {
+            // Admin's own unoccupied appointment slot
             hideDetailsInAppointmentDetailsModal();
         } else {
             $('#appointmentDetailsModal .username')[0].innerText = appointment.userUserName;
             $('#appointmentDetailsModal .details')[0].innerText = appointment.description;
             setUpStatusInAppointmentDetailsModal(appointment.isApproved);
             if (userIsAdmin) {
-                // Details fields can only be with hidden state for admin.
+                // Details fields can only have been with hidden state for admin.
                 showDetailsInAppointmentDetailsModal();
             }
         }
@@ -355,14 +346,19 @@
         $('#appointmentDetailsModal .usernameGroup').hide();
         $('#appointmentDetailsModal .detailsGroup').hide();
         $('#appointmentDetailsModal .statusGroup').hide();
-        $('#approveAppointment').hide();
+        $('#appointmentDetailsModal #approveAppointment').hide();
     }
 
     const showDetailsInAppointmentDetailsModal = () => {
         $('#appointmentDetailsModal .usernameGroup').show();
         $('#appointmentDetailsModal .detailsGroup').show();
         $('#appointmentDetailsModal .statusGroup').show();
-        $('#approveAppointment').show();
+        // Hide approve button if appointment is already approved
+        if (selectedAppointment.isApproved) {
+            $('#appointmentDetailsModal #approveAppointment').hide();
+        } else {
+            $('#appointmentDetailsModal #approveAppointment').show();
+        }
     }
 
     const setUpStatusInAppointmentDetailsModal = (isApproved) => {

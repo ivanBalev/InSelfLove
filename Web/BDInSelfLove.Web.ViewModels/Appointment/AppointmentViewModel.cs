@@ -1,12 +1,10 @@
 ﻿namespace BDInSelfLove.Web.ViewModels.Appointment
 {
     using System;
+
     using AutoMapper;
-    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Appointment;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Identity;
 
     public class AppointmentViewModel : IMapFrom<AppointmentServiceModel>, IHaveCustomMappings
     {

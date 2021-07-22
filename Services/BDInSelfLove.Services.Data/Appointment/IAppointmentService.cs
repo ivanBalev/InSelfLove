@@ -12,7 +12,7 @@
     {
         Task<AppointmentServiceModel[]> GetAll(string userId);
 
-        Task<int> Book(AppointmentServiceModel clientAppointment);
+        Task<int> Book(DateTime utcStart, string appointmentDescription, string userId);
 
         Task<AppointmentServiceModel> GetById(int id);
 
@@ -20,8 +20,8 @@
 
         Task<AppointmentServiceModel> Delete(int appointmentId);
 
-        IQueryable<AppointmentServiceModel> GetAllByDate(DateTime date);
-
         Task<int> Approve(int appointmentId);
+
+        Task<int> Cancel(int id);
     }
 }

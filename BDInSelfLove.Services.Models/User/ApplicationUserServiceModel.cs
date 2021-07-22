@@ -1,13 +1,17 @@
 ﻿namespace BDInSelfLove.Services.Models.User
 {
     using System;
-    using System.Collections.Generic;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
-    using Microsoft.AspNetCore.Identity;
 
-    public class ApplicationUserServiceModel : IdentityUser, IMapFrom<ApplicationUser>, IMapTo<ApplicationUser>
+    public class ApplicationUserServiceModel : IMapFrom<ApplicationUser>, IMapTo<ApplicationUser>
     {
+        public string Id { get; set; }
+
+        public string UserName { get; set; }
+
+        public string Email { get; set; }
+
         public string ProfilePhoto { get; set; }
 
         public DateTime CreatedOn { get; set; }
