@@ -95,13 +95,13 @@
             var rqf = this.Request.HttpContext.Features.Get<IRequestCultureFeature>();
             var culture = rqf.RequestCulture.Culture.Name;
 
-            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault().Email;
+            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
             var userEmailTextEN = $"<div>Hello, </div> <div></div> <div>Your email has been received.</div><div>Thank you!</div>";
             var userEmailTextBG = $"<div>Здравей, </div> <div></div> <div>Имейлът ти е получен.</div><div>Благодаря!</div>";
 
             // Send emails to admin and user
-            await this.emailSender.SendEmailAsync(inputModel.Email, $"{inputModel.FirstName} {inputModel.LastName}", adminEmail, GlobalConstants.SystemName, $"<div>{inputModel.Message}</div><div>Name: {inputModel.FirstName} {inputModel.LastName}</div><div>Phone: {inputModel.PhoneNumber}</div>");
-            await this.emailSender.SendEmailAsync(adminEmail, GlobalConstants.SystemName, inputModel.Email, GlobalConstants.SystemName, culture == "bg" ? userEmailTextBG : userEmailTextEN);
+            await this.emailSender.SendEmailAsync(inputModel.Email, $"{inputModel.FirstName} {inputModel.LastName}", adminEmail, GlobalValues.SystemName, $"<div>{inputModel.Message}</div><div>Name: {inputModel.FirstName} {inputModel.LastName}</div><div>Phone: {inputModel.PhoneNumber}</div>");
+            await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, inputModel.Email, GlobalValues.SystemName, culture == "bg" ? userEmailTextBG : userEmailTextEN);
 
             this.TempData["StatusMessage"] = culture == "bg" ? "Имейлът ти е получен. Благодаря!" : "Your email has been received. Thank you!";
             return this.RedirectToAction("Index");

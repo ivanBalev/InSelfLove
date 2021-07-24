@@ -26,7 +26,6 @@ namespace BDInSelfLove.Web.Controllers
 
         [HttpPost]
         [Authorize]
-
         // TODO: Can't this also be an API controller so page doesn't reload when comment is created?
         public async Task<IActionResult> Create(CommentInputModel inputModel)
         {
@@ -90,7 +89,7 @@ namespace BDInSelfLove.Web.Controllers
             var dbCommentUserId = await this.commentService.GetById(id)
                 .Select(c => c.UserId).SingleOrDefaultAsync();
 
-            if (dbCommentUserId != this.userManager.GetUserId(this.User) && !this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            if (dbCommentUserId != this.userManager.GetUserId(this.User) && !this.User.IsInRole(GlobalValues.AdministratorRoleName))
             {
                 return this.BadRequest();
             }

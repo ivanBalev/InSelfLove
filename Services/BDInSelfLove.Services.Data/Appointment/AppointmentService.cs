@@ -28,7 +28,7 @@
 
         public async Task<AppointmentServiceModel[]> GetAll(string userId)
         {
-            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault();
+            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
             bool currentUserIsAdmin = admin.Id == userId;
             var query = this.appointmentRepository.All();
             if (!currentUserIsAdmin)

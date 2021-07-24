@@ -34,7 +34,7 @@
 
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(admin, GlobalConstants.AdministratorRoleName);
+                await userManager.AddToRoleAsync(admin, GlobalValues.AdministratorRoleName);
             }
         }
     }

@@ -1,0 +1,17 @@
+﻿@model int
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+<div id="confirmVideoDelete" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center pb-0">
+                <h4 class="modal-title">@localizer["Are you sure?"]</h4>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <form method="post" asp-action="Delete" asp-route-id="@Model">
+                    <button type="submit" class="btn btn-outline-danger btn-block">@localizer["Confirm"]</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

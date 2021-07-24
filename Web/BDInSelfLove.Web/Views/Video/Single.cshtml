@@ -16,12 +16,12 @@
                     <iframe title="Psychotherapy video" class="embed-responsive-item" src="@Model.Url"></iframe>
                 </div>
                 <!-- Delete button if user is admin -->
-                @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
                 {
-                    <div class="row mt-2">
+                    <div class="row mt-2 justify-content-center">
+                        <div class="col"></div>
                         <div class="col">
-                            <a asp-area="Administration" asp-controller="Video" asp-action="Delete"
-                               asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a>
+                            <i class="fas fa-trash deleteVideo"></i>
                         </div>
                     </div>
                 }
@@ -30,6 +30,7 @@
                                                     VideoId = Model.Id,
                                                     Comments = Model.Comments,
                      }" />
+            <partial name="_VideoDeleteConfirmPartial" model="@Model.Id" />
         </div>
         <!-- Suggested videos -->
         <vc:sidebar article-id="0" video-id="@Model.Id"></vc:sidebar>
@@ -44,5 +45,6 @@
     <script src="~/Custom/js/commentsHideDisplayItems.js"></script>
     <script src="~/Custom/js/editComment.js"></script>
     <script src="~/Custom/js/deleteComment.js"></script>
+<script src="~/Custom/js/deleteVideo.js"></script>
     <partial name="_ValidationScriptsPartial" />
 }

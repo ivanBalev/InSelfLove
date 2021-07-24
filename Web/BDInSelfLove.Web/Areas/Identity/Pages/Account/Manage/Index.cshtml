@@ -17,21 +17,22 @@
                     <label>@localizer["Username"]</label>
                     <input asp-for="Username" class="form-control" disabled />
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-0">
                     <label>@localizer["Profile picture"]</label>
-                    <label for="originalProfilePic" class="btn btn-outline-warning text-black-50 mt-4 btn-block" style="margin-top: 0px !important">
+                    <div class="mb-3">
+                        <img src=@Model.ProfilePicture alt="Profile picture" class="d-block img-fluid">
+                    </div>
+                    <label for="originalProfilePic" class="btn white-btn mb-3">
                         @localizer["Upload new profile picture"]
                         <input type="file" id="originalProfilePic" hidden>
                     </label>
                     <span class='label label-info' id="upload-file-info"></span>
                     <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
                 </div>
-                <button id="update-profile-button" type="submit" class="btn btn-outline-success">@localizer["Save"]</button>
+                <button id="update-profile-button" type="submit" class="btn green-btn">@localizer["Save"]</button>
             </form>
         </div>
-        <div class="col-md-6 mt-3">
-            <img src=@Model.ProfilePicture alt="Profile picture" class="d-block img-fluid mb-3">
-        </div>
+        
     </div>
 </div>
 

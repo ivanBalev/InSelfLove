@@ -21,6 +21,8 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
+        private const string DefaultProfilePicture = "https://res.cloudinary.com/dzcajpx0y/image/upload/c_scale,w_64/v1610826038/User-Profile-PNG-Free-Image_d3npde.png";
+
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
@@ -127,7 +129,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 string windowsTimezoneId = TZConvert.GetTimeZoneInfo(this.Input.TimezoneIANA).Id;
-                var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, WindowsTimezoneId = windowsTimezoneId };
+                var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, WindowsTimezoneId = windowsTimezoneId, ProfilePhoto = DefaultProfilePicture };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

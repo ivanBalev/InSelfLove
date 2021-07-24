@@ -12,7 +12,6 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Appointment;
-    using BDInSelfLove.Web.Areas.Administration;
     using BDInSelfLove.Web.InputModels.Appointment;
     using BDInSelfLove.Web.ViewModels.Appointment;
     using Microsoft.AspNetCore.Authorization;
@@ -47,7 +46,7 @@
 
         [HttpPost]
         [Route("Create")]
-        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
         {
             // Convert iana to windows timezone & switch input times to utc
@@ -125,7 +124,7 @@
             }
 
             // Get admin email & admin timezone appointment start time
-            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault();
+            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
             TimeZoneInfo adminWindowsTimezone = TZConvert.GetTimeZoneInfo(admin.WindowsTimezoneId);
             DateTime adminTimeAppointmentStart = TimeZoneInfo.ConvertTimeFromUtc(utcAppointmentStart, adminWindowsTimezone);
 
@@ -135,7 +134,7 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         [Route("Approve")]
         public async Task<ActionResult> Approve([FromForm] int id)
         {
@@ -144,11 +143,11 @@
 
             // Get appointment info & admin email
             var appointmentFromDb = await this.appointmentService.GetById(id);
-            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault().Email;
+            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
 
             // Generate email body & send user confirmation email
             var emailContent = $"<div>Hello, </div> <div></div> <div>{AppointmentConfirmationString}</div><div>Thanks!</div>";
-            await this.emailSender.SendEmailAsync(adminEmail, GlobalConstants.SystemName, appointmentFromDb.User.Email, this.GetEmailSubject(appointmentFromDb.UtcStart), emailContent);
+            await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, appointmentFromDb.User.Email, this.GetEmailSubject(appointmentFromDb.UtcStart), emailContent);
             return this.Ok();
         }
 
@@ -158,16 +157,16 @@
         {
             var currentUser = await this.userManager.GetUserAsync(this.User);
             var appointmentFromDb = await this.appointmentService.GetById(id);
-            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.AdministratorRoleName)).FirstOrDefault().Email;
+            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
 
             // Allow only admin to cancel others' appointments
-            if (appointmentFromDb.UserId != currentUser.Id && !this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            if (appointmentFromDb.UserId != currentUser.Id && !this.User.IsInRole(GlobalValues.AdministratorRoleName))
             {
                 return this.BadRequest();
             }
 
             // Delete slot & don't send emails if admin cancels unoccupied appointment slot
-            if (appointmentFromDb.UserId == null && this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            if (appointmentFromDb.UserId == null && this.User.IsInRole(GlobalValues.AdministratorRoleName))
             {
                 await this.appointmentService.Delete(id);
                 return this.Ok();
@@ -179,9 +178,9 @@
             var emailText = $"<div>Hello, </div> <div></div> <div>{AppointmentCancellationIntro}</div><div>Thank you.</div>";
 
             // Send email to user if admin cancels or vice versa
-            if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
             {
-                await this.emailSender.SendEmailAsync(adminEmail, GlobalConstants.SystemName, appointmentFromDb.User.Email, this.GetEmailSubject(appointmentFromDb.UtcStart), emailText);
+                await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, appointmentFromDb.User.Email, this.GetEmailSubject(appointmentFromDb.UtcStart), emailText);
             }
             else
             {
@@ -192,20 +191,20 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         [Route("SetWorkingHours")]
         public ActionResult SetWorkingHours([FromForm] string startHour, [FromForm] string endHour)
         {
-            GlobalAdminValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
-            GlobalAdminValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);
+            GlobalValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
+            GlobalValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);
             return this.Ok();
         }
 
         [HttpGet]
         [Route("GetWorkingHours")]
-        public ActionResult<int[]> GetWorkingHours() => new int[] { GlobalAdminValues.WorkDayStart, GlobalAdminValues.WorkDayEnd };
+        public ActionResult<int[]> GetWorkingHours() => new int[] { GlobalValues.WorkDayStart, GlobalValues.WorkDayEnd };
 
-        private string GetEmailSubject(DateTime start) => $"{GlobalConstants.SystemName} {AppointmentEmailSubject} on {start:dd MMMM HH:mm}";
+        private string GetEmailSubject(DateTime start) => $"{GlobalValues.SystemName} {AppointmentEmailSubject} on {start:dd MMMM HH:mm}";
 
         private async Task SendBookingEmails(
            string userEmail, string userUserName, DateTime userTimeAppointmentStart, string adminEmail, DateTime adminTimeAppointmentStart)
@@ -221,7 +220,7 @@
 
             // Send emails to admin & user
             await this.emailSender.SendEmailAsync(userEmail, userUserName, adminEmail, this.GetEmailSubject(userTimeAppointmentStart), adminEmailText);
-            await this.emailSender.SendEmailAsync(adminEmail, GlobalConstants.SystemName, userEmail, this.GetEmailSubject(adminTimeAppointmentStart), userEmailText);
+            await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, userEmail, this.GetEmailSubject(adminTimeAppointmentStart), userEmailText);
         }
 
     }

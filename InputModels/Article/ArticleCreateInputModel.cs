@@ -1,17 +1,12 @@
 ﻿using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Article;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace BDInSelfLove.Web.InputModels.Administration.Article
+namespace BDInSelfLove.Web.InputModels.Article
 {
-    public class ArticleEditInputModel : IMapTo<ArticleServiceModel>, IMapFrom<ArticleServiceModel>
+    public class ArticleCreateInputModel : IMapTo<ArticleServiceModel>
     {
-        public int Id { get; set; }
-
         [Required]
         public string Title { get; set; }
 

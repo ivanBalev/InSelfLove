@@ -1,11 +1,8 @@
 ﻿using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Videos;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace BDInSelfLove.Web.InputModels.Administration.Video
+namespace BDInSelfLove.Web.InputModels.Video
 {
     public class CreateVideoInputModel : IMapTo<VideoServiceModel>
     {

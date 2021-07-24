@@ -1,14 +1,13 @@
 ﻿@using BDInSelfLove.Common
 @using BDInSelfLove.Data.Models
 @using Microsoft.AspNetCore.Identity
-@using BDInSelfLove.Web.Areas.Administration
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 
 @{
-    bool userIsAdmin = this.User.IsInRole(GlobalConstants.AdministratorRoleName);
+    bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
 }
 
 <div class="container calendar-container mt-4 py-4">
@@ -19,7 +18,7 @@
             <button id="btnWorkingHours" class="green-btn border-0 btn mb-3">@localizer["Set Standard Working Hours"]</button>
         </div>
     }
-    <div id="calendar" workingHours="@GlobalAdminValues.WorkDayStart-@GlobalAdminValues.WorkDayEnd"></div>
+    <div id="calendar" workingHours="@GlobalValues.WorkDayStart-@GlobalValues.WorkDayEnd"></div>
 
 
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">
@@ -134,7 +133,7 @@
                     <div class="container">
                         <div class="row justify-content-center">
                             @{
-                                for (int i = GlobalAdminValues.WorkDayStart; i < GlobalAdminValues.WorkDayEnd; i++)
+                                for (int i = GlobalValues.WorkDayStart; i < GlobalValues.WorkDayEnd; i++)
                                 {
                                     <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
                                         @(i.ToString() + ":00")

@@ -25,19 +25,22 @@
                             <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
                         </div>
                         <div class="img-wrapper text-center">
-                            <img class="card-img-top" src="@Model.ImageUrl" alt="Article image chosen by author">
+                            <img class="card-img-top" src="@Model.ImageUrl" alt="Article image">
                         </div>
                         <!-- Edit and Delete buttons if user is admin -->
-                        @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                        @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
                         {
                             <div class="row mb-4">
-                                <div class="col">
-                                    <a asp-area="Administration" asp-controller="Article" asp-action="Edit"
-                                       asp-route-id="@Model.Id" class="btn btn-block btn-outline-warning">@localizer["Edit"]</a>
+                                <div class="col text-right">
+                                    <a asp-controller="Article" asp-action="Edit"
+                                       asp-route-id="@Model.Id">
+                                        <i class="fas fa-edit edit-comment-btn"></i>
+                                    </a>
                                 </div>
                                 <div class="col">
-                                    <a asp-area="Administration" asp-controller="Article" asp-action="Delete"
-                                       asp-route-id="@Model.Id" class="btn btn-block btn-outline-danger">@localizer["Delete"]</a>
+                                    <div>
+                                        <i class="fas fa-trash deleteArticle"></i>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -54,6 +57,7 @@
                                                     ArticleId = Model.Id,
                                                     Comments = Model.Comments,
                      }" />
+            <partial name="_ArticleDeleteConfirmPartial" model="@Model.Id" />
         </div>
         <!-- Suggested articles -->
         <vc:sidebar article-id="@Model.Id" video-id="0"></vc:sidebar>
@@ -68,5 +72,6 @@
     <script src="~/Custom/js/commentsHideDisplayItems.js"></script>
     <script src="~/Custom/js/editComment.js"></script>
     <script src="~/Custom/js/deleteComment.js"></script>
+    <script src="~/Custom/js/deleteArticle.js"></script>
     <partial name="_ValidationScriptsPartial" />
 }

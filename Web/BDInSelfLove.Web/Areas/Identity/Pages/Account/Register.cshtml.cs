@@ -21,6 +21,8 @@
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
+        private const string DefaultProfilePicture = "https://res.cloudinary.com/dzcajpx0y/image/upload/c_scale,w_64/v1610826038/User-Profile-PNG-Free-Image_d3npde.png";
+
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
@@ -95,6 +97,10 @@
                 if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)
                 {
                     user.ProfilePhoto = this.Input.ProfilePicture;
+                }
+                else
+                {
+                    user.ProfilePhoto = DefaultProfilePicture;
                 }
 
                 var result = await this._userManager.CreateAsync(user, this.Input.Password);

@@ -9,17 +9,13 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-@{ 
-    string defaultProfilePicture = "https://res.cloudinary.com/dzcajpx0y/image/upload/c_scale,w_64/v1610826038/User-Profile-PNG-Free-Image_d3npde.png";
-}
-
 <div id="@Model.Id" class="comment">
     <div class="row">
         <div class="col-md-12 mb-0">
             <div class="card border-0">
                 <div class="card-header bg-white border-0">
                     <div class="media flex-wrap w-100 align-items-center">
-                        <img src="@(Model.UserProfilePhoto == null ? defaultProfilePicture : Model.UserProfilePhoto)"
+                        <img src="@Model.UserProfilePhoto"
                              width="@ViewData["width"]" height="@ViewData["height"]"
                              class="d-block rounded-circle" alt="User profile photo">
                         <div class="media-body mx-3">
@@ -48,14 +44,14 @@
                         <div class="col-sm-7">
                             <div class="row">
                                 <div class="col-sm-4 m-0 mx-2 p-0">
-                                    <button type="button" class="green-btn btn-sm border-0 px-2">
+                                    <button type="button" class="green-btn btn-sm border-0 reply-button px-2">
                                         @localizer["Reply"]
                                     </button>
                                 </div>
                                 @if (Model.SubComments.Count > 0 && Model.ParentCommentId == null)
                                 {
                                     <div class="col-sm-6 ml-2 m-0 p-0">
-                                        <button class="btn btn-outline-secondary btn-sm btn-subcomments">
+                                        <button class="btn btn-sm btn-subcomments white-btn">
                                             @localizer["See Subcomments"]
                                         </button>
                                     </div>
@@ -63,7 +59,7 @@
                             </div>
                         </div>
 
-                        @if (this.UserManager.GetUserId(this.User) == Model.UserId || this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                        @if (this.UserManager.GetUserId(this.User) == Model.UserId || this.User.IsInRole(GlobalValues.AdministratorRoleName))
                         {
                             <div class="col-sm-5">
                                 <div class="row">
@@ -106,7 +102,7 @@
                         <!-- Append 'Hide Subcomments' button at the end of main comment element -->
                         @if (Model.ParentCommentId == null)
                         {
-                            <button class="btn btn-outline-secondary btn-sm hide-subcomments mb-3">
+                            <button class="btn white-btn btn-sm hide-subcomments mb-3">
                                 @localizer["Hide subcomments"]
                             </button>
                         }

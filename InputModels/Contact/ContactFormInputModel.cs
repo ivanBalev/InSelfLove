@@ -7,7 +7,7 @@ namespace BDInSelfLove.Web.InputModels.Contact
 {
     public class ContactFormInputModel
     {
-        [MinLength(30)]
+        [MinLength(30, ErrorMessage = "Please enter more than 30 characters.")]
         [Required(ErrorMessage = "Please enter more than 30 characters.")]
         public string Message { get; set; }
 

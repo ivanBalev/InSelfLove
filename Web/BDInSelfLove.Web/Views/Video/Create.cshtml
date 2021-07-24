@@ -1,0 +1,30 @@
+﻿@model BDInSelfLove.Web.InputModels.Video.CreateVideoInputModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+<partial name="_SlimShowcasePartial" model="@localizer["Create Video"].Value" />
+
+<div class="container pb-5 mt-4">
+    <form method="post" asp-controller="Video" asp-action="Create">
+        <div class="form-group">
+            <label asp-for="@Model.Url"></label>
+            <input asp-for="@Model.Url" class="form-control" rows="20" />
+            <span asp-validation-for="@Model.Url" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Title"></label>
+            <input asp-for="@Model.Title" class="form-control" rows="20" />
+            <span asp-validation-for="@Model.Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.AssociatedTerms"></label>
+            <input asp-for="@Model.AssociatedTerms" class="form-control" rows="20" />
+            <span asp-validation-for="@Model.AssociatedTerms" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn green-btn">Create</button>
+    </form>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

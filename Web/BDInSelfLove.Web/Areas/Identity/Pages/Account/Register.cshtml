@@ -26,7 +26,6 @@
                         else
                         {
                 <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                    <input class="timezone-IANA" type="hidden" asp-for="Input.TimezoneIANA" />
                     <div>
                         <p class="d-flex justify-content-center">
                             @foreach (var provider in Model.ExternalLogins)
@@ -71,15 +70,14 @@
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label>@localizer["Profile picture"]</label>
-                        <label for="originalProfilePic" class="btn btn-outline-warning text-black-50 mt-4 btn-block" style="margin-top: 0px !important">
+                        <label for="originalProfilePic" class="btn white-btn mb-0">
                             @localizer["Upload profile picture"]
                             <input type="file" id="originalProfilePic" hidden>
                         </label>
                         <span class='label label-info' id="upload-file-info"></span>
                     </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-outline-secondary btn-sm w-50">@localizer["Register"]</button>
+                    <div>
+                        <button type="submit" class="btn green-btn">@localizer["Register"]</button>
                     </div>
                 </form>
             </div>

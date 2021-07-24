@@ -77,6 +77,22 @@
     }
 }
 
+@media screen and (max-width: 768px) {
+    .navbar .contact {
+        margin-top: 8px !important;
+        margin-left: 0px !important;
+        width: 104px !important;
+    }
+
+    .navbar .contact .nav-link {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        background-color: rgb(146,171,149);
+        color: white;
+        border-radius: 5px;
+    }
+}
+
 @font-face {
     font-display: optional;
 }
@@ -143,6 +159,7 @@ html, body {
     color: white;
     border-radius: 5px;
 }
+
 .navbar .contact .nav-link:hover {
     color: black;
 }
@@ -301,6 +318,11 @@ html, body {
     text-decoration: none !important;
 }
 
+#loginPage .checkbox {
+    filter: grayscale(1);
+    white-space: nowrap;
+}
+
 #registerPage a {
     color: #f083c1 !important;
     text-decoration: none !important;
@@ -321,7 +343,7 @@ html, body {
     color: #cd486b !important;
     font-size: 1.5rem !important;
     position: absolute;
-    margin-top: -20px;
+    margin-top: -19px;
 }
 
 #manageNav li a {
@@ -334,14 +356,13 @@ html, body {
     background-color: #e9ecef;
 }
 
-.btn-subcomments, .hide-subcomments {
+.white-btn {
     color: black;
     border-color: rgb(146,171,149);
     white-space: nowrap;
 }
 
-.btn-subcomments:hover, .hide-subcomments:hover {
-    color: white;
+.white-btn:hover {
     background-color: rgb(146,171,149);
 }
 
@@ -449,11 +470,11 @@ a .card img {
     background-color: rgb(146,171,149);
 }
 
-.edit-comment-btn, .delete-comment-btn {
+.edit-comment-btn, .fa-trash {
     color: rgb(146,171,149);
 }
 
-.edit-comment-btn:hover, .delete-comment-btn:hover {
+.edit-comment-btn:hover, .fa-trash:hover {
     cursor: pointer;
 }
 
@@ -559,4 +580,10 @@ a .card img {
 
 #appointmentDetailsModal #btnDelete {
     white-space: nowrap;
+}
+
+#contact #submit-btn span {
+    display: inline-block;
+    margin-bottom: 3px;
+    margin-top: 3px;
 }

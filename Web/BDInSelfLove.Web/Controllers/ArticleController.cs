@@ -1,29 +1,41 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using BDInSelfLove.Common;
+    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data;
-    using BDInSelfLove.Services.Data.Video;
+    using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Article;
+    using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels.Article;
     using BDInSelfLove.Web.ViewModels.Home;
     using BDInSelfLove.Web.ViewModels.Pagination;
-    using BDInSelfLove.Web.ViewModels.Video;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
     public class ArticleController : BaseController
     {
         private const int ArticlesPerPage = 6;
+        private const string ArticleCreateError = "Error while creating article. Please try again.";
+        private const string ArticleEditError = "Error while editing article. Please try again.";
 
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly IArticleService articleService;
+        private readonly ICloudinaryService cloudinaryService;
 
-        public ArticleController(IArticleService articleService)
+        public ArticleController(
+            UserManager<ApplicationUser> userManager,
+            IArticleService articleService,
+            ICloudinaryService cloudinaryService)
         {
+            this.userManager = userManager;
             this.articleService = articleService;
+            this.cloudinaryService = cloudinaryService;
         }
 
         public async Task<IActionResult> All(int page = 1)
@@ -56,6 +68,80 @@
                 .GetById(id));
 
             return this.View(viewModel);
+        }
+
+        // Admin acces only below
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public IActionResult Create()
+        {
+            return this.View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                this.ViewData["Error"] = ArticleCreateError;
+                return this.View(inputModel);
+            }
+
+            var user = await this.userManager.GetUserAsync(this.User);
+
+            var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleServiceModel>(inputModel);
+            serviceModel.UserId = user.Id;
+
+            if (inputModel.Image != null)
+            {
+                var imageUrl = await this.cloudinaryService.UploadPicture(inputModel.Image, Guid.NewGuid().ToString());
+                serviceModel.ImageUrl = imageUrl;
+            }
+
+            var postId = await this.articleService.CreateAsync(serviceModel);
+            return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = postId });
+        }
+
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var articleServiceModel = await this.articleService.GetById(id);
+            var articleEditViewModel = AutoMapperConfig.MapperInstance.Map<ArticleEditInputModel>(articleServiceModel);
+
+            return this.View(articleEditViewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                this.ViewData["Error"] = ArticleEditError;
+                return this.View(inputModel);
+            }
+
+            var user = await this.userManager.GetUserAsync(this.User);
+            var serviceModel = AutoMapperConfig.MapperInstance.Map<ArticleServiceModel>(inputModel);
+            serviceModel.UserId = user.Id;
+
+            if (inputModel.Image != null)
+            {
+                var imageUrl = await this.cloudinaryService.UploadPicture(inputModel.Image, inputModel.Title);
+                serviceModel.ImageUrl = imageUrl;
+            }
+
+            await this.articleService.Edit(serviceModel);
+
+            return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = inputModel.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await this.articleService.Delete(id);
+            return this.Redirect("/");
         }
 
     }

@@ -15,12 +15,18 @@
         <p>
             <strong>@localizer["Deleting this data will permanently remove your account, and this cannot be recovered."]</strong>
         </p>
-        <form id="download-data" asp-page="DownloadPersonalData" method="post" class="form-group">
-            <button class="btn btn-outline-secondary" type="submit">@localizer["Download"]</button>
-        </form>
-        <p>
-            <a id="delete" asp-page="DeletePersonalData" class="btn btn-outline-secondary">@localizer["Delete"]</a>
-        </p>
+        <div class="row">
+            <div class="col">
+                <form id="download-data" asp-page="DownloadPersonalData" method="post" class="form-group">
+                    <button class="btn white-btn" type="submit">@localizer["Download"]</button>
+                </form>
+            </div>
+            <div class="col">
+                <p>
+                    <a id="delete" asp-page="DeletePersonalData" class="btn btn-outline-danger">@localizer["Delete"]</a>
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 

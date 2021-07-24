@@ -120,6 +120,9 @@
   <data name="Address" xml:space="preserve">
     <value>Адрес</value>
   </data>
+  <data name="bul. Bulgaria, 60G" xml:space="preserve">
+    <value>Бул. България 60Г</value>
+  </data>
   <data name="Contact" xml:space="preserve">
     <value>Контакти</value>
   </data>
@@ -146,8 +149,5 @@
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Изпрати</value>
-  </data>
-  <data name="Zvanika 1 - 3, Sofia" xml:space="preserve">
-    <value>Звъника 1 - 3, София</value>
   </data>
 </root>

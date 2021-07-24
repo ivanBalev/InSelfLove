@@ -63,16 +63,16 @@
                             <div class="checkbox d-inline">
                                 <label asp-for="Input.RememberMe">
                                     <input asp-for="Input.RememberMe" />
-                                    @localizer["Remember me?"]
+                                    <span>@localizer["Remember me?"]</span>
                                 </label>
                             </div>
                             <span>
-                                <span> <a class="btn btn-outline-light btn-sm" id="forgot-password" asp-page="./ForgotPassword">@localizer["Forgot your password?"]</a>  </span>
-                                <span class="ml-3 btn btn-outline-light btn-sm"> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@localizer["Register as a new user"]</a>  </span>
+                                <span> <a class="ml-2 btn white-btn btn-sm" id="forgot-password" asp-page="./ForgotPassword">@localizer["Forgotten password?"]</a>  </span>
+                                <span class="ml-2 btn white-btn btn-sm"> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@localizer["Register"]</a>  </span>
                             </span>
                         </div>
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-outline-secondary w-50 btn-sm mt-3">@localizer["Log in"]</button>
+                        <div class="form-group">
+                            <button type="submit" class="btn green-btn mt-3">@localizer["Log in"]</button>
                         </div>
                     </form>
                 </section>

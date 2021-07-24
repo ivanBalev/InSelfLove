@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Forgot your password?" xml:space="preserve">
+  <data name="Forgotten password?" xml:space="preserve">
     <value>Забравена парола?</value>
   </data>
   <data name="Log in" xml:space="preserve">
@@ -135,7 +135,7 @@
   <data name="Password" xml:space="preserve">
     <value>Парола</value>
   </data>
-  <data name="Register as a new user" xml:space="preserve">
+  <data name="Register" xml:space="preserve">
     <value>Регистрация</value>
   </data>
   <data name="Remember me?" xml:space="preserve">

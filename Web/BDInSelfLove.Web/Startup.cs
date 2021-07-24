@@ -21,8 +21,7 @@
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Article;
-    using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
-    using BDInSelfLove.Web.InputModels.Administration.Article;
+    using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels;
     using BDInSelfLove.Web.ViewModels.Article;

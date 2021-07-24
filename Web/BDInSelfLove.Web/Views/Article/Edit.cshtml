@@ -1,7 +1,10 @@
-﻿@model BDInSelfLove.Web.InputModels.Administration.Article.ArticleCreateInputModel
-<div class="container pb-5">
-    <h1 class="text-center">Create Article</h1>
-    <form method="post" asp-area="Administration" asp-controller="Article" asp-action="Create" enctype="multipart/form-data">
+﻿@model BDInSelfLove.Web.InputModels.Article.ArticleEditInputModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+<partial name="_SlimShowcasePartial" model="@localizer["Edit Article"].Value" />
+
+<div class="container mb-5 mt-3">
+    <form method="post" asp-controller="Article" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data">
         <div class="form-group">
             <label asp-for="@Model.Title"></label>
             <input asp-for="@Model.Title" class="form-control" />
@@ -13,8 +16,8 @@
             <span asp-validation-for="@Model.ImageUrl" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="@Model.Image" class="btn btn-outline-secondary mt-4 btn-block text-left">
-                Or upload an image, if that's what you'd prefer
+            <label asp-for="@Model.Image" class="btn white-btn">
+                Or upload an image
                 <input type="file" asp-for="@Model.Image" hidden onchange="$('#upload-file-info').html(this.files[0].name); $('#ImageUrl').val('')">
             </label>
             <span class='label label-info' id="upload-file-info"></span>
@@ -25,7 +28,7 @@
             <textarea asp-for="@Model.Content" class="form-control" rows="20" id="mytextarea"></textarea>
             <span asp-validation-for="@Model.Content" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-outline-success btn-block w-50 mx-auto">Create</button>
+        <button type="submit" class="btn green-btn">Edit</button>
     </form>
 </div>
 
@@ -35,10 +38,7 @@
             referrerpolicy="origin"></script>
     <script>
         tinymce.init({
-            selector: '#mytextarea',
-            plugins: "paste",
-            paste_as_text: true,
-            paste_webkit_styles: 'none',
+            selector: '#mytextarea'
         });
     </script>
 }
