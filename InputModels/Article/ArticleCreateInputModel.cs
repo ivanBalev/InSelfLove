@@ -13,7 +13,6 @@ namespace BDInSelfLove.Web.InputModels.Article
         [Required]
         public string Content { get; set; }
 
-        [Display(Name = "Link to your article's image")]
         public string ImageUrl { get; set; }
 
         public IFormFile Image { get; set; }

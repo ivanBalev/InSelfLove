@@ -15,6 +15,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using TimeZoneConverter;
 
     public class VideoController : BaseController
     {
@@ -32,10 +33,17 @@
 
         public async Task<IActionResult> Single(int id)
         {
-            // TODO: convert comment times to user local IF COOKIE EXISTS
-            var viewModel = AutoMapperConfig.MapperInstance
+            VideoViewModel viewModel = AutoMapperConfig.MapperInstance
                 .Map<VideoViewModel>(await this.videoService
                 .GetById(id));
+
+            // Convert comment CreatedOn to user local time
+            TimeZoneInfo userTimezone = TZConvert.GetTimeZoneInfo(
+               (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
+            foreach (var comment in viewModel.Comments)
+            {
+                comment.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(comment.CreatedOn, userTimezone);
+            }
 
             return this.View(viewModel);
         }

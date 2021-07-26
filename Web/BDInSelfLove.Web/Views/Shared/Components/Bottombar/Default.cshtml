@@ -5,11 +5,11 @@
 @{
     bool isSingleArticlePage = Model.Articles.Count != 0;
     int publcationsCount = isSingleArticlePage ? Model.Articles.Count : Model.Videos.Count;
-    string elementTitle = isSingleArticlePage ? localizer["More articles"].Value : localizer["More videos"].Value;
+    string elementTitle = isSingleArticlePage ? localizer["MORE ARTICLES"].Value : localizer["MORE VIDEOS"].Value;
 }
 
 <div id="bottombar">
-    <h1 id="title" class="mb-0 ml-3">@localizer[elementTitle]</h1>
+    <h2 class="mb-0 ml-3 subtitle">@localizer[elementTitle]</h2>
     <div class="row">
         @for (int i = 0; i < publcationsCount; i++)
         {

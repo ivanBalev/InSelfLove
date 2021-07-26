@@ -91,7 +91,12 @@
                     return Page();
                 }
 
-                string windowsTimezoneId = TZConvert.GetTimeZoneInfo(this.Input.TimezoneIANA).Id;
+                string windowsTimezoneId= null;
+                if (this.Input.TimezoneIANA != null)
+                {
+                    windowsTimezoneId = TZConvert.GetTimeZoneInfo(this.Input.TimezoneIANA).Id;
+                }
+
                 var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email, WindowsTimezoneId = windowsTimezoneId };
 
                 if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)

@@ -117,11 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Add new comment" xml:space="preserve">
-    <value>Добави нов коментар</value>
+  <data name="ADD NEW COMMENT" xml:space="preserve">
+    <value>ДОБАВИ НОВ КОМЕНТАР</value>
   </data>
-  <data name="Comments" xml:space="preserve">
-    <value>Коментари</value>
+  <data name="COMMENTS" xml:space="preserve">
+    <value>КОМЕНТАРИ</value>
   </data>
   <data name="Load More Comments" xml:space="preserve">
     <value>Зареди още коментари</value>

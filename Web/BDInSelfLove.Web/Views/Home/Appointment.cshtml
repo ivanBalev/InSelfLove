@@ -161,20 +161,16 @@
                         <div class="row">
                             <div class="form-group col ml-5">
                                 <label>@localizer["Start Time"]</label>
-                                <div class="input-group date">
-                                    <input type="time" id="startHour" name="startHour" required>
-                                </div>
+                                    <input type="time" value="00:00" id="startHour" name="startHour" required>
                             </div>
                             <div class="form-group col ml-5">
                                 <label>@localizer["End Time"]</label>
-                                <div class="input-group date">
-                                    <input type="time" id="endHour" name="endHour" required>
-                                </div>
+                                    <input type="time" value="00:00" id="endHour" name="endHour" required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <button type="button" id="workingHoursSubmitBtn" class="btn green-btn btn-block">@localizer["Save"]</button>
+                                <button type="button" id="workingHoursSubmitBtn" class="btn green-btn">@localizer["Save"]</button>
                             </div>
                         </div>
                     </form>

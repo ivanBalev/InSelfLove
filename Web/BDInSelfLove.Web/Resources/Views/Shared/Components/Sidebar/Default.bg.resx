@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="More articles" xml:space="preserve">
-    <value>Още статии</value>
+  <data name="MORE ARTICLES" xml:space="preserve">
+    <value>ОЩЕ СТАТИИ</value>
   </data>
-  <data name="More videos" xml:space="preserve">
-    <value>Oще видеа</value>
+  <data name="MORE VIDEOS" xml:space="preserve">
+    <value>ОЩЕ ВИДЕА</value>
   </data>
 </root>

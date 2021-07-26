@@ -48,7 +48,7 @@
 <div class="main-content">
     <!-- Info Header -->
     <div id="info-header" class="row text-center pt-5 mt-5 mb-2">
-        <h1 class="col">@localizer["POSTS"]</h1>
+        <h2 class="col subtitle">@localizer["POSTS"]</h2>
     </div>
     <!-- Articles -->
     <div id="home-articles" class="container py-4">
@@ -99,7 +99,13 @@
     </div>
 </div>
 
+@section Links {
+    <link rel="stylesheet" href="~/lib/lite-youtube-embed/src/lite-yt-embed.css" />
+}
+
 @section Scripts {
+    <script src="~/lib/lite-youtube-embed/src/lite-yt-embed.js"></script>
     <script src="~/Custom/js/previewArticleHeightEqualize.js"></script>
     <script src="~/Custom/js/timezone.js"></script>
+
 }

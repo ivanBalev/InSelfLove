@@ -1,17 +1,21 @@
 ﻿@model BDInSelfLove.Web.ViewComponents.Models.Video.AllHomeVideoViewModel
 @{
     int index = 0;
+    const string youtubeApiLink = "https://img.youtube.com/vi/";
+    const string youtubeApiEnd = "/maxresdefault.jpg";
 }
 
 @foreach (var video in Model.Videos)
 {
+    string videoId = video.Url.Split('/').Last();
+    string backgroundImg = youtubeApiLink + videoId + youtubeApiEnd;
+
     <div class="carousel-item @(index == 0 ? "active" : "")" itemscope itemtype="http://schema.org/Movie">
-        <div class="embed-responsive embed-responsive-16by9">
-            <iframe title="Home psychotherapy video" width="560" height="315" src="@video.Url" frameborder="0"
-                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-            </iframe>
-        </div>
+        <lite-youtube videoid="@videoId" playlabel="Play: @video.Title" style="background-image: url('@backgroundImg');">
+            <button type="button" class="lty-playbtn">
+                <span class="lyt-visually-hidden">Play Video: @video.Title</span>
+            </button>
+        </lite-youtube>
     </div>
     @(index++);
 }

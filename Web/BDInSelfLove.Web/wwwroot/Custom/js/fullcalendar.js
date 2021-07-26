@@ -119,7 +119,6 @@
             data: {
                 date: currentSelectedDate,
                 timeSlots: availableDailySlots,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
             url: '/api/appointment/Create',
             headers: { 'X-CSRF-TOKEN': token },

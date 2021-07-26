@@ -23,6 +23,12 @@ document.querySelector('.delete-comment-confirm-btn').addEventListener('click', 
         success: function () {
             // Hide deleted comment which will be removed entirely once page reloads
             $('#' + commentId).hide();
+
+            // If last comment was just deleted(hidden)
+            if (document.querySelectorAll('#comments .comment').length === 1) {
+                // Hide 'Comments' subtitle
+                document.querySelectorAll('#comments .subtitle')[1].style.display = 'none';
+            }
         },
         error: function () {
             console.log('error')

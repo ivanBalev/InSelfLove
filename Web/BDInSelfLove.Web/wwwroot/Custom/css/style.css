@@ -135,6 +135,12 @@ html, body {
     margin-left: 1vw;
 }
 
+.navbar-brand img {
+    padding-top: 5px;
+    width: 20px;
+    height: 20px;
+}
+
 .navbar h3 {
     font-size: 1.25rem;
 }
@@ -237,8 +243,8 @@ html, body {
     margin: auto;
 }
 
-#info-header h1 {
-    font-size: 1rem !important;
+.subtitle {
+    font-size: 16px;
     letter-spacing: 2px;
 }
 
@@ -483,14 +489,6 @@ a .card img {
     padding-right: 4vw;
 }
 
-#sidebar #title {
-    font-size: 20px;
-}
-
-#bottombar #title {
-    font-size: 20px;
-}
-
 #single-video-container {
     padding-left: 4vw;
     padding-right: 4vw;
@@ -586,4 +584,13 @@ a .card img {
     display: inline-block;
     margin-bottom: 3px;
     margin-top: 3px;
+}
+
+/*Calendar set working hours*/
+::-webkit-datetime-edit {
+    display: none;
+}
+
+::-webkit-calendar-picker-indicator {
+    padding-right: 10px;
 }

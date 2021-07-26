@@ -50,18 +50,21 @@
         public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
         {
             // Convert iana to windows timezone & switch input times to utc
-            TimeZoneInfo windowsTimezone = TZConvert.GetTimeZoneInfo(availabilityInput.Timezone);
+            TimeZoneInfo windowsTimezone = TZConvert.GetTimeZoneInfo(
+                (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
 
-            List<AppointmentServiceModel> appointments = availabilityInput.TimeSlots.Select(ts =>
+            var date = DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture);
+
+            List<DateTime> appointments = availabilityInput.TimeSlots?.Select(ts =>
             {
-                DateTime date = DateTime.ParseExact($"{availabilityInput.Date} {ts}", "MM-dd-yyyy H:m", CultureInfo.InvariantCulture);
-                DateTime utcDate = TimeZoneInfo.ConvertTimeToUtc(date, windowsTimezone);
-
-                return new AppointmentServiceModel { UtcStart = utcDate };
+                // We work only with 00 minutes currently
+                double hours = double.Parse(ts.Split(':')[0]);
+                DateTime currentSlot = date.AddHours(hours);
+                return TimeZoneInfo.ConvertTimeToUtc(currentSlot, windowsTimezone);
             })
             .ToList();
 
-            await this.appointmentService.Create(appointments);
+            await this.appointmentService.Create(appointments, DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture));
             return this.Ok();
         }
 

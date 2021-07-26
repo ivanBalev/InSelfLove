@@ -22,12 +22,12 @@
                 @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
                 {
                     <li>
-                        <a class="dropdown-item" asp-controller="Article" asp-action="Create">
+                        <a class="dropdown-item" asp-area="" asp-controller="Article" asp-action="Create">
                             @localizer["Create Article"]
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" asp-controller="Video" asp-action="Create">
+                        <a class="dropdown-item" asp-area="" asp-controller="Video" asp-action="Create">
                             @localizer["Create Video"]
                         </a>
                     </li>

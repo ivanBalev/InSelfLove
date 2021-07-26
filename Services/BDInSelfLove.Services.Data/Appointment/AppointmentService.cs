@@ -53,18 +53,11 @@
                 .SingleOrDefaultAsync(appointment => appointment.Id == id);
         }
 
-        public async Task<int> Create(List<AppointmentServiceModel> controllerAppointments)
+        public async Task<int> Create(List<DateTime> appointmentTimes, DateTime appointmentsDate)
         {
-            // Do nothing if collection is empty
-            if (controllerAppointments.Count == 0)
-            {
-                return 0;
-            }
-
             // Delete same day unoccupied slots
-            DateTime date = controllerAppointments[0].UtcStart.Date;
             var dbAppointments = await this.appointmentRepository.All()
-                .Where(a => DateTime.Compare(date, a.UtcStart.Date) == 0)
+                .Where(a => DateTime.Compare(appointmentsDate, a.UtcStart.Date) == 0)
                 .Where(a => a.UserId == null).ToListAsync();
 
             foreach (var dbAppointment in dbAppointments)
@@ -72,10 +65,16 @@
                 this.appointmentRepository.Delete(dbAppointment);
             }
 
-            // Map to DB entities and add to DB
-            foreach (var controllerAppointment in controllerAppointments)
+            // Return if appointments collection is empty
+            if (appointmentTimes == null)
             {
-                var appointmentForDB = AutoMapperConfig.MapperInstance.Map<Appointment>(controllerAppointment);
+                return await this.appointmentRepository.SaveChangesAsync();
+            }
+
+            // Map to DB entities and add to DB
+            foreach (var dateTime in appointmentTimes)
+            {
+                var appointmentForDB = new Appointment { UtcStart = dateTime };
                 await this.appointmentRepository.AddAsync(appointmentForDB);
             }
 

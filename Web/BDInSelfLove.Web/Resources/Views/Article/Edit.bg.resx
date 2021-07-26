@@ -117,28 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Add New Comment" xml:space="preserve">
-    <value>Add New Comment</value>
+  <data name="Content" xml:space="preserve">
+    <value>Съдържание</value>
   </data>
-  <data name="Are you sure?" xml:space="preserve">
-    <value>Are you sure?</value>
+  <data name="Edit Article" xml:space="preserve">
+    <value>Редактирай статия</value>
   </data>
-  <data name="Comments" xml:space="preserve">
-    <value>Comments</value>
+  <data name="Link to your article's image" xml:space="preserve">
+    <value>Връзка към снимката</value>
   </data>
-  <data name="Confirm" xml:space="preserve">
-    <value>Confirm</value>
+  <data name="or upload an image" xml:space="preserve">
+    <value>или качи снимка</value>
   </data>
-  <data name="Delete" xml:space="preserve">
-    <value>Delete</value>
+  <data name="Title" xml:space="preserve">
+    <value>Заглавие</value>
   </data>
-  <data name="Load More Comments" xml:space="preserve">
-    <value>Load More Comments</value>
-  </data>
-  <data name="Next" xml:space="preserve">
-    <value>Next</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Previous</value>
+  <data name="Редактирай" xml:space="preserve">
+    <value>Редактирай</value>
   </data>
 </root>
