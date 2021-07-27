@@ -12,6 +12,7 @@
 
     <div class="carousel-item @(index == 0 ? "active" : "")" itemscope itemtype="http://schema.org/Movie">
         <lite-youtube videoid="@videoId" playlabel="Play: @video.Title" style="background-image: url('@backgroundImg');">
+            <div class="video-title">@video.Title</div>
             <button type="button" class="lty-playbtn">
                 <span class="lyt-visually-hidden">Play Video: @video.Title</span>
             </button>

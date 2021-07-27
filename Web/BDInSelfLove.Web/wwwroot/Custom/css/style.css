@@ -594,3 +594,11 @@ a .card img {
 ::-webkit-calendar-picker-indicator {
     padding-right: 10px;
 }
+
+.video-title {
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    color: white;
+    font-size: 18px;
+}
