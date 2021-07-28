@@ -1,4 +1,4 @@
-﻿document.querySelectorAll('.delete-comment-btn').forEach(btn => btn.addEventListener('click', (e) => {
+﻿document.querySelectorAll('.deleteCommentBtn').forEach(btn => btn.addEventListener('click', (e) => {
     // Get comment id
     let commentId = e.target.parentElement.parentElement.parentElement.parentElement
         .parentElement.parentElement.parentElement.parentElement.parentElement.id;

@@ -32,11 +32,17 @@
                                         {
                                             if (provider.Name == "Google")
                                             {
-                                                <button type="submit" class="btn btn-outline-secondary mx-3" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="fab fa-google fa-fw text-danger"></i> @localizer["Login with Google"]</button>
+                                                <button type="submit" class="btn btn-outline-secondary mx-3" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                                    <img src="~/Custom/icons/google-brands.svg" class="google-icon" alt="google icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                                                    @localizer["Login with Google"]
+                                                </button>
                                             }
                                             else if (provider.Name == "Facebook")
                                             {
-                                                <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="fab fa-facebook-f fa-fw text-primary"></i> @localizer["Login with Facebook"]</button>
+                                                <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                                    <img src="~/Custom/icons/facebook-f-brands.svg" class="facebook-icon" alt="facebook icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                                                    @localizer["Login with Facebook"]
+                                                </button>
                                             }
                                         }
                                     </p>

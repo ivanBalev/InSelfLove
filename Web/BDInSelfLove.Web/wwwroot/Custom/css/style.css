@@ -3,6 +3,7 @@
     font-style: normal;
     font-weight: 400;
     src: url('../fonts/PTSansCaption-Regular.ttf') format('truetype');
+    font-display: swap;
 }
 
 /*Showcase fix for iOS - fixed background unsupported */
@@ -136,7 +137,6 @@ html, body {
 }
 
 .navbar-brand img {
-    padding-top: 5px;
     width: 20px;
     height: 20px;
 }
@@ -250,11 +250,9 @@ html, body {
 
 .btn-to-singleArticle {
     background-color: rgb(146,171,149);
-    margin-right: 1px;
     padding-right: 22px;
     padding-bottom: 7px;
     padding-top: 7px;
-    color: white;
 }
 
 #video-carousel .carousel-control-prev {
@@ -476,11 +474,51 @@ a .card img {
     background-color: rgb(146,171,149);
 }
 
-.edit-comment-btn, .fa-trash {
-    color: rgb(146,171,149);
+.edit-btn, .delete-btn {
+    filter: invert(74%) sepia(9%) saturate(584%) hue-rotate(76deg) brightness(88%) contrast(87%);
+    width: 18px;
+    height: 16.8px;
 }
 
-.edit-comment-btn:hover, .fa-trash:hover {
+.delete-btn {
+    width: 14px;
+}
+
+.search-login-btn {
+    width: 16px;
+    height: 16.8px;
+}
+
+.facebook-icon {
+    width: 9.9px;
+    height: 19.2px;
+    filter: invert(36%) sepia(95%) saturate(1228%) hue-rotate(185deg) brightness(99%) contrast(92%);
+    margin-bottom: -3px;
+    margin-right: 3px;
+}
+
+.google-icon {
+    width: 15.25px;
+    height: 16.8px;
+    filter: invert(27%) sepia(98%) saturate(1664%) hue-rotate(348deg) brightness(104%) contrast(78%);
+    margin-bottom: -1px;
+    margin-right: 3px;
+}
+
+.instagram-icon {
+    filter: invert(37%) sepia(17%) saturate(2911%) hue-rotate(299deg) brightness(98%) contrast(88%);
+    width: 21px;
+    height: 24.8px;
+    margin-bottom: -4px;
+}
+
+.right-arrow-icon {
+    width: 10px !important;
+    height: 16.8px !important;
+    filter: invert(100%) sepia(0%) saturate(1%) hue-rotate(24deg) brightness(106%) contrast(101%);
+}
+
+.edit-btn:hover, .delete-btn:hover {
     cursor: pointer;
 }
 
@@ -601,4 +639,10 @@ a .card img {
     left: 20px;
     color: white;
     font-size: 18px;
+}
+
+#login-icon {
+    padding-top: 2px;
+    height: 16.8px;
+    width: 14px;
 }

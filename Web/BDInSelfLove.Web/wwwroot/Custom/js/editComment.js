@@ -1,4 +1,4 @@
-﻿document.querySelectorAll('.edit-comment-btn').forEach(b => b.addEventListener('click', (e) => {
+﻿document.querySelectorAll('.editCommentBtn').forEach(b => b.addEventListener('click', (e) => {
     // Show edit comment box and hide reply and edit comment buttons and comment content box
     e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
     e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';

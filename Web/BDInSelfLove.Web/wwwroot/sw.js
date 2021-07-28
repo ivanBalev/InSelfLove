@@ -12,7 +12,7 @@ const assets = [
     '/Custom/icons/en-icon.png',
     '/Custom/icons/flower.svg',
     '/Custom/img/wonder.png',
-    'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+/*    'https://use.fontawesome.com/releases/v5.0.13/css/all.css',*/
 ];
 
 

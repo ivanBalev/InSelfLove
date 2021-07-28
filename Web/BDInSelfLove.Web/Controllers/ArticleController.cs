@@ -67,13 +67,17 @@
                 .Map<ArticleViewModel>(await this.articleService
                 .GetById(id));
 
-            // Convert comment CreatedOn to user local time
-            TimeZoneInfo userTimezone = TZConvert.GetTimeZoneInfo(
-                (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
-            foreach (var comment in viewModel.Comments)
+            if (this.User.Identity.IsAuthenticated)
             {
-                comment.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(comment.CreatedOn, userTimezone);
+                // Convert comment CreatedOn to user local time
+                TimeZoneInfo userTimezone = TZConvert.GetTimeZoneInfo(
+                    (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
+                foreach (var comment in viewModel.Comments)
+                {
+                    comment.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(comment.CreatedOn, userTimezone);
+                }
             }
+
 
             return this.View(viewModel);
         }
