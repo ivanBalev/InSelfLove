@@ -194,12 +194,25 @@
 
             app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse =
+                r =>
+                {
+                    string path = r.File.PhysicalPath;
+                    if (path.EndsWith(".css") || path.EndsWith(".js") || path.EndsWith(".gif") ||
+                    path.EndsWith(".jpg") || path.EndsWith(".png") || path.EndsWith(".svg") ||
+                    path.EndsWith(".ttf"))
+                    {
+                        TimeSpan maxAge = new TimeSpan(7, 0, 0, 0);
+                        r.Context.Response.Headers.Append("Cache-Control", "public, max-age=" + maxAge.TotalSeconds.ToString("0"));
+                    }
+                },
+            });
+
             app.UseResponseCompression();
             app.UseResponseCaching();
-
-            app.UseStaticFiles();
             app.UseCookiePolicy();
-
 
             app.UseRouting();
             //TODO: REMOVE HTTPS REDIRECTION FOR AZURE BUT ADD WHEN DEPLOYING ELSEWHERE!
