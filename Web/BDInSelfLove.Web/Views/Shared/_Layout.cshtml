@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="~/Custom/css/style.css">
     @this.RenderSection("HeadScripts", required: false)
     <title>@(this.ViewData["Title"]) Психотерапия - Мария Маринова | Психолог и психотерапевт София</title>
-    <link rel="manifest" href="../manifest.json" />
+    @*<link rel="manifest" href="../manifest.json" />*@
     @* ios support *@
     <link rel="apple-touch-icon" href="~/Custom/icons/pwa_icons/icon-96x96.png" />
     <meta name="apple-mobile-web-app-status-bar" content="#aa5598" />
@@ -104,7 +104,9 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    @* Older version of jquery for fullcalendar 3.4.0. Doesn't work properly with jquery 3.6.0 *@
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="~/lib/popper.js/umd/popper.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/Custom/js/pwa.js"></script>

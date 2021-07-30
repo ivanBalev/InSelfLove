@@ -265,7 +265,7 @@
                 eventElement.innerText = plusSymbol;
             } else {
                 // Appointment awaiting approval
-                eventElement.setAttribute(style, `${initialStyleState}; border-color: ${yellowColor}; color: ${yellowColor};`);
+                eventElement.setAttribute(style, `${initialStyleState}; border-color:${yellowColor}; color:${yellowColor};`);
                 eventElement.innerText = clockwiseArrowSymbol;
             }
         } else {

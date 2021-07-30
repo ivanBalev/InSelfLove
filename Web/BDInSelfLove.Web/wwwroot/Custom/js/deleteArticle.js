@@ -1,1 +1,1 @@
-﻿document.getElementsByClassName('deleteArticle')[0].addEventListener('click', () => $('#confirmArticleDelete').modal());
+﻿document.getElementsByClassName('deleteArticle')[0]?.addEventListener('click', () => $('#confirmArticleDelete').modal());

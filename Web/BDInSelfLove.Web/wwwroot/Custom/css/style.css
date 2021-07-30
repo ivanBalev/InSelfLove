@@ -40,6 +40,14 @@
         margin-left: 0vmin !important;
         margin-right: 0vmin !important;
     }
+
+    .calendar-container {
+        padding-top: 8px !important;
+    }
+
+    .fc-header-toolbar {
+        margin-bottom: 5px !important;
+    }
 }
 
 @media screen and (max-width: 1366px) {
@@ -185,10 +193,10 @@ html, body {
 }
 
 #showcase .showcase-wrapper {
-    width: 75%;
+    width: 90%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 5%;
+    margin-top: 15vh;
 }
 
 .showcase-wrapper h1 {
@@ -389,6 +397,7 @@ a .card img {
     margin-top: 3px;
     margin-bottom: 3px;
 }
+
 
 .active .page-link {
     background-color: rgb(146,171,149) !important;
