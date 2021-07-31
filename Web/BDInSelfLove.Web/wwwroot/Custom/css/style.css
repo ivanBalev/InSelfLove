@@ -178,6 +178,10 @@ html, body {
     color: black;
 }
 
+.nav-item.dropdown {
+    margin-bottom: 7px;
+}
+
 #navbarCollapse .nav-link {
     white-space: nowrap;
 }

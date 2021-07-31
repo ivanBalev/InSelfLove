@@ -11,7 +11,7 @@ $('.save-edit-btn').click(function (e) {
     let token = e.target.parentElement.parentElement.parentElement.parentElement
         .querySelector('input[name=__RequestVerificationToken]').value;
     let commentId = e.target.parentElement.parentElement.querySelector('#Id').value;
-    let content = e.target.parentElement.parentElement.querySelector('#Content').value;
+    let content = e.target.parentElement.parentElement.querySelector('[name=Content]').value;
     let articleId = e.target.parentElement.parentElement.querySelector('#ArticleId').value;
     $.ajax({
         type: "POST",

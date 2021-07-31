@@ -63,10 +63,6 @@
                 </ul>
             </div>
         </div>
-
-
-
-
     </nav>
 
     <partial name="_CookieConsentPartial" />
@@ -104,54 +100,13 @@
         </div>
     </div>
 
-    @* Older version of jquery for fullcalendar 3.4.0. Doesn't work properly with jquery 3.6.0 *@
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="~/lib/popper.js/umd/popper.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/Custom/js/pwa.js"></script>
-    <script>
-        // Get the current year for the copyright
-        $('#year').text(new Date().getFullYear());
-
-        $('.carousel').carousel({
-            interval: false
-        });
-
-        $("#popover").popover({ trigger: "hover" });
-    </script>
-
-    @*Search scripts*@
-    <script>
-        document.querySelector('.search').addEventListener('click', e => {
-            // Show search modal
-            $('#search-modal').modal();
-            // Set cursor to text field
-            $('#search-modal').on('shown.bs.modal', function () {
-                $('#searchTerm').focus()
-            });
-            $('.search-btn').on('click', function (e) {
-                let searchTermValue = e.target.parentElement.querySelector('#searchTerm').value;
-                if (searchTermValue === '' || !searchTermValue) {
-                    e.preventDefault();
-                    alert('Please enter valid data.');
-                }
-            });
-        });
-    </script>
-
-    <script>
-        $(window).on('click', function (event) {
-            // element over which click was made
-            var clickOver = $(event.target)
-            if ($('.navbar .navbar-toggler').attr('aria-expanded') == 'true' && clickOver.closest('.navbar').length === 0) {
-                // Click on navbar toggler button
-                $('button[aria-expanded="true"]').click();
-            }
-        });
-    </script>
-
+    <script src="~/Custom/js/copyrightjs.js"></script>
+    <script src="~/Custom/js/initialSeatch.js"></script>
+    <script src="~/Custom/js/collapseNavbar.js"></script>
     @this.RenderSection("Scripts", required: false)
-
 </body>
 </html>
