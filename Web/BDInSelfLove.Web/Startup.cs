@@ -35,6 +35,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     public class Startup
@@ -144,7 +145,6 @@
                 options.EnableForHttps = true;
             });
 
-
             // Application services
             services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
             services.AddTransient<IArticleService, ArticleService>();
@@ -154,6 +154,16 @@
             services.AddTransient<IAppointmentService, AppointmentService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ISearchService, SearchService>();
+
+            // Logging
+            services.AddLogging(loggingBuilder =>
+            {
+                var loggingSection = this.configuration.GetSection("Logging");
+                loggingBuilder.AddFile(loggingSection);
+            });
+
+            // Development exceptions
+            services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -184,7 +194,7 @@
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {
@@ -210,6 +220,7 @@
                 },
             });
 
+            // TODO: responsecompression is not working
             app.UseResponseCompression();
             app.UseResponseCaching();
             app.UseCookiePolicy();
@@ -224,6 +235,8 @@
                 endpoints =>
                     {
                         endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                        // Below is used for SEO (not only show Articles/Single/{id}, but the article's name after the id /{id}/{articleName})
+                        //endpoints.MapControllerRoute("forumCategory", "f/{name:minlength(3)}", new { controller = "Categories", action = "ByName" });
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapRazorPages();
                     });

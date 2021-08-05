@@ -1,7 +1,7 @@
 ﻿const cacheDefaultName = 'inselflove';
 const domainNames = ['inselflove', 'localhost'];
-const staticCacheName = cacheDefaultName + '-static-v12.22';
-const dynamicCacheName = cacheDefaultName + '-dyn1mic-v12.22';
+const staticCacheName = cacheDefaultName + '-static-v122.22';
+const dynamicCacheName = cacheDefaultName + '-dynamic-v122.22';
 // TODO: optimize dynamic cache size.
 const dynamicCacheMaxSize = 20;
 const assets = [

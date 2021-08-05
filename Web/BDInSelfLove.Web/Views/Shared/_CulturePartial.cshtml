@@ -18,8 +18,7 @@
           asp-area=""
           asp-route-returnUrl="@returnUrl"
           method="post"
-          class="form-horizontal nav-link text-dark px-0 pt-2"
-          role="form">
+          class="form-horizontal nav-link text-dark px-0 pt-2">
         <input type="hidden" name="culture" value="@otherCulture" />
         <img src="@Url.Content(imgSrc)" alt="Website language icon" onclick="$(this).closest('form').submit();" class="lang-flag border-top" >
     </form>
