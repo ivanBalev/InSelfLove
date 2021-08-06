@@ -6,7 +6,7 @@
 }
 
 <div class="video-preview">
-    <a asp-area="" asp-controller="Video" asp-action="Single" asp-route-id="@Model.Id">
+    <a asp-area="" asp-controller="Videos" asp-action="Single" asp-route-slug="@Model.Slug">
         <div class="pb-1">
             <img class="img-fluid w-100" src="@(youtubeApiLink + @Model.Url.Split('/').Last() + youtubeApiEnd)" alt="Video preview image" />
             <h1 class="mx-4 mb-3 mt-1">@Model.Title</h1>

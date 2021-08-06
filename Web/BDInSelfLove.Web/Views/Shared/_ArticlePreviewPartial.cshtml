@@ -1,7 +1,7 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Home.ArticlePreviewViewModel
 
 <div class="article-preview">
-    <a asp-area="" asp-controller="Article" asp-action="Single" asp-route-id="@Model.Id">
+    <a asp-controller="Articles" asp-action="Single" asp-route-slug="@Model.Slug">
         <div class="card article-card">
             <div class="text-center">
                 <img class="card-img-top img-fluid" src="@Model.ImageUrl" alt="Article image">

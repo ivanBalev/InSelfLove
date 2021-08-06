@@ -23,20 +23,48 @@
             this.videosRepository = videosRepository;
         }
 
-        public async Task<int> CreateAsync(VideoServiceModel videoServiceModel)
+        public async Task<string> CreateAsync(VideoServiceModel videoServiceModel)
         {
             var video = AutoMapperConfig.MapperInstance.Map<Video>(videoServiceModel);
 
             await this.videosRepository.AddAsync(video);
             await this.videosRepository.SaveChangesAsync();
 
-            return video.Id;
+            return video.Title.ToLower().Replace(' ', '-');
         }
 
         public async Task<VideoServiceModel> GetById(int id)
         {
             var video = await this.videosRepository.All()
                .Where(a => a.Id == id)
+               .Include(v => v.User)
+               .Include(v => v.Comments)
+               .To<VideoServiceModel>()
+               .FirstOrDefaultAsync();
+
+            foreach (var comment in video.Comments)
+            {
+                comment.SubComments.Clear();
+            }
+
+            foreach (var comment in video.Comments)
+            {
+                if (comment.ParentCommentId != null)
+                {
+                    var parentComment = video.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+                    parentComment.SubComments.Add(comment);
+                }
+            }
+
+            video.Comments = video.Comments.Where(v => v.ParentCommentId == null).ToList();
+
+            return video;
+        }
+
+        public async Task<VideoServiceModel> GetBySlug(string slug)
+        {
+            var video = await this.videosRepository.All()
+               .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
                .Include(v => v.User)
                .Include(v => v.Comments)
                .To<VideoServiceModel>()

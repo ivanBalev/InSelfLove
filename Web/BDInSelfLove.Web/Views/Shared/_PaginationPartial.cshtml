@@ -18,7 +18,7 @@
                     <li class="page-item">
                         <a class="page-link"
                            asp-controller="@Model.ControllerName"
-                           asp-action="All"
+                           asp-action="Index"
                            asp-route-page="@(this.Model.CurrentPage - 1)">@localizer["Previous"]</a>
                     </li>
                 }
@@ -33,7 +33,7 @@
                         <li class="page-item @active">
                             <a class="page-link"
                                asp-controller="@Model.ControllerName"
-                               asp-action="All"
+                               asp-action="Index"
                                asp-route-page="@i">@i</a>
                         </li>
                     }
@@ -50,7 +50,7 @@
                     <li class="page-item">
                         <a class="page-link"
                            asp-controller="@Model.ControllerName"
-                           asp-action="All"
+                           asp-action="Index"
                            asp-route-page="@(this.Model.CurrentPage + 1)">@localizer["Next"]</a>
                     </li>
                 }

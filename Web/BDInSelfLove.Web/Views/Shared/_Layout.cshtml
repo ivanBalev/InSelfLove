@@ -44,23 +44,23 @@
             <div id="navbarCollapse" class="collapse navbar-collapse">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a asp-area="" asp-controller="Article" asp-action="All" class="nav-link">@localizer["Articles"]</a>
+                        <a asp-area="" asp-controller="Articles" asp-action="Index" class="nav-link">@localizer["Articles"]</a>
                     </li>
                     <li class="nav-item">
-                        <a asp-area="" asp-controller="Video" asp-action="All" class="nav-link">@localizer["Videos"]</a>
+                        <a asp-area="" asp-controller="Videos" asp-action="Index" class="nav-link">@localizer["Videos"]</a>
                     </li>
                     <li class="nav-item">
                         <a asp-area="" asp-controller="Home" asp-action="About" class="nav-link">@localizer["About"]</a>
                     </li>
                     <li class="nav-item mr-2">
-                        <a asp-area="" asp-controller="Home" asp-action="Appointment" class="nav-link">@localizer["Appointment"]</a>
+                        <a asp-area="" asp-controller="Home" asp-action="Appointments" class="nav-link">@localizer["Appointment"]</a>
                     </li>
 
                 </ul>
                 <partial name="_LoginPartial" />
                 <ul class="navbar-nav contact">
                     <li class="nav-item">
-                        <a asp-area="" asp-controller="Home" asp-action="Contact" class="nav-link">@localizer["Contact"]</a>
+                        <a asp-area="" asp-controller="Home" asp-action="Contacts" class="nav-link">@localizer["Contact"]</a>
                     </li>
                 </ul>
             </div>

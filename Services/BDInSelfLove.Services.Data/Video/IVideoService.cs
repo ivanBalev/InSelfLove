@@ -12,13 +12,15 @@
 
         Task<ICollection<VideoPreviewServiceModel>> GetAllPagination(int take, int skip = 0);
 
-        Task<int> CreateAsync(VideoServiceModel videoServiceModel);
+        Task<string> CreateAsync(VideoServiceModel videoServiceModel);
 
         Task<bool> Delete(int id);
 
         IQueryable<VideoPreviewServiceModel> GetSideVideos(int videosCount, int videoId = 0);
 
         Task<VideoServiceModel> GetById(int id);
+
+        Task<VideoServiceModel> GetBySlug(string slug);
 
     }
 }

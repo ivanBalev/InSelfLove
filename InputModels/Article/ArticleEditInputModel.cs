@@ -12,6 +12,8 @@ namespace BDInSelfLove.Web.InputModels.Article
         [Required]
         public string Title { get; set; }
 
+        public string Slug => this.Title.ToLower().Replace(' ', '-');
+
         [Required]
         public string Content { get; set; }
 

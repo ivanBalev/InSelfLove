@@ -2,7 +2,7 @@
 
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-<form class="mb-0 comment-box" asp-controller="Comment" asp-action="Create">
+<form class="mb-0 comment-box" asp-controller="Comments" asp-action="Create">
     <input type="hidden" asp-for="@Model.ArticleId" value="@Model.ArticleId" />
     <input type="hidden" asp-for="@Model.VideoId" value="@Model.VideoId" />
     <input type="hidden" asp-for="@Model.ParentCommentId" value="@Model.ParentCommentId" />

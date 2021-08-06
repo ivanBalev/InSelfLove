@@ -17,7 +17,7 @@
     using Microsoft.AspNetCore.Mvc;
     using TimeZoneConverter;
 
-    public class VideoController : BaseController
+    public class VideosController : BaseController
     {
         private const int VideosPerPage = 6;
         private const string VideoCreateError = "Error creating video. Please try again.";
@@ -25,17 +25,17 @@
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IVideoService videoService;
 
-        public VideoController(IVideoService videoService, UserManager<ApplicationUser> userManager)
+        public VideosController(IVideoService videoService, UserManager<ApplicationUser> userManager)
         {
             this.videoService = videoService;
             this.userManager = userManager;
         }
 
-        public async Task<IActionResult> Single(int id)
+        public async Task<IActionResult> Single(string slug)
         {
             VideoViewModel viewModel = AutoMapperConfig.MapperInstance
                 .Map<VideoViewModel>(await this.videoService
-                .GetById(id));
+                .GetBySlug(slug));
 
             if (this.User.Identity.IsAuthenticated)
             {
@@ -51,7 +51,7 @@
             return this.View(viewModel);
         }
 
-        public async Task<IActionResult> All(int page = 1)
+        public async Task<IActionResult> Index(int page = 1)
         {
             var serviceModel = await this.videoService
                 .GetAllPagination(VideosPerPage, (page - 1) * VideosPerPage);
@@ -81,6 +81,7 @@
 
         [HttpPost]
         [YoutubeLinkActionFilter]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(CreateVideoInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
@@ -93,11 +94,12 @@
             var serviceModel = AutoMapperConfig.MapperInstance.Map<VideoServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
 
-            await this.videoService.CreateAsync(serviceModel);
+            string slug = await this.videoService.CreateAsync(serviceModel);
 
-            return this.RedirectToAction("All", "Video", new { area = string.Empty });
+            return this.RedirectToAction("Single", new { slug });
         }
 
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)
         {
             await this.videoService.Delete(id);

@@ -61,7 +61,7 @@
             var viewModel = new HomeViewModel();
             if (videoisLatest)
             {
-                viewModel.FeaturedVideo = AutoMapperConfig.MapperInstance.Map<VideoViewModel>(lastVideo);
+                viewModel.FeaturedVideo = AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(lastVideo);
                 viewModel.LastArticles = lastArticles.Take(NonFeaturedArticlesCount);
             }
             else
@@ -73,7 +73,7 @@
             return this.View(viewModel);
         }
 
-        public IActionResult Contact()
+        public IActionResult Contacts()
         {
             return this.View();
         }
@@ -84,7 +84,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Contact(ContactFormInputModel inputModel)
+        public async Task<IActionResult> Contacts(ContactFormInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
             {
@@ -108,7 +108,7 @@
         }
 
         [Authorize]
-        public async Task<IActionResult> Appointment()
+        public async Task<IActionResult> Appointments()
         {
             // Query value received from client only if timezone cookie is nonexistent or doesn't match current timezone
             string timezoneIANAQueryValue = this.HttpContext.Request.Query[TimezoneIANACookieName].ToString();

@@ -19,7 +19,7 @@
     using Microsoft.EntityFrameworkCore;
     using TimeZoneConverter;
 
-    public class ArticleController : BaseController
+    public class ArticlesController : BaseController
     {
         private const int ArticlesPerPage = 6;
         private const string ArticleCreateError = "Error while creating article. Please try again.";
@@ -29,7 +29,7 @@
         private readonly IArticleService articleService;
         private readonly ICloudinaryService cloudinaryService;
 
-        public ArticleController(
+        public ArticlesController(
             UserManager<ApplicationUser> userManager,
             IArticleService articleService,
             ICloudinaryService cloudinaryService)
@@ -39,7 +39,7 @@
             this.cloudinaryService = cloudinaryService;
         }
 
-        public async Task<IActionResult> All(int page = 1)
+        public async Task<IActionResult> Index(int page = 1)
         {
             var serviceModel = this.articleService
                 .GetAllPagination(ArticlesPerPage, (page - 1) * ArticlesPerPage);
@@ -61,11 +61,11 @@
             return this.View(viewModel);
         }
 
-        public async Task<IActionResult> Single(int id)
+        public async Task<IActionResult> Single(string slug)
         {
             ArticleViewModel viewModel = AutoMapperConfig.MapperInstance
                 .Map<ArticleViewModel>(await this.articleService
-                .GetById(id));
+                .GetBySlug(slug));
 
             if (this.User.Identity.IsAuthenticated)
             {
@@ -77,7 +77,6 @@
                     comment.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(comment.CreatedOn, userTimezone);
                 }
             }
-
 
             return this.View(viewModel);
         }
@@ -110,8 +109,8 @@
                 serviceModel.ImageUrl = imageUrl;
             }
 
-            var postId = await this.articleService.CreateAsync(serviceModel);
-            return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = postId });
+            string slug = await this.articleService.CreateAsync(serviceModel);
+            return this.RedirectToAction("Single", new { slug });
         }
 
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
@@ -143,9 +142,9 @@
                 serviceModel.ImageUrl = imageUrl;
             }
 
-            await this.articleService.Edit(serviceModel);
+            string slug = await this.articleService.Edit(serviceModel);
 
-            return this.RedirectToAction("Single", "Article", new { area = string.Empty, id = inputModel.Id });
+            return this.RedirectToAction("Single", new { slug });
         }
 
         [HttpPost]

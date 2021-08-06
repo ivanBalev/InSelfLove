@@ -1,10 +1,10 @@
-﻿@model BDInSelfLove.Web.InputModels.Article.ArticleEditInputModel
+﻿@model BDInSelfLove.Web.InputModels.Article.ArticleCreateInputModel
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-<partial name="_SlimShowcasePartial" model="@localizer["Edit Article"].Value" />
+<partial name="_SlimShowcasePartial" model="@localizer["Create Article"].Value" />
 
-<div class="container mb-5 mt-3">
-    <form method="post" asp-controller="Article" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data">
+<div class="container pb-5 mt-3">
+    <form method="post" asp-action="Create" enctype="multipart/form-data">
         <div class="form-group">
             <label>@localizer["Title"]</label>
             <input asp-for="@Model.Title" class="form-control" />
@@ -17,7 +17,7 @@
         </div>
         <div class="form-group">
             <label class="btn white-btn">
-                @localizer["Or upload an image"]
+                @localizer["or upload an image"]
                 <input type="file" asp-for="@Model.Image" hidden onchange="$('#upload-file-info').html(this.files[0].name); $('#ImageUrl').val('')">
             </label>
             <span class='label label-info' id="upload-file-info"></span>
@@ -28,7 +28,7 @@
             <textarea asp-for="@Model.Content" class="form-control" rows="20" id="mytextarea"></textarea>
             <span asp-validation-for="@Model.Content" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn green-btn">@localizer["Edit"]</button>
+        <button type="submit" class="btn green-btn">@localizer["Create"]</button>
     </form>
 </div>
 

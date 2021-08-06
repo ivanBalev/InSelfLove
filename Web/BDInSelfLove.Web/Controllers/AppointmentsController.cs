@@ -22,7 +22,7 @@
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class AppointmentController : ControllerBase
+    public class AppointmentsController : ControllerBase
     {
         private const string AppointmentEmailSubject = "Appointment";
         private const string AppointmentCancellationIntro = "I'm deeply sorry but I'm going to have to cancel the appointment.";
@@ -34,7 +34,7 @@
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEmailSender emailSender;
 
-        public AppointmentController(
+        public AppointmentsController(
             IAppointmentService appointmentService,
             UserManager<ApplicationUser> userManager,
             IEmailSender emailSender)

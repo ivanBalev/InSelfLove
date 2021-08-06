@@ -22,14 +22,14 @@
             this.articleRepository = articleRepository;
         }
 
-        public async Task<int> CreateAsync(ArticleServiceModel articleServiceModel)
+        public async Task<string> CreateAsync(ArticleServiceModel articleServiceModel)
         {
             var article = AutoMapperConfig.MapperInstance.Map<Article>(articleServiceModel);
 
             await this.articleRepository.AddAsync(article);
             await this.articleRepository.SaveChangesAsync();
 
-            return article.Id;
+            return article.Title.ToLower().Replace(' ', '-');
         }
 
         public async Task<bool> Delete(int id)
@@ -47,7 +47,7 @@
             return result > 0;
         }
 
-        public async Task<int> Edit(ArticleServiceModel articleServiceModel)
+        public async Task<string> Edit(ArticleServiceModel articleServiceModel)
         {
             var dbArticle = await this.articleRepository.All().SingleOrDefaultAsync(a => a.Id == articleServiceModel.Id);
 
@@ -63,7 +63,7 @@
             this.articleRepository.Update(dbArticle);
             int result = await this.articleRepository.SaveChangesAsync();
 
-            return result;
+            return dbArticle.Title.ToLower().Replace(' ', '-');
         }
 
         public IQueryable<ArticleServiceModel> GetAll(int? latestArticlesCount = null)
@@ -94,6 +94,34 @@
         {
             var article = await this.articleRepository.All()
                .Where(a => a.Id == id)
+               .Include(a => a.User)
+               .Include(a => a.Comments)
+               .To<ArticleServiceModel>()
+               .FirstOrDefaultAsync();
+
+            foreach (var comment in article.Comments)
+            {
+                comment.SubComments.Clear();
+            }
+
+            foreach (var comment in article.Comments)
+            {
+                if (comment.ParentCommentId != null)
+                {
+                    var parentComment = article.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+                    parentComment.SubComments.Add(comment);
+                }
+            }
+
+            article.Comments = article.Comments.Where(c => c.ParentCommentId == null).ToList();
+
+            return article;
+        }
+
+        public async Task<ArticleServiceModel> GetBySlug(string slug)
+        {
+            var article = await this.articleRepository.All()
+               .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
                .Include(a => a.User)
                .Include(a => a.Comments)
                .To<ArticleServiceModel>()

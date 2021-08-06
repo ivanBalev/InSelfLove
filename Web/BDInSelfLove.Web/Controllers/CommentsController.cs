@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 
 namespace BDInSelfLove.Web.Controllers
 {
-    public class CommentController : BaseController
+    public class CommentsController : BaseController
     {
         private readonly ICommentService commentService;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public CommentController(ICommentService commentService, UserManager<ApplicationUser> userManager)
+        public CommentsController(ICommentService commentService, UserManager<ApplicationUser> userManager)
         {
             this.commentService = commentService;
             this.userManager = userManager;
@@ -30,7 +30,7 @@ namespace BDInSelfLove.Web.Controllers
         public async Task<IActionResult> Create(CommentInputModel inputModel)
         {
             var isParentArticle = inputModel.ArticleId != null;
-            var controllerName = isParentArticle ? "Article" : "Video";
+            var controllerName = isParentArticle ? "Articles" : "Videos";
             var parentEntityId = isParentArticle ? inputModel.ArticleId : inputModel.VideoId;
 
             if (!this.ModelState.IsValid)

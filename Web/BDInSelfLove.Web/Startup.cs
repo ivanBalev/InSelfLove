@@ -204,6 +204,8 @@
 
             app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
+            app.UseResponseCompression();
+
             app.UseStaticFiles(new StaticFileOptions()
             {
                 OnPrepareResponse =
@@ -220,8 +222,6 @@
                 },
             });
 
-            // TODO: responsecompression is not working
-            app.UseResponseCompression();
             app.UseResponseCaching();
             app.UseCookiePolicy();
 
@@ -234,9 +234,9 @@
             app.UseEndpoints(
                 endpoints =>
                     {
+                        endpoints.MapControllerRoute("slugArticlesRoute", "Articles/{slug}", new { controller = "Articles", action = "Single" });
+                        endpoints.MapControllerRoute("slugVIdeosRoute", "Videos/{slug}", new { controller = "Videos", action = "Single" });
                         endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-                        // Below is used for SEO (not only show Articles/Single/{id}, but the article's name after the id /{id}/{articleName})
-                        //endpoints.MapControllerRoute("forumCategory", "f/{name:minlength(3)}", new { controller = "Categories", action = "ByName" });
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapRazorPages();
                     });

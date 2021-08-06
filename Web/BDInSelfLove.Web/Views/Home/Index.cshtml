@@ -8,19 +8,19 @@
     // Determine featured item content
     string featuredItemTitle = "";
     string featuredItemController = "";
-    int featuredItemId = 0;
+    string featuredItemSlug = "";
 
     if (Model.FeaturedArticle == null)
     {
         featuredItemTitle = Model.FeaturedVideo.Title;
-        featuredItemController = "Video";
-        featuredItemId = Model.FeaturedVideo.Id;
+        featuredItemController = "Videos";
+        featuredItemSlug = Model.FeaturedVideo.Slug;
     }
     else
     {
         featuredItemTitle = Model.FeaturedArticle.Title;
-        featuredItemController = "Article";
-        featuredItemId = Model.FeaturedArticle.Id;
+        featuredItemController = "Articles";
+        featuredItemSlug = Model.FeaturedArticle.Slug;
     }
 }
 
@@ -34,7 +34,7 @@
                         <h2>
                             @featuredItemTitle
                         </h2>
-                        <a asp-controller="@featuredItemController" asp-action="Single" asp-route-id="@featuredItemId" class="btn btn-outline-light btn-md text-white mt-2 see-more-feature-btn">
+                        <a asp-controller="@featuredItemController" asp-action="Single" asp-route-slug="@featuredItemSlug" class="btn btn-outline-light btn-md text-white mt-2 see-more-feature-btn">
                             @localizer["SEE MORE"]
                         </a>
                     </div>
@@ -59,7 +59,7 @@
             }
         </div>
         <div class="text-center">
-            <a asp-controller="Article" asp-action="All" class="btn mt-2 white-btn">
+            <a asp-controller="Articles" asp-action="Index" class="btn mt-2 white-btn">
                 @localizer["SEE MORE"]
             </a>
         </div>
@@ -90,7 +90,7 @@
             </div>
         </div>
         <div class="text-center">
-            <a asp-controller="Video" asp-action="All" class="btn my-4 white-btn">
+            <a asp-controller="Videos" asp-action="Index" class="btn my-4 white-btn">
                 @localizer["SEE MORE"]
             </a>
         </div>

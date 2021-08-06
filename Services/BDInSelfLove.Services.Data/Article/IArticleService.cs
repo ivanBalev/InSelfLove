@@ -12,11 +12,13 @@
 
         IQueryable<ArticlePreviewServiceModel> GetAllPagination(int take, int skip = 0);
 
-        Task<int> CreateAsync(ArticleServiceModel articleServiceModel);
+        Task<string> CreateAsync(ArticleServiceModel articleServiceModel);
 
         Task<ArticleServiceModel> GetById(int id);
 
-        Task<int> Edit(ArticleServiceModel productServiceModel);
+        Task<ArticleServiceModel> GetBySlug(string slug);
+
+        Task<string> Edit(ArticleServiceModel productServiceModel);
 
         Task<bool> Delete(int id);
 

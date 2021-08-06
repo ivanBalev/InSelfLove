@@ -9,6 +9,6 @@
 
         public ArticlePreviewViewModel FeaturedArticle { get; set; }
 
-        public VideoViewModel FeaturedVideo { get; set; }
+        public VideoPreviewViewModel FeaturedVideo { get; set; }
     }
 }

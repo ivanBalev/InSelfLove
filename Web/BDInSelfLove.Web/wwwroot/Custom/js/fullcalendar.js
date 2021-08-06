@@ -40,7 +40,7 @@
     function fetchEventAndRenderCalendar() {
         $.ajax({
             type: "GET",
-            url: "/api/appointment/GetAll",
+            url: "/api/appointments/GetAll",
             success: function (dbEvents) {
                 // Avoid duplicate appointments when doing ajax calls
                 appointments = [];
@@ -120,7 +120,7 @@
                 date: currentSelectedDate,
                 timeSlots: availableDailySlots,
             },
-            url: '/api/appointment/Create',
+            url: '/api/appointments/Create',
             headers: { 'X-CSRF-TOKEN': token },
             success: function () {
                 $('#dailyAvailabilityModal').modal('hide');
@@ -141,7 +141,7 @@
 
         $.ajax({
             type: "POST",
-            url: '/api/appointment/SetWorkingHours',
+            url: '/api/appointments/SetWorkingHours',
             data: {
                 startHour,
                 endHour,
@@ -169,7 +169,7 @@
     $('#cancelAppointmentConfirm .confirmCancelAppointment').click(function () {
         $.ajax({
             type: "POST",
-            url: '/api/appointment/Cancel',
+            url: '/api/appointments/Cancel',
             data: {
                 id: selectedAppointment.id
             },
@@ -199,7 +199,7 @@
 
         $.ajax({
             type: "POST",
-            url: '/api/appointment/Book',
+            url: '/api/appointments/Book',
             data: data,
             headers: { 'X-CSRF-TOKEN': token },
             success: function (data) {
@@ -220,7 +220,7 @@
 
         $.ajax({
             type: "POST",
-            url: '/api/appointment/Approve',
+            url: '/api/appointments/Approve',
             data: {
                 id: selectedAppointment.id,
             },
