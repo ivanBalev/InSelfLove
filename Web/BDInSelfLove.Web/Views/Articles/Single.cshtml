@@ -30,18 +30,18 @@
                         <!-- Edit and Delete buttons if user is admin -->
                         @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
                         {
-                            <div class="row mb-4">
-                                <div class="col text-right">
-                                    <a asp-action="Edit" asp-route-id="@Model.Id">
-                                        <img class="edit-btn" src="~/Custom/icons/edit-solid.svg" alt="edit icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
-                                    </a>
-                                </div>
-                                <div class="col">
-                                    <div>
-                                        <img class="delete-btn deleteArticle" src="~/Custom/icons/trash-solid.svg" alt="delete icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license"/>
-                                    </div>
+                        <div class="row mb-4">
+                            <div class="col text-right">
+                                <a asp-action="Edit" asp-route-id="@Model.Id">
+                                    <img class="edit-btn" src="~/Custom/icons/edit-solid.svg" alt="edit icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                                </a>
+                            </div>
+                            <div class="col">
+                                <div>
+                                    <img class="delete-btn deleteArticle" src="~/Custom/icons/trash-solid.svg" alt="delete icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
                                 </div>
                             </div>
+                        </div>
                         }
                         <!-- Content -->
                         <div class="row justify-content-around mt-2 ">
@@ -72,5 +72,6 @@
     <script src="~/Custom/js/editComment.js"></script>
     <script src="~/Custom/js/deleteComment.js"></script>
     <script src="~/Custom/js/deleteArticle.js"></script>
+    <script src="~/Custom/js/addComment.js"></script>
     <partial name="_ValidationScriptsPartial" />
 }

@@ -11,7 +11,7 @@
     const int mainCommentsPerPage = 3;
 }
 
-<div id="comments" class="mb-4">
+<div id="comments-section" class="mb-4">
     <!-- Add new comment -->
     @if (!this.SignInManager.IsSignedIn(this.User))
     {
@@ -40,7 +40,7 @@
     @if (Model.Comments.Count > 0)
     {
         <h2 class="mb-2 mt-5 subtitle">@localizer["COMMENTS"]</h2>
-        <div>
+        <div id="all-comments">
             @foreach (var comment in Model.Comments)
             {
                 this.ViewData["width"] = "64";

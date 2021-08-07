@@ -4,6 +4,7 @@ using BDInSelfLove.Services.Data.CommentService;
 using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Comment;
 using BDInSelfLove.Web.InputModels.Comment;
+using BDInSelfLove.Web.ViewModels.Comment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -26,26 +27,25 @@ namespace BDInSelfLove.Web.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("api/CreateComment")]
         // TODO: Can't this also be an API controller so page doesn't reload when comment is created?
-        public async Task<IActionResult> Create(CommentInputModel inputModel)
+        public async Task<IActionResult> Create([FromBody] CommentInputModel inputModel)
         {
-            var isParentArticle = inputModel.ArticleId != null;
-            var controllerName = isParentArticle ? "Articles" : "Videos";
-            var parentEntityId = isParentArticle ? inputModel.ArticleId : inputModel.VideoId;
-
             if (!this.ModelState.IsValid)
             {
-                return this.RedirectToAction("Single", controllerName, new { id = parentEntityId });
+                return this.BadRequest();
             }
 
             var user = await this.userManager.GetUserAsync(this.User);
             var serviceModel = AutoMapperConfig.MapperInstance.Map<CommentServiceModel>(inputModel);
             serviceModel.UserId = user.Id;
 
-            await this.commentService.Create(serviceModel);
+            int commentId = await this.commentService.Create(serviceModel);
+            CommentViewModel commentViewModel = AutoMapperConfig.MapperInstance.Map<CommentViewModel>
+                (await this.commentService.GetById(commentId).FirstOrDefaultAsync());
 
             // TODO: Send email to admin when new comment added
-            return this.RedirectToAction("Single", controllerName, new { id = parentEntityId });
+            return this.View("_CommentSinglePartial", commentViewModel);
         }
 
         [HttpPost]
