@@ -8,8 +8,8 @@
         let hrefArray = e.target.getAttribute('href').split('/');
 
         let searchTerm = document.querySelector('#search-term').value;
-        let page = hrefArray[2].split('=')[1];
-        let controller = hrefArray[1];
+        let page = hrefArray[1].split('=')[1];
+        let controller = hrefArray[1].split('?')[0];
 
         $.ajax({
             type: "GET",

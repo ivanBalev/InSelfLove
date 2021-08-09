@@ -5,19 +5,7 @@ if (addCommentElement != undefined) {
 }
 // Add reply buttons funcitonality if user is logged in
 if (addCommentElement != undefined) {
-    document.querySelectorAll('.comment .reply-button').forEach(btn => {
-        // Hide/show text box
-        btn.addEventListener('click', e => {
-            //  Hide comment boxes and display all reply buttons
-            document.querySelectorAll('.comment-box').forEach((cb, i) => i > 0 ? cb.style.display = "none" : null);
-            document.querySelectorAll('.comment-buttons').forEach(cb => cb.style.display = "flex");
-            // Hide reply and edit buttons
-            e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
-            // Display comment form
-            btn.parentElement.parentElement.parentElement.parentElement.parentElement
-                .querySelector('.comment-box').style.display = 'block';
-        })
-    })
+    document.querySelectorAll('.comment .reply-button').forEach(btn => addReplyButtonsFunctionality(btn));
     // Hide reply buttons if user is not logged in
 } else {
     document.querySelectorAll('.comment .reply-button').forEach(btn => {
@@ -58,4 +46,20 @@ document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListen
     // TODO: Error Why??
     e.target.parentElement.style.display = 'none'
 }));
+
+function addReplyButtonsFunctionality(btn) {
+    // Hide/show text box
+    btn.addEventListener('click', e => {
+        //  Hide comment boxes and display all reply buttons
+        document.querySelectorAll('.comment-box').forEach((cb, i) => i > 0 ? cb.style.display = "none" : null);
+        document.querySelectorAll('.comment-buttons').forEach(cb => cb.style.display = "flex");
+        // Hide reply and edit buttons
+        e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
+        // Display comment form
+        btn.parentElement.parentElement.parentElement.parentElement.parentElement
+            .querySelector('.comment-box').style.display = 'block';
+    })
+}
+
+export { addReplyButtonsFunctionality };
 

@@ -9,11 +9,11 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-@* Remove layout when using search (REST API Ajax Request) *@
+@* Remove layout when using search (REST API Request) *@
 @if(this.ViewContext.RouteData.Values["controller"].ToString() == "Comments")
 {
     this.Layout = null;
-}
+} 
 
 
 <div id="@Model.Id" class="comment">
@@ -93,7 +93,7 @@
                     this.ViewData["width"] = "40";
                     this.ViewData["height"] = "40";
 
- <!-- Make profile pic even smaller when we have 2nd level subcomment -->
+                <!-- Make profile pic even smaller when we have 2nd level subcomment -->
                 @if (Model.ParentCommentId != null)
                     {
                         this.ViewData["width"] = "30";
@@ -103,7 +103,7 @@
                 <div class="align-self-end @(this.ViewData["width"].ToString() == "40" ? "main-subcomment" : null)" style="width: 90%">
                     @foreach (var item in Model.SubComments)
                         {
-                    <partial name="_CommentSinglePartial" model="@item" />
+                            <partial name="_CommentSinglePartial" model="@item" />
                         }
 
                     <!-- Append 'Hide Subcomments' button at the end of main comment element -->

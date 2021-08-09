@@ -2,6 +2,12 @@
 
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
+@* Remove layout when using search (REST API Ajax Request) *@
+@if(this.ViewContext.RouteData.Values["controller"].ToString() == "Comments")
+{
+    this.Layout = null;
+}
+
 <form class="mb-0 comment-box" asp-controller="Comments" asp-action="Create">
     <input type="hidden" asp-for="@Model.ArticleId" value="@Model.ArticleId" />
     <input type="hidden" asp-for="@Model.VideoId" value="@Model.VideoId" />
