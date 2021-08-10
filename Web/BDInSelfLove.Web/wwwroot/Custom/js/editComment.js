@@ -1,11 +1,19 @@
-﻿document.querySelectorAll('.editCommentBtn').forEach(b => b.addEventListener('click', (e) => {
-    // Show edit comment box and hide reply and edit comment buttons and comment content box
-    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
-    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
-    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
-}));
+﻿document.querySelectorAll('.editCommentBtn').forEach(b =>
+    b.addEventListener('click', e =>
+        editCommentDisplay(e.target)));
 
-$('.save-edit-btn').click(function (e) {
+document.querySelectorAll('.save-edit-btn').forEach(b =>
+    b.addEventListener('click', e =>
+        saveCommentEdit(e)));
+
+function editCommentDisplay(btn) {
+    // Show edit comment box and hide reply and edit comment buttons and comment content box
+    btn.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'block';
+    btn.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
+    btn.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'none';
+}
+
+function saveCommentEdit(e) {
     e.preventDefault();
     // Gather data
     let token = e.target.parentElement.parentElement.parentElement.parentElement
@@ -33,4 +41,6 @@ $('.save-edit-btn').click(function (e) {
             console.log('error')
         }
     })
-})
+}
+
+export { editCommentDisplay, saveCommentEdit }

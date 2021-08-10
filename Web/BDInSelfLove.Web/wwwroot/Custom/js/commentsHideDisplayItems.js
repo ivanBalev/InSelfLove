@@ -5,7 +5,7 @@ if (addCommentElement != undefined) {
 }
 // Add reply buttons funcitonality if user is logged in
 if (addCommentElement != undefined) {
-    document.querySelectorAll('.comment .reply-button').forEach(btn => addReplyButtonsFunctionality(btn));
+    document.querySelectorAll('.comment .reply-button').forEach(btn => addReplyButtonFunctionality(btn));
     // Hide reply buttons if user is not logged in
 } else {
     document.querySelectorAll('.comment .reply-button').forEach(btn => {
@@ -47,7 +47,7 @@ document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListen
     e.target.parentElement.style.display = 'none'
 }));
 
-function addReplyButtonsFunctionality(btn) {
+function addReplyButtonFunctionality(btn) {
     // Hide/show text box
     btn.addEventListener('click', e => {
         //  Hide comment boxes and display all reply buttons
@@ -61,5 +61,5 @@ function addReplyButtonsFunctionality(btn) {
     })
 }
 
-export { addReplyButtonsFunctionality };
+export { addReplyButtonFunctionality };
 

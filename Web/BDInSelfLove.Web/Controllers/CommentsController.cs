@@ -28,7 +28,6 @@ namespace BDInSelfLove.Web.Controllers
         [HttpPost]
         [Authorize]
         [Route("api/CreateComment")]
-        // TODO: Can't this also be an API controller so page doesn't reload when comment is created?
         public async Task<IActionResult> Create([FromBody] CommentInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
