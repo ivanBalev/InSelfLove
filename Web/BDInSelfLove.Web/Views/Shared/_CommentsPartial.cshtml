@@ -43,11 +43,7 @@
         <div id="all-comments">
             @foreach (var comment in Model.Comments)
             {
-                this.ViewData["width"] = "64";
-                this.ViewData["height"] = "64";
-                <div class="main-comment">
-                    <partial name="_CommentSinglePartial" model="@comment" />
-                </div>
+                <partial name="_CommentSinglePartial" model="@comment" />
             }
             <!-- Load more comments button -->
             @if (Model.Comments.Count > mainCommentsPerPage)

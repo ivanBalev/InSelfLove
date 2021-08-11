@@ -5,10 +5,10 @@ if (addCommentElement != undefined) {
 }
 // Add reply buttons funcitonality if user is logged in
 if (addCommentElement != undefined) {
-    document.querySelectorAll('.comment .reply-button').forEach(btn => addReplyButtonFunctionality(btn));
+    document.querySelectorAll('.reply-button').forEach(btn => showAddCommentBox(btn));
     // Hide reply buttons if user is not logged in
 } else {
-    document.querySelectorAll('.comment .reply-button').forEach(btn => {
+    document.querySelectorAll('.reply-button').forEach(btn => {
         btn.style.display = 'none';
     });
 }
@@ -34,20 +34,35 @@ document.querySelector('#load-comments-btn')?.addEventListener('click', e => {
         document.querySelector('#load-comments-btn').style.display = 'none';
     }
 })
-// Initial hide of subcomments
-document.querySelectorAll('.main-subcomment').forEach(sc => sc.style.display = 'none');
+
 // Show subcomments
-document.querySelectorAll('.btn-subcomments').forEach(btn => btn.addEventListener('click', e => {
-    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
-        .querySelector('.main-subcomment').style.display = 'block';
+document.querySelectorAll('.showSubcomments').forEach(btn => btn.addEventListener('click', e => {
+    // Find all lower-level subcomments and show them
+    Array.from(e.target.closest('.card').children).forEach(c => {
+        let classList = c.classList.value;
+        if (classList.includes('-comment') || classList.includes('hideSubcomments')) {
+            c.style.display = 'block';
+        }
+    });
+    // Hide 'showSubcomments' button
+    e.target.style.display = 'none';
 }))
+
 // Hide subcomments
-document.querySelectorAll('.hide-subcomments').forEach(btn => btn.addEventListener('click', e => {
-    // TODO: Error Why??
-    e.target.parentElement.style.display = 'none'
+document.querySelectorAll('.hideSubcomments').forEach(btn => btn.addEventListener('click', e => {
+    // Find all lower-level subcomments and hide them
+    Array.from(e.target.closest('.card').children).forEach(c => {
+        let classList = c.classList.value;
+        if (classList.includes('-comment') || classList.includes('hideSubcomments')) {
+            c.style.display = 'none';
+        } else if (classList.includes('card-body')) {
+            // Show 'showSubcomments' button
+            c.querySelector('.showSubcomments').style.display = 'block';
+        }
+    });
 }));
 
-function addReplyButtonFunctionality(btn) {
+function showAddCommentBox(btn) {
     // Hide/show text box
     btn.addEventListener('click', e => {
         //  Hide comment boxes and display all reply buttons
@@ -56,10 +71,9 @@ function addReplyButtonFunctionality(btn) {
         // Hide reply and edit buttons
         e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'none';
         // Display comment form
-        btn.parentElement.parentElement.parentElement.parentElement.parentElement
-            .querySelector('.comment-box').style.display = 'block';
+        btn.closest('.card').querySelector('.comment-box').style.display = 'block';
     })
 }
 
-export { addReplyButtonFunctionality };
+export { showAddCommentBox };
 

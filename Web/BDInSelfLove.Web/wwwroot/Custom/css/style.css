@@ -80,7 +80,7 @@
         margin-left: 0px !important;
     }
 
-    
+
     .navbar .contact {
         margin-left: 3vmax !important;
     }
@@ -93,13 +93,13 @@
         width: 104px !important;
     }
 
-    .navbar .contact .nav-link {
-        padding-left: 8px !important;
-        padding-right: 8px !important;
-        background-color: rgb(146,171,149);
-        color: white;
-        border-radius: 5px;
-    }
+        .navbar .contact .nav-link {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+            background-color: rgb(146,171,149);
+            color: white;
+            border-radius: 5px;
+        }
 }
 
 @font-face {
@@ -119,6 +119,7 @@ html, body {
     font-weight: 900;
     font-size: 32px;
 }
+
 #single-article span {
     font-size: 15px;
 }
@@ -144,16 +145,16 @@ html, body {
     margin-left: 1vw;
 }
 
-.navbar-brand img {
-    width: 20px;
-    height: 20px;
-}
+    .navbar-brand img {
+        width: 20px;
+        height: 20px;
+    }
 
 .navbar h3 {
     font-size: 1.25rem;
 }
 
-.navbar .container { 
+.navbar .container {
     margin-left: 2.5vmax;
     margin-right: 2.5vmax;
 }
@@ -174,9 +175,9 @@ html, body {
     border-radius: 5px;
 }
 
-.navbar .contact .nav-link:hover {
-    color: black;
-}
+    .navbar .contact .nav-link:hover {
+        color: black;
+    }
 
 .nav-item.dropdown {
     margin-bottom: 7px;
@@ -196,12 +197,12 @@ html, body {
     background-position: center center;
 }
 
-#showcase .showcase-wrapper {
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 15vh;
-}
+    #showcase .showcase-wrapper {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 15vh;
+    }
 
 .showcase-wrapper h1 {
     font-size: 2.5vmin;
@@ -231,15 +232,15 @@ html, body {
     background-position: center center;
 }
 
-#slimShowcase .slimShowcase-wrapper {
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-}
+    #slimShowcase .slimShowcase-wrapper {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-#slimShowcase h1 {
-    color: white;
-}
+    #slimShowcase h1 {
+        color: white;
+    }
 
 .dark-overlay {
     background: rgba(45,70,67, 0.75);
@@ -282,11 +283,16 @@ html, body {
     height: 25px;
 }
 
-.comment-box {
+.edit-comment, .comment-box {
     display: none;
 }
 
-.edit-comment {
+.firstSub-comment, .secondSub-comment {
+    display: none;
+    width: 90%;
+}
+
+.hide-subcomments-btn {
     display: none;
 }
 
@@ -368,9 +374,9 @@ html, body {
     background-color: transparent;
 }
 
-#manageNav li a.active {
-    background-color: #e9ecef;
-}
+    #manageNav li a.active {
+        background-color: #e9ecef;
+    }
 
 .white-btn {
     color: black;
@@ -378,9 +384,9 @@ html, body {
     white-space: nowrap;
 }
 
-.white-btn:hover {
-    background-color: rgb(146,171,149);
-}
+    .white-btn:hover {
+        background-color: rgb(146,171,149);
+    }
 
 .btn-pink {
     color: #f083c1;
@@ -434,9 +440,9 @@ a .card img {
     background-image: none;
 }
 
-.fc-left .fc-prev-button:hover, .fc-right .fc-next-button:hover {
-    color: black;
-}
+    .fc-left .fc-prev-button:hover, .fc-right .fc-next-button:hover {
+        color: black;
+    }
 
 .calendar-container {
     background-color: white !important;
@@ -582,25 +588,25 @@ a .card img {
     background-color: rgb(248,249,250);
 }
 
-.video-preview h1 {
-    font-weight: 600;
-    font-size: 20px;
-}
+    .video-preview h1 {
+        font-weight: 600;
+        font-size: 20px;
+    }
 
-.video-preview:hover {
-    opacity: 0.6;
-    cursor: pointer;
-}
+    .video-preview:hover {
+        opacity: 0.6;
+        cursor: pointer;
+    }
 
-.video-preview a {
-    color: inherit;
-    text-decoration: none;
-}
+    .video-preview a {
+        color: inherit;
+        text-decoration: none;
+    }
 
-.video-preview a:hover {
-    text-decoration: none;
-    color: inherit;
-}
+        .video-preview a:hover {
+            text-decoration: none;
+            color: inherit;
+        }
 
 /*FullCalendar*/
 .green-btn {
@@ -609,9 +615,9 @@ a .card img {
     border-radius: 5px;
 }
 
-.green-btn:hover {
+    .green-btn:hover {
         color: black;
-}
+    }
 
 #bookAppointmentModal label {
     font-size: 18px;

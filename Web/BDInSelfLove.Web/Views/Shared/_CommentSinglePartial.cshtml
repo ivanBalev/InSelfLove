@@ -9,14 +9,37 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-@* Remove layout when using search (REST API Request) *@
-@if(this.ViewContext.RouteData.Values["controller"].ToString() == "Comments")
-{
-    this.Layout = null;
-} 
+@{
+    // Remove layout when using REST API Request
+    if (this.ViewContext.RouteData.Values["controller"].ToString() == "Comments")
+    {
+        this.Layout = null;
+    }
 
+    string commentLevel = "";
 
-<div id="@Model.Id" class="comment">
+    if (Model.ParentCommentId == null)
+    {
+        commentLevel = "main";
+        ViewData["width"] = "64";
+        ViewData["height"] = "64";
+    }
+    // Don't enter the 2 cases below if this is an api call
+    else if (Model.ParentCommentId != null && ViewData["width"]?.ToString() == "64")
+    {
+        commentLevel = "firstSub";
+        ViewData["width"] = "40";
+        ViewData["height"] = "40";
+    }
+    else if (ViewData["width"]?.ToString() != null)
+    {
+        commentLevel = "secondSub";
+        ViewData["width"] = "30";
+        ViewData["height"] = "30";
+    }
+}
+
+<div id="@Model.Id" class="@(commentLevel)-comment @(commentLevel == "main" ? null : "align-self-end")">
     <div class="row">
         <div class="col-md-12 mb-0">
             <div class="card border-0">
@@ -39,10 +62,10 @@
                         <div class="col">
                             @if (this.SignInManager.IsSignedIn(this.User))
                             {
-                            <partial name="_CommentAddPartial" model="@(new CommentInputModel {
+                                <partial name="_CommentAddPartial" model="@(new CommentInputModel {
                                                                     ArticleId = Model.ArticleId, VideoId = Model.VideoId, ParentCommentId = Model.Id })" />
 
-                            <partial name="_CommentEditPartial" model="@(new CommentEditInputModel {
+                                <partial name="_CommentEditPartial" model="@(new CommentEditInputModel {
                                                     ArticleId = Model.ArticleId, VideoId = Model.VideoId,  Id = Model.Id, Content = Model.ContentWithNoTags})" />
                             }
                         </div>
@@ -55,65 +78,48 @@
                                         @localizer["Reply"]
                                     </button>
                                 </div>
-                                @if (Model.SubComments.Count > 0 && Model.ParentCommentId == null)
+                                @if (Model.SubComments.Count > 0)
                                 {
-                                <div class="col-sm-6 ml-2 m-0 p-0">
-                                    <button class="btn btn-sm btn-subcomments white-btn">
-                                        @localizer["See Subcomments"]
-                                    </button>
-                                </div>
+                                    <div class="col-sm-6 ml-2 m-0 p-0">
+                                        <button class="showSubcomments btn btn-sm white-btn">
+                                            @localizer["See Subcomments"]
+                                        </button>
+                                    </div>
                                 }
                             </div>
                         </div>
 
                         @if (this.UserManager.GetUserId(this.User) == Model.UserId || this.User.IsInRole(GlobalValues.AdministratorRoleName))
                         {
-                        <div class="col-sm-5">
-                            <div class="row">
-                                <!-- Edit button only for user's own comments -->
-                                @if (this.UserManager.GetUserId(this.User) == Model.UserId)
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <!-- Edit button only for user's own comments -->
+                                    @if (this.UserManager.GetUserId(this.User) == Model.UserId)
                                     {
-                                <div class="col-4 text-right">
-                                    <img src="~/Custom/icons/edit-solid.svg" class="edit-btn editCommentBtn" alt="edit button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
-                                </div>
+                                        <div class="col-4 text-right">
+                                            <img src="~/Custom/icons/edit-solid.svg" class="edit-btn editCommentBtn" alt="edit button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                                        </div>
                                     }
-                                <!-- Delete comment -->
-                                <div class="col-5 text-left">
-                                    <img src="~/Custom/icons/trash-solid.svg" class="delete-btn deleteCommentBtn" alt="delete button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                                    <!-- Delete comment -->
+                                    <div class="col-5 text-left">
+                                        <img src="~/Custom/icons/trash-solid.svg" class="delete-btn deleteCommentBtn" alt="delete button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         }
                     </div>
                 </div>
 
                 @if (@Model.SubComments.Count > 0)
                 {
-                    <!-- This apples to 1st level subcomments due to recursion -->
-                    this.ViewData["width"] = "40";
-                    this.ViewData["height"] = "40";
-
-                <!-- Make profile pic even smaller when we have 2nd level subcomment -->
-                @if (Model.ParentCommentId != null)
+                    @foreach (var item in Model.SubComments)
                     {
-                        this.ViewData["width"] = "30";
-                        this.ViewData["height"] = "30";
+                        <partial name="_CommentSinglePartial" model="@item" />
                     }
 
-                <div class="align-self-end @(this.ViewData["width"].ToString() == "40" ? "main-subcomment" : null)" style="width: 90%">
-                    @foreach (var item in Model.SubComments)
-                        {
-                            <partial name="_CommentSinglePartial" model="@item" />
-                        }
-
-                    <!-- Append 'Hide Subcomments' button at the end of main comment element -->
-                    @if (Model.ParentCommentId == null)
-                        {
-                    <button class="btn white-btn btn-sm hide-subcomments mb-3">
+                    <button class="hideSubcomments hide-subcomments-btn btn white-btn btn-sm mb-3 ml-3 align-self-start">
                         @localizer["Hide subcomments"]
                     </button>
-                        }
-                </div>
                 }
             </div>
         </div>
