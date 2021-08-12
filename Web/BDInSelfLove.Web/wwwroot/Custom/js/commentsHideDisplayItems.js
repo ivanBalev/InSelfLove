@@ -66,6 +66,7 @@ function showAddCommentBox(btn) {
     // Hide/show text box
     btn.addEventListener('click', e => {
         //  Hide comment boxes and display all reply buttons
+        // TODO: why iterate through all, can't we just find the one that's visible instead?
         document.querySelectorAll('.comment-box').forEach((cb, i) => i > 0 ? cb.style.display = "none" : null);
         document.querySelectorAll('.comment-buttons').forEach(cb => cb.style.display = "flex");
         // Hide reply and edit buttons

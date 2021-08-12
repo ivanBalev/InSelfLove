@@ -316,11 +316,6 @@ html, body {
 }
 
 
-#videoGallery .video {
-    padding-bottom: 2%;
-    border-bottom: 1px #f083c1 solid;
-}
-
 #videoGallery .card-header {
     cursor: pointer;
 }
@@ -345,9 +340,8 @@ html, body {
     white-space: nowrap;
 }
 
-#registerPage a {
-    color: #f083c1 !important;
-    text-decoration: none !important;
+#cookieConsent a {
+    color: #2d4643 !important;
 }
 
 .socialMedia a {
@@ -388,10 +382,6 @@ html, body {
         background-color: rgb(146,171,149);
     }
 
-.btn-pink {
-    color: #f083c1;
-    border-color: #f083c1;
-}
 
 a .card img {
     height: 200px;

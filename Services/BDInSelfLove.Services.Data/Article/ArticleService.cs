@@ -95,7 +95,7 @@
             var article = await this.articleRepository.All()
                .Where(a => a.Id == id)
                .Include(a => a.User)
-               .Include(a => a.Comments)
+               .Include(a => a.Comments.OrderByDescending(c => c.CreatedOn))
                .To<ArticleServiceModel>()
                .FirstOrDefaultAsync();
 
@@ -123,7 +123,7 @@
             var article = await this.articleRepository.All()
                .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
                .Include(a => a.User)
-               .Include(a => a.Comments)
+               .Include(a => a.Comments.OrderByDescending(c => c.CreatedOn))
                .To<ArticleServiceModel>()
                .FirstOrDefaultAsync();
 

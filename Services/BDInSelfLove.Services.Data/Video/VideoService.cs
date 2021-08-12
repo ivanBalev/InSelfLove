@@ -38,7 +38,7 @@
             var video = await this.videosRepository.All()
                .Where(a => a.Id == id)
                .Include(v => v.User)
-               .Include(v => v.Comments)
+               .Include(v => v.Comments.OrderByDescending(c => c.CreatedOn))
                .To<VideoServiceModel>()
                .FirstOrDefaultAsync();
 
@@ -66,7 +66,7 @@
             var video = await this.videosRepository.All()
                .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
                .Include(v => v.User)
-               .Include(v => v.Comments)
+               .Include(v => v.Comments.OrderByDescending(c => c.CreatedOn))
                .To<VideoServiceModel>()
                .FirstOrDefaultAsync();
 

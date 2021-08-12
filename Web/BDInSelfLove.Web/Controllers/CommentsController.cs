@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using TimeZoneConverter;
 
 namespace BDInSelfLove.Web.Controllers
 {
@@ -40,8 +42,12 @@ namespace BDInSelfLove.Web.Controllers
             serviceModel.UserId = user.Id;
 
             int commentId = await this.commentService.Create(serviceModel);
-            CommentViewModel commentViewModel = AutoMapperConfig.MapperInstance.Map<CommentViewModel>
-                (await this.commentService.GetById(commentId).FirstOrDefaultAsync());
+            CommentViewModel commentViewModel = AutoMapperConfig.MapperInstance.Map<CommentViewModel>(
+                await this.commentService.GetById(commentId).FirstOrDefaultAsync());
+
+            TimeZoneInfo userTimezone = TZConvert.GetTimeZoneInfo(
+                    (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
+            commentViewModel.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(commentViewModel.CreatedOn, userTimezone);
 
             // TODO: Send email to admin when new comment added
             return this.View("_CommentSinglePartial", commentViewModel);
