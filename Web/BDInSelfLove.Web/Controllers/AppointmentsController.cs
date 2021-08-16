@@ -11,7 +11,6 @@
     using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
-    using BDInSelfLove.Services.Models.Appointment;
     using BDInSelfLove.Web.InputModels.Appointment;
     using BDInSelfLove.Web.ViewModels.Appointment;
     using Microsoft.AspNetCore.Authorization;
@@ -47,26 +46,28 @@
         [HttpPost]
         [Route("Create")]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
-        public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
+        public async Task<IActionResult> Create([FromForm] List<DateTime> timeSlots)
         {
-            // Convert iana to windows timezone & switch input times to utc
+            //Convert iana to windows timezone & switch input times to utc
             TimeZoneInfo windowsTimezone = TZConvert.GetTimeZoneInfo(
                 (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
 
-            var date = DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture);
+            DateTime date = timeSlots[0].Date;
 
-            List<DateTime> appointments = availabilityInput.TimeSlots?.Select(ts =>
-            {
-                // We work only with 00 minutes currently
-                double hours = double.Parse(ts.Split(':')[0]);
-                DateTime currentSlot = date.AddHours(hours);
-                return TimeZoneInfo.ConvertTimeToUtc(currentSlot, windowsTimezone);
-            })
+            List<DateTime> appointments = timeSlots?.Select(ts =>
+            TimeZoneInfo.ConvertTimeToUtc(ts, windowsTimezone))
             .ToList();
 
-            await this.appointmentService.Create(appointments, DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture));
+            await this.appointmentService.Create(appointments, date);
             return this.Ok();
         }
+
+        //private async Task<DateTime> ToUtc()
+        //{
+
+
+        //    return;
+        //}
 
         [HttpGet]
         [Route("GetAll")]

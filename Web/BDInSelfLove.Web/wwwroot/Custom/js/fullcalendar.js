@@ -117,8 +117,7 @@
         $.ajax({
             type: 'POST',
             data: {
-                date: currentSelectedDate,
-                timeSlots: availableDailySlots,
+                timeSlots: availableDailySlots.map(ts => `${currentSelectedDate} ${ts}`),
             },
             url: '/api/appointments/Create',
             headers: { 'X-CSRF-TOKEN': token },

@@ -12,17 +12,21 @@ namespace BDInSelfLove.Web.Infrastructure.ModelBinders
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var date = bindingContext.ValueProvider.GetValue("date").FirstOrDefault();
+            string[] timeSlots = bindingContext.ValueProvider.GetValue("TimeSlots").ToArray();
 
-            if (date == null)
+            if (timeSlots == null)
             {
                 bindingContext.Result = ModelBindingResult.Failed();
             }
             else
             {
-                var formattedDate = string.Join(" ", date.Split(' ').Skip(1).Take(3));
-                var parsedDate = DateTime.ParseExact(formattedDate, "MMM dd yyyy", CultureInfo.InvariantCulture);
-                bindingContext.Result = ModelBindingResult.Success(parsedDate);
+                List<DateTime> parsedDates = new List<DateTime>();
+                foreach (var date in timeSlots)
+                {
+                    parsedDates.Add(DateTime.ParseExact(date, "MM-dd-yyyy H:mm", CultureInfo.InvariantCulture));
+                }
+
+                bindingContext.Result = ModelBindingResult.Success(parsedDates);
             }
 
             return Task.CompletedTask;
