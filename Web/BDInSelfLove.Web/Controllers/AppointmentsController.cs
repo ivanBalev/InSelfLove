@@ -46,28 +46,26 @@
         [HttpPost]
         [Route("Create")]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
-        public async Task<IActionResult> Create([FromForm] List<DateTime> timeSlots)
+        public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
         {
-            //Convert iana to windows timezone & switch input times to utc
+            // Convert iana to windows timezone & switch input times to utc
             TimeZoneInfo windowsTimezone = TZConvert.GetTimeZoneInfo(
                 (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
 
-            DateTime date = timeSlots[0].Date;
+            var date = DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture);
 
-            List<DateTime> appointments = timeSlots?.Select(ts =>
-            TimeZoneInfo.ConvertTimeToUtc(ts, windowsTimezone))
+            List<DateTime> appointments = availabilityInput.TimeSlots?.Select(ts =>
+            {
+                // We work only with 00 minutes currently
+                double hours = double.Parse(ts.Split(':')[0]);
+                DateTime currentSlot = date.AddHours(hours);
+                return TimeZoneInfo.ConvertTimeToUtc(currentSlot, windowsTimezone);
+            })
             .ToList();
 
-            await this.appointmentService.Create(appointments, date);
+            await this.appointmentService.Create(appointments, DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture));
             return this.Ok();
         }
-
-        //private async Task<DateTime> ToUtc()
-        //{
-
-
-        //    return;
-        //}
 
         [HttpGet]
         [Route("GetAll")]
@@ -161,7 +159,6 @@
         {
             var currentUser = await this.userManager.GetUserAsync(this.User);
             var appointmentFromDb = await this.appointmentService.GetById(id);
-            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
 
             // Allow only admin to cancel others' appointments
             if (appointmentFromDb.UserId != currentUser.Id && !this.User.IsInRole(GlobalValues.AdministratorRoleName))
@@ -179,6 +176,7 @@
             // Cancel slot
             await this.appointmentService.Cancel(id);
 
+            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
             var emailText = $"<div>Hello, </div> <div></div> <div>{AppointmentCancellationIntro}</div><div>Thank you.</div>";
 
             // Send email to user if admin cancels or vice versa

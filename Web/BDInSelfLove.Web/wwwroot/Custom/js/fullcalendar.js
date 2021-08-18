@@ -117,7 +117,8 @@
         $.ajax({
             type: 'POST',
             data: {
-                timeSlots: availableDailySlots.map(ts => `${currentSelectedDate} ${ts}`),
+                date: currentSelectedDate,
+                timeSlots: availableDailySlots,
             },
             url: '/api/appointments/Create',
             headers: { 'X-CSRF-TOKEN': token },
@@ -225,7 +226,7 @@
             },
             headers: { 'X-CSRF-TOKEN': token },
             success: function (data) {
-                $('#appointmentApproval').modal('hide');
+                $('#appointmentDetailsModal').modal('hide');
                 fetchEventAndRenderCalendar();
             },
             error: function () {

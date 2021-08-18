@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.Infrastructure.ModelBinders
+﻿namespace BDInSelfLove.Web.Infrastructure.ModelBinders
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+
     public class AppointmentDateBinder : IModelBinder
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            string[] timeSlots = bindingContext.ValueProvider.GetValue("TimeSlots").ToArray();
+            string[] timeSlots = bindingContext.ValueProvider.GetValue("timeSlots").ToArray();
+            string date = bindingContext.ValueProvider.GetValue("date").ToString();
 
             if (timeSlots == null)
             {
@@ -21,9 +22,10 @@ namespace BDInSelfLove.Web.Infrastructure.ModelBinders
             else
             {
                 List<DateTime> parsedDates = new List<DateTime>();
-                foreach (var date in timeSlots)
+                foreach (var slot in timeSlots)
                 {
-                    parsedDates.Add(DateTime.ParseExact(date, "MM-dd-yyyy H:mm", CultureInfo.InvariantCulture));
+                    var currentSlot = date + " " + slot;
+                    parsedDates.Add(DateTime.ParseExact(currentSlot, "MM-dd-yyyy H:mm", CultureInfo.InvariantCulture));
                 }
 
                 bindingContext.Result = ModelBindingResult.Success(parsedDates);

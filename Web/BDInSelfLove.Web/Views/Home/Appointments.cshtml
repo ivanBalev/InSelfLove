@@ -15,21 +15,21 @@
     @if (userIsAdmin)
     {
         <div class="text-center">
-            <button id="btnWorkingHours" class="green-btn border-0 btn mb-3">@localizer["Set Standard Working Hours"]</button>
+            <button id="btnWorkingHours" class="green-btn border-0 btn mb-3">@localizer["Standard Working Hours"]</button>
         </div>
     }
-<div id="calendar" workingHours="@GlobalValues.WorkDayStart-@GlobalValues.WorkDayEnd"></div>
+    <div id="calendar" workingHours="@GlobalValues.WorkDayStart-@GlobalValues.WorkDayEnd"></div>
 
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header justify-content-start pb-0">
-                    <h4 class="modal-title">@localizer["Appointment Details"]</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header text-center pb-0 border-0">
+                    <h4 class="modal-title w-100">@localizer["Appointment Details"]</h4>
+                    <button type="button" class="close pl-0" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body pb-0">
                     <div class="row">
                         <div class="form-group col">
                             <label class="text-center text-black-50  border-bottom">@localizer["Date:"]</label>
@@ -59,18 +59,12 @@
                         <p class="details mb-0" style="word-wrap: break-word;"></p>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-start pt-0">
-                    <div class="row">
-                        @if (userIsAdmin)
-                        {
-                            <div class="col">
-                                <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
-                            </div>
-                        }
-                        <div class="col">
-                            <button id="btnDelete" class="btn btn-outline-danger">@localizer["Cancel Appointment"]</button>
-                        </div>
-                    </div>
+                <div class="modal-footer justify-content-center pt-0 border-0">
+                    @if (userIsAdmin)
+                    {
+                        <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
+                    }
+                    <button id="btnDelete" class="btn btn-outline-danger">@localizer["Cancel"]</button>
                 </div>
             </div>
         </div>
@@ -80,9 +74,9 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body pb-0">
-                    <div class="modal-header p-0 pb-3">
-                        <h4 class="modal-title">@localizer["Briefly describe your issue"]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <div class="modal-header text-center p-0 pb-3">
+                        <h4 class="modal-title w-100">@localizer["Briefly describe your issue"]</h4>
+                        <button type="button" class="close pl-0" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -91,12 +85,8 @@
                     </div>
                 </div>
 
-                <div class="modal-footer pt-0 text-center justify-content-start">
-                    <div class="row">
-                        <div class="col">
-                            <button id="sendAppointment" type="button" class="btn green-btn">@localizer["Send"]</button>
-                        </div>
-                    </div>
+                <div class="modal-footer justify-content-center pt-0 border-0">
+                    <button id="sendAppointment" type="button" class="btn green-btn">@localizer["Send"]</button>
                 </div>
             </div>
         </div>
@@ -105,13 +95,13 @@
     <div id="cancelAppointmentConfirm" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header justify-content-start">
-                    <h4 class="modal-title">@localizer["Are you sure?"]</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header text-center border-0">
+                    <h4 class="modal-title w-100">@localizer["Are you sure?"]</h4>
+                    <button type="button" class="close pl-0" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-footer justify-content-start pt-0">
+                <div class="modal-footer justify-content-center border-0 pt-0">
                     <button type="button" class="btn btn-outline-danger confirmCancelAppointment">@localizer["Confirm"]</button>
                 </div>
             </div>
@@ -122,13 +112,13 @@
     <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header justify-content-start pt-3 pb-0 pl-4 ml-4">
-                    <h4 class="modal-title">@localizer["Set Daily Availability"]</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header pt-3 pb-2 text-center border-0">
+                    <h4 class="modal-title w-100">@localizer["Set Daily Availability"]</h4>
+                    <button type="button" class="close pb-0" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body pt-1">
                     <div class="container">
                         <div class="row justify-content-center">
                             @{
@@ -141,8 +131,8 @@
                             }
                         </div>
                     </div>
-                    <div class="row justify-content-start mt-1 mb-0 pb-0 ml-2 pl-2">
-                        <button type="button" id="submitDailyAvailability" class="btn green-btn ml-3">@localizer["Save"]</button>
+                    <div class="row w-100 justify-content-center mt-1 mb-0 pb-0 mr-5">
+                        <button type="button" id="submitDailyAvailability" class="btn green-btn ml-3 mt-2">@localizer["Save"]</button>
                     </div>
                 </div>
             </div>
@@ -152,23 +142,23 @@
     <div id="workingHours" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header justify-content-start pb-0">
-                    <h4 class="modal-title">@localizer["Set Standard Working Hours"]</h4>
+                <div class="modal-header text-center pb-0 border-0">
+                    <h4 class="modal-title w-100">@localizer["Standard Working Hours"]</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="row">
-                            <div class="form-group col ml-5">
-                                <label>@localizer["Start Time"]</label>
+                            <div class="form-group col ml-5 mb-0">
+                                <label class="bordr-0">@localizer["Start Time"]</label>
                                 <input type="time" value="00:00" id="startHour" name="startHour" required>
                             </div>
-                            <div class="form-group col ml-5">
+                            <div class="form-group col ml-5 mb-0">
                                 <label>@localizer["End Time"]</label>
                                 <input type="time" value="00:00" id="endHour" name="endHour" required>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col">
+                            <div class="col text-center">
                                 <button type="button" id="workingHoursSubmitBtn" class="btn green-btn">@localizer["Save"]</button>
                             </div>
                         </div>

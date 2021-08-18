@@ -118,84 +118,84 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="(This information will be shared only with your therapist.)" xml:space="preserve">
-    <value>(Тази информация ще бъде споделена единствено с терапевта ти.)</value>
+    <value>(This information will be shared only with your therapist.)</value>
   </data>
   <data name="Appointment" xml:space="preserve">
-    <value>Запази час</value>
+    <value>Appointment</value>
   </data>
   <data name="Appointment Details" xml:space="preserve">
-    <value>Детайли за часа</value>
+    <value>Appointment Details</value>
   </data>
   <data name="Approve" xml:space="preserve">
-    <value>Одобри</value>
+    <value>Approve</value>
+  </data>
+  <data name="Are you sure?" xml:space="preserve">
+    <value>Are you sure?</value>
   </data>
   <data name="Book Appointment" xml:space="preserve">
-    <value>Запази час</value>
-  </data>
-  <data name="Can I have you phone number, please?" xml:space="preserve">
-    <value>Моля, остави телефонен номер за връзка. (незадължително)</value>
+    <value>Book Appointment</value>
   </data>
   <data name="Cancel Appointment" xml:space="preserve">
-    <value>Откажи час</value>
+    <value>Cancel Appointment</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Затвори</value>
+    <value>Close</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Потвърди</value>
+    <value>Confirm</value>
   </data>
   <data name="Confirm Decline" xml:space="preserve">
-    <value>Потвърди отказ</value>
+    <value>Confirm Decline</value>
+  </data>
+  <data name="Daily Availability" xml:space="preserve">
+    <value>Daily Availability</value>
   </data>
   <data name="Date:" xml:space="preserve">
-    <value>Дата:</value>
+    <value>Date:</value>
   </data>
   <data name="Decline" xml:space="preserve">
-    <value>Откажи</value>
+    <value>Decline</value>
   </data>
   <data name="Details:" xml:space="preserve">
-    <value>Детайли:</value>
+    <value>Details:</value>
   </data>
   <data name="End Time" xml:space="preserve">
-    <value>Край</value>
+    <value>End Time</value>
   </data>
   <data name="End:" xml:space="preserve">
-    <value>Край:</value>
+    <value>End:</value>
   </data>
   <data name="If you find it necessary, please let me know what happened." xml:space="preserve">
-    <value>Ако прецениш, моля, сподели защо.</value>
+    <value>If you find it necessary, please let me know what happened.</value>
   </data>
   <data name="Issue description:" xml:space="preserve">
-    <value>Описание на проблема:</value>
+    <value>Issue description:</value>
   </data>
   <data name="Phone number:" xml:space="preserve">
-    <value>Телефонен номер:</value>
+    <value>Phone number:</value>
   </data>
   <data name="Please describe your condition in a few sentences." xml:space="preserve">
-    <value>Моля, опиши състоянието си с няколко изречения.</value>
+    <value>Please describe your condition in a few sentences.</value>
   </data>
   <data name="Save" xml:space="preserve">
-    <value>Запази</value>
+    <value>Save</value>
   </data>
   <data name="Send" xml:space="preserve">
-    <value>Изпрати</value>
+    <value>Send</value>
   </data>
-  <data name="Set Daily Availability" xml:space="preserve">
-    <value>Свободни часове за деня</value>
-  </data>
-  <data name="Set Standard Working Hours" xml:space="preserve">
-    <value>Задай стандартно работно време</value>
+  <data name="Standard Working Hours" xml:space="preserve">
+    <value>Standard Working Hours</value>
   </data>
   <data name="Start Time" xml:space="preserve">
-    <value>Начало</value>
+    <value>Start Time</value>
   </data>
   <data name="Start:" xml:space="preserve">
-    <value>Начало:</value>
+    <value>Start:</value>
   </data>
   <data name="Status:" xml:space="preserve">
-    <value>Статус:</value>
+    <value>Status:</value>
   </data>
   <data name="Username:" xml:space="preserve">
-    <value>Потребител:</value>
+    <value>Username:</value>
   </data>
 </root>

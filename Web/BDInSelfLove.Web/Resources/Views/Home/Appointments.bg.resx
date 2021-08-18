@@ -118,84 +118,84 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="(This information will be shared only with your therapist.)" xml:space="preserve">
-    <value>(This information will be shared only with your therapist.)</value>
+    <value>(Тази информация ще бъде споделена единствено с терапевта ти.)</value>
   </data>
   <data name="Appointment" xml:space="preserve">
-    <value>Appointment</value>
+    <value>Запази час</value>
   </data>
   <data name="Appointment Details" xml:space="preserve">
-    <value>Appointment Details</value>
+    <value>Детайли за часа</value>
   </data>
   <data name="Approve" xml:space="preserve">
-    <value>Approve</value>
+    <value>Одобри</value>
+  </data>
+  <data name="Are you sure?" xml:space="preserve">
+    <value>Сигурни ли сте?</value>
   </data>
   <data name="Book Appointment" xml:space="preserve">
-    <value>Book Appointment</value>
+    <value>Запази час</value>
   </data>
-  <data name="Can I have you phone number, please?" xml:space="preserve">
-    <value>Please leave a phone numbe I can contact you on. (not required)</value>
-  </data>
-  <data name="Cancel Appointment" xml:space="preserve">
-    <value>Cancel Appointment</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Откажи</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Close</value>
+    <value>Затвори</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Потвърди</value>
   </data>
   <data name="Confirm Decline" xml:space="preserve">
-    <value>Confirm Decline</value>
+    <value>Потвърди отказ</value>
+  </data>
+  <data name="Daily Availability" xml:space="preserve">
+    <value>Свободни часове за деня</value>
   </data>
   <data name="Date:" xml:space="preserve">
-    <value>Date:</value>
+    <value>Дата:</value>
   </data>
   <data name="Decline" xml:space="preserve">
-    <value>Decline</value>
+    <value>Откажи</value>
   </data>
   <data name="Details:" xml:space="preserve">
-    <value>Details:</value>
+    <value>Детайли:</value>
   </data>
   <data name="End Time" xml:space="preserve">
-    <value>End Time</value>
+    <value>Край</value>
   </data>
   <data name="End:" xml:space="preserve">
-    <value>End:</value>
+    <value>Край:</value>
   </data>
   <data name="If you find it necessary, please let me know what happened." xml:space="preserve">
-    <value>If you find it necessary, please let me know what happened.</value>
+    <value>Ако прецениш, моля, сподели защо.</value>
   </data>
   <data name="Issue description:" xml:space="preserve">
-    <value>Issue description:</value>
+    <value>Описание на проблема:</value>
   </data>
   <data name="Phone number:" xml:space="preserve">
-    <value>Phone number:</value>
+    <value>Телефонен номер:</value>
   </data>
   <data name="Please describe your condition in a few sentences." xml:space="preserve">
-    <value>Please describe your condition in a few sentences.</value>
+    <value>Моля, опиши състоянието си с няколко изречения.</value>
   </data>
   <data name="Save" xml:space="preserve">
-    <value>Save</value>
+    <value>Запази</value>
   </data>
   <data name="Send" xml:space="preserve">
-    <value>Send</value>
+    <value>Изпрати</value>
   </data>
-  <data name="Set Daily Availability" xml:space="preserve">
-    <value>Set Daily Availability</value>
-  </data>
-  <data name="Set Standard Working Hours" xml:space="preserve">
-    <value>Set Standard Working Hours</value>
+  <data name="Standard Working Hours" xml:space="preserve">
+    <value>Стандартно работно време</value>
   </data>
   <data name="Start Time" xml:space="preserve">
-    <value>Start Time</value>
+    <value>Начало</value>
   </data>
   <data name="Start:" xml:space="preserve">
-    <value>Start:</value>
+    <value>Начало:</value>
   </data>
   <data name="Status:" xml:space="preserve">
-    <value>Status:</value>
+    <value>Статус:</value>
   </data>
   <data name="Username:" xml:space="preserve">
-    <value>Username:</value>
+    <value>Потребител:</value>
   </data>
 </root>

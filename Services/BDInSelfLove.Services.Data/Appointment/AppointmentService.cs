@@ -141,6 +141,7 @@
 
             appointment.UserId = null;
             appointment.Description = null;
+            appointment.IsApproved = false;
             this.appointmentRepository.Update(appointment);
             return await this.appointmentRepository.SaveChangesAsync();
         }
