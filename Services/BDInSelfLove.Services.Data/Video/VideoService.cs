@@ -7,6 +7,7 @@
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Data.CommentService;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Video;
     using BDInSelfLove.Services.Models.Videos;
@@ -17,10 +18,12 @@
         private const int DefaultVideosPerPage = 3;
 
         private readonly IDeletableEntityRepository<Video> videosRepository;
+        private readonly ICommentService commentService;
 
-        public VideoService(IDeletableEntityRepository<Video> videosRepository)
+        public VideoService(IDeletableEntityRepository<Video> videosRepository, ICommentService commentService)
         {
             this.videosRepository = videosRepository;
+            this.commentService = commentService;
         }
 
         public async Task<string> CreateAsync(VideoServiceModel videoServiceModel)
@@ -65,27 +68,10 @@
         {
             var video = await this.videosRepository.All()
                .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
-               .Include(v => v.User)
-               .Include(v => v.Comments.OrderByDescending(c => c.CreatedOn))
                .To<VideoServiceModel>()
                .FirstOrDefaultAsync();
 
-            foreach (var comment in video.Comments)
-            {
-                comment.SubComments.Clear();
-            }
-
-            foreach (var comment in video.Comments)
-            {
-                if (comment.ParentCommentId != null)
-                {
-                    var parentComment = video.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
-                    parentComment.SubComments.Add(comment);
-                }
-            }
-
-            video.Comments = video.Comments.Where(v => v.ParentCommentId == null).ToList();
-
+            video.Comments = this.commentService.ArrangeCommentHierarchy(video.Comments);
             return video;
         }
 

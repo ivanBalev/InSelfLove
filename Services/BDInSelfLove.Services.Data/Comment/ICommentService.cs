@@ -21,5 +21,7 @@ namespace BDInSelfLove.Services.Data.CommentService
 
         Task<int> Delete(int commentId);
 
+        ICollection<CommentServiceModel> ArrangeCommentHierarchy(ICollection<CommentServiceModel> comments);
+
     }
 }

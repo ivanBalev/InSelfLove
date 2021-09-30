@@ -4,6 +4,7 @@ using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Comment;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -105,6 +106,39 @@ namespace BDInSelfLove.Services.Data.CommentService
             int result = await this.commentRepository.SaveChangesAsync();
 
             return result;
+        }
+
+        public ICollection<CommentServiceModel> ArrangeCommentHierarchy(ICollection<CommentServiceModel> comments)
+        {
+            // Clear ef subcomment structure as it only goes 1 level deep
+            foreach (var comment in comments)
+            {
+                comment.SubComments.Clear();
+            }
+
+            // Populate subcomments references
+            foreach (var comment in comments.Where(c => c.ParentCommentId != null))
+            {
+                var parentComment = comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+                parentComment.SubComments.Add(comment);
+            }
+
+            // Remove subcomments from main structure, leaving only nested structure, and order comments
+            comments = comments.Where(c => c.ParentCommentId == null)
+                .OrderByDescending(c => c.CreatedOn).ToList();
+
+            // Order subcomments
+            foreach (var comment in comments)
+            {
+                comment.SubComments = comment.SubComments?.OrderByDescending(c => c.CreatedOn).ToList();
+
+                foreach (var subcomment in comment.SubComments)
+                {
+                    subcomment.SubComments = subcomment.SubComments?.OrderByDescending(c => c.CreatedOn).ToList();
+                }
+            }
+
+            return comments;
         }
 
         private async Task<int> CheckCommentDepth(int? parentCommentId, int depthLevel = 1)

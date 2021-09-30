@@ -378,9 +378,9 @@ html, body {
     white-space: nowrap;
 }
 
-    .white-btn:hover {
-        background-color: rgb(146,171,149);
-    }
+.white-btn:hover {
+    background-color: rgb(146,171,149);
+}
 
 
 a .card img {
@@ -654,4 +654,8 @@ a .card img {
     padding-top: 2px;
     height: 16.8px;
     width: 14px;
+}
+
+.flower-icon {
+    margin-bottom: 3px;
 }

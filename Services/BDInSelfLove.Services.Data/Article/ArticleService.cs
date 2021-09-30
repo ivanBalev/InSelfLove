@@ -7,8 +7,10 @@
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Data.CommentService;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Article;
+    using BDInSelfLove.Services.Models.Comment;
     using Microsoft.EntityFrameworkCore;
 
     public class ArticleService : IArticleService
@@ -16,10 +18,12 @@
         private const int DefaultArticlesPerPage = 6;
 
         private readonly IDeletableEntityRepository<Article> articleRepository;
+        private readonly ICommentService commentService;
 
-        public ArticleService(IDeletableEntityRepository<Article> articleRepository)
+        public ArticleService(IDeletableEntityRepository<Article> articleRepository, ICommentService commentService)
         {
             this.articleRepository = articleRepository;
+            this.commentService = commentService;
         }
 
         public async Task<string> CreateAsync(ArticleServiceModel articleServiceModel)
@@ -95,7 +99,7 @@
             var article = await this.articleRepository.All()
                .Where(a => a.Id == id)
                .Include(a => a.User)
-               .Include(a => a.Comments.OrderByDescending(c => c.CreatedOn))
+               .Include(a => a.Comments)
                .To<ArticleServiceModel>()
                .FirstOrDefaultAsync();
 
@@ -113,7 +117,8 @@
                 }
             }
 
-            article.Comments = article.Comments.Where(c => c.ParentCommentId == null).ToList();
+            article.Comments = article.Comments
+                .Where(c => c.ParentCommentId == null).OrderByDescending(c => c.CreatedOn).ToList();
 
             return article;
         }
@@ -122,27 +127,10 @@
         {
             var article = await this.articleRepository.All()
                .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
-               .Include(a => a.User)
-               .Include(a => a.Comments.OrderByDescending(c => c.CreatedOn))
                .To<ArticleServiceModel>()
                .FirstOrDefaultAsync();
 
-            foreach (var comment in article.Comments)
-            {
-                comment.SubComments.Clear();
-            }
-
-            foreach (var comment in article.Comments)
-            {
-                if (comment.ParentCommentId != null)
-                {
-                    var parentComment = article.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
-                    parentComment.SubComments.Add(comment);
-                }
-            }
-
-            article.Comments = article.Comments.Where(c => c.ParentCommentId == null).ToList();
-
+            article.Comments = this.commentService.ArrangeCommentHierarchy(article.Comments);
             return article;
         }
 
