@@ -74,6 +74,8 @@ function addAddCommentButtonFunctionality(e) {
                 parentComment.querySelector('.comment-buttons').style.display = 'flex';
                 //hideAddCommentBox(e.target);
             }
+            // Clear text box
+            form.querySelector('[name=Content]').value = '';
         });
 }
 

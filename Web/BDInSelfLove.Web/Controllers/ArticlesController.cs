@@ -61,6 +61,7 @@
             return this.View(viewModel);
         }
 
+        [Route("Articles/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
             ArticleViewModel viewModel = AutoMapperConfig.MapperInstance
@@ -82,6 +83,8 @@
         }
 
         // Admin acces only below
+        [HttpGet]
+        [Route("Articles/Create")]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public IActionResult Create()
         {
@@ -89,6 +92,7 @@
         }
 
         [HttpPost]
+        [Route("Articles/Create")]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
         {

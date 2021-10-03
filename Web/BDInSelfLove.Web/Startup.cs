@@ -234,10 +234,8 @@
             app.UseEndpoints(
                 endpoints =>
                     {
-                        endpoints.MapControllerRoute("slugArticlesRoute", "Articles/{slug}", new { controller = "Articles", action = "Single" });
-                        endpoints.MapControllerRoute("slugVideosRoute", "Videos/{slug}", new { controller = "Videos", action = "Single" });
-                        endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                        endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapRazorPages();
                     });
         }

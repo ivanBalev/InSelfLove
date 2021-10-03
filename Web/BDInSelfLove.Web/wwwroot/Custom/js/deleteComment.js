@@ -28,8 +28,8 @@ function confirmCommentDelete(e) {
         },
         headers: { 'X-CSRF-TOKEN': token },
         success: function () {
-            // Hide deleted comment which will be removed entirely once page reloads
-            $('#' + commentId).hide();
+            // Remove deleted comment
+            $('#' + commentId).remove();
 
             // If last comment was just deleted(hidden)
             if (document.querySelectorAll('#comments .comment').length === 1) {

@@ -4,24 +4,6 @@
 
 @{
     this.ViewData["Title"] = localizer["Home Page"].Value;
-
-    // Determine featured item content
-    string featuredItemTitle = "";
-    string featuredItemController = "";
-    string featuredItemSlug = "";
-
-    if (Model.FeaturedArticle == null)
-    {
-        featuredItemTitle = Model.FeaturedVideo.Title;
-        featuredItemController = "Videos";
-        featuredItemSlug = Model.FeaturedVideo.Slug;
-    }
-    else
-    {
-        featuredItemTitle = Model.FeaturedArticle.Title;
-        featuredItemController = "Articles";
-        featuredItemSlug = Model.FeaturedArticle.Slug;
-    }
 }
 
 <!-- Showcase -->
@@ -32,9 +14,9 @@
                     <div class="showcase-wrapper">
                         <h1>@localizer["FEATURED POST"]</h1>
                         <h2>
-                            @featuredItemTitle
+                            @Model.FeaturedItem.Title
                         </h2>
-                        <a asp-controller="@featuredItemController" asp-action="Single" asp-route-slug="@featuredItemSlug" class="btn btn-outline-light btn-md text-white mt-2 see-more-feature-btn">
+                        <a asp-controller="@Model.FeaturedItem.Controller" asp-action="Single" asp-route-slug="@Model.FeaturedItem.Slug" class="btn btn-outline-light btn-md text-white mt-2 see-more-feature-btn">
                             @localizer["SEE MORE"]
                         </a>
                     </div>
@@ -51,7 +33,7 @@
     <!-- Articles -->
     <div id="home-articles" class="container py-4">
         <div class="row">
-            @foreach (var article in Model.LastArticles)
+            @foreach (var article in Model.Articles)
             {
                 <div class="col-lg-4 col-md-6 mb-4">
                     <partial name="_ArticlePreviewPartial" model="@article" />

@@ -1,6 +1,5 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
-    using System;
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
@@ -23,8 +22,7 @@
 
     public class HomeController : BaseController
     {
-        private const int IndexArticlesCount = 4;
-        private const int NonFeaturedArticlesCount = 3;
+        private const int IndexItemsCount = 4;
         private const string TimezoneIANACookieName = "timezoneIANA";
 
         private readonly IArticleService articleService;
@@ -46,30 +44,9 @@
 
         public async Task<IActionResult> Index()
         {
-            // Get articles
-            var serviceData = await this.articleService.GetAll(IndexArticlesCount).ToListAsync();
-
-            // Parse articles
-            var lastArticles = serviceData.Select(x =>
-            AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(x)).ToList();
-
-            // Get last video and check whether it's posted after latest article
-            var lastVideo = await this.videoService.GetAll(1).FirstOrDefaultAsync();
-            var videoisLatest = DateTime.Compare(lastArticles[0].CreatedOn, lastVideo.CreatedOn) == -1;
-
-            // Populate view model depending on whether we have a featured video or article
-            var viewModel = new HomeViewModel();
-            if (videoisLatest)
-            {
-                viewModel.FeaturedVideo = AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(lastVideo);
-                viewModel.LastArticles = lastArticles.Take(NonFeaturedArticlesCount);
-            }
-            else
-            {
-                viewModel.FeaturedArticle = lastArticles[0];
-                viewModel.LastArticles = lastArticles.Skip(1).ToList();
-            }
-
+            var lastArticles = await this.articleService.GetAll(IndexItemsCount).To<ArticlePreviewViewModel>().ToListAsync();
+            var lastVideos = await this.videoService.GetAll(IndexItemsCount).To<VideoPreviewViewModel>().ToListAsync();
+            var viewModel = new HomeViewModel(lastArticles, lastVideos);
             return this.View(viewModel);
         }
 
@@ -78,37 +55,43 @@
             return this.View();
         }
 
-        public IActionResult About()
-        {
-            return this.View();
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Contacts(ContactFormInputModel inputModel)
+        public async Task<IActionResult> Contacts(ContactFormInputModel userInfo)
         {
             if (!this.ModelState.IsValid)
             {
                 this.ViewData["Error"] = "Error. Please try again.";
                 return this.View();
             }
-
-            var rqf = this.Request.HttpContext.Features.Get<IRequestCultureFeature>();
-            var culture = rqf.RequestCulture.Culture.Name;
-
-            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
-            var userEmailTextEN = $"<div>Hello, </div> <div></div> <div>Your email has been received.</div><div>Thank you!</div>";
-            var userEmailTextBG = $"<div>Здравей, </div> <div></div> <div>Имейлът ти е получен.</div><div>Благодаря!</div>";
-
-            // Send emails to admin and user
-            await this.emailSender.SendEmailAsync(inputModel.Email, $"{inputModel.FirstName} {inputModel.LastName}", adminEmail, GlobalValues.SystemName, $"<div>{inputModel.Message}</div><div>Name: {inputModel.FirstName} {inputModel.LastName}</div><div>Phone: {inputModel.PhoneNumber}</div>");
-            await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, inputModel.Email, GlobalValues.SystemName, culture == "bg" ? userEmailTextBG : userEmailTextEN);
-
-            this.TempData["StatusMessage"] = culture == "bg" ? "Имейлът ти е получен. Благодаря!" : "Your email has been received. Thank you!";
+            await this.SubmitContactForm(userInfo);
             return this.RedirectToAction("Index");
+        }
+
+        public IActionResult About()
+        {
+            return this.View();
         }
 
         [Authorize]
         public async Task<IActionResult> Appointments()
+        {
+            await this.UpdateUserTimezone();
+            return this.View();
+        }
+
+        public IActionResult Privacy()
+        {
+            return this.View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
+        }
+
+        // Helper methods
+        private async Task UpdateUserTimezone()
         {
             // Query value received from client only if timezone cookie is nonexistent or doesn't match current timezone
             string timezoneIANAQueryValue = this.HttpContext.Request.Query[TimezoneIANACookieName].ToString();
@@ -126,22 +109,30 @@
                     await this.userManager.UpdateAsync(user);
                 }
             }
-
-            return this.View();
         }
 
-        public IActionResult Privacy()
+        private async Task SubmitContactForm(ContactFormInputModel userInfo)
         {
-            return this.View();
-        }
+            string culture = this.Request.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
+            string adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            var context = this.HttpContext;
+            // Send email to admin
+            await this.emailSender.SendEmailAsync(
+                from: userInfo.Email,
+                fromName: $"{userInfo.FirstName} {userInfo.LastName}",
+                to: adminEmail,
+                subject: GlobalValues.SystemName,
+                htmlContent: string.Format(GlobalValues.ContactsAdminEmailText, userInfo.Message, userInfo.FirstName, userInfo.LastName, userInfo.PhoneNumber));
 
-            return this.View(
-                new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
+            // Send email to user
+            await this.emailSender.SendEmailAsync(
+                from: adminEmail,
+                fromName: GlobalValues.SystemName,
+                to: userInfo.Email,
+                subject: GlobalValues.SystemName,
+                htmlContent: culture == "bg" ? GlobalValues.ContactsUserEmailTextBG : GlobalValues.ContactsUserEmailTextEN);
+
+            this.TempData["StatusMessage"] = culture == "bg" ? GlobalValues.ContactsStatusMessageBG : GlobalValues.ContactsStatusMessageEN;
         }
     }
 }
