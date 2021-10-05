@@ -1,18 +1,20 @@
-﻿const targetActionNames = ["Appointment"];
-let timezoneCookieValue = decodeURIComponent(getCookie("timezoneIANA"));
-let currentTimezoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
+﻿let timezoneCookieName = "timezoneIANA";
+let timezoneCookieValue = decodeURIComponent(getCookie(timezoneCookieName));
+let currentTimezoneValue = Intl.DateTimeFormat().resolvedOptions().timeZone;
 // If timezone cookie doesn't exist || it doesn't match the current timezone
-if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneIANA) !== 0) {
-    // Get all anchor elements leading to the targeted controllers and attach the timezone to their href values
-    Array.from(document.getElementsByTagName('a')).filter(a =>
-        targetActionNames.some(cn => a.href.includes(cn)))
-        .forEach(e => {
-            e.href = e.href + "?timezoneIANA=" + currentTimezoneIANA;
-        })
+if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneValue) !== 0) {
+    setCookie(timezoneCookieName, currentTimezoneValue);
 }
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+}
+
+function setCookie(name, value, days = 60, path = '/') {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=' + path;
 }

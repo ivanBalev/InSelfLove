@@ -31,6 +31,7 @@
             this.userManager = userManager;
         }
 
+        [Route("Videos/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
             VideoViewModel viewModel = AutoMapperConfig.MapperInstance
@@ -73,6 +74,8 @@
         }
 
         // Admin access only below
+        [HttpGet]
+        [Route("Videos/Create")]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public IActionResult Create()
         {
@@ -80,6 +83,7 @@
         }
 
         [HttpPost]
+        [Route("Videos/Create")]
         [YoutubeLinkActionFilter]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(CreateVideoInputModel inputModel)

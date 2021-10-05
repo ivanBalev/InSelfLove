@@ -21,7 +21,7 @@
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class AppointmentsController : ControllerBase
+    public class AppointmentsController : BaseController
     {
         private const string AppointmentEmailSubject = "Appointment";
         private const string AppointmentCancellationIntro = "I'm deeply sorry but I'm going to have to cancel the appointment.";
@@ -41,6 +41,14 @@
             this.appointmentService = appointmentService;
             this.userManager = userManager;
             this.emailSender = emailSender;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+            await this.UpdateUserTimezone();
+            return this.View();
         }
 
         [HttpPost]
@@ -75,7 +83,7 @@
             TimeZoneInfo userTimezone;
             string ianaTimezoneCookieValue = this.HttpContext.Request.Cookies[IANATimezoneCookieName];
 
-            // Set userId & timezone from cookie or db
+            // Get timezone from cookie or db & userId
             if (ianaTimezoneCookieValue != null)
             {
                 userId = this.userManager.GetUserId(this.User);
@@ -225,5 +233,23 @@
             await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, userEmail, this.GetEmailSubject(adminTimeAppointmentStart), userEmailText);
         }
 
+        private async Task UpdateUserTimezone()
+        {
+            string ianaTimezoneCookieValue = this.HttpContext.Request.Cookies[IANATimezoneCookieName];
+
+            // Update user db timezone if query value differs from db value
+            if (ianaTimezoneCookieValue != string.Empty)
+            {
+                var user = await this.userManager.GetUserAsync(this.User);
+                string timezoneWindowsId = TZConvert.GetTimeZoneInfo(ianaTimezoneCookieValue).Id;
+
+                if (user.WindowsTimezoneId == null ||
+                    user.WindowsTimezoneId.ToLower().CompareTo(timezoneWindowsId.ToLower()) != 0)
+                {
+                    user.WindowsTimezoneId = timezoneWindowsId;
+                    await this.userManager.UpdateAsync(user);
+                }
+            }
+        }
     }
 }

@@ -23,7 +23,7 @@
     public class HomeController : BaseController
     {
         private const int IndexItemsCount = 4;
-        private const string TimezoneIANACookieName = "timezoneIANA";
+        private const string BGCulture = "bg";
 
         private readonly IArticleService articleService;
         private readonly IVideoService videoService;
@@ -72,13 +72,6 @@
             return this.View();
         }
 
-        [Authorize]
-        public async Task<IActionResult> Appointments()
-        {
-            await this.UpdateUserTimezone();
-            return this.View();
-        }
-
         public IActionResult Privacy()
         {
             return this.View();
@@ -91,26 +84,6 @@
         }
 
         // Helper methods
-        private async Task UpdateUserTimezone()
-        {
-            // Query value received from client only if timezone cookie is nonexistent or doesn't match current timezone
-            string timezoneIANAQueryValue = this.HttpContext.Request.Query[TimezoneIANACookieName].ToString();
-
-            // Update user db timezone if query value differs from db value
-            if (timezoneIANAQueryValue != string.Empty)
-            {
-                var user = await this.userManager.GetUserAsync(this.User);
-                string timezoneWindowsId = TZConvert.GetTimeZoneInfo(timezoneIANAQueryValue).Id;
-
-                if (user.WindowsTimezoneId == null ||
-                    user.WindowsTimezoneId.ToLower().CompareTo(timezoneWindowsId.ToLower()) != 0)
-                {
-                    user.WindowsTimezoneId = timezoneWindowsId;
-                    await this.userManager.UpdateAsync(user);
-                }
-            }
-        }
-
         private async Task SubmitContactForm(ContactFormInputModel userInfo)
         {
             string culture = this.Request.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
@@ -130,9 +103,9 @@
                 fromName: GlobalValues.SystemName,
                 to: userInfo.Email,
                 subject: GlobalValues.SystemName,
-                htmlContent: culture == "bg" ? GlobalValues.ContactsUserEmailTextBG : GlobalValues.ContactsUserEmailTextEN);
+                htmlContent: culture == BGCulture ? GlobalValues.ContactsUserEmailTextBG : GlobalValues.ContactsUserEmailTextEN);
 
-            this.TempData["StatusMessage"] = culture == "bg" ? GlobalValues.ContactsStatusMessageBG : GlobalValues.ContactsStatusMessageEN;
+            this.TempData["StatusMessage"] = culture == BGCulture ? GlobalValues.ContactsStatusMessageBG : GlobalValues.ContactsStatusMessageEN;
         }
     }
 }

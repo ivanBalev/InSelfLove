@@ -91,7 +91,7 @@
                     return Page();
                 }
 
-                string windowsTimezoneId= null;
+                string windowsTimezoneId = null;
                 if (this.Input.TimezoneIANA != null)
                 {
                     windowsTimezoneId = TZConvert.GetTimeZoneInfo(this.Input.TimezoneIANA).Id;

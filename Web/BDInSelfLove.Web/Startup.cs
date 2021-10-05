@@ -114,6 +114,7 @@
                     options.CheckConsentNeeded = context => true;
                 });
 
+            // TODO: this doesn't seem to be used anywhere
             var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions()
             {
                 Path = "/",

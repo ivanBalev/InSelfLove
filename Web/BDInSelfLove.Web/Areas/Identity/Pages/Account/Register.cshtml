@@ -93,9 +93,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        let timezoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        Array.from(document.getElementsByClassName('timezone-IANA')).forEach(e => e.value = timezoneIANA);
-    </script>
+    <script src="~/Custom/js/setTimezoneOnRegister.js"></script>
     <script src="~/Custom/js/profilePictureCompression.js"></script>
 }
