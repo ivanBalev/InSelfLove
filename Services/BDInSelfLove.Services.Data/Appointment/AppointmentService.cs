@@ -53,26 +53,20 @@
                 .SingleOrDefaultAsync(appointment => appointment.Id == id);
         }
 
-        public async Task<int> Create(List<DateTime> appointmentTimes, DateTime appointmentsDate)
+        public async Task<int> Create(DateTime[] appointmentSlots, DateTime appointmentsDate)
         {
-            // Delete same day unoccupied slots
-            var dbAppointments = await this.appointmentRepository.All()
+            var sameDayVacantSlots = await this.appointmentRepository.All()
                 .Where(a => DateTime.Compare(appointmentsDate, a.UtcStart.Date) == 0)
                 .Where(a => a.UserId == null).ToListAsync();
 
-            foreach (var dbAppointment in dbAppointments)
+            // Delete current vacant slots
+            foreach (var slot in sameDayVacantSlots)
             {
-                this.appointmentRepository.Delete(dbAppointment);
+                this.appointmentRepository.Delete(slot);
             }
 
-            // Return if appointments collection is empty
-            if (appointmentTimes == null)
-            {
-                return await this.appointmentRepository.SaveChangesAsync();
-            }
-
-            // Map to DB entities and add to DB
-            foreach (var dateTime in appointmentTimes)
+            // Create new vacant slots and add to DB
+            foreach (var dateTime in appointmentSlots)
             {
                 var appointmentForDB = new Appointment { UtcStart = dateTime };
                 await this.appointmentRepository.AddAsync(appointmentForDB);

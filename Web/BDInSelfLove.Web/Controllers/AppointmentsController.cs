@@ -56,22 +56,8 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
         {
-            // Convert iana to windows timezone & switch input times to utc
-            TimeZoneInfo windowsTimezone = TZConvert.GetTimeZoneInfo(
-                (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
-
-            var date = DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture);
-
-            List<DateTime> appointments = availabilityInput.TimeSlots?.Select(ts =>
-            {
-                // We work only with 00 minutes currently
-                double hours = double.Parse(ts.Split(':')[0]);
-                DateTime currentSlot = date.AddHours(hours);
-                return TimeZoneInfo.ConvertTimeToUtc(currentSlot, windowsTimezone);
-            })
-            .ToList();
-
-            await this.appointmentService.Create(appointments, DateTime.ParseExact(availabilityInput.Date, "MM-dd-yyyy", CultureInfo.InvariantCulture));
+            DateTime[] utcAppointments = availabilityInput.TimeSlots?.Select(ts => this.GetUtcTimeSlot(ts)).ToArray();
+            await this.appointmentService.Create(utcAppointments, availabilityInput.Date);
             return this.Ok();
         }
 
@@ -84,6 +70,7 @@
             string ianaTimezoneCookieValue = this.HttpContext.Request.Cookies[IANATimezoneCookieName];
 
             // Get timezone from cookie or db & userId
+            // TODO: cookie will always be set. no need to overcomplicate code with unplausible scenarios
             if (ianaTimezoneCookieValue != null)
             {
                 userId = this.userManager.GetUserId(this.User);
@@ -235,21 +222,30 @@
 
         private async Task UpdateUserTimezone()
         {
-            string ianaTimezoneCookieValue = this.HttpContext.Request.Cookies[IANATimezoneCookieName];
+            string ianaTimezoneCookieValue = this.GetTimezoneCookieValue();
 
-            // Update user db timezone if query value differs from db value
             if (ianaTimezoneCookieValue != string.Empty)
             {
-                var user = await this.userManager.GetUserAsync(this.User);
-                string timezoneWindowsId = TZConvert.GetTimeZoneInfo(ianaTimezoneCookieValue).Id;
-
-                if (user.WindowsTimezoneId == null ||
-                    user.WindowsTimezoneId.ToLower().CompareTo(timezoneWindowsId.ToLower()) != 0)
-                {
-                    user.WindowsTimezoneId = timezoneWindowsId;
-                    await this.userManager.UpdateAsync(user);
-                }
+                return;
             }
+
+            var user = await this.userManager.GetUserAsync(this.User);
+            string timezoneWindowsId = TZConvert.GetTimeZoneInfo(ianaTimezoneCookieValue).Id;
+
+            if (user.WindowsTimezoneId == null ||
+                user.WindowsTimezoneId.ToLower().CompareTo(timezoneWindowsId.ToLower()) != 0)
+            {
+                user.WindowsTimezoneId = timezoneWindowsId;
+                await this.userManager.UpdateAsync(user);
+            }
+        }
+
+        private string GetTimezoneCookieValue() => this.HttpContext.Request.Cookies[IANATimezoneCookieName];
+
+        private DateTime GetUtcTimeSlot(DateTime timeSlot)
+        {
+            var userWindowsTimezone = TZConvert.GetTimeZoneInfo(this.GetTimezoneCookieValue());
+            return TimeZoneInfo.ConvertTimeToUtc(timeSlot, userWindowsTimezone);
         }
     }
 }

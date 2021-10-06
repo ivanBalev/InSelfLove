@@ -24,6 +24,11 @@
     {
         private const int IndexItemsCount = 4;
         private const string BGCulture = "bg";
+        private const string ContactsUserEmailTextEN = "<div>Hello, </div> <div></div> <div>Your email has been received.</div><div>Thank you!</div>";
+        private const string ContactsUserEmailTextBG = "<div>Здравей, </div> <div></div> <div>Имейлът ти е получен.</div><div>Благодаря!</div>";
+        private const string ContactsStatusMessageEN = "Your email has been received. Thank you!";
+        private const string ContactsStatusMessageBG = "Имейлът ти е получен. Благодаря!";
+        private const string ContactsAdminEmailText = "<div>{0}</div><div>Name: {1} {2}</div><div>Phone: {3}</div>";
 
         private readonly IArticleService articleService;
         private readonly IVideoService videoService;
@@ -95,7 +100,7 @@
                 fromName: $"{userInfo.FirstName} {userInfo.LastName}",
                 to: adminEmail,
                 subject: GlobalValues.SystemName,
-                htmlContent: string.Format(GlobalValues.ContactsAdminEmailText, userInfo.Message, userInfo.FirstName, userInfo.LastName, userInfo.PhoneNumber));
+                htmlContent: string.Format(ContactsAdminEmailText, userInfo.Message, userInfo.FirstName, userInfo.LastName, userInfo.PhoneNumber));
 
             // Send email to user
             await this.emailSender.SendEmailAsync(
@@ -103,9 +108,9 @@
                 fromName: GlobalValues.SystemName,
                 to: userInfo.Email,
                 subject: GlobalValues.SystemName,
-                htmlContent: culture == BGCulture ? GlobalValues.ContactsUserEmailTextBG : GlobalValues.ContactsUserEmailTextEN);
+                htmlContent: culture == BGCulture ? ContactsUserEmailTextBG : ContactsUserEmailTextEN);
 
-            this.TempData["StatusMessage"] = culture == BGCulture ? GlobalValues.ContactsStatusMessageBG : GlobalValues.ContactsStatusMessageEN;
+            this.TempData["StatusMessage"] = culture == BGCulture ? ContactsStatusMessageBG : ContactsStatusMessageEN;
         }
     }
 }

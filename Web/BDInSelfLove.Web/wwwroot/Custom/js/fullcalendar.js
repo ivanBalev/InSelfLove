@@ -117,8 +117,8 @@
         $.ajax({
             type: 'POST',
             data: {
-                date: currentSelectedDate,
-                timeSlots: availableDailySlots,
+                dateString: currentSelectedDate,
+                timeSlotsString: availableDailySlots,
             },
             url: '/api/appointments/Create',
             headers: { 'X-CSRF-TOKEN': token },

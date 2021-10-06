@@ -16,7 +16,7 @@
 
         Task<AppointmentServiceModel> GetById(int id);
 
-        Task<int> Create(List<DateTime> appointmentServiceModels, DateTime appointmentsDate);
+        Task<int> Create(DateTime[] appointmentSlots, DateTime appointmentsDate);
 
         Task<AppointmentServiceModel> Delete(int appointmentId);
 
