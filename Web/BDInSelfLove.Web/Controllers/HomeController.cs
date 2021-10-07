@@ -68,6 +68,7 @@
                 this.ViewData["Error"] = "Error. Please try again.";
                 return this.View();
             }
+
             await this.SubmitContactForm(userInfo);
             return this.RedirectToAction("Index");
         }

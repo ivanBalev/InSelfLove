@@ -7,9 +7,9 @@ namespace BDInSelfLove.Web.InputModels.Appointment
 {
     public class AvailabilityInputModel
     {
-        public string DateString { get; set; }
+        public string DateString { get; set; } = string.Empty;
 
-        public string[] TimeSlotsString { get; set; }
+        public string[] TimeSlotsString { get; set; } = new string[0];
 
         public DateTime Date => DateTime.ParseExact(DateString, "MM-dd-yyyy", CultureInfo.InvariantCulture);
 

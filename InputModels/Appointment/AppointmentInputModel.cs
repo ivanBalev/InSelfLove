@@ -8,7 +8,7 @@ namespace BDInSelfLove.Web.InputModels.Appointment
     public class AppointmentInputModel : IMapTo<AppointmentServiceModel>
     {
         [Required]
-        public string Start { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MinLength(30)]

@@ -16,40 +16,34 @@
     public class AppointmentService : IAppointmentService
     {
         private readonly IDeletableEntityRepository<Appointment> appointmentRepository;
-        private readonly UserManager<ApplicationUser> userManager;
 
         public AppointmentService(
-            IDeletableEntityRepository<Appointment> appointmentRepository,
-            UserManager<ApplicationUser> userManager)
+            IDeletableEntityRepository<Appointment> appointmentRepository)
         {
             this.appointmentRepository = appointmentRepository;
-            this.userManager = userManager;
         }
 
-        public async Task<AppointmentServiceModel[]> GetAll(string userId)
+        public IQueryable<Appointment> GetAll(string userId, bool userIsAdmin)
         {
-            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
-            bool currentUserIsAdmin = admin.Id == userId;
             var query = this.appointmentRepository.All();
-            if (!currentUserIsAdmin)
+            if (!userIsAdmin)
             {
-                // Take only user's own and upcoming available appointments
+                // Take only user's own and upcoming vacant appointments
                 query = query.Where(a => a.UserId == userId ||
                                         (a.UserId == null && DateTime.Compare(a.UtcStart, DateTime.UtcNow) > 0));
             }
             else
             {
-                // Skip past available appointment slots
+                // Skip past vacant appointments
                 query = query.Where(a => !(a.UserId == null && DateTime.Compare(a.UtcStart, DateTime.UtcNow) <= 0));
             }
 
-            return await query.To<AppointmentServiceModel>().ToArrayAsync();
+            return query;
         }
 
-        public async Task<AppointmentServiceModel> GetById(int id)
+        public async Task<Appointment> GetById(int id)
         {
             return await this.appointmentRepository.All()
-                .To<AppointmentServiceModel>()
                 .SingleOrDefaultAsync(appointment => appointment.Id == id);
         }
 
@@ -75,42 +69,37 @@
             return await this.appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task<int> Book(DateTime utcStart, string appointmentDescription, string userId)
+        public async Task<Appointment> Book(int appointmentId, string appointmentDescription, string userId)
         {
-            // Check if slot is already occupied
-            Appointment dbAppointment = await this.appointmentRepository.All()
-                 .FirstOrDefaultAsync(a => DateTime.Compare(a.UtcStart, utcStart) == 0);
+            var dbAppointment = await this.appointmentRepository.All()
+                 .SingleOrDefaultAsync(a => a.Id == appointmentId);
 
-            if (dbAppointment == null || dbAppointment.UserId != null)
+            if (dbAppointment.UserId != null)
             {
-                return 0;
+                throw new UnauthorizedAccessException(nameof(dbAppointment));
             }
 
-            // Update and save
+            // Update
             dbAppointment.Description = appointmentDescription;
             dbAppointment.UserId = userId;
             this.appointmentRepository.Update(dbAppointment);
 
-            int result = await this.appointmentRepository.SaveChangesAsync();
-            return result;
+            await this.appointmentRepository.SaveChangesAsync();
+            return dbAppointment;
         }
 
-        public async Task<AppointmentServiceModel> Delete(int appointmentId)
+        public async Task<int> Delete(Appointment appointment)
         {
-            var dbAppointment = await this.appointmentRepository.All().FirstOrDefaultAsync(a => a.Id == appointmentId);
-
-            if (dbAppointment == null)
+            if (appointment == null)
             {
-                throw new ArgumentNullException(nameof(dbAppointment));
+                throw new ArgumentNullException(nameof(appointment));
             }
 
-            this.appointmentRepository.Delete(dbAppointment);
-            int result = await this.appointmentRepository.SaveChangesAsync();
-
-            return AutoMapperConfig.MapperInstance.Map<AppointmentServiceModel>(dbAppointment);
+            this.appointmentRepository.Delete(appointment);
+            return await this.appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task<int> Approve(int appointmentId)
+        public async Task<Appointment> Approve(int appointmentId)
         {
             var appointment = await this.appointmentRepository.All().SingleOrDefaultAsync(a => a.Id == appointmentId);
 
@@ -121,13 +110,12 @@
 
             appointment.IsApproved = true;
             this.appointmentRepository.Update(appointment);
-            return await this.appointmentRepository.SaveChangesAsync();
+            await this.appointmentRepository.SaveChangesAsync();
+            return appointment;
         }
 
-        public async Task<int> Cancel(int id)
+        public async Task<int> Cancel(Appointment appointment)
         {
-            var appointment = await this.appointmentRepository.All().SingleOrDefaultAsync(a => a.Id == id);
-
             if (appointment == null)
             {
                 throw new ArgumentNullException(nameof(appointment));

@@ -1,8 +1,6 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -16,6 +14,8 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Localization;
     using TimeZoneConverter;
 
     [Authorize]
@@ -23,24 +23,23 @@
     [Route("api/[controller]")]
     public class AppointmentsController : BaseController
     {
-        private const string AppointmentEmailSubject = "Appointment";
-        private const string AppointmentCancellationIntro = "I'm deeply sorry but I'm going to have to cancel the appointment.";
-        private const string AppointmentConfirmationString = "Your appointment has been confirmed. See you soon!";
-        private const string AppointmentAwaitingApprovalText = "Your request for an appointment has been received. Please wait for approval.";
         private const string IANATimezoneCookieName = "timezoneIANA";
 
         private readonly IAppointmentService appointmentService;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEmailSender emailSender;
+        private readonly IStringLocalizer<AppointmentsController> localizer;
 
         public AppointmentsController(
             IAppointmentService appointmentService,
             UserManager<ApplicationUser> userManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IStringLocalizer<AppointmentsController> localizer)
         {
             this.appointmentService = appointmentService;
             this.userManager = userManager;
             this.emailSender = emailSender;
+            this.localizer = localizer;
         }
 
         [HttpGet]
@@ -56,8 +55,8 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
         {
-            DateTime[] utcAppointments = availabilityInput.TimeSlots?.Select(ts => this.GetUtcTimeSlot(ts)).ToArray();
-            await this.appointmentService.Create(utcAppointments, availabilityInput.Date);
+            DateTime[] utcTimeSlots = this.GetUtcTimeSlots(availabilityInput.TimeSlots).ToArray();
+            await this.appointmentService.Create(utcTimeSlots, availabilityInput.Date);
             return this.Ok();
         }
 
@@ -65,34 +64,19 @@
         [Route("GetAll")]
         public async Task<ActionResult<AppointmentViewModel[]>> GetAll()
         {
-            string userId;
-            TimeZoneInfo userTimezone;
-            string ianaTimezoneCookieValue = this.HttpContext.Request.Cookies[IANATimezoneCookieName];
+            string userId = this.userManager.GetUserId(this.User);
+            bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
 
-            // Get timezone from cookie or db & userId
-            // TODO: cookie will always be set. no need to overcomplicate code with unplausible scenarios
-            if (ianaTimezoneCookieValue != null)
-            {
-                userId = this.userManager.GetUserId(this.User);
-                userTimezone = TZConvert.GetTimeZoneInfo(ianaTimezoneCookieValue);
-            }
-            else
-            {
-                var user = await this.userManager.GetUserAsync(this.User);
-                userId = user.Id;
-                userTimezone = TZConvert.GetTimeZoneInfo(user.WindowsTimezoneId);
-            }
-
-            // Get appointments from db & switch start times to user local time
             var appointments = (await this.appointmentService
-                .GetAll(userId))
-                .Select(a => AutoMapperConfig.MapperInstance.Map<AppointmentViewModel>(a))
+                .GetAll(userId, userIsAdmin)
+                .To<AppointmentViewModel>()
+                .ToArrayAsync())
                 .Select(a =>
-                {
-                    a.Start = TimeZoneInfo.ConvertTimeFromUtc(a.Start, userTimezone);
-                    return a;
-                })
-                .ToArray();
+                 {
+                     // Convert start times to user local time
+                     a.Start = TimeZoneInfo.ConvertTimeFromUtc(a.Start, this.GetUserWindowsTimezone());
+                     return a;
+                 }).ToArray();
 
             return appointments;
         }
@@ -101,32 +85,14 @@
         [Route("Book")]
         public async Task<IActionResult> Book([FromForm] AppointmentInputModel inputModel)
         {
-            // Validate input model
             if (!this.ModelState.IsValid)
             {
                 return this.BadRequest();
             }
 
-            // Get user & get appointment start in utc time
-            ApplicationUser user = await this.userManager.GetUserAsync(this.User);
-            DateTime userTimeAppointmentStart = DateTime.ParseExact(inputModel.Start, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
-            TimeZoneInfo userWindowsTimezone = TZConvert.GetTimeZoneInfo(user.WindowsTimezoneId);
-            DateTime utcAppointmentStart = TimeZoneInfo.ConvertTimeToUtc(userTimeAppointmentStart, userWindowsTimezone);
-
-            // Book appointment
-            int bookingResult = await this.appointmentService.Book(utcAppointmentStart, inputModel.Description, user.Id);
-            if (bookingResult == 0)
-            {
-                return this.BadRequest();
-            }
-
-            // Get admin email & admin timezone appointment start time
-            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
-            TimeZoneInfo adminWindowsTimezone = TZConvert.GetTimeZoneInfo(admin.WindowsTimezoneId);
-            DateTime adminTimeAppointmentStart = TimeZoneInfo.ConvertTimeFromUtc(utcAppointmentStart, adminWindowsTimezone);
-
-            // Notify admin & user via email
-            await this.SendBookingEmails(user.Email, user.UserName, userTimeAppointmentStart, admin.Email, adminTimeAppointmentStart);
+            var user = await this.userManager.GetUserAsync(this.User);
+            var appointment = await this.appointmentService.Book(inputModel.Id, inputModel.Description, user.Id);
+            await this.SendBookingEmails(appointment);
             return this.Ok();
         }
 
@@ -135,16 +101,8 @@
         [Route("Approve")]
         public async Task<ActionResult> Approve([FromForm] int id)
         {
-            // Approve appointment
-            await this.appointmentService.Approve(id);
-
-            // Get appointment info & admin email
-            var appointmentFromDb = await this.appointmentService.GetById(id);
-            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
-
-            // Generate email body & send user confirmation email
-            var emailContent = $"<div>Hello, </div> <div></div> <div>{AppointmentConfirmationString}</div><div>Thanks!</div>";
-            await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, appointmentFromDb.User.Email, this.GetEmailSubject(appointmentFromDb.UtcStart), emailContent);
+            Appointment appointment = await this.appointmentService.Approve(id);
+            await this.SendApprovalEmail(appointment);
             return this.Ok();
         }
 
@@ -152,37 +110,26 @@
         [Route("Cancel")]
         public async Task<ActionResult> Cancel([FromForm] int id)
         {
-            var currentUser = await this.userManager.GetUserAsync(this.User);
-            var appointmentFromDb = await this.appointmentService.GetById(id);
+            var user = await this.userManager.GetUserAsync(this.User);
+            bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
+            Appointment appointment = await this.appointmentService.GetById(id);
 
             // Allow only admin to cancel others' appointments
-            if (appointmentFromDb.UserId != currentUser.Id && !this.User.IsInRole(GlobalValues.AdministratorRoleName))
+            if (appointment.UserId != user.Id && !userIsAdmin)
             {
                 return this.BadRequest();
             }
 
             // Delete slot & don't send emails if admin cancels unoccupied appointment slot
-            if (appointmentFromDb.UserId == null && this.User.IsInRole(GlobalValues.AdministratorRoleName))
+            if (appointment.UserId == null && userIsAdmin)
             {
-                await this.appointmentService.Delete(id);
+                await this.appointmentService.Delete(appointment);
                 return this.Ok();
             }
 
             // Cancel slot
-            await this.appointmentService.Cancel(id);
-
-            var adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
-            var emailText = $"<div>Hello, </div> <div></div> <div>{AppointmentCancellationIntro}</div><div>Thank you.</div>";
-
-            // Send email to user if admin cancels or vice versa
-            if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
-            {
-                await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, appointmentFromDb.User.Email, this.GetEmailSubject(appointmentFromDb.UtcStart), emailText);
-            }
-            else
-            {
-                await this.emailSender.SendEmailAsync(appointmentFromDb.User.Email, appointmentFromDb.User.UserName, adminEmail, this.GetEmailSubject(appointmentFromDb.UtcStart), emailText);
-            }
+            await this.appointmentService.Cancel(appointment);
+            await this.SendCancellationEmail(user, userIsAdmin, appointment);
 
             return this.Ok();
         }
@@ -192,6 +139,7 @@
         [Route("SetWorkingHours")]
         public ActionResult SetWorkingHours([FromForm] string startHour, [FromForm] string endHour)
         {
+            // Currently working only with 00 minutes
             GlobalValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
             GlobalValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);
             return this.Ok();
@@ -199,53 +147,128 @@
 
         [HttpGet]
         [Route("GetWorkingHours")]
-        public ActionResult<int[]> GetWorkingHours() => new int[] { GlobalValues.WorkDayStart, GlobalValues.WorkDayEnd };
-
-        private string GetEmailSubject(DateTime start) => $"{GlobalValues.SystemName} {AppointmentEmailSubject} on {start:dd MMMM HH:mm}";
-
-        private async Task SendBookingEmails(
-           string userEmail, string userUserName, DateTime userTimeAppointmentStart, string adminEmail, DateTime adminTimeAppointmentStart)
+        public ActionResult<int[]> GetWorkingHours()
         {
-            // TODO: this thing needs to be way more abstract.
-            var scheme = this.HttpContext.Request.Scheme;
-            var baseUrl = this.HttpContext.Request.Host.Value;
+            return new int[] { GlobalValues.WorkDayStart, GlobalValues.WorkDayEnd };
+        }
 
-            // TODO: Translate messages into Bulgarian
-            var urlElement = $"<a href=\"{scheme}://{baseUrl}/home/appointment\"><h3>Appointment Details and Approval</h3></a>";
-            var adminEmailText = $"<div>Hello, </div> <div></div> <div>You have a new appointment. Have a look below:</div><div></div><div>{urlElement}</div><div></div><div>Thank you!</div>";
-            var userEmailText = $"<div>Hello, </div> <div></div> <div>{AppointmentAwaitingApprovalText}</div><div>Thank you!</div>";
+        // Helper methods
+        private string FillInEmailTemplate(string templateName, string element)
+        {
+            return string.Format(this.localizer[templateName], element);
+        }
 
-            // Send emails to admin & user
-            await this.emailSender.SendEmailAsync(userEmail, userUserName, adminEmail, this.GetEmailSubject(userTimeAppointmentStart), adminEmailText);
-            await this.emailSender.SendEmailAsync(adminEmail, GlobalValues.SystemName, userEmail, this.GetEmailSubject(adminTimeAppointmentStart), userEmailText);
+        private DateTime ConvertToLocalTime(string windowsTimezoneId, DateTime utcTime)
+        {
+            TimeZoneInfo userWindowsTimezone = TZConvert.GetTimeZoneInfo(windowsTimezoneId);
+            DateTime userLocalTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, userWindowsTimezone);
+            return userLocalTime;
         }
 
         private async Task UpdateUserTimezone()
         {
-            string ianaTimezoneCookieValue = this.GetTimezoneCookieValue();
-
-            if (ianaTimezoneCookieValue != string.Empty)
-            {
-                return;
-            }
-
+            string userCurrentWindowsTimezoneId = this.GetUserWindowsTimezone().Id;
             var user = await this.userManager.GetUserAsync(this.User);
-            string timezoneWindowsId = TZConvert.GetTimeZoneInfo(ianaTimezoneCookieValue).Id;
 
-            if (user.WindowsTimezoneId == null ||
-                user.WindowsTimezoneId.ToLower().CompareTo(timezoneWindowsId.ToLower()) != 0)
+            if (user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
             {
-                user.WindowsTimezoneId = timezoneWindowsId;
+                user.WindowsTimezoneId = userCurrentWindowsTimezoneId;
                 await this.userManager.UpdateAsync(user);
             }
         }
 
-        private string GetTimezoneCookieValue() => this.HttpContext.Request.Cookies[IANATimezoneCookieName];
-
-        private DateTime GetUtcTimeSlot(DateTime timeSlot)
+        private TimeZoneInfo GetUserWindowsTimezone()
         {
-            var userWindowsTimezone = TZConvert.GetTimeZoneInfo(this.GetTimezoneCookieValue());
-            return TimeZoneInfo.ConvertTimeToUtc(timeSlot, userWindowsTimezone);
+            return TZConvert.GetTimeZoneInfo(this.HttpContext.Request.Cookies[IANATimezoneCookieName]);
+        }
+
+        private DateTime[] GetUtcTimeSlots(DateTime[] timeSlots)
+        {
+            DateTime[] adjustedTimeSlots = new DateTime[timeSlots.Length];
+
+            for (int i = 0; i < timeSlots.Length; i++)
+            {
+                adjustedTimeSlots[i] = TimeZoneInfo.ConvertTimeToUtc(timeSlots[i], this.GetUserWindowsTimezone());
+            }
+
+            return adjustedTimeSlots;
+        }
+
+        private async Task SendBookingEmails(Appointment appointment)
+        {
+            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
+            DateTime adminTimeAppointmentStart = this.ConvertToLocalTime(admin.WindowsTimezoneId, appointment.UtcStart);
+            string adminEmailBody = this.FillInEmailTemplate("Body", this.localizer["NewAppointment"]);
+            string adminEmailSubject = this.FillInEmailTemplate("Subject", adminTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+
+            // Send email to admin
+            await this.emailSender.SendEmailAsync(
+                from: appointment.User.Email,
+                fromName: appointment.User.UserName,
+                to: admin.Email,
+                subject: adminEmailSubject,
+                htmlContent: adminEmailBody);
+
+            DateTime userTimeAppointmentStart = this.ConvertToLocalTime(this.GetUserWindowsTimezone().Id, appointment.UtcStart);
+            string userEmailBody = this.FillInEmailTemplate("Body", this.localizer["AwaitingApproval"]);
+            string userEmailSubject = this.FillInEmailTemplate("Subject", userTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+
+            // Send email to user
+            await this.emailSender.SendEmailAsync(
+                from: admin.Email,
+                fromName: GlobalValues.SystemName,
+                to: appointment.User.Email,
+                subject: userEmailSubject,
+                htmlContent: userEmailBody);
+        }
+
+        private async Task SendApprovalEmail(Appointment appointmentFromDb)
+        {
+            string adminEmail =
+                            (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
+            DateTime userTimeAppointmentStart =
+                this.ConvertToLocalTime(appointmentFromDb.User.WindowsTimezoneId, appointmentFromDb.UtcStart);
+
+            string emailBody = this.FillInEmailTemplate("Body", this.localizer["Confirmation"]);
+            string emailSubject = this.FillInEmailTemplate("Subject", userTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+            await this.emailSender.SendEmailAsync(
+                from: adminEmail,
+                fromName: GlobalValues.SystemName,
+                to: appointmentFromDb.User.Email,
+                subject: emailSubject,
+                htmlContent: emailBody);
+        }
+
+        private async Task SendCancellationEmail(ApplicationUser user, bool userIsAdmin, Appointment appointment)
+        {
+            var admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
+            DateTime adminTimeAppointmentStart = this.ConvertToLocalTime(admin.WindowsTimezoneId, appointment.UtcStart);
+            string adminEmailSubject = this.FillInEmailTemplate("Subject", adminTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+
+            DateTime userTimeAppointmentStart = this.ConvertToLocalTime(this.GetUserWindowsTimezone().Id, appointment.UtcStart);
+            string userEmailSubject = this.FillInEmailTemplate("Subject", userTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+
+            var emailBody = this.FillInEmailTemplate("Body", this.localizer["Cancellation"]);
+
+            // Send email to user if admin cancels or vice versa
+            if (userIsAdmin)
+            {
+                await this.emailSender.SendEmailAsync(
+                    from: admin.Email,
+                    fromName: GlobalValues.SystemName,
+                    to: user.Email,
+                    subject: userEmailSubject,
+                    htmlContent: emailBody);
+            }
+            else
+            {
+                await this.emailSender.SendEmailAsync(
+                    from: user.Email,
+                    fromName: user.UserName,
+                    to: admin.Email,
+                    subject: adminEmailSubject,
+                    htmlContent: emailBody);
+            }
         }
     }
 }

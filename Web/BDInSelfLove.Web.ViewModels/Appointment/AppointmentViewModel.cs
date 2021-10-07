@@ -3,10 +3,11 @@
     using System;
 
     using AutoMapper;
+    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Appointment;
 
-    public class AppointmentViewModel : IMapFrom<AppointmentServiceModel>, IHaveCustomMappings
+    public class AppointmentViewModel : IMapFrom<Appointment>, IHaveCustomMappings
     {
         public int Id { get; set; }
 
@@ -22,12 +23,11 @@
 
         public string UserId { get; set; }
 
-
         public string Description { get; set; }
 
         public void CreateMappings(IProfileExpression configuration)
         {
-            configuration.CreateMap<AppointmentServiceModel, AppointmentViewModel>().ForMember(
+            configuration.CreateMap<Appointment, AppointmentViewModel>().ForMember(
                 m => m.Start,
                 opt => opt.MapFrom(x => x.UtcStart));
         }

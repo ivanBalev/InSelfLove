@@ -5,23 +5,23 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-
+    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Models.Appointment;
 
     public interface IAppointmentService
     {
-        Task<AppointmentServiceModel[]> GetAll(string userId);
+        IQueryable<Appointment> GetAll(string userId, bool userIsAdmin);
 
-        Task<int> Book(DateTime utcStart, string appointmentDescription, string userId);
+        Task<Appointment> Book(int appointmentId, string appointmentDescription, string userId);
 
-        Task<AppointmentServiceModel> GetById(int id);
+        Task<Appointment> GetById(int id);
 
         Task<int> Create(DateTime[] appointmentSlots, DateTime appointmentsDate);
 
-        Task<AppointmentServiceModel> Delete(int appointmentId);
+        Task<int> Delete(Appointment appointment);
 
-        Task<int> Approve(int appointmentId);
+        Task<Appointment> Approve(int appointmentId);
 
-        Task<int> Cancel(int id);
+        Task<int> Cancel(Appointment appointment);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using BDInSelfLove.Data.Models;
 using BDInSelfLove.Services.Data.Calendar;
@@ -72,10 +73,13 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var userAppointments = await this.appointmentService.GetAll(user.Id);
-            foreach (var appointment in userAppointments)
+            var userAppointmentIds = await this.appointmentService
+                .GetAll(user.Id, false)
+                .ToArrayAsync();
+
+            foreach (var appointment in userAppointmentIds)
             {
-                await this.appointmentService.Delete(appointment.Id);
+                await this.appointmentService.Delete(appointment);
             }
 
             user.IsDeleted = true;

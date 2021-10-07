@@ -192,9 +192,14 @@
             return;
         }
 
+        // Check if user hasn't tampered with data
+        if (appointments.filter(a => a.id === selectedAppointment.id).length === 0) {
+            return;
+        }
+
         let data = {
-            Start: selectedAppointment.start._i,
-            Description: $('#patientIssueDescription').val(),
+            Id: selectedAppointment.id,
+            Description: userIssueDescription,
         }
 
         $.ajax({
@@ -202,7 +207,7 @@
             url: '/api/appointments/Book',
             data: data,
             headers: { 'X-CSRF-TOKEN': token },
-            success: function (data) {
+            success: function () {
                 $('#bookAppointmentModal').modal('hide');
                 $('#patientIssueDescription').val('');
                 fetchEventAndRenderCalendar();
