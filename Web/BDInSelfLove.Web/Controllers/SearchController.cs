@@ -41,7 +41,7 @@ namespace BDInSelfLove.Web.Controllers
             var viewModel = new IndexSearchViewModel
             {
                 SearchTerm = searchTerm,
-                ArticlesPagination = new ArticlePaginationViewModel
+                ArticlesPagination = new ArticlesPaginationViewModel
                 {
                     PaginationInfo = new PaginationViewModel
                     {
@@ -74,7 +74,7 @@ namespace BDInSelfLove.Web.Controllers
 
             var pagesCount = (int)Math.Ceiling(serviceModel.ArticlesCount / (decimal)ArticlesPerPage);
 
-            var viewModel = new ArticlePaginationViewModel
+            var viewModel = new ArticlesPaginationViewModel
             {
                 Articles = serviceModel.Articles.Select(a => AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(a)).ToList(),
                 PaginationInfo = new PaginationViewModel

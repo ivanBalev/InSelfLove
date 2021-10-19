@@ -5,7 +5,6 @@
     using AutoMapper;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Appointment;
 
     public class AppointmentViewModel : IMapFrom<Appointment>, IHaveCustomMappings
     {

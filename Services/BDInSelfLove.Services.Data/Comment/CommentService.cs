@@ -1,19 +1,16 @@
-﻿using BDInSelfLove.Data.Common.Repositories;
-using BDInSelfLove.Data.Models;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Comment;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Services.Data.CommentService
+﻿namespace BDInSelfLove.Services.Data.CommentService
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Data.Common.Repositories;
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Models.Comment;
+    using Microsoft.EntityFrameworkCore;
+
     public class CommentService : ICommentService
     {
-        private const int MaxCommentNestingDepth = 3;
         private readonly IDeletableEntityRepository<Comment> commentRepository;
 
         public CommentService(IDeletableEntityRepository<Comment> commentRepository)
@@ -21,45 +18,33 @@ namespace BDInSelfLove.Services.Data.CommentService
             this.commentRepository = commentRepository;
         }
 
-        public async Task<int> Create(CommentServiceModel commentServiceModel)
+        public async Task<int> Create(Comment comment)
         {
-            var parentCommentId = commentServiceModel.ParentCommentId;
-            if (parentCommentId != null && await this.CheckCommentDepth(parentCommentId) >= MaxCommentNestingDepth)
-            {
-                // Set upper level parent to avoid too much nesting
-                commentServiceModel.ParentCommentId = (await this.commentRepository.All()
-                    .SingleOrDefaultAsync(c => c.Id == parentCommentId)).ParentCommentId;
-            }
-
-            var comment = AutoMapperConfig.MapperInstance.Map<Comment>(commentServiceModel);
-
+            await this.SetCommentDepth(comment);
             await this.commentRepository.AddAsync(comment);
             await this.commentRepository.SaveChangesAsync();
             return comment.Id;
         }
 
-        public IQueryable<CommentServiceModel> GetAllByArticleId(int articleId)
+        public IQueryable<Comment> GetAllByArticleId(int articleId)
         {
             return this.commentRepository.All()
-                .Where(a => a.ArticleId == articleId)
-                .To<CommentServiceModel>();
+                .Where(a => a.ArticleId == articleId);
         }
 
-        public IQueryable<CommentServiceModel> GetAllByVideoId(int videoId)
+        public IQueryable<Comment> GetAllByVideoId(int videoId)
         {
             return this.commentRepository.All()
-                .Where(vc => vc.VideoId == videoId)
-                .To<CommentServiceModel>();
+                .Where(vc => vc.VideoId == videoId);
         }
 
-        public IQueryable<CommentServiceModel> GetById(int commentId)
+        public IQueryable<Comment> GetById(int commentId)
         {
             return this.commentRepository.All()
-                .Where(a => a.Id == commentId)
-                .To<CommentServiceModel>();
+                .Where(a => a.Id == commentId);
         }
 
-        public async Task<int> Edit(CommentServiceModel serviceModel)
+        public async Task<int> Edit(Comment serviceModel)
         {
             var dbComment = await this.commentRepository.All().SingleOrDefaultAsync(a => a.Id == serviceModel.Id);
 
@@ -110,11 +95,11 @@ namespace BDInSelfLove.Services.Data.CommentService
 
         public ICollection<CommentServiceModel> ArrangeCommentHierarchy(ICollection<CommentServiceModel> comments)
         {
-            // Clear ef subcomment structure as it only goes 1 level deep
-            foreach (var comment in comments)
-            {
-                comment.SubComments.Clear();
-            }
+            //// Clear ef subcomment structure as it only goes 1 level deep
+            //foreach (var comment in comments)
+            //{
+            //    comment.SubComments.Clear();
+            //}
 
             // Populate subcomments references
             foreach (var comment in comments.Where(c => c.ParentCommentId != null))
@@ -141,16 +126,27 @@ namespace BDInSelfLove.Services.Data.CommentService
             return comments;
         }
 
-        private async Task<int> CheckCommentDepth(int? parentCommentId, int depthLevel = 1)
+        private async Task SetCommentDepth(Comment comment)
         {
-            var parentComment = await this.commentRepository.All().Where(c => c.Id == parentCommentId).FirstOrDefaultAsync();
-            if (parentComment.ParentCommentId != null)
-            {
-                depthLevel++;
-                depthLevel = await this.CheckCommentDepth(parentComment.ParentCommentId, depthLevel);
-            }
+            var parentCommentId = comment.ParentCommentId;
 
-            return depthLevel;
+            if (parentCommentId != null)
+            {
+                var grandParentCommentId = (await this.commentRepository.All()
+                    .FirstOrDefaultAsync(c => c.Id == parentCommentId)).ParentCommentId;
+
+                if (grandParentCommentId != null)
+                {
+                    var greatGrandParentCommentId = (await this.commentRepository.All()
+                    .FirstOrDefaultAsync(c => c.Id == grandParentCommentId)).ParentCommentId;
+
+                    if (greatGrandParentCommentId != null)
+                    {
+                        // Set parent 1 level up to avoid too much nesting
+                        comment.ParentCommentId = grandParentCommentId;
+                    }
+                }
+            }
         }
     }
 }

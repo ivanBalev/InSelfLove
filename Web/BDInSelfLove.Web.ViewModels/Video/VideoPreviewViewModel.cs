@@ -1,10 +1,11 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Video;
-using BDInSelfLove.Services.Models.Videos;
-using System;
-
-namespace BDInSelfLove.Web.ViewModels.Video
+﻿namespace BDInSelfLove.Web.ViewModels.Video
 {
+    using System;
+
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Services.Models.Video;
+    using BDInSelfLove.Services.Models.Videos;
+
     public class VideoPreviewViewModel : IMapFrom<VideoPreviewServiceModel>, IMapFrom<VideoServiceModel>
     {
         public int Id { get; set; }

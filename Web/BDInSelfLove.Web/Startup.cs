@@ -22,9 +22,7 @@
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Services.Models.Article;
     using BDInSelfLove.Web.InputModels.Article;
-    using BDInSelfLove.Web.ViewComponents.Models.Video;
     using BDInSelfLove.Web.ViewModels;
-    using BDInSelfLove.Web.ViewModels.Article;
     using CloudinaryDotNet;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -175,9 +173,8 @@
             AutoMapperConfig.RegisterMappings(
                 typeof(ErrorViewModel).GetTypeInfo().Assembly,
                 typeof(ArticleServiceModel).GetTypeInfo().Assembly,
-                typeof(ArticleViewModel).GetTypeInfo().Assembly,
-                typeof(HomeVideoViewModel).GetTypeInfo().Assembly,
-                typeof(ArticleEditInputModel).GetTypeInfo().Assembly);
+                typeof(ArticleEditInputModel).GetTypeInfo().Assembly,
+                typeof(Article).GetTypeInfo().Assembly);
 
             // Seed data on application startup
             using (var serviceScope = app.ApplicationServices.CreateScope())

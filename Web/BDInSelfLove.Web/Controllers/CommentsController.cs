@@ -1,27 +1,29 @@
-﻿using BDInSelfLove.Common;
-using BDInSelfLove.Data.Models;
-using BDInSelfLove.Services.Data.CommentService;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Comment;
-using BDInSelfLove.Web.InputModels.Comment;
-using BDInSelfLove.Web.ViewModels.Comment;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using TimeZoneConverter;
-
-namespace BDInSelfLove.Web.Controllers
+﻿namespace BDInSelfLove.Web.Controllers
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Common;
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Data.CommentService;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.InputModels.Comment;
+    using BDInSelfLove.Web.ViewModels.Comment;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using TimeZoneConverter;
+
     public class CommentsController : BaseController
     {
-        private readonly ICommentService commentService;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ICommentService commentService;
 
-        public CommentsController(ICommentService commentService, UserManager<ApplicationUser> userManager)
+        public CommentsController(
+            ICommentService commentService,
+            UserManager<ApplicationUser> userManager)
         {
             this.commentService = commentService;
             this.userManager = userManager;
@@ -37,17 +39,16 @@ namespace BDInSelfLove.Web.Controllers
                 return this.BadRequest();
             }
 
-            var user = await this.userManager.GetUserAsync(this.User);
-            var serviceModel = AutoMapperConfig.MapperInstance.Map<CommentServiceModel>(inputModel);
-            serviceModel.UserId = user.Id;
+            // Create comment
+            var dataForDb = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
+            dataForDb.UserId = this.userManager.GetUserId(this.User);
+            var commentId = await this.commentService.Create(dataForDb);
 
-            int commentId = await this.commentService.Create(serviceModel);
-            CommentViewModel commentViewModel = AutoMapperConfig.MapperInstance.Map<CommentViewModel>(
-                await this.commentService.GetById(commentId).FirstOrDefaultAsync());
-
-            TimeZoneInfo userTimezone = TZConvert.GetTimeZoneInfo(
-                    (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
-            commentViewModel.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(commentViewModel.CreatedOn, userTimezone);
+            // Create comment view model
+            var commentViewModel = await this.commentService.GetById(commentId)
+                .To<CommentViewModel>().FirstOrDefaultAsync();
+            commentViewModel.CreatedOn = TimezoneHelper
+                .ToLocalTime(commentViewModel.CreatedOn, this.TimezoneCookieValue);
 
             // TODO: Send email to admin when new comment added
             return this.View("_CommentSinglePartial", commentViewModel);
@@ -72,7 +73,7 @@ namespace BDInSelfLove.Web.Controllers
                 return this.BadRequest();
             }
 
-            var serviceModel = AutoMapperConfig.MapperInstance.Map<CommentServiceModel>(inputModel);
+            var serviceModel = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
 
             // Send data to service
             var result = await this.commentService.Edit(serviceModel);

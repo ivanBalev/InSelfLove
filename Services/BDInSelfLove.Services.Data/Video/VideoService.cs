@@ -71,7 +71,7 @@
                .To<VideoServiceModel>()
                .FirstOrDefaultAsync();
 
-            video.Comments = this.commentService.ArrangeCommentHierarchy(video.Comments);
+            //video.Comments = this.commentService.ArrangeCommentHierarchy(video.Comments);
             return video;
         }
 

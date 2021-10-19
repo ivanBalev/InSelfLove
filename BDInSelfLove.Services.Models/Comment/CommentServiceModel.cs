@@ -1,4 +1,5 @@
-﻿using BDInSelfLove.Services.Mapping;
+﻿using AutoMapper;
+using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Services.Models.Article;
 using BDInSelfLove.Services.Models.User;
 using System;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace BDInSelfLove.Services.Models.Comment
 {
-    public class CommentServiceModel : IMapFrom<Data.Models.Comment>, IMapTo<Data.Models.Comment>
+    public class CommentServiceModel : IMapFrom<Data.Models.Comment>, IMapTo<Data.Models.Comment>, IHaveCustomMappings
     {
         public int Id { get; set; }
 
@@ -25,8 +26,15 @@ namespace BDInSelfLove.Services.Models.Comment
 
         public DateTime CreatedOn { get; set; }
 
-        public virtual CommentServiceModel ParentComment { get; set; }
+        public CommentServiceModel ParentComment { get; set; }
 
-        public virtual IList<CommentServiceModel> SubComments { get; set; }
+        public IList<CommentServiceModel> SubComments { get; set; } = new List<CommentServiceModel>();
+
+        public void CreateMappings(IProfileExpression configuration)
+        {
+            configuration.CreateMap<Data.Models.Comment, CommentServiceModel>().ForMember(
+                m => m.SubComments,
+                opt => opt.Ignore());
+        }
     }
 }

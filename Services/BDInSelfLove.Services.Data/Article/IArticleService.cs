@@ -1,27 +1,25 @@
 ﻿namespace BDInSelfLove.Services.Data
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
+    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Models.Article;
 
     public interface IArticleService
     {
-        IQueryable<ArticleServiceModel> GetAll(int? count = null);
+        IQueryable<Article> GetAll(int? take = null, int skip = 0);
 
-        IQueryable<ArticlePreviewServiceModel> GetAllPagination(int take, int skip = 0);
+        Task<string> Create(Article articleServiceModel);
 
-        Task<string> CreateAsync(ArticleServiceModel articleServiceModel);
-
-        Task<ArticleServiceModel> GetById(int id);
+        IQueryable<Article> GetById(int id);
 
         Task<ArticleServiceModel> GetBySlug(string slug);
 
-        Task<string> Edit(ArticleServiceModel productServiceModel);
+        Task<string> Edit(Article productServiceModel);
 
-        Task<bool> Delete(int id);
+        Task<int> Delete(int id);
 
-        IQueryable<ArticlePreviewServiceModel> GetSideArticles(int articlesCount, int articleId = 0);
+        IQueryable<Article> GetSideArticles(int articlesCount, int articleId = 0);
     }
 }

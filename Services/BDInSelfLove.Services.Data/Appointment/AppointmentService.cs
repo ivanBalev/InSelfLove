@@ -1,24 +1,18 @@
 ﻿namespace BDInSelfLove.Services.Data.Calendar
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Appointment;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
 
     public class AppointmentService : IAppointmentService
     {
         private readonly IDeletableEntityRepository<Appointment> appointmentRepository;
 
-        public AppointmentService(
-            IDeletableEntityRepository<Appointment> appointmentRepository)
+        public AppointmentService(IDeletableEntityRepository<Appointment> appointmentRepository)
         {
             this.appointmentRepository = appointmentRepository;
         }
@@ -83,8 +77,8 @@
             dbAppointment.Description = appointmentDescription;
             dbAppointment.UserId = userId;
             this.appointmentRepository.Update(dbAppointment);
-
             await this.appointmentRepository.SaveChangesAsync();
+
             return dbAppointment;
         }
 

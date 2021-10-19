@@ -16,24 +16,29 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Localization;
-    using TimeZoneConverter;
 
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AppointmentsController : BaseController
     {
-        private const string IANATimezoneCookieName = "timezoneIANA";
+        private const string Body = "Body";
+        private const string Subject = "Subject";
+        private const string Cancellation = "Cancellation";
+        private const string Confirmation = "Confirmation";
+        private const string NewAppointment = "NewAppointment";
+        private const string DateEmailFormat = "dd MMMM HH:mm";
+        private const string AwaitingApproval = "AwaitingApproval";
 
-        private readonly IAppointmentService appointmentService;
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly IEmailSender emailSender;
         private readonly IStringLocalizer<AppointmentsController> localizer;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IAppointmentService appointmentService;
+        private readonly IEmailSender emailSender;
 
         public AppointmentsController(
+            IEmailSender emailSender,
             IAppointmentService appointmentService,
             UserManager<ApplicationUser> userManager,
-            IEmailSender emailSender,
             IStringLocalizer<AppointmentsController> localizer)
         {
             this.appointmentService = appointmentService;
@@ -55,7 +60,8 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
         {
-            DateTime[] utcTimeSlots = this.GetUtcTimeSlots(availabilityInput.TimeSlots).ToArray();
+            DateTime[] utcTimeSlots = availabilityInput.TimeSlots
+                .Select(ts => TimezoneHelper.ToUTCTime(ts, this.TimezoneCookieValue)).ToArray();
             await this.appointmentService.Create(utcTimeSlots, availabilityInput.Date);
             return this.Ok();
         }
@@ -73,8 +79,7 @@
                 .ToArrayAsync())
                 .Select(a =>
                  {
-                     // Convert start times to user local time
-                     a.Start = TimeZoneInfo.ConvertTimeFromUtc(a.Start, this.GetUserWindowsTimezone());
+                     a.Start = TimezoneHelper.ToLocalTime(a.Start, this.TimezoneCookieValue);
                      return a;
                  }).ToArray();
 
@@ -120,17 +125,15 @@
                 return this.BadRequest();
             }
 
-            // Delete slot & don't send emails if admin cancels unoccupied appointment slot
+            // Delete slot if admin cancels unoccupied appointment & don't send emails
             if (appointment.UserId == null && userIsAdmin)
             {
                 await this.appointmentService.Delete(appointment);
                 return this.Ok();
             }
 
-            // Cancel slot
             await this.appointmentService.Cancel(appointment);
             await this.SendCancellationEmail(user, userIsAdmin, appointment);
-
             return this.Ok();
         }
 
@@ -158,16 +161,9 @@
             return string.Format(this.localizer[templateName], element);
         }
 
-        private DateTime ConvertToLocalTime(string windowsTimezoneId, DateTime utcTime)
-        {
-            TimeZoneInfo userWindowsTimezone = TZConvert.GetTimeZoneInfo(windowsTimezoneId);
-            DateTime userLocalTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, userWindowsTimezone);
-            return userLocalTime;
-        }
-
         private async Task UpdateUserTimezone()
         {
-            string userCurrentWindowsTimezoneId = this.GetUserWindowsTimezone().Id;
+            string userCurrentWindowsTimezoneId = TimezoneHelper.GetUserWindowsTimezone(this.TimezoneCookieValue).Id;
             var user = await this.userManager.GetUserAsync(this.User);
 
             if (user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
@@ -177,29 +173,12 @@
             }
         }
 
-        private TimeZoneInfo GetUserWindowsTimezone()
-        {
-            return TZConvert.GetTimeZoneInfo(this.HttpContext.Request.Cookies[IANATimezoneCookieName]);
-        }
-
-        private DateTime[] GetUtcTimeSlots(DateTime[] timeSlots)
-        {
-            DateTime[] adjustedTimeSlots = new DateTime[timeSlots.Length];
-
-            for (int i = 0; i < timeSlots.Length; i++)
-            {
-                adjustedTimeSlots[i] = TimeZoneInfo.ConvertTimeToUtc(timeSlots[i], this.GetUserWindowsTimezone());
-            }
-
-            return adjustedTimeSlots;
-        }
-
         private async Task SendBookingEmails(Appointment appointment)
         {
             ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
-            DateTime adminTimeAppointmentStart = this.ConvertToLocalTime(admin.WindowsTimezoneId, appointment.UtcStart);
-            string adminEmailBody = this.FillInEmailTemplate("Body", this.localizer["NewAppointment"]);
-            string adminEmailSubject = this.FillInEmailTemplate("Subject", adminTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+            DateTime adminTimeAppointmentStart = TimezoneHelper.ToLocalTime(appointment.UtcStart, this.TimezoneCookieValue);
+            string adminEmailBody = this.FillInEmailTemplate(Body, this.localizer[NewAppointment]);
+            string adminEmailSubject = this.FillInEmailTemplate(Subject, adminTimeAppointmentStart.ToString(DateEmailFormat));
 
             // Send email to admin
             await this.emailSender.SendEmailAsync(
@@ -209,9 +188,9 @@
                 subject: adminEmailSubject,
                 htmlContent: adminEmailBody);
 
-            DateTime userTimeAppointmentStart = this.ConvertToLocalTime(this.GetUserWindowsTimezone().Id, appointment.UtcStart);
-            string userEmailBody = this.FillInEmailTemplate("Body", this.localizer["AwaitingApproval"]);
-            string userEmailSubject = this.FillInEmailTemplate("Subject", userTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+            DateTime userTimeAppointmentStart = TimezoneHelper.ToLocalTime(appointment.UtcStart, this.TimezoneCookieValue);
+            string userEmailBody = this.FillInEmailTemplate(Body, this.localizer[AwaitingApproval]);
+            string userEmailSubject = this.FillInEmailTemplate(Subject, userTimeAppointmentStart.ToString(DateEmailFormat));
 
             // Send email to user
             await this.emailSender.SendEmailAsync(
@@ -227,10 +206,10 @@
             string adminEmail =
                             (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
             DateTime userTimeAppointmentStart =
-                this.ConvertToLocalTime(appointmentFromDb.User.WindowsTimezoneId, appointmentFromDb.UtcStart);
+                TimezoneHelper.ToLocalTime(appointmentFromDb.UtcStart, this.TimezoneCookieValue);
 
-            string emailBody = this.FillInEmailTemplate("Body", this.localizer["Confirmation"]);
-            string emailSubject = this.FillInEmailTemplate("Subject", userTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+            string emailBody = this.FillInEmailTemplate(Body, this.localizer[Confirmation]);
+            string emailSubject = this.FillInEmailTemplate(Subject, userTimeAppointmentStart.ToString(DateEmailFormat));
             await this.emailSender.SendEmailAsync(
                 from: adminEmail,
                 fromName: GlobalValues.SystemName,
@@ -242,13 +221,13 @@
         private async Task SendCancellationEmail(ApplicationUser user, bool userIsAdmin, Appointment appointment)
         {
             var admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
-            DateTime adminTimeAppointmentStart = this.ConvertToLocalTime(admin.WindowsTimezoneId, appointment.UtcStart);
-            string adminEmailSubject = this.FillInEmailTemplate("Subject", adminTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+            DateTime adminTimeAppointmentStart = TimezoneHelper.ToLocalTime(appointment.UtcStart, this.TimezoneCookieValue);
+            string adminEmailSubject = this.FillInEmailTemplate(Subject, adminTimeAppointmentStart.ToString(DateEmailFormat));
 
-            DateTime userTimeAppointmentStart = this.ConvertToLocalTime(this.GetUserWindowsTimezone().Id, appointment.UtcStart);
-            string userEmailSubject = this.FillInEmailTemplate("Subject", userTimeAppointmentStart.ToString("dd MMMM HH:mm"));
+            DateTime userTimeAppointmentStart = TimezoneHelper.ToLocalTime(appointment.UtcStart, this.TimezoneCookieValue);
+            string userEmailSubject = this.FillInEmailTemplate(Subject, userTimeAppointmentStart.ToString(DateEmailFormat));
 
-            var emailBody = this.FillInEmailTemplate("Body", this.localizer["Cancellation"]);
+            var emailBody = this.FillInEmailTemplate(Body, this.localizer[Cancellation]);
 
             // Send email to user if admin cancels or vice versa
             if (userIsAdmin)

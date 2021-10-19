@@ -3,6 +3,7 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data;
@@ -13,38 +14,36 @@
     using BDInSelfLove.Web.ViewModels;
     using BDInSelfLove.Web.ViewModels.Home;
     using BDInSelfLove.Web.ViewModels.Video;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using TimeZoneConverter;
+    using Microsoft.Extensions.Localization;
 
     public class HomeController : BaseController
     {
         private const int IndexItemsCount = 4;
-        private const string BGCulture = "bg";
-        private const string ContactsUserEmailTextEN = "<div>Hello, </div> <div></div> <div>Your email has been received.</div><div>Thank you!</div>";
-        private const string ContactsUserEmailTextBG = "<div>Здравей, </div> <div></div> <div>Имейлът ти е получен.</div><div>Благодаря!</div>";
-        private const string ContactsStatusMessageEN = "Your email has been received. Thank you!";
-        private const string ContactsStatusMessageBG = "Имейлът ти е получен. Благодаря!";
-        private const string ContactsAdminEmailText = "<div>{0}</div><div>Name: {1} {2}</div><div>Phone: {3}</div>";
+        private const string StatusMessage = "StatusMessage";
+        private const string UserEmailBody = "UserEmailBody";
+        private const string AdminEmailBodyTemplate = "AdminEmailBodyTemplate";
 
+        private readonly IStringLocalizer<HomeController> localizer;
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly IArticleService articleService;
         private readonly IVideoService videoService;
         private readonly IEmailSender emailSender;
-        private readonly UserManager<ApplicationUser> userManager;
 
         public HomeController(
-            IArticleService articleService,
-            IVideoService videoService,
             IEmailSender emailSender,
-            UserManager<ApplicationUser> userManager)
+            IVideoService videoService,
+            IArticleService articleService,
+            UserManager<ApplicationUser> userManager,
+            IStringLocalizer<HomeController> localizer)
         {
             this.articleService = articleService;
             this.videoService = videoService;
             this.emailSender = emailSender;
             this.userManager = userManager;
+            this.localizer = localizer;
         }
 
         public async Task<IActionResult> Index()
@@ -92,7 +91,6 @@
         // Helper methods
         private async Task SubmitContactForm(ContactFormInputModel userInfo)
         {
-            string culture = this.Request.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
             string adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
 
             // Send email to admin
@@ -101,7 +99,7 @@
                 fromName: $"{userInfo.FirstName} {userInfo.LastName}",
                 to: adminEmail,
                 subject: GlobalValues.SystemName,
-                htmlContent: string.Format(ContactsAdminEmailText, userInfo.Message, userInfo.FirstName, userInfo.LastName, userInfo.PhoneNumber));
+                htmlContent: string.Format(this.localizer[AdminEmailBodyTemplate], userInfo.Message, userInfo.FirstName, userInfo.LastName, userInfo.PhoneNumber));
 
             // Send email to user
             await this.emailSender.SendEmailAsync(
@@ -109,9 +107,9 @@
                 fromName: GlobalValues.SystemName,
                 to: userInfo.Email,
                 subject: GlobalValues.SystemName,
-                htmlContent: culture == BGCulture ? ContactsUserEmailTextBG : ContactsUserEmailTextEN);
+                htmlContent: this.localizer[UserEmailBody]);
 
-            this.TempData["StatusMessage"] = culture == BGCulture ? ContactsStatusMessageBG : ContactsStatusMessageEN;
+            this.TempData["StatusMessage"] = this.localizer[StatusMessage];
         }
     }
 }

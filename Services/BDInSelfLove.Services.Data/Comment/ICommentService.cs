@@ -1,23 +1,23 @@
-﻿using BDInSelfLove.Services.Models.Comment;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Services.Data.CommentService
+﻿namespace BDInSelfLove.Services.Data.CommentService
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Models.Comment;
+
     public interface ICommentService
     {
-        Task<int> Create(CommentServiceModel commentServiceModel);
+        Task<int> Create(Comment commentServiceModel);
 
-        IQueryable<CommentServiceModel> GetAllByArticleId(int articleId);
+        IQueryable<Comment> GetAllByArticleId(int articleId);
 
-        IQueryable<CommentServiceModel> GetAllByVideoId(int videoId);
+        IQueryable<Comment> GetAllByVideoId(int videoId);
 
-        IQueryable<CommentServiceModel> GetById(int commentId);
+        IQueryable<Comment> GetById(int commentId);
 
-        Task<int> Edit(CommentServiceModel serviceModel);
+        Task<int> Edit(Comment serviceModel);
 
         Task<int> Delete(int commentId);
 

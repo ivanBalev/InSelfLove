@@ -1,24 +1,9 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Article;
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
-
-namespace BDInSelfLove.Web.InputModels.Article
+﻿namespace BDInSelfLove.Web.InputModels.Article
 {
-    public class ArticleEditInputModel : IMapTo<ArticleServiceModel>, IMapFrom<ArticleServiceModel>
+    public class ArticleEditInputModel : ArticleCreateInputModel
     {
         public int Id { get; set; }
 
-        [Required]
-        public string Title { get; set; }
-
         public string Slug => this.Title.ToLower().Replace(' ', '-');
-
-        [Required]
-        public string Content { get; set; }
-
-        public string ImageUrl { get; set; }
-
-        public IFormFile Image { get; set; }
     }
 }

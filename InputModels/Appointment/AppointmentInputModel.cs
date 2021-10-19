@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Appointment;
-using System.ComponentModel.DataAnnotations;
-
-namespace BDInSelfLove.Web.InputModels.Appointment
+﻿namespace BDInSelfLove.Web.InputModels.Appointment
 {
-    public class AppointmentInputModel : IMapTo<AppointmentServiceModel>
+    using System.ComponentModel.DataAnnotations;
+
+    public class AppointmentInputModel
     {
         [Required]
         public int Id { get; set; }

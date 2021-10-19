@@ -1,10 +1,9 @@
 ﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Comment;
 using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Comment
 {
-    public class CommentEditInputModel : IMapTo<CommentServiceModel>
+    public class CommentEditInputModel : IMapTo<Data.Models.Comment>
     {
         [Required]
         public int Id { get; set; }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Web.ViewModels.Pagination
+﻿namespace BDInSelfLove.Web.ViewModels.Pagination
 {
     public class PaginationViewModel
     {

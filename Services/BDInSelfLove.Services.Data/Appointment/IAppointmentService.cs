@@ -1,12 +1,10 @@
 ﻿namespace BDInSelfLove.Services.Data.Calendar
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
+
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Models.Appointment;
 
     public interface IAppointmentService
     {

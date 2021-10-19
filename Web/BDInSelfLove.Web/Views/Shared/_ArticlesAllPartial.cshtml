@@ -1,9 +1,12 @@
-﻿@model BDInSelfLove.Web.ViewModels.Article.ArticlePaginationViewModel
-
-@* Remove layout when using search (REST API Ajax Request) *@
-@if(this.ViewContext.RouteData.Values["controller"].ToString() == "Search")
-{
-    this.Layout = null;
+﻿@model BDInSelfLove.Web.ViewModels.Article.ArticlesPaginationViewModel
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    if (controllerName == "Search")
+    {
+        // Remove layout when using search (REST API Ajax Request)
+        this.Layout = null;
+    }
+    this.Model.PaginationInfo.ControllerName = controllerName;
 }
 
 <div id="all-articles" class="py-4">

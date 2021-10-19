@@ -1,12 +1,10 @@
-﻿using BDInSelfLove.Web.ViewModels.Home;
-using BDInSelfLove.Web.ViewModels.Video;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.ViewComponents.Models.Sidebar
+﻿namespace BDInSelfLove.Web.ViewComponents.Models.Sidebar
 {
+    using System.Collections.Generic;
+
+    using BDInSelfLove.Web.ViewModels.Home;
+    using BDInSelfLove.Web.ViewModels.Video;
+
     public class SuggestedViewModel
     {
         public SuggestedViewModel()

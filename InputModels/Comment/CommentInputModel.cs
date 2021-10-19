@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Comment
 {
-    public class CommentInputModel : IMapTo<CommentServiceModel>
+    public class CommentInputModel : IMapTo<Data.Models.Comment>
     {
         [Required]
         [MinLength(2, ErrorMessage = "Comment must be longer than 2 symbols")]

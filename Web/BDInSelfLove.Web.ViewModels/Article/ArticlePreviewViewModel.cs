@@ -1,14 +1,13 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Article;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-
-namespace BDInSelfLove.Web.ViewModels.Home
+﻿namespace BDInSelfLove.Web.ViewModels.Home
 {
-    public class ArticlePreviewViewModel : IMapFrom<ArticleServiceModel>, IMapFrom<ArticlePreviewServiceModel>
+    using System;
+    using System.Net;
+    using System.Text.RegularExpressions;
+
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Mapping;
+
+    public class ArticlePreviewViewModel : IMapFrom<Article>
     {
         private const int PreviewContentLength = 320;
 

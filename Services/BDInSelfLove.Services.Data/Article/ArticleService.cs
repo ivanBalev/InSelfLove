@@ -1,7 +1,6 @@
 ﻿namespace BDInSelfLove.Services.Data
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -10,48 +9,36 @@
     using BDInSelfLove.Services.Data.CommentService;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Article;
-    using BDInSelfLove.Services.Models.Comment;
     using Microsoft.EntityFrameworkCore;
 
     public class ArticleService : IArticleService
     {
-        private const int DefaultArticlesPerPage = 6;
-
-        private readonly IDeletableEntityRepository<Article> articleRepository;
         private readonly ICommentService commentService;
+        private readonly IDeletableEntityRepository<Article> articleRepository;
 
-        public ArticleService(IDeletableEntityRepository<Article> articleRepository, ICommentService commentService)
+        public ArticleService(
+            ICommentService commentService,
+            IDeletableEntityRepository<Article> articleRepository)
         {
             this.articleRepository = articleRepository;
             this.commentService = commentService;
         }
 
-        public async Task<string> CreateAsync(ArticleServiceModel articleServiceModel)
+        public async Task<string> Create(Article article)
         {
-            var article = AutoMapperConfig.MapperInstance.Map<Article>(articleServiceModel);
-
             await this.articleRepository.AddAsync(article);
             await this.articleRepository.SaveChangesAsync();
-
             return article.Title.ToLower().Replace(' ', '-');
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<int> Delete(int id)
         {
             var dbArticle = await this.articleRepository.All().SingleOrDefaultAsync(a => a.Id == id);
-
-            if (dbArticle == null)
-            {
-                throw new ArgumentNullException(nameof(dbArticle));
-            }
-
             this.articleRepository.Delete(dbArticle);
-            int result = await this.articleRepository.SaveChangesAsync();
-
-            return result > 0;
+            return await this.articleRepository.SaveChangesAsync();
         }
 
-        public async Task<string> Edit(ArticleServiceModel articleServiceModel)
+        public async Task<string> Edit(Article articleServiceModel)
         {
             var dbArticle = await this.articleRepository.All().SingleOrDefaultAsync(a => a.Id == articleServiceModel.Id);
 
@@ -70,57 +57,21 @@
             return dbArticle.Title.ToLower().Replace(' ', '-');
         }
 
-        public IQueryable<ArticleServiceModel> GetAll(int? latestArticlesCount = null)
+        public IQueryable<Article> GetAll(int? take = null, int skip = 0)
         {
-            IQueryable<Article> query = this.articleRepository.AllAsNoTracking().OrderByDescending(a => a.CreatedOn);
+            var query = this.articleRepository.All().OrderByDescending(a => a.CreatedOn).Skip(skip);
 
-            if (latestArticlesCount.HasValue)
+            if (take.HasValue)
             {
-                query = query.Take(latestArticlesCount.Value);
+                query = query.Take(take.Value);
             }
 
-            return query.To<ArticleServiceModel>();
+            return query;
         }
 
-        public IQueryable<ArticlePreviewServiceModel> GetAllPagination(int take = DefaultArticlesPerPage, int skip = 0)
+        public IQueryable<Article> GetById(int id)
         {
-            var articles = this.articleRepository
-                               .All()
-                               .OrderByDescending(a => a.CreatedOn)
-                               .Skip(skip)
-                               .Take(take)
-                               .To<ArticlePreviewServiceModel>();
-
-            return articles;
-        }
-
-        public async Task<ArticleServiceModel> GetById(int id)
-        {
-            var article = await this.articleRepository.All()
-               .Where(a => a.Id == id)
-               .Include(a => a.User)
-               .Include(a => a.Comments)
-               .To<ArticleServiceModel>()
-               .FirstOrDefaultAsync();
-
-            foreach (var comment in article.Comments)
-            {
-                comment.SubComments.Clear();
-            }
-
-            foreach (var comment in article.Comments)
-            {
-                if (comment.ParentCommentId != null)
-                {
-                    var parentComment = article.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
-                    parentComment.SubComments.Add(comment);
-                }
-            }
-
-            article.Comments = article.Comments
-                .Where(c => c.ParentCommentId == null).OrderByDescending(c => c.CreatedOn).ToList();
-
-            return article;
+            return this.articleRepository.All().Where(a => a.Id == id);
         }
 
         public async Task<ArticleServiceModel> GetBySlug(string slug)
@@ -134,13 +85,12 @@
             return article;
         }
 
-        public IQueryable<ArticlePreviewServiceModel> GetSideArticles(int articlesCount, int articleId = 0)
+        public IQueryable<Article> GetSideArticles(int articlesCount, int articleId = 0)
         {
             var articles = this.articleRepository.All()
                .Where(a => a.Id != articleId)
                .OrderByDescending(a => a.CreatedOn)
-               .Take(articlesCount)
-               .To<ArticlePreviewServiceModel>();
+               .Take(articlesCount);
 
             return articles;
         }

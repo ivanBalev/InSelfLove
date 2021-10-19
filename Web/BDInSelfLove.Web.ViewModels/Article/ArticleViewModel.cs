@@ -3,12 +3,13 @@
     using System;
     using System.Collections.Generic;
 
+    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Models.Article;
     using BDInSelfLove.Web.ViewModels.Comment;
     using Ganss.XSS;
 
-    public class ArticleViewModel : IMapFrom<ArticleServiceModel>
+    public class ArticleViewModel : IMapFrom<Article>, IMapFrom<ArticleServiceModel>
     {
         public ArticleViewModel()
         {

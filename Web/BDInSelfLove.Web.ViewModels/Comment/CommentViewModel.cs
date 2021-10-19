@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace BDInSelfLove.Web.ViewModels.Comment
 {
-    public class CommentViewModel : IMapFrom<CommentServiceModel>
+    public class CommentViewModel : IMapFrom<Data.Models.Comment>, IMapFrom<CommentServiceModel>
     {
         public int Id { get; set; }
 
