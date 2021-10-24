@@ -5,21 +5,22 @@
 
     document.querySelectorAll(refresherId + ' .page-link').forEach(pl => pl.addEventListener('click', e => {
         e.preventDefault();
-        let hrefArray = e.target.getAttribute('href').split('/');
+        let hrefArray = e.target.getAttribute('href').split('/').filter(x => x);
 
         let searchTerm = document.querySelector('#search-term').value;
         let page = hrefArray[1].split('=')[1];
-        let controller = hrefArray[1].split('?')[0];
+        let action = hrefArray[1].split('?')[0];
+        let controller = hrefArray[0];
 
         $.ajax({
             type: "GET",
-            url: '/api/Search/' + controller,
+            url: `/api/${controller}/${action}`,
             data: {
                 page: page,
                 searchTerm: searchTerm,
             },
             success: function (data) {
-                if (controller === "Video") {
+                if (action === "Video") {
                     $('#all-videos').replaceWith(data);
                     equalizeVideoPreviewHeight();
                     paginationScripts('#all-videos');

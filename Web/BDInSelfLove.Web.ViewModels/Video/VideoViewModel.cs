@@ -1,13 +1,12 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Videos;
-using BDInSelfLove.Web.ViewModels.Comment;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Web.ViewModels.Video
+﻿namespace BDInSelfLove.Web.ViewModels.Video
 {
-    public class VideoViewModel : IMapFrom<VideoServiceModel>
+    using System;
+    using System.Collections.Generic;
+
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.ViewModels.Comment;
+
+    public class VideoViewModel : IMapFrom<BDInSelfLove.Data.Models.Video>
     {
         public int Id { get; set; }
 

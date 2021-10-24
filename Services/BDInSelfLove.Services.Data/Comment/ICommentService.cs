@@ -17,11 +17,11 @@
 
         IQueryable<Comment> GetById(int commentId);
 
-        Task<int> Edit(Comment serviceModel);
+        Task<int> Edit(Comment serviceModel, string userId);
 
-        Task<int> Delete(int commentId);
+        Task<int> Delete(int commentId, string userId, bool isUserAdmin);
 
-        ICollection<CommentServiceModel> ArrangeCommentHierarchy(ICollection<CommentServiceModel> comments);
+        ICollection<Comment> ArrangeCommentHierarchy(ICollection<Comment> comments);
 
     }
 }

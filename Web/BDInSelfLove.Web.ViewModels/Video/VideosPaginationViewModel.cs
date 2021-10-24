@@ -1,10 +1,9 @@
-﻿using BDInSelfLove.Web.ViewModels.Pagination;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BDInSelfLove.Web.ViewModels.Video
+﻿namespace BDInSelfLove.Web.ViewModels.Video
 {
+    using System.Collections.Generic;
+
+    using BDInSelfLove.Web.ViewModels.Pagination;
+
     public class VideoPaginationViewModel
     {
         public ICollection<VideoPreviewViewModel> Videos { get; set; }

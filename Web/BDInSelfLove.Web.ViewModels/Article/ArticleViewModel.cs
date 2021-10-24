@@ -18,8 +18,6 @@
 
         public int Id { get; set; }
 
-        public string UserUsername { get; set; }
-
         public string Title { get; set; }
 
         public DateTime CreatedOn { get; set; }

@@ -32,20 +32,18 @@
             if (videoId != 0)
             {
                 // Suggest more videos only for videos page.
-                viewModel.Videos = (await this.videoService
+                viewModel.Videos = await this.videoService
                .GetSideVideos(SidebarItemsCount, videoId)
-               .ToListAsync())
-               .Select(a => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(a))
-               .ToList();
+               .To<VideoPreviewViewModel>()
+               .ToListAsync();
             }
             else
             {
                 // Suggest more articles only for articles page.
-                viewModel.Articles = (await this.articleService
+                viewModel.Articles = await this.articleService
                .GetSideArticles(SidebarItemsCount, articleId)
-               .ToListAsync())
-               .Select(a => AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(a))
-               .ToList();
+               .To<ArticlePreviewViewModel>()
+               .ToListAsync();
             }
 
             return this.View(viewModel);

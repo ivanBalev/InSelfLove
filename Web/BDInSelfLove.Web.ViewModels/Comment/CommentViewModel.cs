@@ -1,14 +1,13 @@
-﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Comment;
-using Ganss.XSS;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-
-namespace BDInSelfLove.Web.ViewModels.Comment
+﻿namespace BDInSelfLove.Web.ViewModels.Comment
 {
-    public class CommentViewModel : IMapFrom<Data.Models.Comment>, IMapFrom<CommentServiceModel>
+    using System;
+    using System.Collections.Generic;
+    using System.Text.RegularExpressions;
+
+    using BDInSelfLove.Services.Mapping;
+    using Ganss.XSS;
+
+    public class CommentViewModel : IMapFrom<Data.Models.Comment>
     {
         public int Id { get; set; }
 

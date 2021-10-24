@@ -33,20 +33,18 @@ namespace BDInSelfLove.Web.ViewComponents
             if (isArticle)
             {
                 // Suggest more videos only for articles page.
-                viewModel.Videos = (await this.videoService
+                viewModel.Videos = await this.videoService
                .GetSideVideos(SidebarItemsCount, 0)
-               .ToListAsync())
-               .Select(a => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(a))
-               .ToList();
+               .To<VideoPreviewViewModel>()
+               .ToListAsync();
             }
             else
             {
                 // Suggest more articles only for videos page.
-                viewModel.Articles = (await this.articleService
+                viewModel.Articles = await this.articleService
                .GetSideArticles(SidebarItemsCount, 0)
-               .ToListAsync())
-               .Select(a => AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(a))
-               .ToList();
+               .To<ArticlePreviewViewModel>()
+               .ToListAsync();
             }
 
             return this.View(viewModel);

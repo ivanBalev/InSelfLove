@@ -16,7 +16,7 @@ namespace BDInSelfLove.Services.Models.Comment
 
         public string UserId { get; set; }
 
-        public virtual ApplicationUserServiceModel User { get; set; }
+        public ApplicationUserServiceModel User { get; set; }
 
         public int? ArticleId { get; set; }
 

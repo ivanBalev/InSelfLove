@@ -16,6 +16,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
     using TimeZoneConverter;
 
     public class VideosController : BaseController
@@ -56,7 +57,9 @@
         public async Task<IActionResult> Index(int page = 1)
         {
             var serviceModel = await this.videoService
-                .GetAllPagination(VideosPerPage, (page - 1) * VideosPerPage);
+                .GetAll(VideosPerPage, (page - 1) * VideosPerPage)
+                .To<VideoPreviewViewModel>()
+                .ToArrayAsync();
 
             var pagesCount = (int)Math.Ceiling(this.videoService.GetAll().Count() / (decimal)VideosPerPage);
             var viewModel = new VideoPaginationViewModel()
@@ -65,7 +68,6 @@
                 .ToList(),
                 PaginationInfo = new PaginationViewModel
                 {
-                    ControllerName = this.ControllerContext.RouteData.Values["controller"].ToString(),
                     PagesCount = pagesCount == 0 ? 1 : pagesCount,
                     CurrentPage = page,
                 },

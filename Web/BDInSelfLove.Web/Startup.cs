@@ -15,7 +15,6 @@
     using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Data.CommentService;
-    using BDInSelfLove.Services.Data.Search;
     using BDInSelfLove.Services.Data.User;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
@@ -152,7 +151,6 @@
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAppointmentService, AppointmentService>();
             services.AddTransient<ICommentService, CommentService>();
-            services.AddTransient<ISearchService, SearchService>();
 
             // Logging
             services.AddLogging(loggingBuilder =>

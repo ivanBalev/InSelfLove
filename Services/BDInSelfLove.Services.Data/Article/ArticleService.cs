@@ -1,14 +1,13 @@
 ﻿namespace BDInSelfLove.Services.Data
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.CommentService;
-    using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Article;
     using Microsoft.EntityFrameworkCore;
 
     public class ArticleService : IArticleService
@@ -57,9 +56,25 @@
             return dbArticle.Title.ToLower().Replace(' ', '-');
         }
 
-        public IQueryable<Article> GetAll(int? take = null, int skip = 0)
+        public IQueryable<Article> GetAll(int? take = null, int skip = 0, string searchString = null)
         {
-            var query = this.articleRepository.All().OrderByDescending(a => a.CreatedOn).Skip(skip);
+            var query = this.articleRepository.All();
+
+            if (searchString != null)
+            {
+                var searchItems = SearchHelpers.GetSearchItems(searchString);
+                foreach (var item in searchItems)
+                {
+                    // TODO: need to check why I needed this
+                    var tempItem = item;
+
+                    query = query.Where(a =>
+                    a.Content.ToLower().Contains(tempItem) ||
+                    a.Title.ToLower().Contains(tempItem));
+                }
+            }
+
+            query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);
 
             if (take.HasValue)
             {
@@ -74,12 +89,34 @@
             return this.articleRepository.All().Where(a => a.Id == id);
         }
 
-        public async Task<ArticleServiceModel> GetBySlug(string slug)
+        public async Task<Article> GetBySlug(string slug)
         {
             var article = await this.articleRepository.All()
-               .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
-               .To<ArticleServiceModel>()
-               .FirstOrDefaultAsync();
+                .Where(a => a.Title.ToLower().Equals(slug.Replace('-', ' ')))
+                .Select(x => new Article
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    CreatedOn = x.CreatedOn,
+                    Content = x.Content,
+                    ImageUrl = x.ImageUrl,
+                    Comments = new List<Comment>(x.Comments.Select(c => new Comment
+                    {
+                        Id = c.Id,
+                        Content = c.Content,
+                        UserId = c.UserId,
+                        User = new ApplicationUser
+                        {
+                            UserName = c.User.UserName,
+                            ProfilePhoto = c.User.ProfilePhoto,
+                        },
+                        ArticleId = c.ArticleId,
+                        ParentCommentId = c.ParentCommentId,
+                        CreatedOn = c.CreatedOn,
+                        SubComments = new List<Comment>(),
+                    })),
+                })
+                .FirstOrDefaultAsync();
 
             article.Comments = this.commentService.ArrangeCommentHierarchy(article.Comments);
             return article;

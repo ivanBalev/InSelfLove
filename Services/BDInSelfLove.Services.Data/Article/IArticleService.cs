@@ -8,13 +8,13 @@
 
     public interface IArticleService
     {
-        IQueryable<Article> GetAll(int? take = null, int skip = 0);
+        IQueryable<Article> GetAll(int? take = null, int skip = 0, string searchString = null);
 
         Task<string> Create(Article articleServiceModel);
 
         IQueryable<Article> GetById(int id);
 
-        Task<ArticleServiceModel> GetBySlug(string slug);
+        Task<Article> GetBySlug(string slug);
 
         Task<string> Edit(Article productServiceModel);
 

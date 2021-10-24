@@ -9,7 +9,6 @@
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data;
     using BDInSelfLove.Services.Data.CloudinaryService;
-    using BDInSelfLove.Services.Data.CommentService;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels.Article;
@@ -35,14 +34,14 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int currentPage = 1)
+        public async Task<IActionResult> Index(int page = 1)
         {
             var articles = await this.articleService
-                .GetAll(ArticlesPerPage, (currentPage - 1) * ArticlesPerPage)
+                .GetAll(ArticlesPerPage, (page - 1) * ArticlesPerPage)
                 .To<ArticlePreviewViewModel>()
                 .ToArrayAsync();
 
-            var viewModel = this.CreateIndexViewModel(currentPage, articles);
+            var viewModel = this.CreateIndexViewModel(page, articles);
             return this.View(viewModel);
         }
 
@@ -71,7 +70,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
         {
-            await this.SetProfilePicture(inputModel);
+            await this.SetArticlePhoto(inputModel);
 
             string slug = await this.articleService
                 .Create(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
@@ -92,7 +91,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
         {
-            await this.SetProfilePicture(inputModel);
+            await this.SetArticlePhoto(inputModel);
 
             string slug = await this.articleService.Edit(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
             return this.RedirectToAction("Single", new { slug });
@@ -119,10 +118,9 @@
             }
         }
 
-        private ArticlesPaginationViewModel CreateIndexViewModel(int currentPage, ArticlePreviewViewModel[] articles)
+        private async Task<ArticlesPaginationViewModel> CreateIndexViewModel(int currentPage, ArticlePreviewViewModel[] articles)
         {
-            var pagesCount =
-                ((int)Math.Floor(this.articleService.GetAll().Count() / (decimal)ArticlesPerPage)) + 1;
+            var pagesCount = (int)Math.Ceiling(await this.articleService.GetAll().CountAsync() / (decimal)ArticlesPerPage);
 
             var viewModel = new ArticlesPaginationViewModel()
             {
@@ -136,7 +134,7 @@
             return viewModel;
         }
 
-        private async Task SetProfilePicture(ArticleCreateInputModel inputModel)
+        private async Task SetArticlePhoto(ArticleCreateInputModel inputModel)
         {
             if (inputModel.Image != null)
             {

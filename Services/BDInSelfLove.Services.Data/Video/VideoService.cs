@@ -15,8 +15,6 @@
 
     public class VideoService : IVideoService
     {
-        private const int DefaultVideosPerPage = 3;
-
         private readonly IDeletableEntityRepository<Video> videosRepository;
         private readonly ICommentService commentService;
 
@@ -64,44 +62,64 @@
             return video;
         }
 
-        public async Task<VideoServiceModel> GetBySlug(string slug)
+        public async Task<Video> GetBySlug(string slug)
         {
             var video = await this.videosRepository.All()
                .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
-               .To<VideoServiceModel>()
-               .FirstOrDefaultAsync();
+              .Select(x => new Video
+              {
+                  Id = x.Id,
+                  Url = x.Url,
+                  Title = x.Title,
+                  CreatedOn = x.CreatedOn,
+                  Comments = new List<Comment>(x.Comments.Select(c => new Comment
+                  {
+                      Id = c.Id,
+                      Content = c.Content,
+                      UserId = c.UserId,
+                      User = new ApplicationUser
+                      {
+                          UserName = c.User.UserName,
+                          ProfilePhoto = c.User.ProfilePhoto,
+                      },
+                      ArticleId = c.ArticleId,
+                      ParentCommentId = c.ParentCommentId,
+                      CreatedOn = c.CreatedOn,
+                      SubComments = new List<Comment>(),
+                  })),
+              })
+                .FirstOrDefaultAsync();
 
-            //video.Comments = this.commentService.ArrangeCommentHierarchy(video.Comments);
+            video.Comments = this.commentService.ArrangeCommentHierarchy(video.Comments);
             return video;
         }
 
-        public IQueryable<VideoServiceModel> GetAll(int? latestVideosCount = null)
+        public IQueryable<Video> GetAll(int? take = null, int skip = 0, string searchString = null)
         {
-            IQueryable<Video> query = this.videosRepository.AllAsNoTracking();
+            var query = this.videosRepository.All();
 
-            if (latestVideosCount.HasValue)
+            if (searchString != null)
             {
-                query = query
-                    .OrderByDescending(a => a.CreatedOn)
-                    .Take(latestVideosCount.Value);
+                var searchItems = SearchHelpers.GetSearchItems(searchString);
+                foreach (var item in searchItems)
+                {
+                    // TODO: need to check why I needed this
+                    var tempItem = item;
+
+                    query = query.Where(v =>
+                    v.AssociatedTerms.ToLower().Contains(tempItem) ||
+                    v.Title.ToLower().Contains(tempItem));
+                }
             }
 
-            return query.To<VideoServiceModel>();
-        }
+            query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);
 
-        public async Task<ICollection<VideoPreviewServiceModel>> GetAllPagination(int take = DefaultVideosPerPage, int skip = 0)
-        {
-            var videos = await this.videosRepository
-                               .All()
-                               .Include(a => a.User)
-                               .Include(a => a.Comments)
-                               .OrderByDescending(a => a.CreatedOn)
-                               .Skip(skip)
-                               .Take(take)
-                               .To<VideoPreviewServiceModel>()
-                               .ToListAsync();
+            if (take.HasValue)
+            {
+                query = query.Take(take.Value);
+            }
 
-            return videos;
+            return query;
         }
 
         public async Task<bool> Delete(int id)
@@ -119,13 +137,12 @@
             return result > 0;
         }
 
-        public IQueryable<VideoPreviewServiceModel> GetSideVideos(int videosCount, int videoId = 0)
+        public IQueryable<Video> GetSideVideos(int videosCount, int videoId = 0)
         {
             var videos = this.videosRepository.All()
                .Where(v => v.Id != videoId)
                .OrderByDescending(a => a.CreatedOn)
-               .Take(videosCount)
-               .To<VideoPreviewServiceModel>();
+               .Take(videosCount);
 
             return videos;
         }

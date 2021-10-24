@@ -11,7 +11,7 @@ namespace BDInSelfLove.Web.ViewModels.Search
     {
         public string SearchTerm { get; set; }
 
-        public VideoPaginationViewModel VideosPagination { get; set; }
+        public VideosPaginationViewModel VideosPagination { get; set; }
 
         public ArticlesPaginationViewModel ArticlesPagination { get; set; }
     }

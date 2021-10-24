@@ -1,9 +1,13 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Video.VideoPaginationViewModel
-
 @* Remove layout when using search (REST API Ajax Request) *@
-@if (this.ViewContext.RouteData.Values["controller"].ToString() == "Search")
-{
-    this.Layout = null;
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    if (controllerName == "Search")
+    {
+        // Remove layout when using search (REST API Ajax Request)
+        this.Layout = null;
+    }
+    this.Model.PaginationInfo.ControllerName = controllerName;
 }
 
 <div id="all-videos" class="py-4">

@@ -1,66 +1,44 @@
-﻿using BDInSelfLove.Services.Data.Search;
-using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Web.ViewModels.Article;
-using BDInSelfLove.Web.ViewModels.Home;
-using BDInSelfLove.Web.ViewModels.Pagination;
-using BDInSelfLove.Web.ViewModels.Search;
-using BDInSelfLove.Web.ViewModels.Video;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.Controllers
+﻿namespace BDInSelfLove.Web.Controllers
 {
+    using System;
+    using System.Threading.Tasks;
+
+    using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.Video;
+    using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.ViewModels.Article;
+    using BDInSelfLove.Web.ViewModels.Home;
+    using BDInSelfLove.Web.ViewModels.Pagination;
+    using BDInSelfLove.Web.ViewModels.Search;
+    using BDInSelfLove.Web.ViewModels.Video;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
     public class SearchController : BaseController
     {
         private const int ArticlesPerPage = 6;
         private const int VideosPerPage = 3;
-        private const string ArticleControllerName = "Article";
-        private const string VideoControllerName = "Video";
+        private const string ArticleActionName = "Article";
+        private const string VideoActionName = "Video";
 
-        private ISearchService searchService;
+        private IArticleService articleService;
+        private IVideoService videoService;
 
-        public SearchController(ISearchService searchService)
+        public SearchController(
+            IArticleService articleService,
+            IVideoService videoService)
         {
-            this.searchService = searchService;
+            this.articleService = articleService;
+            this.videoService = videoService;
         }
 
         public async Task<IActionResult> Index(string searchTerm)
         {
-            if (string.IsNullOrEmpty(searchTerm) || string.IsNullOrWhiteSpace(searchTerm) || searchTerm.All(ch => ch == ' '))
-            {
-                return this.BadRequest();
-            }
-
-            var serviceModel = await this.searchService.Index(searchTerm);
-
-            var articlePagesCount = (int)Math.Ceiling(serviceModel.ArticlesCount / (decimal)ArticlesPerPage);
-            var videoPagesCount = (int)Math.Ceiling(serviceModel.VideosCount / (decimal)VideosPerPage);
-
             var viewModel = new IndexSearchViewModel
             {
                 SearchTerm = searchTerm,
-                ArticlesPagination = new ArticlesPaginationViewModel
-                {
-                    PaginationInfo = new PaginationViewModel
-                    {
-                        ControllerName = ArticleControllerName,
-                        PagesCount = articlePagesCount,
-                        CurrentPage = 1,
-                    },
-                    Articles = serviceModel.Articles.Select(a => AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(a)).ToList(),
-                },
-                VideosPagination = new VideoPaginationViewModel
-                {
-                    Videos = serviceModel.Videos.Select(v => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(v)).ToList(),
-                    PaginationInfo = new PaginationViewModel
-                    {
-                        ControllerName = VideoControllerName,
-                        CurrentPage = 1,
-                        PagesCount = videoPagesCount,
-                    },
-                },
+                ArticlesPagination = await this.GetArticlesViewModel(searchTerm, 0),
+                VideosPagination = await this.GetVideosViewModel(searchTerm, 0),
             };
 
             return this.View(viewModel);
@@ -69,21 +47,7 @@ namespace BDInSelfLove.Web.Controllers
         [Route("api/Search/Article")]
         public async Task<IActionResult> Article(int page, string searchTerm)
         {
-            var serviceModel = await this.searchService
-                .GetArticles(searchTerm, ArticlesPerPage, (page - 1) * ArticlesPerPage);
-
-            var pagesCount = (int)Math.Ceiling(serviceModel.ArticlesCount / (decimal)ArticlesPerPage);
-
-            var viewModel = new ArticlesPaginationViewModel
-            {
-                Articles = serviceModel.Articles.Select(a => AutoMapperConfig.MapperInstance.Map<ArticlePreviewViewModel>(a)).ToList(),
-                PaginationInfo = new PaginationViewModel
-                {
-                    ControllerName = ArticleControllerName,
-                    PagesCount = pagesCount == 0 ? 1 : pagesCount,
-                    CurrentPage = page,
-                },
-            };
+            var viewModel = await this.GetArticlesViewModel(searchTerm, page);
 
             return this.View("_ArticlesAllPartial", viewModel);
         }
@@ -91,23 +55,43 @@ namespace BDInSelfLove.Web.Controllers
         [Route("api/Search/Video")]
         public async Task<IActionResult> Video(int page, string searchTerm)
         {
-            var serviceModel = await this.searchService
-                .GetVideos(searchTerm, VideosPerPage, (page - 1) * VideosPerPage);
-
-            var pagesCount = (int)Math.Ceiling(serviceModel.VideosCount / (decimal)VideosPerPage);
-
-            var viewModel = new VideoPaginationViewModel
-            {
-                Videos = serviceModel.Videos.Select(v => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(v)).ToList(),
-                PaginationInfo = new PaginationViewModel
-                {
-                    ControllerName = VideoControllerName,
-                    PagesCount = pagesCount == 0 ? 1 : pagesCount,
-                    CurrentPage = page,
-                },
-            };
+            var viewModel = await this.GetVideosViewModel(searchTerm, page);
 
             return this.View("_VideosAllPartial", viewModel);
+        }
+
+        private async Task<ArticlesPaginationViewModel> GetArticlesViewModel(string searchTerm, int page)
+        {
+            var articlePagesCount = (int)Math.Ceiling(await this.articleService.GetAll().CountAsync() / (decimal)ArticlesPerPage);
+
+            return new ArticlesPaginationViewModel
+            {
+                Articles = await this.articleService.GetAll(ArticlesPerPage, (page - 1) * ArticlesPerPage, searchTerm)
+                    .To<ArticlePreviewViewModel>().ToArrayAsync(),
+                PaginationInfo = new PaginationViewModel
+                {
+                    PagesCount = articlePagesCount,
+                    CurrentPage = 1,
+                    ActionName = ArticleActionName,
+                },
+            };
+        }
+
+        private async Task<VideosPaginationViewModel> GetVideosViewModel(string searchTerm, int page)
+        {
+            var videoPagesCount = (int)Math.Ceiling(await this.videoService.GetAll().CountAsync() / (decimal)VideosPerPage);
+
+            return new VideosPaginationViewModel
+            {
+                Videos = await this.videoService.GetAll(VideosPerPage, (page - 1) * VideosPerPage, searchTerm)
+                    .To<VideoPreviewViewModel>().ToArrayAsync(),
+                PaginationInfo = new PaginationViewModel
+                {
+                    CurrentPage = 1,
+                    PagesCount = videoPagesCount,
+                    ActionName = VideoActionName,
+                },
+            };
         }
     }
 }

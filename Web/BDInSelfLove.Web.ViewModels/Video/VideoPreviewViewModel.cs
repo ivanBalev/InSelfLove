@@ -3,10 +3,8 @@
     using System;
 
     using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Video;
-    using BDInSelfLove.Services.Models.Videos;
 
-    public class VideoPreviewViewModel : IMapFrom<VideoPreviewServiceModel>, IMapFrom<VideoServiceModel>
+    public class VideoPreviewViewModel : IMapFrom<BDInSelfLove.Data.Models.Video>
     {
         public int Id { get; set; }
 

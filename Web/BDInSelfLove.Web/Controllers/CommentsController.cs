@@ -1,7 +1,5 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
-    using System;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Common;
@@ -14,7 +12,6 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using TimeZoneConverter;
 
     public class CommentsController : BaseController
     {
@@ -40,9 +37,9 @@
             }
 
             // Create comment
-            var dataForDb = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
-            dataForDb.UserId = this.userManager.GetUserId(this.User);
-            var commentId = await this.commentService.Create(dataForDb);
+            var comment = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
+            comment.UserId = this.userManager.GetUserId(this.User);
+            var commentId = await this.commentService.Create(comment);
 
             // Create comment view model
             var commentViewModel = await this.commentService.GetById(commentId)
@@ -50,7 +47,6 @@
             commentViewModel.CreatedOn = TimezoneHelper
                 .ToLocalTime(commentViewModel.CreatedOn, this.TimezoneCookieValue);
 
-            // TODO: Send email to admin when new comment added
             return this.View("_CommentSinglePartial", commentViewModel);
         }
 
@@ -64,20 +60,10 @@
                 return this.BadRequest();
             }
 
-            // Check if creator is same as editor
-            var dbCommentUserId = await this.commentService.GetById(inputModel.Id)
-                .Select(c => c.UserId).SingleOrDefaultAsync();
+            var comment = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
+            var userId = this.userManager.GetUserId(this.User);
 
-            if (dbCommentUserId != this.userManager.GetUserId(this.User))
-            {
-                return this.BadRequest();
-            }
-
-            var serviceModel = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
-
-            // Send data to service
-            var result = await this.commentService.Edit(serviceModel);
-
+            var result = await this.commentService.Edit(comment, userId);
             return result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest();
         }
 
@@ -86,23 +72,9 @@
         [Route("api/DeleteComment")]
         public async Task<ActionResult> Delete(int id)
         {
-            if (id < 1)
-            {
-                return this.BadRequest();
-            }
-
-            // Check if creator is same as editor
-            var dbCommentUserId = await this.commentService.GetById(id)
-                .Select(c => c.UserId).SingleOrDefaultAsync();
-
-            if (dbCommentUserId != this.userManager.GetUserId(this.User) && !this.User.IsInRole(GlobalValues.AdministratorRoleName))
-            {
-                return this.BadRequest();
-            }
-
-            // Send data to service
-            var result = await this.commentService.Delete(id);
-
+            var userId = this.userManager.GetUserId(this.User);
+            var isUserAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
+            var result = await this.commentService.Delete(id, userId, isUserAdmin);
             return (result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest());
         }
     }
