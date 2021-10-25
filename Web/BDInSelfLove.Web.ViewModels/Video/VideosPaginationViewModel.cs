@@ -4,7 +4,7 @@
 
     using BDInSelfLove.Web.ViewModels.Pagination;
 
-    public class VideoPaginationViewModel
+    public class VideosPaginationViewModel
     {
         public ICollection<VideoPreviewViewModel> Videos { get; set; }
 

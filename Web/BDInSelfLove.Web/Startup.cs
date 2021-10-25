@@ -15,11 +15,9 @@
     using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Data.CloudinaryService;
     using BDInSelfLove.Services.Data.CommentService;
-    using BDInSelfLove.Services.Data.User;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
-    using BDInSelfLove.Services.Models.Article;
     using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels;
     using CloudinaryDotNet;
@@ -148,7 +146,6 @@
             services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IVideoService, VideoService>();
             services.AddTransient<ICloudinaryService, CloudinaryService>();
-            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAppointmentService, AppointmentService>();
             services.AddTransient<ICommentService, CommentService>();
 
@@ -170,7 +167,6 @@
 
             AutoMapperConfig.RegisterMappings(
                 typeof(ErrorViewModel).GetTypeInfo().Assembly,
-                typeof(ArticleServiceModel).GetTypeInfo().Assembly,
                 typeof(ArticleEditInputModel).GetTypeInfo().Assembly,
                 typeof(Article).GetTypeInfo().Assembly);
 

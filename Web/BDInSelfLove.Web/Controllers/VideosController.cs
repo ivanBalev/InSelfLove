@@ -1,77 +1,44 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
-    using System;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Videos;
     using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
     using BDInSelfLove.Web.InputModels.Video;
-    using BDInSelfLove.Web.ViewModels.Pagination;
     using BDInSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using TimeZoneConverter;
 
-    public class VideosController : BaseController
+    public class VideosController : PreviewAndPaginationHelper
     {
-        private const int VideosPerPage = 6;
-        private const string VideoCreateError = "Error creating video. Please try again.";
-
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly IVideoService videoService;
-
-        public VideosController(IVideoService videoService, UserManager<ApplicationUser> userManager)
+        public VideosController(
+            IVideoService videoService)
+            : base(videoService)
         {
-            this.videoService = videoService;
-            this.userManager = userManager;
+        }
+
+        public async Task<IActionResult> Index(int page = 1)
+        {
+            var viewModel = await this.GetVideosPreviewAndPagination(page);
+
+            return this.View(viewModel);
         }
 
         [Route("Videos/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
-            VideoViewModel viewModel = AutoMapperConfig.MapperInstance
-                .Map<VideoViewModel>(await this.videoService
+            var viewModel = AutoMapperConfig.MapperInstance
+                .Map<VideoViewModel>(await this.VideoService
                 .GetBySlug(slug));
 
-            if (this.User.Identity.IsAuthenticated)
+            for (int i = 0; i < viewModel.Comments.Count; i++)
             {
-                // Convert comment CreatedOn to user local time
-                TimeZoneInfo userTimezone = TZConvert.GetTimeZoneInfo(
-               (await this.userManager.GetUserAsync(this.User)).WindowsTimezoneId);
-                foreach (var comment in viewModel.Comments)
-                {
-                    comment.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(comment.CreatedOn, userTimezone);
-                }
+                viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(
+                    viewModel.Comments[i].CreatedOn, this.TimezoneCookieValue);
             }
-
-            return this.View(viewModel);
-        }
-
-        public async Task<IActionResult> Index(int page = 1)
-        {
-            var serviceModel = await this.videoService
-                .GetAll(VideosPerPage, (page - 1) * VideosPerPage)
-                .To<VideoPreviewViewModel>()
-                .ToArrayAsync();
-
-            var pagesCount = (int)Math.Ceiling(this.videoService.GetAll().Count() / (decimal)VideosPerPage);
-            var viewModel = new VideoPaginationViewModel()
-            {
-                Videos = serviceModel.Select(a => AutoMapperConfig.MapperInstance.Map<VideoPreviewViewModel>(a))
-                .ToList(),
-                PaginationInfo = new PaginationViewModel
-                {
-                    PagesCount = pagesCount == 0 ? 1 : pagesCount,
-                    CurrentPage = page,
-                },
-            };
 
             return this.View(viewModel);
         }
@@ -91,17 +58,8 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(CreateVideoInputModel inputModel)
         {
-            if (!this.ModelState.IsValid)
-            {
-                this.ViewData["Error"] = VideoCreateError;
-                return this.View(inputModel);
-            }
-
-            var user = await this.userManager.GetUserAsync(this.User);
-            var serviceModel = AutoMapperConfig.MapperInstance.Map<VideoServiceModel>(inputModel);
-            serviceModel.UserId = user.Id;
-
-            string slug = await this.videoService.CreateAsync(serviceModel);
+            string slug = await this.VideoService
+                .Create(AutoMapperConfig.MapperInstance.Map<Video>(inputModel));
 
             return this.RedirectToAction("Single", new { slug });
         }
@@ -109,7 +67,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)
         {
-            await this.videoService.Delete(id);
+            await this.VideoService.Delete(id);
 
             return this.Redirect("/");
         }

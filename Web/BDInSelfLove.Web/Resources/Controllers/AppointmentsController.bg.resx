@@ -121,7 +121,7 @@
     <value>Заявката ви за терапевтична сесия е получена. Моля, очаквайте потвърждение.</value>
   </data>
   <data name="Body" xml:space="preserve">
-    <value>&lt;div&gt;Здравейте, &lt;/div&gt; &lt;div&gt;&lt;/div&gt; &lt;div&gt;{0}&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&gt;&lt;div&gt;Благодаря!&lt;/div&gt;</value>
+    <value>&lt;div&gt;Здравейте, &lt;/div&gt; &lt;div&gt;&lt;/div&gt; &lt;div&gt;{0}&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;Благодаря!&lt;/div&gt;</value>
   </data>
   <data name="Cancellation" xml:space="preserve">
     <value>Много съжалявам, но ми се налага да откажа сесията.</value>

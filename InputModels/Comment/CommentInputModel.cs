@@ -1,5 +1,4 @@
 ﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Comment;
 using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Comment

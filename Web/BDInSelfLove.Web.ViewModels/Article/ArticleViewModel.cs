@@ -5,17 +5,11 @@
 
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Article;
     using BDInSelfLove.Web.ViewModels.Comment;
     using Ganss.XSS;
 
-    public class ArticleViewModel : IMapFrom<Article>, IMapFrom<ArticleServiceModel>
+    public class ArticleViewModel : IMapFrom<Article>
     {
-        public ArticleViewModel()
-        {
-            this.Comments = new List<CommentViewModel>();
-        }
-
         public int Id { get; set; }
 
         public string Title { get; set; }
@@ -28,6 +22,6 @@
 
         public string ImageUrl { get; set; }
 
-        public ICollection<CommentViewModel> Comments { get; set; }
+        public IList<CommentViewModel> Comments { get; set; }
     }
 }

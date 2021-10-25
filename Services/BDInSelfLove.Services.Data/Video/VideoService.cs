@@ -1,6 +1,5 @@
 ﻿namespace BDInSelfLove.Services.Data.Video
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -8,9 +7,6 @@
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.CommentService;
-    using BDInSelfLove.Services.Mapping;
-    using BDInSelfLove.Services.Models.Video;
-    using BDInSelfLove.Services.Models.Videos;
     using Microsoft.EntityFrameworkCore;
 
     public class VideoService : IVideoService
@@ -18,48 +14,19 @@
         private readonly IDeletableEntityRepository<Video> videosRepository;
         private readonly ICommentService commentService;
 
-        public VideoService(IDeletableEntityRepository<Video> videosRepository, ICommentService commentService)
+        public VideoService(
+            IDeletableEntityRepository<Video> videosRepository,
+            ICommentService commentService)
         {
             this.videosRepository = videosRepository;
             this.commentService = commentService;
         }
 
-        public async Task<string> CreateAsync(VideoServiceModel videoServiceModel)
+        public async Task<string> Create(Video video)
         {
-            var video = AutoMapperConfig.MapperInstance.Map<Video>(videoServiceModel);
-
             await this.videosRepository.AddAsync(video);
             await this.videosRepository.SaveChangesAsync();
-
             return video.Title.ToLower().Replace(' ', '-');
-        }
-
-        public async Task<VideoServiceModel> GetById(int id)
-        {
-            var video = await this.videosRepository.All()
-               .Where(a => a.Id == id)
-               .Include(v => v.User)
-               .Include(v => v.Comments.OrderByDescending(c => c.CreatedOn))
-               .To<VideoServiceModel>()
-               .FirstOrDefaultAsync();
-
-            foreach (var comment in video.Comments)
-            {
-                comment.SubComments.Clear();
-            }
-
-            foreach (var comment in video.Comments)
-            {
-                if (comment.ParentCommentId != null)
-                {
-                    var parentComment = video.Comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
-                    parentComment.SubComments.Add(comment);
-                }
-            }
-
-            video.Comments = video.Comments.Where(v => v.ParentCommentId == null).ToList();
-
-            return video;
         }
 
         public async Task<Video> GetBySlug(string slug)
@@ -122,19 +89,11 @@
             return query;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<int> Delete(int id)
         {
             var dbVideo = await this.videosRepository.All().SingleOrDefaultAsync(a => a.Id == id);
-
-            if (dbVideo == null)
-            {
-                throw new ArgumentNullException(nameof(dbVideo));
-            }
-
             this.videosRepository.Delete(dbVideo);
-            int result = await this.videosRepository.SaveChangesAsync();
-
-            return result > 0;
+            return await this.videosRepository.SaveChangesAsync();
         }
 
         public IQueryable<Video> GetSideVideos(int videosCount, int videoId = 0)

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using BDInSelfLove.Data.Models;
-using BDInSelfLove.Services.Data.CloudinaryService;
-using BDInSelfLove.Services.Data.User;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,16 +12,13 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IUserService userService;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IUserService userService)
+            SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            this.userService = userService;
         }
 
         public string Username { get; set; }
@@ -50,16 +42,12 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(ApplicationUser user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            var profilePicture = await this.userService.GetProfilePicture(user.Id);
+            this.Username = user.UserName;
+            this.ProfilePicture = user.ProfilePhoto;
 
-            Username = userName;
-            ProfilePicture = profilePicture;
-
-            Input = new InputModel
+            this.Input = new InputModel
             {
-                PhoneNumber = phoneNumber,
+                PhoneNumber = user.PhoneNumber,
             };
         }
 
@@ -102,7 +90,8 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
 
             if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)
             {
-                await this.userService.SetProfilePicture(user, this.Input.ProfilePicture);
+                user.ProfilePhoto = this.Input.ProfilePicture;
+                await this._userManager.UpdateAsync(user);
             }
 
             await this._signInManager.RefreshSignInAsync(user);

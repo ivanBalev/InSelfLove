@@ -12,7 +12,7 @@
 
         public string Url { get; set; }
 
-        public ICollection<CommentViewModel> Comments { get; set; }
+        public IList<CommentViewModel> Comments { get; set; }
 
         public string Title { get; set; }
 

@@ -121,7 +121,7 @@
     <value>Your request for an appointment has been received. Please wait for approval.</value>
   </data>
   <data name="Body" xml:space="preserve">
-    <value>&lt;div&gt;Hello, &lt;/div&gt; &lt;div&gt;&lt;/div&gt; &lt;div&gt;{0}&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&gt;&lt;div&gt;Thank you!&lt;/div</value>
+    <value>&lt;div&gt;Hello, &lt;/div&gt; &lt;div&gt;&lt;/div&gt; &lt;div&gt;{0}&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;Thank you!&lt;/div</value>
   </data>
   <data name="Cancellation" xml:space="preserve">
     <value>I'm deeply sorry but I'm going to have to cancel the appointment.</value>

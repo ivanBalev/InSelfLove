@@ -58,7 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BDInSelfLove.Services.Models\BDInSelfLove.Services.Models.csproj" />
     <ProjectReference Include="..\..\Data\BDInSelfLove.Data.Models\BDInSelfLove.Data.Models.csproj" />
     <ProjectReference Include="..\..\Data\BDInSelfLove.Data\BDInSelfLove.Data.csproj" />
     <ProjectReference Include="..\..\InputModels\BDInSelfLove.Web.InputModels.csproj" />

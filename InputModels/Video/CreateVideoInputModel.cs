@@ -1,10 +1,9 @@
 ﻿using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Videos;
 using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Video
 {
-    public class CreateVideoInputModel : IMapTo<VideoServiceModel>
+    public class CreateVideoInputModel : IMapTo<Data.Models.Video>
     {
         [Required]
         [Display(Name = "Link to your video")]

@@ -6,7 +6,6 @@
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Models.Comment;
     using Microsoft.EntityFrameworkCore;
 
     public class CommentService : ICommentService

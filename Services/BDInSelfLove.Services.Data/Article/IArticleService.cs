@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Models.Article;
 
     public interface IArticleService
     {

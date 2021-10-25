@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BDInSelfLove.Services.Mapping;
-using BDInSelfLove.Services.Models.Article;
 using BDInSelfLove.Services.Models.User;
 using System;
 using System.Collections.Generic;
