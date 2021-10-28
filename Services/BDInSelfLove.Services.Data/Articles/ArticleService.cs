@@ -1,4 +1,4 @@
-﻿namespace BDInSelfLove.Services.Data
+﻿namespace BDInSelfLove.Services.Data.Articles
 {
     using System;
     using System.Collections.Generic;
@@ -7,8 +7,9 @@
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Data.CommentService;
+    using BDInSelfLove.Services.Data.Comments;
     using Microsoft.EntityFrameworkCore;
+    using NinjaNye.SearchExtensions;
 
     public class ArticleService : IArticleService
     {
@@ -25,53 +26,67 @@
 
         public async Task<string> Create(Article article)
         {
+            if (article == null ||
+               string.IsNullOrEmpty(article.Title) || string.IsNullOrWhiteSpace(article.Title) ||
+               string.IsNullOrEmpty(article.Content) || string.IsNullOrWhiteSpace(article.Content) ||
+               string.IsNullOrEmpty(article.ImageUrl) || string.IsNullOrWhiteSpace(article.ImageUrl))
+            {
+                throw new ArgumentException(nameof(article));
+            }
+
             await this.articleRepository.AddAsync(article);
             await this.articleRepository.SaveChangesAsync();
             return article.Title.ToLower().Replace(' ', '-');
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<string> Edit(Article article)
         {
-            var dbArticle = await this.articleRepository.All().SingleOrDefaultAsync(a => a.Id == id);
-            this.articleRepository.Delete(dbArticle);
-            return await this.articleRepository.SaveChangesAsync();
-        }
+            if (article == null ||
+               string.IsNullOrEmpty(article.Title) || string.IsNullOrWhiteSpace(article.Title) ||
+               string.IsNullOrEmpty(article.Content) || string.IsNullOrWhiteSpace(article.Content) ||
+               string.IsNullOrEmpty(article.ImageUrl) || string.IsNullOrWhiteSpace(article.ImageUrl))
+            {
+                throw new ArgumentException(nameof(article));
+            }
 
-        public async Task<string> Edit(Article articleServiceModel)
-        {
-            var dbArticle = await this.articleRepository.All().SingleOrDefaultAsync(a => a.Id == articleServiceModel.Id);
+            var dbArticle = await this.articleRepository.All().SingleOrDefaultAsync(a => a.Id == article.Id);
 
             if (dbArticle == null)
             {
-                throw new ArgumentNullException(nameof(dbArticle));
+                throw new ArgumentException(nameof(dbArticle));
             }
 
-            dbArticle.Title = articleServiceModel.Title;
-            dbArticle.Content = articleServiceModel.Content;
-            dbArticle.ImageUrl = articleServiceModel.ImageUrl;
+            dbArticle.Title = article.Title;
+            dbArticle.Content = article.Content;
+            dbArticle.ImageUrl = article.ImageUrl;
 
             this.articleRepository.Update(dbArticle);
-            int result = await this.articleRepository.SaveChangesAsync();
+            await this.articleRepository.SaveChangesAsync();
 
             return dbArticle.Title.ToLower().Replace(' ', '-');
+        }
+
+        public async Task<int> Delete(int id)
+        {
+            var dbArticle = await this.articleRepository.All().SingleOrDefaultAsync(a => a.Id == id);
+
+            if (dbArticle == null)
+            {
+                throw new ArgumentException(nameof(dbArticle));
+            }
+
+            this.articleRepository.Delete(dbArticle);
+            return await this.articleRepository.SaveChangesAsync();
         }
 
         public IQueryable<Article> GetAll(int? take = null, int skip = 0, string searchString = null)
         {
             var query = this.articleRepository.All();
 
-            if (searchString != null)
+            if (!string.IsNullOrEmpty(searchString) && !string.IsNullOrWhiteSpace(searchString))
             {
-                var searchItems = SearchHelpers.GetSearchItems(searchString);
-                foreach (var item in searchItems)
-                {
-                    // TODO: need to check why I needed this
-                    var tempItem = item;
-
-                    query = query.Where(a =>
-                    a.Content.ToLower().Contains(tempItem) ||
-                    a.Title.ToLower().Contains(tempItem));
-                }
+                var searchItems = SearchHelper.GetSearchItems(searchString);
+                query = query.Search(x => x.Content, x => x.Title).Containing(searchItems);
             }
 
             query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);
@@ -91,6 +106,11 @@
 
         public async Task<Article> GetBySlug(string slug)
         {
+            if (slug == null)
+            {
+                return null;
+            }
+
             var article = await this.articleRepository.All()
                 .Where(a => a.Title.ToLower().Equals(slug.Replace('-', ' ')))
                 .Select(x => new Article
@@ -117,6 +137,11 @@
                     })),
                 })
                 .FirstOrDefaultAsync();
+
+            if (article == null)
+            {
+                return null;
+            }
 
             article.Comments = this.commentService.ArrangeCommentHierarchy(article.Comments);
             return article;

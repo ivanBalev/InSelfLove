@@ -1,4 +1,4 @@
-﻿namespace BDInSelfLove.Services.Data.CommentService
+﻿namespace BDInSelfLove.Services.Data.Comments
 {
     using System.Collections.Generic;
     using System.Linq;

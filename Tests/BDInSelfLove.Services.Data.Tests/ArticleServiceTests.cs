@@ -1,230 +1,433 @@
-﻿//namespace BDInSelfLove.Services.Data.Tests
-//{
-//    using System;
-//    using System.Linq;
-//    using System.Threading.Tasks;
+﻿namespace BDInSelfLove.Services.Data.Tests
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
-//    using BDInSelfLove.Data;
-//    using BDInSelfLove.Data.Models;
-//    using BDInSelfLove.Data.Repositories;
-//    using BDInSelfLove.Services.Data.Tests.Common.Seeders;
-//    using BDInSelfLove.Services.Models.Article;
-//    using Microsoft.EntityFrameworkCore;
-//    using Xunit;
+    using BDInSelfLove.Data;
+    using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Data.Repositories;
+    using BDInSelfLove.Services.Data.Articles;
+    using BDInSelfLove.Services.Data.Comments;
+    using Microsoft.EntityFrameworkCore;
+    using Xunit;
 
-//    public class ArticleServiceTests : SqliteSetup
-//    {
-//        public ArticleServiceTests()
-//        {
-//            MapperInitializer.InitializeMapper();
-//        }
+    public class ArticleServiceTests
+    {
+        private ArticleService articleService;
+        private EfDeletableEntityRepository<Article> articleRepository;
 
-//        [Theory]
-//        [InlineData(1, 1)]
-//        [InlineData(2, 2)]
-//        [InlineData(3, 3)]
-//        public async Task GetByIdShouldReturnCorrectArticle(int input, int expected)
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+        public ArticleServiceTests()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                  .UseInMemoryDatabase(Guid.NewGuid().ToString());
+            var dbContext = new ApplicationDbContext(options.Options);
+            var articleRepository = new EfDeletableEntityRepository<Article>(dbContext);
+            this.articleRepository = articleRepository;
+            var commentRepository = new EfDeletableEntityRepository<Comment>(dbContext);
+            var commentService = new CommentService(commentRepository);
+            var articleService = new ArticleService(commentService, articleRepository);
+            this.articleService = articleService;
+        }
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+        // Create
+        [Fact]
+        public async Task CreateReturnsSlug()
+        {
+            var article = new Article()
+            {
+                Title = "TEST Test",
+                ImageUrl = "test",
+                Content = "test",
+            };
 
-//            var article = await articleService.GetById(input);
+            var slug = await this.articleService.Create(article);
+            Assert.True(slug.Equals(article.Title.ToLower().Replace(' ', '-')));
+        }
 
-//            Assert.IsType<ArticleServiceModel>(article);
-//            Assert.Equal(article.Id, expected);
-//        }
+        [Theory]
+        [InlineData(null, "test", "test")]
+        [InlineData("test", null, "test")]
+        [InlineData("test", "test", null)]
+        [InlineData("", "test", "test")]
+        [InlineData("test", "", "test")]
+        [InlineData("test", "test", "")]
+        [InlineData("   ", "test", "test")]
+        [InlineData("test", "   ", "test")]
+        [InlineData("test", "test", "   ")]
+        public async Task CreateIncompleteArticleThrowsArgumentException(string title, string imageUrl, string content)
+        {
+            var article = new Article()
+            {
+                Title = title,
+                ImageUrl = imageUrl,
+                Content = content,
+            };
 
-//        [Theory]
-//        [InlineData(4, null)]
-//        [InlineData(5, null)]
-//        [InlineData(6, null)]
-//        public async Task GetByIdShouldReturnNullWithNonExistingId(int input, int? expected)
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+            await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Create(article));
+        }
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+        [Fact]
+        public async Task CreateWithSameIdTwiceThrowsArgumentException()
+        {
+            var article = new Article()
+            {
+                Id = 1,
+                Title = "test",
+                ImageUrl = "test",
+                Content = "test",
+            };
 
-//            var article = await articleService.GetById(input);
+            var slug = await this.articleService.Create(article);
+            await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Create(article));
+        }
 
-//            Assert.Equal(article?.Id, expected);
-//        }
+        [Fact]
+        public async Task CreateWithNullArgumentThrowsArgumentException()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Create(null));
+        }
 
-//        [Fact]
-//        public async Task GetAllShouldReturnAllArticlesInCorrectOrder()
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+        // GetBySlug
+        [Fact]
+        public async Task GetBySlugReturnsCorrectArticle()
+        {
+            await this.ClearArticleRepository();
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+            var article = new Article()
+            {
+                Title = "test",
+                ImageUrl = "test",
+                Content = "test",
+            };
 
-//            var articlesFromDb = await articleService.GetAll().ToListAsync();
+            var slug = await this.articleService.Create(article);
+            var dbArticle = await this.articleService.GetBySlug(slug);
 
-//            var generatedArticles = this.GetTestArticles();
+            Assert.Equal(article.Title, dbArticle.Title);
+            Assert.Equal(article.ImageUrl, dbArticle.ImageUrl);
+            Assert.Equal(article.Content, dbArticle.Content);
+        }
 
-//            Assert.Equal(generatedArticles.Length, articlesFromDb.Count);
-//            for (var i = 0; i < generatedArticles.Length; i++)
-//            {
-//                Assert.Equal(generatedArticles[i].Id, articlesFromDb[articlesFromDb.Count - 1 - i].Id);
-//            }
-//        }
+        [Fact]
+        public async Task GetBySlugReturnsCorrectArticleAndComments()
+        {
+            await this.ClearArticleRepository();
 
-//        [Theory]
-//        [InlineData(2)]
-//        public async Task GetAllShouldReturnOnlyRequestedNumberOfArticles(int count)
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+            var article = new Article()
+            {
+                Title = "test",
+                ImageUrl = "test",
+                Content = "test",
+                Comments = new List<Comment>
+                {
+                    new Comment
+                    {
+                        Content = "test test",
+                        ArticleId = 1,
+                        User = new ApplicationUser
+                        {
+                            UserName = "Pesho",
+                            ProfilePhoto = "test",
+                        },
+                    },
+                    new Comment
+                    {
+                        Content = "test",
+                        ArticleId = 1,
+                        User = new ApplicationUser
+                        {
+                            UserName = "Pesho1",
+                            ProfilePhoto = "test1",
+                        },
+                    },
+                },
+            };
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+            var slug = await this.articleService.Create(article);
+            var dbArticle = await this.articleService.GetBySlug(slug);
 
-//            var articles = await articleService.GetAll(count).ToListAsync();
+            var articleComments = article.Comments.OrderByDescending(c => c.CreatedOn).ToArray();
+            var dbArticleComments = dbArticle.Comments.ToArray();
 
-//            Assert.Equal(count, articles.Count);
-//        }
+            for (int i = 0; i < articleComments.Length; i++)
+            {
+                Assert.Equal(articleComments[i].Content, dbArticleComments[i].Content);
+                Assert.Equal(articleComments[i].CreatedOn, dbArticleComments[i].CreatedOn);
+                Assert.Equal(articleComments[i].User.UserName, dbArticleComments[i].User.UserName);
+                Assert.Equal(articleComments[i].User.ProfilePhoto, dbArticleComments[i].User.ProfilePhoto);
+            }
+        }
 
-//        [Fact]
-//        public async Task EditShouldExecuteSuccessfully()
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+        [Theory]
+        [InlineData("does-not-exist")]
+        [InlineData("   ")]
+        [InlineData("---")]
+        [InlineData(null)]
+        public async Task GetBySlugReturnsNullWhenRequestingNonExistentArticle(string slug)
+        {
+            await this.ClearArticleRepository();
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+            var nonExistentArticle = await this.articleService.GetBySlug(slug);
 
-//            var newArticleObj = new ArticleServiceModel { Id = 1, Content = "Test", ImageUrl = "Test", Title = "Test" };
+            Assert.Null(nonExistentArticle);
+        }
 
-//            var result = await articleService.Edit(newArticleObj);
-//            var updatedArticle = repository.All().FirstOrDefault(a => a.Id == 1);
+        // Edit
+        [Fact]
+        public async Task EditThrowsArgumentExceptionWhenGivenNullArticle()
+        {
+            await this.ClearArticleRepository();
 
-//            Assert.Equal(1, result);
-//            Assert.Equal("Test", updatedArticle.Title);
-//            Assert.Equal("Test", updatedArticle.Content);
-//            Assert.Equal("Test", updatedArticle.ImageUrl);
-//        }
+            await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Edit(null));
+        }
 
-//        [Theory]
-//        [InlineData(0)]
-//        [InlineData(-1)]
-//        [InlineData(6)]
-//        public async Task EditShouldThrowExceptionsSuccessfully(int articleId)
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+        [Fact]
+        public async Task EditThrowsArgumentExceptionWhenGivenNonExistentArticle()
+        {
+            await this.ClearArticleRepository();
+            var article = new Article { Id = 1 };
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+            await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Edit(article));
+        }
 
-//            var newArticleObj = new ArticleServiceModel { Id = articleId, Content = "Test", ImageUrl = "Test", Title = "Test" };
+        [Theory]
+        [InlineData("", "", "")]
+        [InlineData(null, null, null)]
+        [InlineData("", "test", "test")]
+        [InlineData("test", "", "test")]
+        [InlineData("test", "test", "")]
+        [InlineData(" ", "test", "test")]
+        [InlineData("test", " ", "test")]
+        [InlineData("test", "test", " ")]
+        public async Task EditThrowsArgumentExceptionWhenGivenInvalidArticle(string title, string imageUrl, string content)
+        {
+            await this.ClearArticleRepository();
 
-//            await Assert.ThrowsAsync<ArgumentNullException>(() => articleService.Edit(newArticleObj));
-//        }
+            var article = new Article()
+            {
+                Title = "test",
+                ImageUrl = "test",
+                Content = "test",
+            };
 
-//        [Theory]
-//        [InlineData(1)]
-//        [InlineData(2)]
-//        [InlineData(3)]
-//        public async Task DeleteShouldExecuteSuccessfully(int articleId)
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+            var slug = await this.articleService.Create(article);
+            var invalidArticle = await this.articleService.GetBySlug(slug);
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+            invalidArticle.Title = title;
+            invalidArticle.ImageUrl = imageUrl;
+            invalidArticle.Content = content;
 
-//            var deleteResult = await articleService.Delete(articleId);
-//            Assert.True(deleteResult);
-//        }
+            await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Edit(invalidArticle));
+        }
 
-//        [Theory]
-//        [InlineData(0)]
-//        [InlineData(-1)]
-//        [InlineData(6)]
-//        public async Task DeleteShouldThrowExceptionsSuccessfully(int articleId)
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+        [Fact]
+        public async Task EditUpdatesEntityAndReturnsSlug()
+        {
+            await this.ClearArticleRepository();
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+            var article = new Article()
+            {
+                Title = "test",
+                ImageUrl = "test",
+                Content = "test",
+            };
 
-//            await Assert.ThrowsAsync<ArgumentNullException>(() => articleService.Delete(articleId));
-//        }
+            var slug = await this.articleService.Create(article);
+            var updatedArticle = await this.articleService.GetBySlug(slug);
 
-//        [Fact]
-//        public async Task CreateShouldAddArticleToDatabaseSuccessfully()
-//        {
-//            this.SetupSqlite();
-//            await this.SeedDatabase();
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+            updatedArticle.Title = "test1 TEST1";
+            updatedArticle.ImageUrl = "test1";
+            updatedArticle.Content = "test1";
 
-//            var repository = new EfDeletableEntityRepository<Article>(context);
-//            var articleService = new ArticleService(repository);
+            var updatedSlug = await this.articleService.Edit(updatedArticle);
+            var dbUpdatedArticle = await this.articleService.GetBySlug(updatedSlug);
 
-//            var articleToAdd = new ArticleServiceModel
-//            {
-//                Title = "Test",
-//                Content = "Test",
-//                ImageUrl = "Test",
-//                UserId = "1",
-//            };
+            Assert.Equal(updatedSlug, updatedArticle.Title.ToLower().Replace(' ', '-'));
 
-//            var articleId = await articleService.CreateAsync(articleToAdd);
-//            Assert.True(articleId != 0);
-//        }
+            Assert.Equal(dbUpdatedArticle.Title, updatedArticle.Title);
+            Assert.Equal(dbUpdatedArticle.ImageUrl, updatedArticle.ImageUrl);
+            Assert.Equal(dbUpdatedArticle.Content, updatedArticle.Content);
+        }
 
-//        private async Task SeedDatabase()
-//        {
-//            using var context = new ApplicationDbContext(this.ContextOptions);
+        // Delete
+        [Fact]
+        public async Task DeleteIsSuccessfulWithValidId()
+        {
+            await this.ClearArticleRepository();
 
-//            await context.Users.AddRangeAsync(UserCreator.GetTestUsers());
-//            await context.Articles.AddRangeAsync(this.GetTestArticles());
-//            await context.SaveChangesAsync();
-//        }
+            var article = new Article()
+            {
+                Title = "test",
+                ImageUrl = "test",
+                Content = "test",
+            };
 
-//        private Article[] GetTestArticles()
-//        {
-//            return new Article[]
-//                {
-//                    new Article
-//                    {
-//                        Title = "Test1",
-//                        Content = "Test1Content",
-//                        ImageUrl = "Test1ImageUrl",
-//                        UserId = "1",
-//                        Id = 1,
-//                    },
-//                    new Article
-//                    {
-//                        Title = "Test2",
-//                        Content = "Test2Content",
-//                        ImageUrl = "Test2ImageUrl",
-//                        UserId = "2",
-//                        Id = 2,
-//                    },
-//                    new Article
-//                    {
-//                        Title = "Test3",
-//                        Content = "Test3Content",
-//                        ImageUrl = "Test3ImageUrl",
-//                        UserId = "3",
-//                        Id = 3,
-//                    },
-//                };
-//        }
-//    }
-//}
+            var slug = await this.articleService.Create(article);
+            var dbArticle = await this.articleService.GetBySlug(slug);
+            var result = await this.articleService.Delete(dbArticle.Id);
+
+            Assert.Equal(1, result);
+        }
+
+        [Fact]
+        public async Task DeleteThrowsArgumentExceptionWithInvaildId()
+        {
+            await this.ClearArticleRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Delete(1));
+        }
+
+        // GetAll
+        [Fact]
+        public async Task GetAllWithNoParametersReturnsAllArticles()
+        {
+            await this.ClearArticleRepository();
+            var articles = (await this.SeedData()).OrderByDescending(x => x.CreatedOn).ToList();
+            var dbArticles = await this.articleService.GetAll().ToListAsync();
+
+            Assert.Equal(articles.Count, dbArticles.Count);
+
+            for (int i = 0; i < articles.Count; i++)
+            {
+                Assert.Equal(articles[i].Title, dbArticles[i].Title);
+                Assert.Equal(articles[i].ImageUrl, dbArticles[i].ImageUrl);
+                Assert.Equal(articles[i].Content, dbArticles[i].Content);
+            }
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(1, 2)]
+        public async Task GetAllSkipsAndTakesCorrectly(int take, int skip)
+        {
+            await this.ClearArticleRepository();
+            var articles = (await this.SeedData()).OrderByDescending(x => x.CreatedOn).Skip(skip).Take(take).ToList();
+            var dbArticles = await this.articleService.GetAll(take, skip).ToListAsync();
+
+            Assert.Equal(articles.Count, dbArticles.Count);
+
+            for (int i = 0; i < articles.Count; i++)
+            {
+                Assert.Equal(articles[i].Title, dbArticles[i].Title);
+                Assert.Equal(articles[i].ImageUrl, dbArticles[i].ImageUrl);
+                Assert.Equal(articles[i].Content, dbArticles[i].Content);
+            }
+        }
+
+        [Theory]
+        [InlineData("test")]
+        [InlineData("test1")]
+        [InlineData("test2")]
+        [InlineData("test2 test1")]
+        public async Task GetAllSearchesCorrectly(string searchString)
+        {
+            await this.ClearArticleRepository();
+            var articles = await this.SeedData();
+            var dbArticles = await this.articleService.GetAll(null, 0, searchString).ToListAsync();
+
+            var filteredArticles = new List<Article>();
+            string[] searchTermsArray = SearchHelper.GetSearchItems(searchString);
+
+            foreach (var term in searchTermsArray)
+            {
+                var articlesThatIncludeTerm = articles.Where(a => a.Title.Contains(term) || a.Content.Contains(term));
+                filteredArticles.AddRange(articlesThatIncludeTerm);
+            }
+
+            filteredArticles = filteredArticles.Distinct().OrderByDescending(x => x.CreatedOn).ToList();
+
+            Assert.Equal(filteredArticles.Count, dbArticles.Count);
+
+            for (int i = 0; i < filteredArticles.Count; i++)
+            {
+                Assert.Equal(filteredArticles[i].Title, dbArticles[i].Title);
+                Assert.Equal(filteredArticles[i].ImageUrl, dbArticles[i].ImageUrl);
+                Assert.Equal(filteredArticles[i].Content, dbArticles[i].Content);
+            }
+        }
+
+        // GetById
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task GetByIdReturnsCorrectArticle(int id)
+        {
+            await this.ClearArticleRepository();
+            await this.SeedData();
+
+            var dbArticle = await this.articleService.GetById(id).FirstOrDefaultAsync();
+            Assert.Equal(dbArticle.Id, id);
+        }
+
+        [Fact]
+        public async Task GetByIdReturnsNullWithInvalidId()
+        {
+            await this.ClearArticleRepository();
+
+            Assert.Null(await this.articleService.GetById(123).FirstOrDefaultAsync());
+        }
+
+        // GetSideArticles
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 2)]
+        [InlineData(3, 1)]
+        public async Task GetSideArticlesReturnsCorrectData(int id, int count)
+        {
+            await this.ClearArticleRepository();
+            await this.SeedData();
+
+            var dbArticles = await this.articleService.GetSideArticles(count, id).ToListAsync();
+
+            Assert.True(!dbArticles.Any(a => a.Id == id));
+            Assert.True(dbArticles.Count == count);
+        }
+
+        private async Task ClearArticleRepository()
+        {
+            var allEntries = await this.articleRepository.All().ToListAsync();
+
+            foreach (var article in allEntries)
+            {
+                this.articleRepository.HardDelete(article);
+            }
+
+            await this.articleRepository.SaveChangesAsync();
+        }
+
+        private async Task<List<Article>> SeedData()
+        {
+            List<Article> articles = new List<Article>
+            {
+                new Article()
+                {
+                    Title = "test",
+                    ImageUrl = "test",
+                    Content = "test",
+                },
+                new Article()
+                {
+                    Title = "test1",
+                    ImageUrl = "test1",
+                    Content = "test1",
+                },
+                new Article()
+                {
+                    Title = "test2",
+                    ImageUrl = "test2",
+                    Content = "test2",
+                },
+            };
+
+            foreach (var article in articles)
+            {
+                await this.articleService.Create(article);
+            }
+
+            return articles;
+        }
+    }
+}

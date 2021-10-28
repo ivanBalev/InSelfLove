@@ -1,32 +1,51 @@
 ﻿namespace BDInSelfLove.Web.Tests
 {
+    using System;
+    using System.Linq;
+
     using BDInSelfLove.Web;
+    using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
-    using OpenQA.Selenium.Remote;
+
     using Xunit;
 
-    public class SeleniumTests
+    public class SeleniumTests : IClassFixture<SeleniumServerFactory<Startup>>, IDisposable
     {
-        private RemoteWebDriver browser;
-        private SeleniumServerFactory<Startup> serverFactory;
+        private readonly SeleniumServerFactory<Startup> server;
+        private readonly IWebDriver browser;
 
-        public SeleniumTests()
+        public SeleniumTests(SeleniumServerFactory<Startup> server)
         {
-            this.serverFactory = new SeleniumServerFactory<Startup>();
-            serverFactory.CreateClient();
-            var options = new ChromeOptions();
-            options.AddArguments("--headless", "--no-sandbox", "--ignore-certificate-errors");
-            this.browser = new RemoteWebDriver(options);
+            this.server = server;
+            server.CreateClient();
+            var opts = new ChromeOptions();
+            opts.AddArguments("--headless");
+            opts.AcceptInsecureCertificates = true;
+            this.browser = new ChromeDriver(opts);
         }
 
-        [Fact]
-        public void HomePageShouldHaveH1Tag()
+        [Fact(Skip = "Example test. Disabled for CI.")]
+        public void FooterOfThePageContainsPrivacyLink()
         {
-            this.browser.Navigate().GoToUrl(this.serverFactory.RootUri + "/Home/Index");
-            var result = this.browser.FindElementByTagName("html");
+            this.browser.Navigate().GoToUrl(this.server.RootUri);
+            Assert.EndsWith(
+                "/Home/Privacy",
+                this.browser.FindElements(By.CssSelector("footer a")).First().GetAttribute("href"));
+        }
 
-            // Assert.Contains("Welcome to", this.browser.FindElementByTagName("body").Text);
-            Assert.True(this.browser.FindElementByCssSelector("html") != null);
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.server?.Dispose();
+                this.browser?.Dispose();
+            }
         }
     }
 }

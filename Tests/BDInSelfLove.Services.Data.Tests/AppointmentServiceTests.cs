@@ -1,26 +1,36 @@
 ﻿//namespace BDInSelfLove.Services.Data.Tests
 //{
 //    using System;
-//    using System.Data.Common;
 //    using System.Linq;
 //    using System.Threading.Tasks;
+
 //    using BDInSelfLove.Common;
 //    using BDInSelfLove.Data;
 //    using BDInSelfLove.Data.Models;
 //    using BDInSelfLove.Data.Repositories;
+//    using BDInSelfLove.Data.Seeding;
 //    using BDInSelfLove.Services.Data.Calendar;
 //    using BDInSelfLove.Services.Data.Tests.Common.Seeders;
-//    using BDInSelfLove.Services.Models.Appointment;
-//    using Microsoft.Data.Sqlite;
 //    using Microsoft.EntityFrameworkCore;
-//    using Microsoft.EntityFrameworkCore.Infrastructure;
 //    using Xunit;
 
 //    public class AppointmentServiceTests : SqliteSetup
 //    {
 //        public AppointmentServiceTests()
 //        {
-//            MapperInitializer.InitializeMapper();
+//        }
+
+//        // GetAll Tests
+//        [Fact]
+//        public async Task GetAllTests()
+//        {
+//            this.SetupSqlite();
+//            await this.SeedDatabase();
+//            using var context = new ApplicationDbContext(this.ContextOptions);
+
+//            var repository = new EfDeletableEntityRepository<Appointment>(context);
+//            var appointmentService = new AppointmentService(repository);
+
 //        }
 
 //        [Fact]
@@ -33,7 +43,7 @@
 //            var repository = new EfDeletableEntityRepository<Appointment>(context);
 //            var appointmentService = new AppointmentService(repository);
 
-//            var appointmentsFromDb = await appointmentService.GetAll(GlobalConstants.AdministratorRoleName).ToListAsync();
+//            var appointmentsFromDb = await appointmentService.GetAll(GlobalValues.AdministratorRoleName).ToListAsync();
 
 //            var generatedAppointments = this.GetTestAppointments();
 
@@ -192,6 +202,8 @@
 
 //        private async Task SeedDatabase()
 //        {
+//            new ApplicationDbContextSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+
 //            using var context = new ApplicationDbContext(this.ContextOptions);
 
 //            await context.Users.AddRangeAsync(UserCreator.GetTestUsers());
@@ -206,7 +218,7 @@
 //                    new Appointment
 //                    {
 //                        Description = "Test1",
-//                        Start = DateTime.UtcNow.AddDays(-1),
+//                        UtcStart = DateTime.UtcNow.AddDays(-1),
 //                        UserId = "1",
 //                        IsApproved = true,
 //                        Id = 1,
@@ -214,7 +226,7 @@
 //                    new Appointment
 //                    {
 //                        Description = "Test2",
-//                        Start = DateTime.UtcNow.AddDays(-2),
+//                        UtcStart = DateTime.UtcNow.AddDays(-2),
 //                        UserId = "2",
 //                        IsApproved = true,
 //                        Id = 2,
@@ -222,7 +234,7 @@
 //                    new Appointment
 //                    {
 //                        Description = "Test3",
-//                        Start = DateTime.UtcNow.AddDays(-3),
+//                        UtcStart = DateTime.UtcNow.AddDays(-3),
 //                        UserId = "3",
 //                        IsApproved = true,
 //                        Id = 3,

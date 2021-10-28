@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    public static class SearchHelpers
+    public static class SearchHelper
     {
         public static string[] GetSearchItems(string searchInput)
         {

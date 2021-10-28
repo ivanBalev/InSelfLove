@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.ViewModels.Article;

@@ -12,9 +12,10 @@
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Data.Seeding;
     using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Data.CloudinaryService;
-    using BDInSelfLove.Services.Data.CommentService;
+    using BDInSelfLove.Services.Data.Comments;
     using BDInSelfLove.Services.Data.Video;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;

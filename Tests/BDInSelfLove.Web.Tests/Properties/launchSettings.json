@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "BDInSelfLove.Web.Tests": {
+    "AspNetCoreTemplate.Web.Tests": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

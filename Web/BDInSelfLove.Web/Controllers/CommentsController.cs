@@ -4,7 +4,7 @@
 
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Data.CommentService;
+    using BDInSelfLove.Services.Data.Comments;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.InputModels.Comment;
     using BDInSelfLove.Web.ViewModels.Comment;

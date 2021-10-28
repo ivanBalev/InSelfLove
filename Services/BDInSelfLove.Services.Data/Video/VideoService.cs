@@ -6,8 +6,9 @@
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Data.CommentService;
+    using BDInSelfLove.Services.Data.Comments;
     using Microsoft.EntityFrameworkCore;
+    using NinjaNye.SearchExtensions;
 
     public class VideoService : IVideoService
     {
@@ -65,18 +66,11 @@
         {
             var query = this.videosRepository.All();
 
+
             if (searchString != null)
             {
-                var searchItems = SearchHelpers.GetSearchItems(searchString);
-                foreach (var item in searchItems)
-                {
-                    // TODO: need to check why I needed this
-                    var tempItem = item;
-
-                    query = query.Where(v =>
-                    v.AssociatedTerms.ToLower().Contains(tempItem) ||
-                    v.Title.ToLower().Contains(tempItem));
-                }
+                var searchItems = SearchHelper.GetSearchItems(searchString);
+                query = query.Search(x => x.AssociatedTerms, x => x.Title).Containing(searchItems);
             }
 
             query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);
