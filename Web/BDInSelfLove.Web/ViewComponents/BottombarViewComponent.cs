@@ -1,14 +1,11 @@
-﻿using BDInSelfLove.Services.Data;
-using BDInSelfLove.Services.Data.Video;
+﻿using BDInSelfLove.Services.Data.Articles;
+using BDInSelfLove.Services.Data.Videos;
 using BDInSelfLove.Services.Mapping;
 using BDInSelfLove.Web.ViewComponents.Models.Sidebar;
 using BDInSelfLove.Web.ViewModels.Home;
 using BDInSelfLove.Web.ViewModels.Video;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BDInSelfLove.Web.ViewComponents

@@ -1,5 +1,6 @@
-﻿namespace BDInSelfLove.Services.Data.Video
+﻿namespace BDInSelfLove.Services.Data.Videos
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -25,6 +26,14 @@
 
         public async Task<string> Create(Video video)
         {
+            if (video == null ||
+              string.IsNullOrEmpty(video.Title) || string.IsNullOrWhiteSpace(video.Title) ||
+              string.IsNullOrEmpty(video.Url) || string.IsNullOrWhiteSpace(video.Url) ||
+              string.IsNullOrEmpty(video.AssociatedTerms) || string.IsNullOrWhiteSpace(video.AssociatedTerms))
+            {
+                throw new ArgumentException(nameof(video));
+            }
+
             await this.videosRepository.AddAsync(video);
             await this.videosRepository.SaveChangesAsync();
             return video.Title.ToLower().Replace(' ', '-');
@@ -32,6 +41,11 @@
 
         public async Task<Video> GetBySlug(string slug)
         {
+            if (slug == null)
+            {
+                return null;
+            }
+
             var video = await this.videosRepository.All()
                .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
               .Select(x => new Video
@@ -57,6 +71,11 @@
                   })),
               })
                 .FirstOrDefaultAsync();
+
+            if (video == null)
+            {
+                return null;
+            }
 
             video.Comments = this.commentService.ArrangeCommentHierarchy(video.Comments);
             return video;
@@ -86,6 +105,13 @@
         public async Task<int> Delete(int id)
         {
             var dbVideo = await this.videosRepository.All().SingleOrDefaultAsync(a => a.Id == id);
+
+            if (dbVideo == null)
+            {
+                throw new ArgumentException(nameof(dbVideo));
+            }
+
+
             this.videosRepository.Delete(dbVideo);
             return await this.videosRepository.SaveChangesAsync();
         }

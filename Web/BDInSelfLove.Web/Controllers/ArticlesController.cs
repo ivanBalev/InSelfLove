@@ -5,8 +5,8 @@
 
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Data;
-    using BDInSelfLove.Services.Data.CloudinaryService;
+    using BDInSelfLove.Services.Data.Articles;
+    using BDInSelfLove.Services.Data.CloudinaryServices;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels.Article;

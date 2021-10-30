@@ -4,7 +4,7 @@
 
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Data.Video;
+    using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
     using BDInSelfLove.Web.InputModels.Video;

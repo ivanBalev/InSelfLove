@@ -3,8 +3,8 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Services.Data;
-    using BDInSelfLove.Services.Data.Video;
+    using BDInSelfLove.Services.Data.Articles;
+    using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.ViewComponents.Models.Sidebar;
     using BDInSelfLove.Web.ViewModels.Home;

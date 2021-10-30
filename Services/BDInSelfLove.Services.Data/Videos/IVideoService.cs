@@ -1,4 +1,4 @@
-﻿namespace BDInSelfLove.Services.Data.Video
+﻿namespace BDInSelfLove.Services.Data.Videos
 {
     using System.Linq;
     using System.Threading.Tasks;

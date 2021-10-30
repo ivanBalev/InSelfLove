@@ -14,9 +14,9 @@
     using BDInSelfLove.Services.Data;
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.Calendar;
-    using BDInSelfLove.Services.Data.CloudinaryService;
+    using BDInSelfLove.Services.Data.CloudinaryServices;
     using BDInSelfLove.Services.Data.Comments;
-    using BDInSelfLove.Services.Data.Video;
+    using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Web.InputModels.Article;

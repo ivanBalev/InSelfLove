@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Services.Data.Comments
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -19,22 +20,17 @@
 
         public async Task<int> Create(Comment comment)
         {
-            await this.SetCommentDepth(comment);
+            if (string.IsNullOrEmpty(comment.UserId) || string.IsNullOrWhiteSpace(comment.UserId) ||
+                string.IsNullOrEmpty(comment.Content) || string.IsNullOrWhiteSpace(comment.Content) ||
+                (comment.ArticleId == null && comment.VideoId == null))
+            {
+                throw new ArgumentException(nameof(comment));
+            }
+
+            comment = await this.SetCommentDepth(comment);
             await this.commentRepository.AddAsync(comment);
             await this.commentRepository.SaveChangesAsync();
             return comment.Id;
-        }
-
-        public IQueryable<Comment> GetAllByArticleId(int articleId)
-        {
-            return this.commentRepository.All()
-                .Where(c => c.ArticleId == articleId);
-        }
-
-        public IQueryable<Comment> GetAllByVideoId(int videoId)
-        {
-            return this.commentRepository.All()
-                .Where(c => c.VideoId == videoId);
         }
 
         public IQueryable<Comment> GetById(int commentId)
@@ -45,6 +41,11 @@
 
         public async Task<int> Edit(Comment comment, string userId)
         {
+            if (comment == null || string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            {
+                return 0;
+            }
+
             var dbComment = await this.commentRepository.All().Where(c => c.Id == comment.Id).SingleOrDefaultAsync();
 
             // Check if comment exists & creator is same as editor
@@ -104,32 +105,34 @@
                 .OrderByDescending(c => c.CreatedOn).ToList();
 
             // Order subcomments
-            foreach (var comment in comments)
+            foreach (var firstLevelSubcomment in comments)
             {
-                comment.SubComments = comment.SubComments?.OrderByDescending(c => c.CreatedOn).ToList();
+                firstLevelSubcomment.SubComments = firstLevelSubcomment.SubComments?
+                    .OrderByDescending(c => c.CreatedOn).ToList();
 
-                foreach (var subcomment in comment.SubComments)
+                foreach (var secondLevelSubcomment in firstLevelSubcomment.SubComments)
                 {
-                    subcomment.SubComments = subcomment.SubComments?.OrderByDescending(c => c.CreatedOn).ToList();
+                    secondLevelSubcomment.SubComments = secondLevelSubcomment.SubComments?
+                        .OrderByDescending(c => c.CreatedOn).ToList();
                 }
             }
 
             return comments;
         }
 
-        private async Task SetCommentDepth(Comment comment)
+        public async Task<Comment> SetCommentDepth(Comment comment)
         {
             var parentCommentId = comment.ParentCommentId;
 
             if (parentCommentId != null)
             {
                 var grandParentCommentId = (await this.commentRepository.All()
-                    .FirstOrDefaultAsync(c => c.Id == parentCommentId)).ParentCommentId;
+                    .FirstOrDefaultAsync(c => c.Id == parentCommentId))?.ParentCommentId;
 
                 if (grandParentCommentId != null)
                 {
                     var greatGrandParentCommentId = (await this.commentRepository.All()
-                    .FirstOrDefaultAsync(c => c.Id == grandParentCommentId)).ParentCommentId;
+                    .FirstOrDefaultAsync(c => c.Id == grandParentCommentId))?.ParentCommentId;
 
                     if (greatGrandParentCommentId != null)
                     {
@@ -138,6 +141,8 @@
                     }
                 }
             }
+
+            return comment;
         }
     }
 }

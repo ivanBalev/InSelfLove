@@ -1,4 +1,4 @@
-﻿namespace BDInSelfLove.Services.Data.CloudinaryService
+﻿namespace BDInSelfLove.Services.Data.CloudinaryServices
 {
     using System.IO;
     using System.Threading.Tasks;
@@ -39,7 +39,18 @@
                 uploadResult = this.cloudinaryUtility.Upload(uploadParams);
             }
 
-            return uploadResult?.SecureUri.AbsoluteUri;
+            if (uploadResult.Error != null)
+            {
+                return null;
+            }
+
+            return uploadResult?.SecureUrl.AbsoluteUri;
+        }
+
+        public async Task<string> Delete(string folderAndPublicId)
+        {
+            var result = await this.cloudinaryUtility.DestroyAsync(new DeletionParams(folderAndPublicId));
+            return result.Result;
         }
     }
 }

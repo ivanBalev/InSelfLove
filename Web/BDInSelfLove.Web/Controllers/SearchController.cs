@@ -3,7 +3,7 @@
     using System.Threading.Tasks;
 
     using BDInSelfLove.Services.Data.Articles;
-    using BDInSelfLove.Services.Data.Video;
+    using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Web.ViewModels.Search;
     using Microsoft.AspNetCore.Mvc;
 

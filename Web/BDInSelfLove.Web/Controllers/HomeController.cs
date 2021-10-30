@@ -6,8 +6,8 @@
 
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Data;
-    using BDInSelfLove.Services.Data.Video;
+    using BDInSelfLove.Services.Data.Articles;
+    using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Web.InputModels.Contact;

@@ -10,10 +10,6 @@
     {
         Task<int> Create(Comment commentServiceModel);
 
-        IQueryable<Comment> GetAllByArticleId(int articleId);
-
-        IQueryable<Comment> GetAllByVideoId(int videoId);
-
         IQueryable<Comment> GetById(int commentId);
 
         Task<int> Edit(Comment serviceModel, string userId);
@@ -22,5 +18,6 @@
 
         ICollection<Comment> ArrangeCommentHierarchy(ICollection<Comment> comments);
 
+        Task<Comment> SetCommentDepth(Comment comment);
     }
 }

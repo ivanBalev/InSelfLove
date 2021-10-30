@@ -16,7 +16,6 @@
     public class ArticleServiceTests
     {
         private ArticleService articleService;
-        private EfDeletableEntityRepository<Article> articleRepository;
 
         public ArticleServiceTests()
         {
@@ -24,7 +23,6 @@
                   .UseInMemoryDatabase(Guid.NewGuid().ToString());
             var dbContext = new ApplicationDbContext(options.Options);
             var articleRepository = new EfDeletableEntityRepository<Article>(dbContext);
-            this.articleRepository = articleRepository;
             var commentRepository = new EfDeletableEntityRepository<Comment>(dbContext);
             var commentService = new CommentService(commentRepository);
             var articleService = new ArticleService(commentService, articleRepository);
@@ -93,7 +91,7 @@
         [Fact]
         public async Task GetBySlugReturnsCorrectArticle()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             var article = new Article()
             {
@@ -113,7 +111,7 @@
         [Fact]
         public async Task GetBySlugReturnsCorrectArticleAndComments()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             var article = new Article()
             {
@@ -167,7 +165,7 @@
         [InlineData(null)]
         public async Task GetBySlugReturnsNullWhenRequestingNonExistentArticle(string slug)
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             var nonExistentArticle = await this.articleService.GetBySlug(slug);
 
@@ -178,7 +176,7 @@
         [Fact]
         public async Task EditThrowsArgumentExceptionWhenGivenNullArticle()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Edit(null));
         }
@@ -186,7 +184,7 @@
         [Fact]
         public async Task EditThrowsArgumentExceptionWhenGivenNonExistentArticle()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
             var article = new Article { Id = 1 };
 
             await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Edit(article));
@@ -203,7 +201,7 @@
         [InlineData("test", "test", " ")]
         public async Task EditThrowsArgumentExceptionWhenGivenInvalidArticle(string title, string imageUrl, string content)
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             var article = new Article()
             {
@@ -225,7 +223,7 @@
         [Fact]
         public async Task EditUpdatesEntityAndReturnsSlug()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             var article = new Article()
             {
@@ -255,7 +253,7 @@
         [Fact]
         public async Task DeleteIsSuccessfulWithValidId()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             var article = new Article()
             {
@@ -274,7 +272,7 @@
         [Fact]
         public async Task DeleteThrowsArgumentExceptionWithInvaildId()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             await Assert.ThrowsAsync<ArgumentException>(() => this.articleService.Delete(1));
         }
@@ -283,7 +281,7 @@
         [Fact]
         public async Task GetAllWithNoParametersReturnsAllArticles()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
             var articles = (await this.SeedData()).OrderByDescending(x => x.CreatedOn).ToList();
             var dbArticles = await this.articleService.GetAll().ToListAsync();
 
@@ -302,7 +300,7 @@
         [InlineData(1, 2)]
         public async Task GetAllSkipsAndTakesCorrectly(int take, int skip)
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
             var articles = (await this.SeedData()).OrderByDescending(x => x.CreatedOn).Skip(skip).Take(take).ToList();
             var dbArticles = await this.articleService.GetAll(take, skip).ToListAsync();
 
@@ -323,7 +321,7 @@
         [InlineData("test2 test1")]
         public async Task GetAllSearchesCorrectly(string searchString)
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
             var articles = await this.SeedData();
             var dbArticles = await this.articleService.GetAll(null, 0, searchString).ToListAsync();
 
@@ -355,7 +353,7 @@
         [InlineData(3)]
         public async Task GetByIdReturnsCorrectArticle(int id)
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
             await this.SeedData();
 
             var dbArticle = await this.articleService.GetById(id).FirstOrDefaultAsync();
@@ -365,7 +363,7 @@
         [Fact]
         public async Task GetByIdReturnsNullWithInvalidId()
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
 
             Assert.Null(await this.articleService.GetById(123).FirstOrDefaultAsync());
         }
@@ -377,7 +375,7 @@
         [InlineData(3, 1)]
         public async Task GetSideArticlesReturnsCorrectData(int id, int count)
         {
-            await this.ClearArticleRepository();
+            await this.ClearArticles();
             await this.SeedData();
 
             var dbArticles = await this.articleService.GetSideArticles(count, id).ToListAsync();
@@ -386,16 +384,14 @@
             Assert.True(dbArticles.Count == count);
         }
 
-        private async Task ClearArticleRepository()
+        private async Task ClearArticles()
         {
-            var allEntries = await this.articleRepository.All().ToListAsync();
+            var allEntries = await this.articleService.GetAll().ToListAsync();
 
             foreach (var article in allEntries)
             {
-                this.articleRepository.HardDelete(article);
+                await this.articleService.Delete(article.Id);
             }
-
-            await this.articleRepository.SaveChangesAsync();
         }
 
         private async Task<List<Article>> SeedData()

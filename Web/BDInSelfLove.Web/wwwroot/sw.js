@@ -25,7 +25,7 @@ self.addEventListener('install', evt => {
 self.addEventListener('activate', evt => {
     // This causes the service worker to activate immediately after it's installed isntead of waiting for the page to close.
     // It might break things though, so use with caution
-    self.skipWaiting();
+    //self.skipWaiting();
 
     // Delete all previous versions of our cache
     evt.waitUntil(
