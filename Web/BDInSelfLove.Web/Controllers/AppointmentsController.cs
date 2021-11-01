@@ -62,7 +62,10 @@
         {
             DateTime[] utcTimeSlots = availabilityInput.TimeSlots
                 .Select(ts => TimezoneHelper.ToUTCTime(ts, this.TimezoneCookieValue)).ToArray();
-            await this.appointmentService.Create(utcTimeSlots, availabilityInput.Date);
+
+            var result = await this.appointmentService
+                .Create(utcTimeSlots, TimezoneHelper.ToUTCTime(availabilityInput.Date, this.TimezoneCookieValue));
+
             return this.Ok();
         }
 

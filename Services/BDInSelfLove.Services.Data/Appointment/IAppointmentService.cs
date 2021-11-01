@@ -8,17 +8,17 @@
 
     public interface IAppointmentService
     {
+        Task<int> Create(DateTime[] utcSlots, DateTime utcDate);
+
         IQueryable<Appointment> GetAll(string userId, bool userIsAdmin);
 
         Task<Appointment> Book(int appointmentId, string appointmentDescription, string userId);
 
         Task<Appointment> GetById(int id);
 
-        Task<int> Create(DateTime[] appointmentSlots, DateTime appointmentsDate);
-
         Task<int> Delete(Appointment appointment);
 
-        Task<Appointment> Approve(int appointmentId);
+        Task<Appointment> Approve(int id);
 
         Task<int> Cancel(Appointment appointment);
     }

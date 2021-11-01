@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-
+﻿
 namespace BDInSelfLove.Web.InputModels.Appointment
 {
+    using System;
+    using System.Globalization;
+    using System.Linq;
+
     public class AvailabilityInputModel
     {
         public string DateString { get; set; } = string.Empty;
