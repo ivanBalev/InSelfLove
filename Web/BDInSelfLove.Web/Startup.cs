@@ -37,10 +37,12 @@
     public class Startup
     {
         private readonly IConfiguration configuration;
+        private readonly IWebHostEnvironment environment;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             this.configuration = configuration;
+            this.environment = environment;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -69,8 +71,16 @@
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
-            services.AddDbContext<ApplicationDbContext>(
+            if (this.environment.EnvironmentName.Equals("testing"))
+            {
+                services.AddDbContext<ApplicationDbContext>(
+                options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
+            }
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -151,18 +161,21 @@
             services.AddTransient<ICommentService, CommentService>();
 
             // Logging
-            services.AddLogging(loggingBuilder =>
+            if (!this.environment.EnvironmentName.Equals("testing"))
             {
-                var loggingSection = this.configuration.GetSection("Logging");
-                loggingBuilder.AddFile(loggingSection);
-            });
+                services.AddLogging(loggingBuilder =>
+                {
+                    var loggingSection = this.configuration.GetSection("Logging");
+                    loggingBuilder.AddFile(loggingSection);
+                });
+            }
 
             // Development exceptions
             services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
@@ -176,7 +189,7 @@
             {
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                if (env.IsDevelopment())
+                if (this.environment.IsDevelopment())
                 {
                     dbContext.Database.Migrate();
                 }
@@ -184,7 +197,7 @@
                 new ApplicationDbContextSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
-            if (env.IsDevelopment())
+            if (this.environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();

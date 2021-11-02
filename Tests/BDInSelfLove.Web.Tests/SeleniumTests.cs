@@ -21,10 +21,10 @@
             var opts = new ChromeOptions();
             opts.AddArguments("--headless");
             opts.AcceptInsecureCertificates = true;
-            this.browser = new ChromeDriver(opts);
+            this.browser = new ChromeDriver(AppDomain.CurrentDomain.BaseDirectory, opts);
         }
 
-        [Fact(Skip = "Example test. Disabled for CI.")]
+        [Fact]
         public void FooterOfThePageContainsPrivacyLink()
         {
             this.browser.Navigate().GoToUrl(this.server.RootUri);
