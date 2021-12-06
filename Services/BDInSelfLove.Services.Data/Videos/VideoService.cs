@@ -85,11 +85,10 @@
         {
             var query = this.videosRepository.All();
 
-
             if (searchString != null)
             {
                 var searchItems = SearchHelper.GetSearchItems(searchString);
-                query = query.Search(x => x.AssociatedTerms, x => x.Title).Containing(searchItems);
+                query = query.Search(x => x.AssociatedTerms.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
             query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);

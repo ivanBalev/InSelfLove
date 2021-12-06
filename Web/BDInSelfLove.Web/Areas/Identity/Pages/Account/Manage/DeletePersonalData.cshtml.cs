@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using BDInSelfLove.Data.Models;
-using BDInSelfLove.Services.Data.Calendar;
+using BDInSelfLove.Services.Data.Appointments;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

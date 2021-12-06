@@ -7,7 +7,6 @@
 
     using BDInSelfLove.Data.Models;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore.Internal;
     using Microsoft.Extensions.DependencyInjection;
 
     internal class ArticleSeeder : ISeeder
@@ -19,38 +18,49 @@
                 return;
             }
 
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var adminUser = await userManager.FindByNameAsync("admin");
-
             var articles = new List<Article>
             {
                 new Article
                 {
-                    Title = "Test1",
+                    Title = "Test1 Test1",
                     Content = "Test1Content",
                     ImageUrl = "https://source.unsplash.com/random/800x600",
-                    UserId = adminUser.Id,
                 },
                 new Article
                 {
-                    Title = "Test2",
+                    Title = "Test2 Test2",
                     Content = "Test2Content",
                     ImageUrl = "https://source.unsplash.com/random/800x601",
-                    UserId = adminUser.Id,
                 },
                 new Article
                 {
                     Title = "Test3",
                     Content = "Test3Content",
                     ImageUrl = "https://source.unsplash.com/random/801x600",
-                    UserId = adminUser.Id,
                 },
                 new Article
                 {
                     Title = "Test4",
                     Content = "Test4Content",
                     ImageUrl = "https://source.unsplash.com/random/800x602",
-                    UserId = adminUser.Id,
+                },
+                new Article
+                {
+                    Title = "Test5",
+                    Content = "Test5Content",
+                    ImageUrl = "https://source.unsplash.com/random/800x602",
+                },
+                new Article
+                {
+                    Title = "Test6 Test6",
+                    Content = "Test6Content",
+                    ImageUrl = "https://source.unsplash.com/random/800x602",
+                },
+                new Article
+                {
+                    Title = "Test7 Test7",
+                    Content = "Test7Content",
+                    ImageUrl = "https://source.unsplash.com/random/800x602",
                 },
             };
 

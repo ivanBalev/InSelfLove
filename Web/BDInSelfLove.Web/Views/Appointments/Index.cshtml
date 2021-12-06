@@ -1,4 +1,5 @@
-﻿@using BDInSelfLove.Common
+﻿@model BDInSelfLove.Web.ViewModels.Appointment.AppointmentIndexViewModel 
+@using BDInSelfLove.Common
 @using BDInSelfLove.Data.Models
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
@@ -18,7 +19,7 @@
             <button id="btnWorkingHours" class="green-btn border-0 btn mb-3">@localizer["Standard Working Hours"]</button>
         </div>
     }
-    <div id="calendar" workingHours="@GlobalValues.WorkDayStart-@GlobalValues.WorkDayEnd"></div>
+    <div id="calendar" workingHours="@Model.WorkdayStart.Hour-@Model.WorkdayEnd.Hour"></div>
 
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -122,7 +123,7 @@
                     <div class="container">
                         <div class="row justify-content-center">
                             @{
-                                for (int i = GlobalValues.WorkDayStart; i < GlobalValues.WorkDayEnd; i++)
+                                for (int i = Model.WorkdayStart.Hour; i < Model.WorkdayEnd.Hour; i++)
                                 {
                                     <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
                                         @(i.ToString() + ":00")

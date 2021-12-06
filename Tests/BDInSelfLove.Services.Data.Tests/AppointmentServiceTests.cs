@@ -8,14 +8,13 @@
     using BDInSelfLove.Data;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Data.Repositories;
-    using BDInSelfLove.Services.Data.Calendar;
+    using BDInSelfLove.Services.Data.Appointments;
     using Microsoft.EntityFrameworkCore;
     using Xunit;
 
     public class AppointmentServiceTests
     {
         private const string CurrentUserId = "1";
-        private const string OtherUserId = "2";
 
         private EfDeletableEntityRepository<Appointment> appointmentRepository;
         private AppointmentService appointmentService;

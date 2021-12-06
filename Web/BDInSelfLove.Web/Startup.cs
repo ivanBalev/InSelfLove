@@ -11,9 +11,8 @@
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Data.Seeding;
-    using BDInSelfLove.Services.Data;
+    using BDInSelfLove.Services.Data.Appointments;
     using BDInSelfLove.Services.Data.Articles;
-    using BDInSelfLove.Services.Data.Calendar;
     using BDInSelfLove.Services.Data.CloudinaryServices;
     using BDInSelfLove.Services.Data.Comments;
     using BDInSelfLove.Services.Data.Videos;
@@ -46,7 +45,7 @@
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -71,16 +70,8 @@
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
-            if (this.environment.EnvironmentName.Equals("testing"))
-            {
-                services.AddDbContext<ApplicationDbContext>(
-                options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
-            }
-            else
-            {
-                services.AddDbContext<ApplicationDbContext>(
+            services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
-            }
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -98,20 +89,27 @@
             services.AddResponseCaching();
 
             // External Logins
-            services.AddAuthentication()
-                .AddGoogle(googleOptions =>
-                {
-                    IConfigurationSection googleAuthNSection =
-                                   this.configuration.GetSection("Authentication:Google");
+            if (this.environment.EnvironmentName.Equals("testing"))
+            {
+                services.AddAuthentication();
+            }
+            else
+            {
+                services.AddAuthentication()
+               .AddGoogle(googleOptions =>
+               {
+                   IConfigurationSection googleAuthNSection =
+                                  this.configuration.GetSection("Authentication:Google");
 
-                    googleOptions.ClientId = googleAuthNSection["ClientId"];
-                    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-                })
-                .AddFacebook(facebookOptions =>
-                {
-                    facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
-                    facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
-                });
+                   googleOptions.ClientId = googleAuthNSection["ClientId"];
+                   googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+               })
+               .AddFacebook(facebookOptions =>
+               {
+                   facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
+                   facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
+               });
+            }
 
             // Cookies setup
             services.Configure<CookiePolicyOptions>(
@@ -163,6 +161,8 @@
             // Logging
             if (!this.environment.EnvironmentName.Equals("testing"))
             {
+                // server.CreateClient() runs through this a second time,
+                // causing an error(log file is already in use by server)
                 services.AddLogging(loggingBuilder =>
                 {
                     var loggingSection = this.configuration.GetSection("Logging");

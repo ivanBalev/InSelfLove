@@ -1,12 +1,13 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
-    using BDInSelfLove.Services.Data.Calendar;
+    using BDInSelfLove.Services.Data.Appointments;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Web.InputModels.Appointment;
@@ -52,7 +53,7 @@
         public async Task<IActionResult> Index()
         {
             await this.UpdateUserTimezone();
-            return this.View();
+            return this.View(this.GetIndexViewModel());
         }
 
         [HttpPost]
@@ -69,6 +70,7 @@
             return this.Ok();
         }
 
+        // TODO: Index should also return all appointments to avoid unnecessary initial request
         [HttpGet]
         [Route("GetAll")]
         public async Task<ActionResult<AppointmentViewModel[]>> GetAll()
@@ -146,16 +148,13 @@
         public ActionResult SetWorkingHours([FromForm] string startHour, [FromForm] string endHour)
         {
             // Currently working only with 00 minutes
-            GlobalValues.WorkDayStart = int.Parse(startHour.Split(':')[0]);
-            GlobalValues.WorkDayEnd = int.Parse(endHour.Split(':')[0]);
-            return this.Ok();
-        }
+            var localStartHour = DateTime.ParseExact(startHour.Split(':')[0], "H", CultureInfo.InvariantCulture);
+            var localEndHour = DateTime.ParseExact(endHour.Split(':')[0], "H", CultureInfo.InvariantCulture);
 
-        [HttpGet]
-        [Route("GetWorkingHours")]
-        public ActionResult<int[]> GetWorkingHours()
-        {
-            return new int[] { GlobalValues.WorkDayStart, GlobalValues.WorkDayEnd };
+            GlobalValues.WorkDayStartUTC = TimezoneHelper.ToUTCTime(localStartHour, this.TimezoneCookieValue);
+            GlobalValues.WorkDayEndUTC = TimezoneHelper.ToUTCTime(localEndHour, this.TimezoneCookieValue);
+
+            return this.Ok();
         }
 
         // Helper methods
@@ -166,7 +165,7 @@
 
         private async Task UpdateUserTimezone()
         {
-            string userCurrentWindowsTimezoneId = TimezoneHelper.GetUserWindowsTimezone(this.TimezoneCookieValue).Id;
+            string userCurrentWindowsTimezoneId = TimezoneHelper.GetWindowsTimezone(this.TimezoneCookieValue).Id;
             var user = await this.userManager.GetUserAsync(this.User);
 
             if (user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
@@ -178,7 +177,7 @@
 
         private async Task SendBookingEmails(Appointment appointment)
         {
-            ApplicationUser admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
+            var admin = await this.GetAdmin();
             DateTime adminTimeAppointmentStart = TimezoneHelper.ToLocalTime(appointment.UtcStart, this.TimezoneCookieValue);
             string adminEmailBody = this.FillInEmailTemplate(Body, this.localizer[NewAppointment]);
             string adminEmailSubject = this.FillInEmailTemplate(Subject, adminTimeAppointmentStart.ToString(DateEmailFormat));
@@ -206,8 +205,7 @@
 
         private async Task SendApprovalEmail(Appointment appointmentFromDb)
         {
-            string adminEmail =
-                            (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
+            string adminEmail = (await this.GetAdmin()).Email;
             DateTime userTimeAppointmentStart =
                 TimezoneHelper.ToLocalTime(appointmentFromDb.UtcStart, this.TimezoneCookieValue);
 
@@ -223,7 +221,7 @@
 
         private async Task SendCancellationEmail(ApplicationUser user, bool userIsAdmin, Appointment appointment)
         {
-            var admin = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
+            var admin = await this.GetAdmin();
             DateTime adminTimeAppointmentStart = TimezoneHelper.ToLocalTime(appointment.UtcStart, this.TimezoneCookieValue);
             string adminEmailSubject = this.FillInEmailTemplate(Subject, adminTimeAppointmentStart.ToString(DateEmailFormat));
 
@@ -252,5 +250,20 @@
                     htmlContent: emailBody);
             }
         }
+
+        private async Task<ApplicationUser> GetAdmin()
+        {
+            return (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
+        }
+
+        private AppointmentIndexViewModel GetIndexViewModel()
+        {
+            return new AppointmentIndexViewModel
+            {
+                WorkdayStart = TimezoneHelper.ToLocalTime(GlobalValues.WorkDayStartUTC, this.TimezoneCookieValue),
+                WorkdayEnd = TimezoneHelper.ToLocalTime(GlobalValues.WorkDayEndUTC, this.TimezoneCookieValue),
+            };
+        }
+
     }
 }

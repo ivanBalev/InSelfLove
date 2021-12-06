@@ -40,6 +40,11 @@
                     this.videos = this.videos.Skip(1).Take(DefaultItemsCount).ToList();
                 }
 
+                if (this.articles.Count > DefaultItemsCount)
+                {
+                    this.articles = this.articles.Take(DefaultItemsCount).ToList();
+                }
+
                 featuredItem.Title = lastVideo.Title;
                 featuredItem.Slug = lastVideo.Slug;
                 featuredItem.Controller = "Videos";
@@ -49,6 +54,11 @@
                 if (this.articles.Count > DefaultItemsCount)
                 {
                     this.articles = this.articles.Skip(1).Take(DefaultItemsCount).ToList();
+                }
+
+                if (this.videos.Count > DefaultItemsCount)
+                {
+                    this.videos = this.videos.Take(DefaultItemsCount).ToList();
                 }
 
                 featuredItem.Title = lastArticle.Title;

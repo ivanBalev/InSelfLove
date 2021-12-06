@@ -86,7 +86,7 @@
             if (!string.IsNullOrEmpty(searchString) && !string.IsNullOrWhiteSpace(searchString))
             {
                 var searchItems = SearchHelper.GetSearchItems(searchString);
-                query = query.Search(x => x.Content, x => x.Title).Containing(searchItems);
+                query = query.Search(x => x.Content.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
             query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);

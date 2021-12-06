@@ -1,4 +1,4 @@
-﻿namespace BDInSelfLove.Services.Data.Calendar
+﻿namespace BDInSelfLove.Services.Data.Appointments
 {
     using System;
     using System.Linq;

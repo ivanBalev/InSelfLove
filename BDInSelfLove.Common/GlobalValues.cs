@@ -1,4 +1,7 @@
-﻿namespace BDInSelfLove.Common
+﻿using System;
+using System.Globalization;
+
+namespace BDInSelfLove.Common
 {
     public static class GlobalValues
     {
@@ -8,8 +11,8 @@
 
         public const string UserRoleName = "User";
 
-        public static int WorkDayStart = 9;
+        public static DateTime WorkDayStartUTC = DateTime.ParseExact("07:00:00", "HH:mm:ss", CultureInfo.InvariantCulture);
 
-        public static int WorkDayEnd = 17;
+        public static DateTime WorkDayEndUTC = DateTime.ParseExact("15:00:00", "HH:mm:ss", CultureInfo.InvariantCulture);
     }
 }

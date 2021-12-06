@@ -10,7 +10,7 @@
     string videoId = video.Url.Split('/').Last();
     string backgroundImg = youtubeApiMainLink + videoId + youtubeApiEndpoint;
 
-    <div class="carousel-item @(index == 0 ? "active" : "")" itemscope itemtype="http://schema.org/Movie">
+    <div id="@video.Id" class="carousel-item @(index == 0 ? "active" : "")" itemscope itemtype="http://schema.org/Movie">
         <lite-youtube videoid="@videoId" playlabel="Play: @video.Title" style="background-image: url('@backgroundImg');">
             <div class="video-title">@video.Title</div>
             <button type="button" class="lty-playbtn">
