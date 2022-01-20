@@ -1,12 +1,12 @@
 ﻿const cacheDefaultName = 'inselflove';
 const domainNames = ['inselflove', 'localhost'];
-const staticCacheName = cacheDefaultName + '-static-v122.22';
-const dynamicCacheName = cacheDefaultName + '-dynamic-v122.22';
-// TODO: optimize dynamic cache size.
-const dynamicCacheMaxSize = 20;
+const staticCacheName = cacheDefaultName + '-static-v1.1';
+const dynamicCacheName = cacheDefaultName + '-dynamic-v1.1';
+const dynamicCacheMaxSize = 40;
 const assets = [
     '/Home/Error',
     'https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg',
+    'https://res.cloudinary.com/dzcajpx0y/image/upload/v1615058365/popetoCircle_gk8b5i.jpg',
 ];
 
 // The first event a service worker gets, and it only happens once.
@@ -59,7 +59,10 @@ self.addEventListener('fetch', evt => {
                     // Add to dynamic cache only if request is not handled by server
                     // Server-handled requests are already cached adequately
                     if (!domainNames.some(dn => evt.request.url.includes(dn))) {
-                        cache.put(evt.request.url, fetchRes.clone());
+                        // only if over https(chrome extension requests via http cannot be cached *unsupported extension error*)
+                        if ((evt.request.url.indexOf('http') === 0)) {
+                            cache.put(evt.request.url, fetchRes.clone());
+                        }
                         limitCacheSize(dynamicCacheName, dynamicCacheMaxSize);
                     }
                     return fetchRes;

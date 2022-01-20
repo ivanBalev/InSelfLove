@@ -6,7 +6,7 @@
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
 
-    public class CultureController : BaseController
+    public class CultureController : Controller
     {
         [HttpPost]
         public IActionResult SetCulture(string culture, string returnUrl)

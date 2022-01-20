@@ -19,7 +19,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Localization;
 
-    public class HomeController : BaseController
+    public class HomeController : Controller
     {
         private const int IndexItemsCount = 4;
         private const string StatusMessage = "StatusMessage";

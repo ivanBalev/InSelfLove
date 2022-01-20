@@ -14,7 +14,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    public class ArticlesController : PreviewAndPaginationHelper
+    public class ArticlesController : PreviewAndPaginationController
     {
         private readonly ICloudinaryService cloudinaryService;
 
@@ -45,7 +45,7 @@
             for (int i = 0; i < viewModel.Comments.Count; i++)
             {
                 viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(
-                    viewModel.Comments[i].CreatedOn, this.TimezoneCookieValue);
+                    viewModel.Comments[i].CreatedOn, this.TimezoneIdFromCookie);
             }
 
             return this.View(viewModel);

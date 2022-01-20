@@ -91,7 +91,8 @@
                 query = query.Search(x => x.AssociatedTerms.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
-            query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);
+            query = query.Distinct().OrderByDescending(c => c.CreatedOn.Date)
+               .ThenByDescending(c => c.CreatedOn.TimeOfDay).Skip(skip);
 
             if (take.HasValue)
             {
@@ -119,7 +120,8 @@
         {
             var videos = this.videosRepository.All()
                .Where(v => v.Id != videoId)
-               .OrderByDescending(a => a.CreatedOn)
+                 .OrderByDescending(c => c.CreatedOn.Date)
+               .ThenByDescending(c => c.CreatedOn.TimeOfDay)
                .Take(videosCount);
 
             return videos;

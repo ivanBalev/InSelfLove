@@ -12,7 +12,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    public class VideosController : PreviewAndPaginationHelper
+    public class VideosController : PreviewAndPaginationController
     {
         public VideosController(
             IVideoService videoService)
@@ -37,7 +37,7 @@
             for (int i = 0; i < viewModel.Comments.Count; i++)
             {
                 viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(
-                    viewModel.Comments[i].CreatedOn, this.TimezoneCookieValue);
+                    viewModel.Comments[i].CreatedOn, this.TimezoneIdFromCookie);
             }
 
             return this.View(viewModel);

@@ -4,6 +4,6 @@
 
     public class BaseController : Controller
     {
-        protected string TimezoneCookieValue => this.HttpContext.Request.Cookies["timezoneIANA"];
+        public string TimezoneIdFromCookie => this.HttpContext.Request.Cookies["timezoneIANA"];
     }
 }

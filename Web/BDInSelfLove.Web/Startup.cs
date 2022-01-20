@@ -24,6 +24,7 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -71,7 +72,10 @@
                 .AddDataAnnotationsLocalization();
 
             services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
+                options => options.UseMySQL(this.configuration.GetConnectionString("MySql")));
+
+            //services.AddDbContext<ApplicationDbContext>(
+            //    options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -161,7 +165,7 @@
             // Logging
             if (!this.environment.EnvironmentName.Equals("testing"))
             {
-                // server.CreateClient() runs through this a second time,
+                // testing server.CreateClient() runs through this a second time,
                 // causing an error(log file is already in use by server)
                 services.AddLogging(loggingBuilder =>
                 {
@@ -177,6 +181,11 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+            });
+
             app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
             AutoMapperConfig.RegisterMappings(
@@ -232,7 +241,7 @@
             app.UseCookiePolicy();
 
             app.UseRouting();
-            //TODO: REMOVE HTTPS REDIRECTION FOR AZURE BUT ADD WHEN DEPLOYING ELSEWHERE!
+            app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();

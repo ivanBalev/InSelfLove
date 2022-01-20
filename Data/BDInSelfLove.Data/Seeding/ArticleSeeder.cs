@@ -64,6 +64,11 @@
                 },
             };
 
+            for (int i = 0; i < articles.Count; i++)
+            {
+                articles[i].CreatedOn = DateTime.UtcNow.AddMinutes(i);
+            }
+
             await dbContext.Articles.AddRangeAsync(articles);
         }
     }

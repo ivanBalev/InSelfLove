@@ -16,8 +16,8 @@
                 .Build();
 
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            builder.UseSqlServer(connectionString);
+            var connectionString = configuration.GetConnectionString("MySql");
+            builder.UseMySQL(connectionString);
 
             return new ApplicationDbContext(builder.Options);
         }

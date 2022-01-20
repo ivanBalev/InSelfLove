@@ -36,6 +36,8 @@
                 .UseStartup<FakeStartup>());
         }
 
+        public IConfiguration Configuration => this.configuration;
+
         public string RootUri { get; set; }
 
         public class FakeStartup
@@ -63,6 +65,8 @@
             .UseStartup<TStartup>();
             base.ConfigureWebHost(builder);
         }
+
+        //protected override void 
 
         //private void ConfigureInMemoryDb(IServiceCollection services)
         //{

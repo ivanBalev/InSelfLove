@@ -123,13 +123,13 @@
   <data name="Edit" xml:space="preserve">
     <value>Промени</value>
   </data>
-  <data name="Hide subcomments" xml:space="preserve">
-    <value>Скрий подкоментарите</value>
+  <data name="Hide" xml:space="preserve">
+    <value>Скрий</value>
   </data>
   <data name="Reply" xml:space="preserve">
     <value>Отговори</value>
   </data>
-  <data name="See Subcomments" xml:space="preserve">
-    <value>Виж подкоментарите</value>
+  <data name="Subcomments" xml:space="preserve">
+    <value>Подкоментарите</value>
   </data>
 </root>

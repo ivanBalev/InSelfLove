@@ -102,18 +102,21 @@
 
             // Remove subcomments from main structure, leaving only nested structure, and order comments
             comments = comments.Where(c => c.ParentCommentId == null)
-                .OrderByDescending(c => c.CreatedOn).ToList();
+                  .OrderByDescending(c => c.CreatedOn.Date)
+               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
 
             // Order subcomments
             foreach (var firstLevelSubcomment in comments)
             {
                 firstLevelSubcomment.SubComments = firstLevelSubcomment.SubComments?
-                    .OrderByDescending(c => c.CreatedOn).ToList();
+                      .OrderByDescending(c => c.CreatedOn.Date)
+               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
 
                 foreach (var secondLevelSubcomment in firstLevelSubcomment.SubComments)
                 {
                     secondLevelSubcomment.SubComments = secondLevelSubcomment.SubComments?
-                        .OrderByDescending(c => c.CreatedOn).ToList();
+                         .OrderByDescending(c => c.CreatedOn.Date)
+               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
                 }
             }
 

@@ -118,7 +118,8 @@
 
         public async Task<Appointment> Approve(int appointmentId)
         {
-            var appointment = await this.appointmentRepository.All().SingleOrDefaultAsync(a => a.Id == appointmentId);
+            var appointment = await this.appointmentRepository.All()
+                .Include(a => a.User).SingleOrDefaultAsync(a => a.Id == appointmentId);
 
             if (appointment == null)
             {

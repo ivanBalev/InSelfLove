@@ -89,7 +89,8 @@
                 query = query.Search(x => x.Content.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
-            query = query.Distinct().OrderByDescending(a => a.CreatedOn).Skip(skip);
+            query = query.OrderByDescending(c => c.CreatedOn.Date)
+                .ThenByDescending(c => c.CreatedOn.TimeOfDay).Skip(skip);
 
             if (take.HasValue)
             {
@@ -151,7 +152,8 @@
         {
             var articles = this.articleRepository.All()
                .Where(a => a.Id != articleId)
-               .OrderByDescending(a => a.CreatedOn)
+               .OrderByDescending(c => c.CreatedOn.Date)
+               .ThenByDescending(c => c.CreatedOn.TimeOfDay)
                .Take(articlesCount);
 
             return articles;

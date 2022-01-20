@@ -6,14 +6,14 @@
 
     public static class TimezoneHelper
     {
-        public static TimeZoneInfo GetWindowsTimezone(string timezone)
+        public static TimeZoneInfo GetTimezone(string timezoneId)
         {
-            if (timezone == null)
+            if (timezoneId == null)
             {
                 return null;
             }
 
-            return TZConvert.GetTimeZoneInfo(timezone);
+            return TZConvert.GetTimeZoneInfo(timezoneId);
         }
 
         public static DateTime ToUTCTime(DateTime localTime, string timezone)
@@ -23,7 +23,7 @@
                 return localTime;
             }
 
-            return TimeZoneInfo.ConvertTimeToUtc(localTime, GetWindowsTimezone(timezone));
+            return TimeZoneInfo.ConvertTimeToUtc(localTime, GetTimezone(timezone));
         }
 
         public static DateTime ToLocalTime(DateTime utcTime, string timezone)
@@ -33,7 +33,7 @@
                 return utcTime;
             }
 
-            TimeZoneInfo userWindowsTimezone = TZConvert.GetTimeZoneInfo(GetWindowsTimezone(timezone).Id);
+            TimeZoneInfo userWindowsTimezone = TZConvert.GetTimeZoneInfo(GetTimezone(timezone).Id);
             DateTime userLocalTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, userWindowsTimezone);
             return userLocalTime;
         }

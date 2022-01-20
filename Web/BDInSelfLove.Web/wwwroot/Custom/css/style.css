@@ -84,6 +84,10 @@
     .navbar .contact {
         margin-left: 3vmax !important;
     }
+
+    #sidebar {
+        padding-left: 0px;
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -224,7 +228,7 @@ html, body {
 
 #slimShowcase {
     position: relative;
-    background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1620505605/found10_elbacf.jpg");
+    background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg");
     height: 200px;
     background-repeat: no-repeat;
     background-size: cover;

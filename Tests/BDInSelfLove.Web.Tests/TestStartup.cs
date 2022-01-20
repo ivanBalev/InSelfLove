@@ -1,17 +1,13 @@
-﻿using BDInSelfLove.Data;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BDInSelfLove.Web.Tests
+﻿namespace BDInSelfLove.Web.Tests
 {
+    using System.Linq;
+
+    using BDInSelfLove.Data;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class TestStartup : Startup
     {
         public TestStartup(IConfiguration configuration, IWebHostEnvironment environment)

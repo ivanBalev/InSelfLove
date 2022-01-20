@@ -123,13 +123,13 @@
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
-  <data name="Hide subcomments" xml:space="preserve">
-    <value>Hide subcomments</value>
+  <data name="Hide" xml:space="preserve">
+    <value>Hide</value>
   </data>
   <data name="Reply" xml:space="preserve">
     <value>Reply</value>
   </data>
-  <data name="See Subcomments" xml:space="preserve">
-    <value>See Subcomments</value>
+  <data name="Subcomments" xml:space="preserve">
+    <value>Subcomments</value>
   </data>
 </root>

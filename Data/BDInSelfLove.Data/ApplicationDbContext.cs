@@ -8,7 +8,7 @@
 
     using BDInSelfLove.Data.Common.Models;
     using BDInSelfLove.Data.Models;
-
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
@@ -108,6 +108,18 @@
                 .WithMany(v => v.Comments)
                 .HasForeignKey(ac => ac.VideoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ApplicationUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+            builder.Entity<ApplicationRole>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+
+            builder.Entity<IdentityUserClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+            builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
+
+            builder.Entity<IdentityUserLogin<string>>(entity => entity.Property(m => m.LoginProvider).HasMaxLength(85));
+            builder.Entity<IdentityUserLogin<string>>(entity => entity.Property(m => m.ProviderKey).HasMaxLength(85));
+
+            builder.Entity<IdentityUserToken<string>>(entity => entity.Property(m => m.LoginProvider).HasMaxLength(85));
+            builder.Entity<IdentityUserToken<string>>(entity => entity.Property(m => m.Name).HasMaxLength(85));
         }
 
         private void ApplyAuditInfoRules()

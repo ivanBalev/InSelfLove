@@ -356,6 +356,7 @@ MigrationBackup/
 **/wwwroot/lib/
 appsettings.Production.json
 appsettings.json
+/Data/BDInSelfLove.Data/appsettings.json
 *.min.css
 *.min.js
 Web/BDInSelfLove.Web/appsettings.json

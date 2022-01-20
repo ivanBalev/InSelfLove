@@ -7,7 +7,7 @@
     using BDInSelfLove.Web.ViewModels.Search;
     using Microsoft.AspNetCore.Mvc;
 
-    public class SearchController : PreviewAndPaginationHelper
+    public class SearchController : PreviewAndPaginationController
     {
         private const string ArticleActionName = "Article";
         private const string VideoActionName = "Video";
