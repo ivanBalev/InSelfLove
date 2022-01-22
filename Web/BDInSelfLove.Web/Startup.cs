@@ -48,6 +48,18 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            // Logging
+            if (!this.environment.EnvironmentName.Equals("testing"))
+            {
+                // testing server.CreateClient() runs through this a second time,
+                // causing an error(log file is already in use by server)
+                services.AddLogging(loggingBuilder =>
+                {
+                    var loggingSection = this.configuration.GetSection("Logging");
+                    loggingBuilder.AddFile(loggingSection);
+                });
+            }
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             services.Configure<RequestLocalizationOptions>(options =>
@@ -73,9 +85,6 @@
 
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySQL(this.configuration.GetConnectionString("MySql")));
-
-            //services.AddDbContext<ApplicationDbContext>(
-            //    options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -161,18 +170,6 @@
             services.AddTransient<ICloudinaryService, CloudinaryService>();
             services.AddTransient<IAppointmentService, AppointmentService>();
             services.AddTransient<ICommentService, CommentService>();
-
-            // Logging
-            if (!this.environment.EnvironmentName.Equals("testing"))
-            {
-                // testing server.CreateClient() runs through this a second time,
-                // causing an error(log file is already in use by server)
-                services.AddLogging(loggingBuilder =>
-                {
-                    var loggingSection = this.configuration.GetSection("Logging");
-                    loggingBuilder.AddFile(loggingSection);
-                });
-            }
 
             // Development exceptions
             services.AddDatabaseDeveloperPageExceptionFilter();
