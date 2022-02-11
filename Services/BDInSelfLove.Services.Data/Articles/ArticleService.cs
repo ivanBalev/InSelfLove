@@ -59,6 +59,7 @@
             dbArticle.Title = article.Title;
             dbArticle.Content = article.Content;
             dbArticle.ImageUrl = article.ImageUrl;
+            dbArticle.PreviewImageBlob = article.PreviewImageBlob;
             dbArticle.Slug = article.Slug;
 
             this.articleRepository.Update(dbArticle);
