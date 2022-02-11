@@ -120,8 +120,11 @@
   <data name="CHECK THEM OUT" xml:space="preserve">
     <value>CHECK THEM OUT</value>
   </data>
-  <data name="FEATURED POST" xml:space="preserve">
-    <value>FEATURED POST</value>
+  <data name="FEATURED Articles" xml:space="preserve">
+    <value>FEATURED ARTICLE</value>
+  </data>
+  <data name="FEATURED Videos" xml:space="preserve">
+    <value>FEATURED VIDEO</value>
   </data>
   <data name="HOME PAGE" xml:space="preserve">
     <value>HOME PAGE</value>

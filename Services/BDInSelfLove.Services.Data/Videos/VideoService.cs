@@ -47,7 +47,7 @@
             }
 
             var video = await this.videosRepository.All()
-               .Where(a => a.Title.ToLower() == slug.Replace('-', ' '))
+               .Where(a => a.Slug.Equals(slug.ToLower()))
               .Select(x => new Video
               {
                   Id = x.Id,

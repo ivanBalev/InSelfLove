@@ -53,11 +53,17 @@
 
                 </ul>
                 <partial name="_LoginPartial" />
+                <ul class="navbar-nav">
+                    <li class="search">
+                        <img src="~/Custom/icons/search-solid.svg" class="search-login-btn" alt="search icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                    </li>
+                </ul>
                 <ul class="navbar-nav contact">
                     <li class="nav-item">
                         <a asp-area="" asp-controller="Home" asp-action="Contacts" class="nav-link">@localizer["Contact"]</a>
                     </li>
                 </ul>
+
             </div>
         </div>
     </nav>

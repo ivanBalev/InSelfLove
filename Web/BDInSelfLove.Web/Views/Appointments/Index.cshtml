@@ -1,4 +1,4 @@
-﻿@model BDInSelfLove.Web.ViewModels.Appointment.AppointmentIndexViewModel 
+﻿@model BDInSelfLove.Web.ViewModels.Appointment.AppointmentIndexViewModel
 @using BDInSelfLove.Common
 @using BDInSelfLove.Data.Models
 @using Microsoft.AspNetCore.Identity
@@ -10,8 +10,14 @@
 @{
     bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
 }
+<div class="alert alert-success alert-dismissible mb-0" role="alert" style="display:none;">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span>@localizer["NoAvailableApppointments"]?.Value</span>
+    <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
+</div>
 
 <div class="container calendar-container mt-4 py-4">
+
     <form id="csfrToken" method="post"></form>
     @if (userIsAdmin)
     {
@@ -19,6 +25,7 @@
             <button id="btnWorkingHours" class="green-btn border-0 btn mb-3">@localizer["Standard Working Hours"]</button>
         </div>
     }
+
     <div id="calendar" workingHours="@Model.WorkdayStart.Hour-@Model.WorkdayEnd.Hour"></div>
 
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">

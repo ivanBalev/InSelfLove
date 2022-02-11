@@ -70,16 +70,29 @@
 }
 
 @media screen and (max-width: 950px) {
+    #about p {
+        margin-left: 0px !important;
+    }
+
+    .profile-pic {
+        margin-top: -110px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        display: block;
+        width: 75% !important;
+    }
 
     .navbar-brand {
-        margin-left: 0px !important;
+        margin-right: 12px !important;
+    }
+
+    .navbar {
         padding-left: 0px !important;
     }
 
     .navbar .container {
-        margin-left: 0px !important;
+        padding-left: 5px !important;
     }
-
 
     .navbar .contact {
         margin-left: 3vmax !important;
@@ -88,22 +101,50 @@
     #sidebar {
         padding-left: 0px;
     }
+
+    #showcase .showcase-wrapper {
+        margin-top: 8vh !important;
+    }
 }
 
 @media screen and (max-width: 768px) {
+    #slimShowcase, #showcase {
+        background-attachment: scroll !important;
+    }
+
+    .alert .green-btn {
+        padding: 5px !important;
+    }
+
     .navbar .contact {
         margin-top: 8px !important;
         margin-left: 0px !important;
         width: 104px !important;
     }
 
-        .navbar .contact .nav-link {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
-            background-color: rgb(146,171,149);
-            color: white;
-            border-radius: 5px;
-        }
+    .navbar .contact .nav-link {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        background-color: rgb(146,171,149);
+        color: white;
+        border-radius: 5px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    /*gypsy fix*/
+    html {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+}
+
+@media screen and (max-width: 220px) {
+    /*reverse-gypsy fix*/
+    html {
+        overflow-y: scroll;
+        overflow-x: scroll;
+    }
 }
 
 @font-face {
@@ -145,14 +186,14 @@ html, body {
 }
 
 .navbar-brand {
-    margin-right: 20vw;
+    margin-right: 18vw;
     margin-left: 1vw;
 }
 
-    .navbar-brand img {
-        width: 20px;
-        height: 20px;
-    }
+.navbar-brand img {
+    width: 20px;
+    height: 20px;
+}
 
 .navbar h3 {
     font-size: 1.25rem;
@@ -185,6 +226,7 @@ html, body {
 
 .nav-item.dropdown {
     margin-bottom: 7px;
+    margin-right: 36px;
 }
 
 #navbarCollapse .nav-link {
@@ -272,19 +314,17 @@ html, body {
     padding-top: 7px;
 }
 
-#video-carousel .carousel-control-prev {
-    height: 30%;
-}
-
+#video-carousel .carousel-control-prev,
 #video-carousel .carousel-control-next {
-    height: 30%;
+    height: 50%;
+    opacity: 1.0 !important;
 }
 
 #video-carousel .carousel-control-next-icon,
 #video-carousel .carousel-control-prev-icon {
-    filter: invert(1);
-    width: 25px;
-    height: 25px;
+    opacity: 1.0!important;
+    width: 40px;
+    height: 40px;
 }
 
 .edit-comment, .comment-box {
@@ -382,9 +422,9 @@ html, body {
     white-space: nowrap;
 }
 
-.white-btn:hover {
-    background-color: rgb(146,171,149);
-}
+    .white-btn:hover {
+        background-color: rgb(146,171,149);
+    }
 
 
 a .card img {
@@ -414,6 +454,7 @@ a .card img {
 
 .search {
     cursor: pointer;
+    margin-bottom: 6px;
 }
 
 .fc-today-button, .fc-agendaWeek-button {
@@ -442,6 +483,10 @@ a .card img {
     background-color: white !important;
 }
 
+.alert .green-btn:hover {
+    text-decoration: none !important;
+}
+
 .fc-center h2 {
     font-size: 1.6em;
 }
@@ -464,9 +509,36 @@ a .card img {
     margin-left: -10vmin;
 }
 
-#about p {
-    font-size: 22px;
-    text-align: justify;
+#about .profile-pic {
+    width: 90%;
+    border: 10px solid;
+    border-color: rgb(146,171,149);
+    margin-top: 50px;
+    margin-bottom: -1px;
+    margin-left: 21px;
+    margin-right: -1px;
+}
+
+#about .wrapper-row {
+    margin-left: 15vmin;
+    margin-right: 15vmin;
+}
+
+#about .content-col .first-paragraph {
+    margin-left: 10vmin;
+}
+
+#about .content-col .second-paragraph {
+    margin-right: 10vmin;
+}
+
+#about .content-col {
+    margin-top: 5vmin;
+}
+
+#about .office-pic {
+    width: 100%;
+    border-radius: 0.25rem !important;
 }
 
 #about .row {
@@ -480,6 +552,15 @@ a .card img {
 
 #about .content-wrapper {
     padding-bottom: 0px !important;
+}
+
+.sidebar-col {
+    padding-right: 15px !important;
+}
+
+.bottombar-div {
+    padding-right: 15px !important;
+    padding-left: 15px !important;
 }
 
 .search-btn {
@@ -658,6 +739,10 @@ a .card img {
     padding-top: 2px;
     height: 16.8px;
     width: 14px;
+}
+
+.dropdown-toggle::after {
+    margin-left: 0px !important;
 }
 
 .flower-icon {

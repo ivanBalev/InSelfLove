@@ -1,9 +1,10 @@
 ﻿const cacheDefaultName = 'inselflove';
 const domainNames = ['inselflove', 'localhost'];
-const staticCacheName = cacheDefaultName + '-static-v1.1';
-const dynamicCacheName = cacheDefaultName + '-dynamic-v1.1';
+const staticCacheName = cacheDefaultName + '-static-v1.911';
+const dynamicCacheName = cacheDefaultName + '-dynamic-v1.911';
 const dynamicCacheMaxSize = 40;
 const assets = [
+    '/Custom/img/wonder.png',
     '/Home/Error',
     'https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg',
     'https://res.cloudinary.com/dzcajpx0y/image/upload/v1615058365/popetoCircle_gk8b5i.jpg',

@@ -16,5 +16,7 @@ namespace BDInSelfLove.Web.InputModels.Video
         [Required]
         [Display(Name = "Key words associated with your video's content")]
         public string AssociatedTerms { get; set; }
+
+        public string Slug => this.Title.ToLower().Replace(' ', '-');
     }
 }

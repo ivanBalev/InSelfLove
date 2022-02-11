@@ -117,11 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="(This information will be shared only with your therapist.)" xml:space="preserve">
-    <value>(This information will be shared only with your therapist.)</value>
-  </data>
   <data name="Appointment" xml:space="preserve">
-    <value>Appointment</value>
+    <value>Briefly describe your issue</value>
   </data>
   <data name="Appointment Details" xml:space="preserve">
     <value>Appointment Details</value>
@@ -135,6 +132,9 @@
   <data name="Book Appointment" xml:space="preserve">
     <value>Book Appointment</value>
   </data>
+  <data name="Briefly describe your issue" xml:space="preserve">
+    <value>Briefly describe your issue</value>
+  </data>
   <data name="Cancel Appointment" xml:space="preserve">
     <value>Cancel Appointment</value>
   </data>
@@ -146,6 +146,9 @@
   </data>
   <data name="Confirm Decline" xml:space="preserve">
     <value>Confirm Decline</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>CONTACT</value>
   </data>
   <data name="Daily Availability" xml:space="preserve">
     <value>Daily Availability</value>
@@ -171,11 +174,11 @@
   <data name="Issue description:" xml:space="preserve">
     <value>Issue description:</value>
   </data>
+  <data name="NoAvailableApppointments" xml:space="preserve">
+    <value>No available appointments in calendar. Go to </value>
+  </data>
   <data name="Phone number:" xml:space="preserve">
     <value>Phone number:</value>
-  </data>
-  <data name="Please describe your condition in a few sentences." xml:space="preserve">
-    <value>Please describe your condition in a few sentences.</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -194,6 +197,9 @@
   </data>
   <data name="Status:" xml:space="preserve">
     <value>Status:</value>
+  </data>
+  <data name="This will be shared only with your therapist" xml:space="preserve">
+    <value>This will be shared only with your therapist</value>
   </data>
   <data name="Username:" xml:space="preserve">
     <value>Username:</value>

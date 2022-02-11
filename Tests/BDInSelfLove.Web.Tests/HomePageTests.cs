@@ -17,8 +17,7 @@
 
     public class HomePageTests : IClassFixture<SeleniumServerFactory<TestStartup>>, IDisposable
     {
-        private const int TotalItemsCount = 4;
-        private const int DisplayedItemsCount = 3;
+        private const int TotalItemsCount = 3;
 
         private readonly SeleniumServerFactory<TestStartup> server;
         private readonly IWebDriver browser;
@@ -42,9 +41,6 @@
         [Fact]
         public async Task ArticlesAndVideosAreArrangedCorrectly()
         {
-            // .SendKeys to populate a field after selecting
-            // JavascriptExecutor for scrolling the page
-
             List<Article> dbArticles = new List<Article>();
             List<Video> dbVideos = new List<Video>();
 
@@ -61,18 +57,6 @@
             var latestArticle = dbArticles[0];
             var latestVideo = dbVideos[0];
             bool videoIsLatest = DateTime.Compare(latestArticle.CreatedOn, latestVideo.CreatedOn) == -1;
-
-            // Reduce collections to items on screen
-            if (videoIsLatest)
-            {
-                dbVideos = dbVideos.Skip(1).ToList();
-                dbArticles = dbArticles.Take(DisplayedItemsCount).ToList();
-            }
-            else
-            {
-                dbArticles = dbArticles.Skip(1).ToList();
-                dbVideos = dbVideos.Take(DisplayedItemsCount).ToList();
-            }
 
             // Gather data from screen
             var featuredItemTitle = this.browser.FindElement(By.CssSelector(".showcase-wrapper h2")).Text;

@@ -1,1 +1,1 @@
-﻿document.getElementsByClassName('deleteVideo')[0].addEventListener('click', () => $('#confirmVideoDelete').modal());
+﻿document.getElementsByClassName('deleteVideo')[0]?.addEventListener('click', () => $('#confirmVideoDelete').modal());

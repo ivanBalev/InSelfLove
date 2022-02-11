@@ -1,10 +1,13 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Home.ArticlePreviewViewModel
+@{ 
+    var previewPic = Model.PreviewImageBlob == null ? Model.ImageUrl : "data:image/jpeg;base64," + System.Convert.ToBase64String(Model.PreviewImageBlob);
+}
 
 <div class="article-preview" id="@Model.Id">
     <a asp-controller="Articles" asp-action="Single" asp-route-slug="@Model.Slug">
         <div class="card article-card">
             <div class="text-center">
-                <img class="card-img-top img-fluid" src="@Model.ImageUrl" alt="Article image">
+                <img class="card-img-top img-fluid" src="@previewPic" alt="Article image">
             </div>
             <div class="card-body bg-light pt-1 text-left">
                 <small>@Model.CreatedOn.ToString("dd/MM/yyyy")</small>

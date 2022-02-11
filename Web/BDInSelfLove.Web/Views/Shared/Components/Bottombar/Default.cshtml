@@ -13,11 +13,10 @@
     <div class="row">
         @for (int i = 0; i < publcationsCount; i++)
         {
-            <div class="col-lg-4 p-3">
+            <div class="col-lg-4 p-2 bottombar-div">
                 @if (@Model.Articles.Count != 0)
                 {
                     <partial name="_ArticlePreviewPartial" model="@Model.Articles[i]" />
-
                 }
                 else
                 {

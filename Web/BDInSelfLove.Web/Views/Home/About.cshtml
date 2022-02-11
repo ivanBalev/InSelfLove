@@ -1,36 +1,49 @@
 ﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 @{
-    ViewData["Title"] = @localizer["About"].Value;
+    ViewData["Title"] = @localizer["Hello!"].Value;
 }
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
 
 <section id="about" class="pt-3">
-    <div class="container">
-        <div class="row mb-0 justify-content-center">
-            <div class="col-md-10 pb-2 border rounded text">
-                <div class="float-left p-3 pr-5 profile-image-wrapper">
-                    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1615058365/popetoCircle_gk8b5i.jpg"
-                         class="img-fluid rounded-circle profile-image" alt="Owner image" />
-                </div>
-                <div class="p-3 content-wrapper">
-                    <p class="mb-0">
-                        Мъдрите хора са казали, че най-важната връзка е тази, която имаме със себе си. По време на
-                        дългото ми обучение за психолог и психотерапевт, тази мисъл постоянно изскачаше в моите
-                        анализи и работа. Осъзнавах, че колкото и да изучавам психичните разстройства, техните
-                        симптоми и особености, винаги накрая се стигаше до връзката, която човек има със себе си. И
-                        в случая, когато в тази връзка нямаше честност, уважение, разбиране, съчувствие, търпение и
-                        лоялност, винаги се стигаше до някаква патология. Когато човек оправеше отношението към
-                        себе си, той оздравяваше и си връщаше естествеността и радостта. Психотерапията, през
-                        моите очи, е точно този начин да се върнем обратно към себе си, да се приемем и обикнем за
-                        да можем да се наслаждаваме на живота и отношенията ни с другите.
-                    </p>
-                </div>
-                    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1642094508/bulgaria-practice_zoorqg.jpg"
-                         class="bottomRight" alt="Office image" />
-            </div>
+    <div class="row wrapper-row">
+        <div class="col-lg-5 profile-pic-col justify-content-around">
+            <img class="img-fluid rounded-circle profile-pic" src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1615058365/popetoCircle_gk8b5i.jpg"
+                 alt="Owner image" />
         </div>
-        
+        <div class="col-lg-7 content-col pt-5">
+            <p class="first-paragraph">
+                    Мъдрите хора са казали, че най-важната връзка е тази, която имаме със себе си. По време на
+                дългото ми обучение за психолог и психотерапевт, тази мисъл постоянно изскачаше в моите
+                анализи и работа. Осъзнавах, че колкото и да изучавам психичните разстройства, техните
+                симптоми и особености, винаги накрая се стигаше до връзката, която човек има със себе си. И
+                в случая, когато в тази връзка нямаше честност, уважение, разбиране, съчувствие, търпение и
+                лоялност, винаги се стигаше до някаква патология. Когато човек оправеше отношението към
+                себе си, той оздравяваше и си връщаше естествеността и радостта. Психотерапията, през
+                моите очи, е точно този начин да се върнем обратно към себе си, да се приемем и обикнем, за
+                да можем да се наслаждаваме на живота и отношенията ни с другите.
+            </p>
+        </div>
     </div>
+    <div class="row wrapper-row">
+        <div class="col-lg-7 content-col">
+            <p class="second-paragraph">
+                    Мъдрите хора са казали, че най-важната връзка е тази, която имаме със себе си. По време на
+                дългото ми обучение за психолог и психотерапевт, тази мисъл постоянно изскачаше в моите
+                анализи и работа. Осъзнавах, че колкото и да изучавам психичните разстройства, техните
+                симптоми и особености, винаги накрая се стигаше до връзката, която човек има със себе си. И
+                в случая, когато в тази връзка нямаше честност, уважение, разбиране, съчувствие, търпение и
+                лоялност, винаги се стигаше до някаква патология. Когато човек оправеше отношението към
+                себе си, той оздравяваше и си връщаше естествеността и радостта. Психотерапията, през
+                моите очи, е точно този начин да се върнем обратно към себе си, да се приемем и обикнем, за
+                да можем да се наслаждаваме на живота и отношенията ни с другите.
+            </p>
+        </div>
+        <div class="col-lg-5 office-pic-col justify-content-around">
+            <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1643790444/bulgaria-practice_gbs06k.jpg"
+                 class="office-pic" alt="Office image" />
+        </div>
+    </div>
+
 </section>

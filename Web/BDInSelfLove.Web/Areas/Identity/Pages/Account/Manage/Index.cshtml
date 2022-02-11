@@ -20,7 +20,7 @@
                 <div class="form-group mb-0">
                     <label>@localizer["Profile picture"]</label>
                     <div class="mb-3">
-                        <img src=@Model.ProfilePicture alt="Profile picture" class="d-block img-fluid">
+                        <img src=@(Model.ProfilePicture == null ? "../../Custom/img/avatar.png" : Model.ProfilePicture) alt="Profile picture" class="d-block img-fluid">
                     </div>
                     <label for="originalProfilePic" class="btn white-btn mb-3">
                         @localizer["Upload new profile picture"]

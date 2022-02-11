@@ -48,8 +48,4 @@
     <ProjectReference Include="..\BDInSelfLove.Data.Models\BDInSelfLove.Data.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

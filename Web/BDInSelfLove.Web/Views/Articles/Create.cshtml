@@ -4,7 +4,7 @@
 <partial name="_SlimShowcasePartial" model="@localizer["Create Article"].Value" />
 
 <div class="container pb-5 mt-3">
-    <form method="post" asp-action="Create" enctype="multipart/form-data">
+    <form id="article-create-form" method="post" asp-action="Create" enctype="multipart/form-data">
         <div class="form-group">
             <label>@localizer["Title"]</label>
             <input asp-for="@Model.Title" class="form-control" />
@@ -24,6 +24,14 @@
             <span asp-validation-for="@Model.Image" class="text-danger"></span>
         </div>
         <div class="form-group">
+            <label for="originalPreviewPic" class="btn white-btn mb-3">
+                @localizer["Upload preview image"]
+                <input type="file" id="originalPreviewPic" hidden>
+            </label>
+            <span class='label label-info' id="upload-previewPic-info"></span>
+            <span asp-validation-for="@Model.PreviewImage" class="text-danger"></span>
+        </div>
+        <div class="form-group">
             <label>@localizer["Content"]</label>
             <textarea asp-for="@Model.Content" class="form-control" rows="20" id="mytextarea"></textarea>
             <span asp-validation-for="@Model.Content" class="text-danger"></span>
@@ -41,4 +49,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/Custom/js/compressArticlePreviewPic.js"></script>
 }

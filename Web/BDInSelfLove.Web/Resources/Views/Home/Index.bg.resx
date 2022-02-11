@@ -120,8 +120,11 @@
   <data name="CHECK THEM OUT" xml:space="preserve">
     <value>ВИЖ ВСИЧКИ</value>
   </data>
-  <data name="FEATURED POST" xml:space="preserve">
-    <value>ПОСЛЕДНА ПУБЛИКАЦИЯ</value>
+  <data name="FEATURED Articles" xml:space="preserve">
+    <value>ПОСЛЕДНА СТАТИЯ</value>
+  </data>
+  <data name="FEATURED Videos" xml:space="preserve">
+    <value>ПОСЛЕДНО ВИДЕО</value>
   </data>
   <data name="HOME PAGE" xml:space="preserve">
     <value>НАЧАЛНА СТРАНИЦА</value>

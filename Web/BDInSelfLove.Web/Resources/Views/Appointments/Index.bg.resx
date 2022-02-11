@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="(This information will be shared only with your therapist.)" xml:space="preserve">
-    <value>(Тази информация ще бъде споделена единствено с терапевта ти.)</value>
-  </data>
   <data name="Appointment" xml:space="preserve">
     <value>Запази час</value>
   </data>
@@ -135,6 +132,9 @@
   <data name="Book Appointment" xml:space="preserve">
     <value>Запази час</value>
   </data>
+  <data name="Briefly describe your issue" xml:space="preserve">
+    <value>Разкажете накратко за проблема си</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Откажи</value>
   </data>
@@ -146,6 +146,9 @@
   </data>
   <data name="Confirm Decline" xml:space="preserve">
     <value>Потвърди отказ</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>КОНТАКТИ</value>
   </data>
   <data name="Daily Availability" xml:space="preserve">
     <value>Свободни часове за деня</value>
@@ -171,11 +174,11 @@
   <data name="Issue description:" xml:space="preserve">
     <value>Описание на проблема:</value>
   </data>
+  <data name="NoAvailableApppointments" xml:space="preserve">
+    <value>В календара няма свободни часове. Иди на </value>
+  </data>
   <data name="Phone number:" xml:space="preserve">
     <value>Телефонен номер:</value>
-  </data>
-  <data name="Please describe your condition in a few sentences." xml:space="preserve">
-    <value>Моля, опиши състоянието си с няколко изречения.</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Запази</value>
@@ -194,6 +197,9 @@
   </data>
   <data name="Status:" xml:space="preserve">
     <value>Статус:</value>
+  </data>
+  <data name="This will be shared only with your therapist" xml:space="preserve">
+    <value>Ще бъде споделен единствено с терапевта</value>
   </data>
   <data name="Username:" xml:space="preserve">
     <value>Потребител:</value>

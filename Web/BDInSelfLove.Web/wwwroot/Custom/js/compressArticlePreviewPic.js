@@ -1,4 +1,4 @@
-﻿let uploadField = document.getElementById("originalProfilePic");
+﻿let uploadField = document.getElementById("originalPreviewPic");
 
 uploadField.onchange = function () {
 
@@ -16,30 +16,30 @@ uploadField.onchange = function () {
     };
 
     // Set file name so user knows the upload is successful
-    $('#upload-file-info').html(fileToLoad.name);
+    $('#upload-previewPic-info').html(fileToLoad.name);
 
     let fileReader = new FileReader();
     fileReader.onload = function (fileLoadedEvent) {
 
         let imgBase64 = fileLoadedEvent.target.result;
-        const maxWidth = 300;
-        const maxHeight = 300;
+        const maxWidth = 500;
+        const maxHeight = 200;
 
-        compressImage(imgBase64, maxWidth, maxHeight, 0.7)
+        compressImage(imgBase64, maxWidth, maxHeight)
             .then(function (newImg) {
-            // Attach compressed image to form
-            let newinput = document.createElement("input");
-            newinput.type = 'hidden';
-            newinput.name = 'Input.ProfilePicture';
-            newinput.id = 'Input_ProfilePicture'
-            newinput.value = newImg;
-            document.querySelector('#profile-form').appendChild(newinput);
-        });
+                // Attach compressed image to form
+                let newinput = document.createElement("input");
+                newinput.type = 'hidden';
+                newinput.name = 'PreviewImage';
+                newinput.id = 'PreviewImage'
+                newinput.value = newImg;
+                document.querySelector('#article-create-form').appendChild(newinput);
+            });
     }
     fileReader.readAsDataURL(fileToLoad);
 };
 
-function compressImage(base64, maxWidth, maxHeight, imgQuality) {
+function compressImage(base64, maxWidth, maxHeight) {
     const canvas = document.createElement('canvas')
     const img = document.createElement('img')
 
@@ -66,7 +66,7 @@ function compressImage(base64, maxWidth, maxHeight, imgQuality) {
             const ctx = canvas.getContext('2d')
             ctx.drawImage(img, 0, 0, width, height)
 
-            resolve(canvas.toDataURL('image/jpeg', imgQuality))
+            resolve(canvas.toDataURL('image/jpeg', 0.9))
         }
         img.onerror = function (err) {
             reject(err)

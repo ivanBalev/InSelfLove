@@ -59,6 +59,7 @@
             dbArticle.Title = article.Title;
             dbArticle.Content = article.Content;
             dbArticle.ImageUrl = article.ImageUrl;
+            dbArticle.Slug = article.Slug;
 
             this.articleRepository.Update(dbArticle);
             await this.articleRepository.SaveChangesAsync();
@@ -113,7 +114,7 @@
             }
 
             var article = await this.articleRepository.All()
-                .Where(a => a.Title.ToLower().Equals(slug.Replace('-', ' ')))
+                .Where(a => a.Slug.Equals(slug.ToLower()))
                 .Select(x => new Article
                 {
                     Id = x.Id,

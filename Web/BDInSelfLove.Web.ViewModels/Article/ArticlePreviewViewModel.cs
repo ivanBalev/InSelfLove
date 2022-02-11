@@ -3,7 +3,7 @@
     using System;
     using System.Net;
     using System.Text.RegularExpressions;
-
+    using AutoMapper;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
 
@@ -40,5 +40,7 @@
         }
 
         public string ImageUrl { get; set; }
+
+        public byte[] PreviewImageBlob { get; set; }
     }
 }

@@ -38,6 +38,7 @@
                 Title = "TEST Test",
                 Url = "test",
                 AssociatedTerms = "test",
+                Slug = "test-test",
             };
 
             var slug = await this.videoService.Create(video);
@@ -75,6 +76,7 @@
                 Title = "test",
                 Url = "test",
                 AssociatedTerms = "test",
+                Slug = "test",
             };
 
             var slug = await this.videoService.Create(video);
@@ -98,6 +100,7 @@
                 Title = "test",
                 Url = "test",
                 AssociatedTerms = "test",
+                Slug = "test",
             };
 
             var slug = await this.videoService.Create(video);
@@ -117,6 +120,7 @@
                 Title = "test",
                 Url = "test",
                 AssociatedTerms = "test",
+                Slug = "test",
                 Comments = new List<Comment>
                 {
                     new Comment
@@ -182,6 +186,7 @@
                 Title = "test",
                 Url = "test",
                 AssociatedTerms = "test",
+                Slug = "test",
             };
 
             var slug = await this.videoService.Create(video);
@@ -300,18 +305,21 @@
                     Title = "test",
                     Url = "test",
                     AssociatedTerms = "test",
+                    Slug = "test",
                 },
                 new Video()
                 {
                     Title = "test1",
                     Url = "test1",
                     AssociatedTerms = "test1",
+                    Slug = "test1",
                 },
                 new Video()
                 {
                     Title = "test2",
                     Url = "test2",
                     AssociatedTerms = "test2",
+                    Slug = "test2",
                 },
             };
 

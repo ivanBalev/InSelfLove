@@ -15,7 +15,7 @@
     public class AppointmentPageTests : IClassFixture<SeleniumServerFactory<TestStartup>>, IDisposable
     {
         private const string ApprovedText = "✓";
-        private const string AwaitingApprovalText = "⭮";
+        private const string AwaitingApprovalText = "\u27F3";
 
         private readonly IConfiguration configuration;
         private readonly SeleniumServerFactory<TestStartup> server;

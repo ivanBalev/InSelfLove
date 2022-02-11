@@ -38,6 +38,7 @@
                 Title = "TEST Test",
                 ImageUrl = "test",
                 Content = "test",
+                Slug = "test-test",
             };
 
             var slug = await this.articleService.Create(article);
@@ -75,6 +76,7 @@
                 Title = "test",
                 ImageUrl = "test",
                 Content = "test",
+                Slug = "test",
             };
 
             var slug = await this.articleService.Create(article);
@@ -98,6 +100,7 @@
                 Title = "test",
                 ImageUrl = "test",
                 Content = "test",
+                Slug = "test",
             };
 
             var slug = await this.articleService.Create(article);
@@ -118,6 +121,7 @@
                 Title = "test",
                 ImageUrl = "test",
                 Content = "test",
+                Slug = "test",
                 Comments = new List<Comment>
                 {
                     new Comment
@@ -208,6 +212,7 @@
                 Title = "test",
                 ImageUrl = "test",
                 Content = "test",
+                Slug = "test",
             };
 
             var slug = await this.articleService.Create(article);
@@ -230,6 +235,7 @@
                 Title = "test",
                 ImageUrl = "test",
                 Content = "test",
+                Slug = "test",
             };
 
             var slug = await this.articleService.Create(article);
@@ -238,11 +244,10 @@
             updatedArticle.Title = "test1 TEST1";
             updatedArticle.ImageUrl = "test1";
             updatedArticle.Content = "test1";
+            updatedArticle.Slug = "test1-test1";
 
-            var updatedSlug = await this.articleService.Edit(updatedArticle);
-            var dbUpdatedArticle = await this.articleService.GetBySlug(updatedSlug);
-
-            Assert.Equal(updatedSlug, updatedArticle.Title.ToLower().Replace(' ', '-'));
+            await this.articleService.Edit(updatedArticle);
+            var dbUpdatedArticle = await this.articleService.GetBySlug(updatedArticle.Slug);
 
             Assert.Equal(dbUpdatedArticle.Title, updatedArticle.Title);
             Assert.Equal(dbUpdatedArticle.ImageUrl, updatedArticle.ImageUrl);
@@ -260,6 +265,7 @@
                 Title = "test",
                 ImageUrl = "test",
                 Content = "test",
+                Slug = "test",
             };
 
             var slug = await this.articleService.Create(article);
@@ -403,18 +409,21 @@
                     Title = "test",
                     ImageUrl = "test",
                     Content = "test",
+                    Slug = "test",
                 },
                 new Article()
                 {
                     Title = "test1",
                     ImageUrl = "test1",
                     Content = "test1",
+                    Slug = "test1",
                 },
                 new Article()
                 {
                     Title = "test2",
                     ImageUrl = "test2",
                     Content = "test2",
+                    Slug = "test2",
                 },
             };
 

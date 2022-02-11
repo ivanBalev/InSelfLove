@@ -21,7 +21,7 @@
 
     public class HomeController : Controller
     {
-        private const int IndexItemsCount = 4;
+        private const int IndexItemsCount = 3;
         private const string StatusMessage = "StatusMessage";
         private const string UserEmailBody = "UserEmailBody";
         private const string AdminEmailBodyTemplate = "AdminEmailBodyTemplate";
