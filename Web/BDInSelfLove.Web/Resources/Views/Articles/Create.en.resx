@@ -126,6 +126,9 @@
   <data name="Create Article" xml:space="preserve">
     <value>Create Article</value>
   </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
   <data name="Link to your article's image" xml:space="preserve">
     <value>Link to your article's image</value>
   </data>

@@ -1,7 +1,7 @@
 ﻿@model BDInSelfLove.Web.InputModels.Article.ArticleEditInputModel
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-@{ 
+@{
     var previewPic = (Model.PreviewImageBlob == null || Model.PreviewImageBlob.Length < 10) ?
         null : "data:image/jpeg;base64," + System.Convert.ToBase64String(Model.PreviewImageBlob);
 }
@@ -56,7 +56,7 @@
     <script src="https://cdn.tiny.cloud/1/mky5s0u10p9um2r86zbuod2opxi008rpr3tpgf6dtd16t787/tinymce/5/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script src="~/Custom/js/tinyMce.js"></script>
-    <script src="~/lib/the-date-picker/the-datepicker.min.js"></script>
+    <script src="~/Custom/js/the-datepicker.js"></script>
 }
 
 @section Scripts {
@@ -66,5 +66,5 @@
 }
 
 @section Links {
-    <link rel="stylesheet" href="~/lib/the-date-picker/the-datepicker.css">
+    <link rel="stylesheet" href="~/Custom/css/the-datepicker.css">
 }

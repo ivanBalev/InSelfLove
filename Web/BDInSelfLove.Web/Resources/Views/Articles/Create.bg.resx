@@ -126,6 +126,9 @@
   <data name="Create Article" xml:space="preserve">
     <value>Създай статия</value>
   </data>
+  <data name="Date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
   <data name="Link to your article's image" xml:space="preserve">
     <value>Връзка към снимката</value>
   </data>

@@ -120,6 +120,9 @@
   <data name="Content" xml:space="preserve">
     <value>Съдържание</value>
   </data>
+  <data name="Date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>Редактирай</value>
   </data>

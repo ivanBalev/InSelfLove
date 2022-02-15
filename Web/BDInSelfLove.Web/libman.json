@@ -38,11 +38,10 @@
         "umd/popper-base.min.js",
         "umd/popper.min.js.map",
       ]
+    },
+    {
+      "library": "lite-youtube-embed@0.2.0",
+      "destination": "wwwroot/lib/lite-youtube-embed/"
     }
-  ,
-{
-  "library": "lite-youtube-embed@0.2.0",
-  "destination": "wwwroot/lib/lite-youtube-embed/"
-}
-]
+  ]
 }
