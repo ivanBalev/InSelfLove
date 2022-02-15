@@ -10,11 +10,14 @@
 @{
     bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
 }
-<div class="alert alert-success alert-dismissible mb-0" role="alert" style="display:none;">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <span>@localizer["NoAvailableApppointments"]?.Value</span>
-    <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
-</div>
+@if (!userIsAdmin)
+{
+    <div class="alert alert-success alert-dismissible mb-0" role="alert" style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <span>@localizer["NoAvailableApppointments"]</span>
+        <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
+    </div>
+}
 
 <div class="container calendar-container mt-4 py-4">
 

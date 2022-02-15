@@ -6,9 +6,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Article
 {
-    public class ArticleEditInputModel : ArticleCreateInputModel
+    public class ArticleEditInputModel : ArticleCreateInputModel, IMapFrom<Data.Models.Article>
     {
         public int Id { get; set; }
+
+        public byte[] PreviewImageBlob { get; set; }
 
         public override void CreateMappings(IProfileExpression configuration)
         {

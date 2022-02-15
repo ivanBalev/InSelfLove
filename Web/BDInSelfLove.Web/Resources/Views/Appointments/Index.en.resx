@@ -150,9 +150,6 @@
   <data name="Contact" xml:space="preserve">
     <value>CONTACT</value>
   </data>
-  <data name="Daily Availability" xml:space="preserve">
-    <value>Daily Availability</value>
-  </data>
   <data name="Date:" xml:space="preserve">
     <value>Date:</value>
   </data>
@@ -185,6 +182,9 @@
   </data>
   <data name="Send" xml:space="preserve">
     <value>Send</value>
+  </data>
+  <data name="Set Daily Availability" xml:space="preserve">
+    <value>Set Daily Availability</value>
   </data>
   <data name="Standard Working Hours" xml:space="preserve">
     <value>Standard Working Hours</value>

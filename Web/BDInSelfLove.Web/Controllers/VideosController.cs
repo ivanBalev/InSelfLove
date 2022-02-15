@@ -11,6 +11,7 @@
     using BDInSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
 
     public class VideosController : PreviewAndPaginationController
     {
@@ -63,6 +64,27 @@
 
             return this.RedirectToAction("Single", new { slug });
         }
+
+        [HttpGet]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var model = await this.VideoService.GetById(id)
+                .To<EditVideoInputModel>().FirstOrDefaultAsync();
+
+            return this.View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public async Task<IActionResult> Edit(EditVideoInputModel inputModel)
+        {
+            string slug = await this.VideoService
+                .Edit(AutoMapperConfig.MapperInstance.Map<Video>(inputModel));
+
+            return this.RedirectToAction("Single", new { slug });
+        }
+
 
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)

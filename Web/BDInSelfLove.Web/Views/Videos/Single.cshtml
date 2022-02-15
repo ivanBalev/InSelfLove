@@ -15,13 +15,22 @@
                 <div class="embed-responsive embed-responsive-21by9">
                     <iframe title="Psychotherapy video" class="embed-responsive-item" src="@Model.Url"></iframe>
                 </div>
+                <div class="text-center mb-2 mt-2">
+                    <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
+                </div>
                 <!-- Delete button if user is admin -->
                 @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
                 {
-                    <div class="row mt-2 justify-content-center">
-                        <div class="col"></div>
+                    <div class="row mt-2">
+                        <div class="col text-right">
+                            <a asp-action="Edit" asp-route-id="@Model.Id">
+                                <img class="edit-btn" src="~/Custom/icons/edit-solid.svg" alt="edit icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                            </a>
+                        </div>
                         <div class="col">
-                            <img src="~/Custom/icons/trash-solid.svg" class="delete-btn deleteVideo" alt="delete icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                            <div>
+                                <img class="delete-btn deleteVideo" src="~/Custom/icons/trash-solid.svg" alt="delete icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                            </div>
                         </div>
                     </div>
                 }

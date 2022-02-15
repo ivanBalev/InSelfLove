@@ -1,6 +1,6 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Home.ArticlePreviewViewModel
 @{ 
-    var previewPic = Model.PreviewImageBlob == null ? Model.ImageUrl : "data:image/jpeg;base64," + System.Convert.ToBase64String(Model.PreviewImageBlob);
+    var previewPic = (Model.PreviewImageBlob == null || Model.PreviewImageBlob.Length < 10) ? Model.ImageUrl : "data:image/jpeg;base64," + System.Convert.ToBase64String(Model.PreviewImageBlob);
 }
 
 <div class="article-preview" id="@Model.Id">

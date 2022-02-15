@@ -65,6 +65,11 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
         {
+            if (!this.ModelState.IsValid)
+            {
+                ; 
+            }
+
             await this.SetArticlePhoto(inputModel);
 
             string slug = await this.ArticleService

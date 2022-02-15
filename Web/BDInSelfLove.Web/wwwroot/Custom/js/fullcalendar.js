@@ -169,7 +169,7 @@
                     appointments.push(currentEvent);
                 });
 
-                if (!availableAppointmentsPresent) {
+                if (!availableAppointmentsPresent && !userIsAdmin) {
                     // Remove 'no available appointments' alert
                     document.querySelector('.alert').style.display = 'block';
                 }

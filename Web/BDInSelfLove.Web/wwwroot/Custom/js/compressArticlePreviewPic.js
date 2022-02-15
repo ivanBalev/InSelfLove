@@ -27,13 +27,7 @@ uploadField.onchange = function () {
 
         compressImage(imgBase64, maxWidth, maxHeight)
             .then(function (newImg) {
-                // Attach compressed image to form
-                let newinput = document.createElement("input");
-                newinput.type = 'hidden';
-                newinput.name = 'PreviewImage';
-                newinput.id = 'PreviewImage'
-                newinput.value = newImg;
-                document.querySelector('#article-create-form').appendChild(newinput);
+                document.querySelector('#PreviewImage').value = newImg;
             });
     }
     fileReader.readAsDataURL(fileToLoad);

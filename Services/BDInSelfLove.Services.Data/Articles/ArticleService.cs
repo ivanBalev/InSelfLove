@@ -61,6 +61,7 @@
             dbArticle.ImageUrl = article.ImageUrl;
             dbArticle.PreviewImageBlob = article.PreviewImageBlob;
             dbArticle.Slug = article.Slug;
+            dbArticle.CreatedOn = article.CreatedOn;
 
             this.articleRepository.Update(dbArticle);
             await this.articleRepository.SaveChangesAsync();

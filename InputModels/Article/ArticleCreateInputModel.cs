@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Article
 {
-    public class ArticleCreateInputModel : IMapTo<Data.Models.Article>, IMapFrom<Data.Models.Article>, IHaveCustomMappings
+    public class ArticleCreateInputModel : IMapTo<Data.Models.Article>, IHaveCustomMappings
     {
         [Required]
         public string Title { get; set; }
@@ -19,6 +19,8 @@ namespace BDInSelfLove.Web.InputModels.Article
         public IFormFile Image { get; set; }
 
         public string PreviewImage { get; set; }
+
+        public DateTime CreatedOn { get; set; }
 
         public string Slug => this.Title.ToLower().Replace(' ', '-');
 

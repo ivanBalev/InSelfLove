@@ -126,5 +126,39 @@
 
             return videos;
         }
+
+        public async Task<string> Edit(Video video)
+        {
+            if (video == null ||
+              string.IsNullOrEmpty(video.Title) || string.IsNullOrWhiteSpace(video.Title) ||
+              string.IsNullOrEmpty(video.Url) || string.IsNullOrWhiteSpace(video.Url) ||
+              string.IsNullOrEmpty(video.AssociatedTerms) || string.IsNullOrWhiteSpace(video.AssociatedTerms))
+            {
+                throw new ArgumentException(nameof(video));
+            }
+
+            var dbVideo = await this.videosRepository.All().SingleOrDefaultAsync(v => v.Id == video.Id);
+
+            if (dbVideo == null)
+            {
+                throw new ArgumentException(nameof(dbVideo));
+            }
+
+            dbVideo.Title = video.Title;
+            dbVideo.Url = video.Url;
+            dbVideo.AssociatedTerms = video.AssociatedTerms;
+            dbVideo.Slug = video.Slug;
+            dbVideo.CreatedOn = video.CreatedOn;
+
+            this.videosRepository.Update(dbVideo);
+            await this.videosRepository.SaveChangesAsync();
+
+            return dbVideo.Slug;
+        }
+
+        public IQueryable<Video> GetById(int id)
+        {
+            return this.videosRepository.All().Where(v => v.Id == id);
+        }
     }
 }

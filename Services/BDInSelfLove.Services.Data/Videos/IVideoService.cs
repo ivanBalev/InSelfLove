@@ -15,7 +15,11 @@
 
         IQueryable<Video> GetSideVideos(int videosCount, int videoId = 0);
 
+        IQueryable<Video> GetById(int id);
+
+
         Task<Video> GetBySlug(string slug);
 
+        Task<string> Edit(Video video);
     }
 }

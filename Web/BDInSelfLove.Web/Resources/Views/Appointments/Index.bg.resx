@@ -150,9 +150,6 @@
   <data name="Contact" xml:space="preserve">
     <value>КОНТАКТИ</value>
   </data>
-  <data name="Daily Availability" xml:space="preserve">
-    <value>Свободни часове за деня</value>
-  </data>
   <data name="Date:" xml:space="preserve">
     <value>Дата:</value>
   </data>
@@ -185,6 +182,9 @@
   </data>
   <data name="Send" xml:space="preserve">
     <value>Изпрати</value>
+  </data>
+  <data name="Set Daily Availability" xml:space="preserve">
+    <value>Свободни часове за деня</value>
   </data>
   <data name="Standard Working Hours" xml:space="preserve">
     <value>Стандартно работно време</value>

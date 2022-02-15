@@ -29,7 +29,13 @@
                 <input type="file" id="originalPreviewPic" hidden>
             </label>
             <span class='label label-info' id="upload-previewPic-info"></span>
-            <span asp-validation-for="@Model.PreviewImage" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input type="hidden" asp-for="@Model.PreviewImage" />
+        </div>
+        <div class="form-group">
+            <label class="d-block">@localizer["Date"]</label>
+            <input class="w-100" id="CreatedOn" name="CreatedOn">
         </div>
         <div class="form-group">
             <label>@localizer["Content"]</label>
@@ -45,9 +51,15 @@
     <script src="https://cdn.tiny.cloud/1/mky5s0u10p9um2r86zbuod2opxi008rpr3tpgf6dtd16t787/tinymce/5/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script src="~/Custom/js/tinyMce.js"></script>
+    <script src="~/lib/the-date-picker/the-datepicker.min.js"></script>
 }
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/Custom/js/compressArticlePreviewPic.js"></script>
+    <script src="~/Custom/js/datePicker.js"></script>
+}
+
+@section Links {
+    <link rel="stylesheet" href="~/lib/the-date-picker/the-datepicker.css">
 }

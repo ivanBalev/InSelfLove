@@ -1,9 +1,10 @@
 ﻿using BDInSelfLove.Services.Mapping;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Video
 {
-    public class CreateVideoInputModel : IMapTo<Data.Models.Video>
+    public class CreateVideoInputModel : IMapTo<Data.Models.Video>, IMapFrom<Data.Models.Video>
     {
         [Required]
         [Display(Name = "Link to your video")]
@@ -18,5 +19,7 @@ namespace BDInSelfLove.Web.InputModels.Video
         public string AssociatedTerms { get; set; }
 
         public string Slug => this.Title.ToLower().Replace(' ', '-');
+
+        public DateTime CreatedOn { get; set; }
     }
 }
