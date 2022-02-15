@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0",
   "defaultProvider": "jsdelivr",
   "libraries": [
@@ -36,12 +36,16 @@
       "files": [
         "umd/popper.min.js",
         "umd/popper-base.min.js",
-        "umd/popper.min.js.map",
+        "umd/popper.min.js.map"
       ]
     },
     {
       "library": "lite-youtube-embed@0.2.0",
       "destination": "wwwroot/lib/lite-youtube-embed/"
+    },
+    {
+      "library": "fullcalendar@5.10.2",
+      "destination": "wwwroot/lib/fullcalendar/"
     }
   ]
 }
