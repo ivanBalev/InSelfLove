@@ -6,7 +6,7 @@
 <div class="article-preview" id="@Model.Id">
     <a asp-controller="Articles" asp-action="Single" asp-route-slug="@Model.Slug">
         <div class="card article-card">
-            <div class="text-center">
+            <div>
                 <img class="card-img-top img-fluid" src="@previewPic" alt="Article image">
             </div>
             <div class="card-body bg-light pt-1 text-left">
@@ -16,8 +16,8 @@
                     @Model.PreviewContent
                 </p>
             </div>
-            <div class="card-footer border-0 pr-1 pb-0">
-                <div class="row float-right">
+            <div class="card-footer border-0 pb-0">
+                <div class="row float-end">
                     <div class="col-1 btn-to-singleArticle"><img src="~/Custom/icons/chevron-right-solid.svg" class="right-arrow-icon" alt="right arrow icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license"/></div>
                 </div>
             </div>

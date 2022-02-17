@@ -13,7 +13,6 @@
     }
 }
 
-/*Lower article font size for smaller screens*/
 @media screen and (max-width: 500px) {
     #single-article .card-body p {
         font-size: 16px !important;
@@ -59,19 +58,20 @@
 @media screen and (max-width: 1150px) {
 
     .navbar-brand {
-        margin-left: 3vw !important;
-        padding-left: 0px !important;
-    }
-
-    .navbar-brand {
         margin-right: 5vw !important;
         margin-left: 2vw !important;
+        padding-left: 0px !important;
     }
 }
 
 @media screen and (max-width: 950px) {
     #about p {
-        margin-left: 0px !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+    }
+
+    #about .office-pic-col {
+        margin-top: 7vmin;
     }
 
     .profile-pic {
@@ -104,6 +104,11 @@
 
     #showcase .showcase-wrapper {
         margin-top: 8vh !important;
+    }
+
+    .showcase-wrapper h2 {
+        font-size: 5vmin !important;
+        font-weight: 700 !important;
     }
 }
 
@@ -179,6 +184,10 @@ html, body {
     text-align: justify;
 }
 
+form .form-group {
+    margin-bottom: 1rem;
+}
+
 .navbar {
     box-shadow: 2px 2px 5px #92ab9b;
     opacity: 0.9;
@@ -186,8 +195,8 @@ html, body {
 }
 
 .navbar-brand {
-    margin-right: 18vw;
-    margin-left: 1vw;
+    margin-right: 18.5vw;
+    margin-left: 2.5vw;
 }
 
 .navbar-brand img {
@@ -269,7 +278,6 @@ html, body {
 }
 
 #slimShowcase {
-    position: relative;
     background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg");
     height: 200px;
     background-repeat: no-repeat;
@@ -278,19 +286,18 @@ html, body {
     background-position: center center;
 }
 
-    #slimShowcase .slimShowcase-wrapper {
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
+#slimShowcase .slimShowcase-wrapper {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-    #slimShowcase h1 {
-        color: white;
-    }
+#slimShowcase h1 {
+    color: white;
+}
 
 .dark-overlay {
     background: rgba(45,70,67, 0.75);
-    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -310,29 +317,37 @@ html, body {
 .btn-to-singleArticle {
     background-color: rgb(146,171,149);
     padding-right: 22px;
+    padding-left: 15px;
     padding-bottom: 7px;
     padding-top: 7px;
+    margin-right: 1px;
 }
 
 .btn-to-singleVideo {
     background-color: rgb(146,171,149);
     padding-right: 22px;
+    padding-left: 15px;
     padding-bottom: 7px;
     padding-top: 7px;
     margin-top: -34px;
+    margin-right: 1px;
 }
 
 #video-carousel .carousel-control-prev,
 #video-carousel .carousel-control-next {
     height: 50%;
-    opacity: 1.0 !important;
+    opacity: 1.0;
 }
 
 #video-carousel .carousel-control-next-icon,
 #video-carousel .carousel-control-prev-icon {
-    opacity: 1.0!important;
-    width: 40px;
-    height: 40px;
+    opacity: 1.0;
+    width: 60px;
+    height: 60px;
+}
+
+lite-youtube {
+    max-width: 100%;
 }
 
 .edit-comment, .comment-box {
@@ -507,16 +522,6 @@ a .card img {
     font-size: 24px;
 }
 
-#about .text {
-    background-color: white;
-}
-
-#about .profile-image {
-    max-width: 40vmin;
-    margin-top: -10vmin;
-    margin-left: -10vmin;
-}
-
 #about .profile-pic {
     width: 90%;
     border: 10px solid;
@@ -525,6 +530,11 @@ a .card img {
     margin-bottom: -1px;
     margin-left: 21px;
     margin-right: -1px;
+}
+
+#about p {
+    text-align: justify;
+    text-indent: 20px;
 }
 
 #about .wrapper-row {
@@ -553,17 +563,13 @@ a .card img {
     margin-top: 7vmin !important;
 }
 
-.bottomRight {
-    width: 100%;
-    border-radius: 0.25rem !important;
-}
-
 #about .content-wrapper {
     padding-bottom: 0px !important;
 }
 
-.sidebar-col {
-    padding-right: 15px !important;
+.bottomRight {
+    width: 100%;
+    border-radius: 0.25rem !important;
 }
 
 .bottombar-div {
@@ -646,6 +652,7 @@ a .card img {
 
 .article-preview .card-footer {
     background-color: rgb(248,249,250) !important;
+    padding-right: 0px;
 }
 
 .article-preview .card:hover {
@@ -665,6 +672,11 @@ a .card img {
 .article-preview .card-img-top {
     min-width: 100%;
     object-fit: cover;
+}
+
+.small, small {
+    font-size: 80%;
+    font-weight: 400;
 }
 
 #CreatedOn {

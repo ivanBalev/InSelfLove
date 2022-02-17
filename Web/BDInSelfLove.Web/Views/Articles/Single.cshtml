@@ -31,13 +31,13 @@
                         @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
                         {
                             <div class="row mb-4">
-                                <div class="col text-right">
+                                <div class="col text-end">
                                     <a asp-action="Edit" asp-route-id="@Model.Id">
                                         <img class="edit-btn" src="~/Custom/icons/edit-solid.svg" alt="edit icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
                                     </a>
                                 </div>
                                 <div class="col">
-                                    <div>
+                                    <div data-bs-toggle="modal" data-bs-target="#confirmArticleDelete">
                                         <img class="delete-btn deleteArticle" src="~/Custom/icons/trash-solid.svg" alt="delete icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
                                     </div>
                                 </div>
@@ -68,7 +68,6 @@
 @section Scripts
 {
     <script src="~/Custom/js/previewVideoHeightEqualize.js"></script>
-    <script src="~/Custom/js/deleteArticle.js"></script>
     <script type="module" src="~/Custom/js/commentsHideDisplayItems.js"></script>
     <script type="module" src="~/Custom/js/editComment.js"></script>
     <script type="module" src="~/Custom/js/deleteComment.js"></script>

@@ -64,7 +64,7 @@
                           UserName = c.User.UserName,
                           ProfilePhoto = c.User.ProfilePhoto,
                       },
-                      ArticleId = c.ArticleId,
+                      VideoId = c.VideoId,
                       ParentCommentId = c.ParentCommentId,
                       CreatedOn = c.CreatedOn,
                       SubComments = new List<Comment>(),

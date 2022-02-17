@@ -4,7 +4,7 @@
 <partial name="_SlimShowcasePartial" model="@localizer["Create Video"].Value" />
 
 <div class="container pb-5 mt-4">
-    <form method="post" asp-action="Create">
+    <form method="post" asp-action="Create"  id="video-create-form">
         <div class="form-group">
             <label>@localizer["Link to your video"]</label>
             <input asp-for="@Model.Url" class="form-control" rows="20" />

@@ -28,12 +28,27 @@
 </head>
 
 <body>
+     <div id="search-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form asp-controller="Search" asp-action="Index" method="get">
+                        <div class="input-group text-center">
+                            <input class="form-control" id="searchTerm" name="searchTerm" type="text" minlength="2" value="">
+                            <button type="submit" class="btn btn-sm mt-2 w-100 search-btn">@localizer["Search"]</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar navbar-expand-md navbar-light fixed-top" id="main-nav">
         <div class="container">
-            <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand pl-2">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
                 <img class="flower-icon" src="~/Custom/icons/flower.svg" alt="flower icon" /> In.Self.Love
             </a>
-            <button class="navbar-toggler" data-toggle="collapse" aria-label="expand site navigation" data-target="#navbarCollapse">
+            <button class="navbar-toggler" data-bs-toggle="collapse" aria-label="expand site navigation" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div id="navbarCollapse" class="collapse navbar-collapse">
@@ -54,7 +69,7 @@
                 </ul>
                 <partial name="_LoginPartial" />
                 <ul class="navbar-nav">
-                    <li class="search">
+                    <li class="search" data-bs-toggle="modal" data-bs-target="#search-modal">
                         <img src="~/Custom/icons/search-solid.svg" class="search-login-btn" alt="search icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
                     </li>
                 </ul>
@@ -78,7 +93,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer id="main-footer" class="text-right pt-2 pb-2">
+    <footer id="main-footer" class="text-end pt-2 pb-2">
         <div class="container">
             <div class="row">
                 <div class="col">
@@ -88,20 +103,7 @@
         </div>
     </footer>
 
-    <div id="search-modal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <form asp-controller="Search" asp-action="Index" method="get">
-                        <div class="input-group text-center">
-                            <input class="form-control" id="searchTerm" name="searchTerm" type="text" minlength="2" value="">
-                            <button type="submit" class="btn btn-sm mt-2 btn-block search-btn">@localizer["Search"]</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+   
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="~/lib/popper.js/umd/popper.min.js"></script>

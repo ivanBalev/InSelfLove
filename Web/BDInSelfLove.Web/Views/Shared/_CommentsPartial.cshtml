@@ -12,6 +12,9 @@
 }
 
 <div id="comments-section" class="mb-4">
+      <!-- Comment delete confirmation modal -->
+    <partial name="_CommentDeleteConfirmPartial" />
+
     <!-- Add new comment -->
     @if (!this.SignInManager.IsSignedIn(this.User))
     {
@@ -56,6 +59,4 @@
             }
         </div>
     }
-    <!-- Comment delete confirmation modal -->
-    <partial name="_CommentDeleteConfirmPartial" />
 </div>
