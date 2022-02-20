@@ -39,9 +39,9 @@
         private IWebElement SubmitBtn => this.browser.FindElement(By.Id("login-btn"));
 
         [Fact]
-        public void AddCommentShouldWorkCorrectly()
+        public void AddArticleCommentShouldWorkCorrectly()
         {
-            this.browser.FindElements( By.CssSelector(".article-preview")).FirstOrDefault().Click();
+            this.browser.FindElements(By.CssSelector(".article-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
             var username = this.Login(GlobalValues.UserRoleName);
 
@@ -60,7 +60,7 @@
         }
 
         [Fact]
-        public void AddSubCommentShouldWorkCorrectly()
+        public void AddArticleSubCommentShouldWorkCorrectly()
         {
             // Click article with seeded comments
             this.browser.FindElements(By.CssSelector(".article-preview")).
@@ -97,7 +97,7 @@
         }
 
         [Fact]
-        public void AddSecondLevelSubCommentShouldWorkCorrectly()
+        public void AddArticleSecondLevelSubCommentShouldWorkCorrectly()
         {
             // Click article with seeded comments
             this.browser.FindElements(By.CssSelector(".article-preview")).
@@ -153,6 +153,202 @@
                 By.CssSelector(".userName")).Text;
 
             Assert.Equal(commentText, secondSubommentPostRefreshContent);
+            Assert.Equal(username, secondSubcommentPostRefreshAuthorUsername);
+        }
+
+        [Fact]
+        public void AddVideoCommentShouldWorkCorrectly()
+        {
+            this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
+            this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
+            this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
+
+            var username = this.Login(GlobalValues.UserRoleName);
+
+            string commentText = new string('a', 33);
+            this.AddNewMainComment(commentText);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
+
+            var firstMainComment = this.browser.FindElements(By.CssSelector(".main-comment")).FirstOrDefault();
+            var firstMainCommentUsername = firstMainComment.FindElement(By.CssSelector(".card-header .userName")).Text;
+            var firstMainCommentText = firstMainComment.FindElement(By.CssSelector(".card-body .comment-content")).Text;
+
+            Assert.Equal(commentText, firstMainCommentText);
+            Assert.Equal(username, firstMainCommentUsername);
+        }
+
+        [Fact]
+        public void AddVideoCommentShouldWorkCorrectlyAfterRefresh()
+        {
+            this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
+            this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
+            this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
+
+            var username = this.Login(GlobalValues.UserRoleName);
+
+            string commentText = new string('a', 33);
+            this.AddNewMainComment(commentText);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
+
+            this.browser.Navigate().GoToUrl(this.browser.Url);
+
+            var firstMainComment = this.browser.FindElements(By.CssSelector(".main-comment")).FirstOrDefault();
+            var firstMainCommentUsername = firstMainComment.FindElement(By.CssSelector(".card-header .userName")).Text;
+            var firstMainCommentText = firstMainComment.FindElement(By.CssSelector(".card-body .comment-content")).Text;
+
+            Assert.Equal(commentText, firstMainCommentText);
+            Assert.Equal(username, firstMainCommentUsername);
+        }
+
+        [Fact]
+        public void AddVideoSubCommentShouldWorkCorrectly()
+        {
+            this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
+            this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
+            this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
+
+            var username = this.Login(GlobalValues.UserRoleName);
+
+            string commentText = new string('a', 33);
+            this.AddNewMainComment(commentText);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
+
+            // Add subcomment
+            var firstMainComment = this.browser.FindElement(By.CssSelector(".main-comment"));
+            firstMainComment.FindElement(By.CssSelector(".reply-button")).Click();
+
+            wait.Until(b => firstMainComment.FindElement(By.TagName("textarea")).Displayed);
+
+            var subCommentText = new string('a', 22);
+            firstMainComment.FindElement(By.TagName("textarea")).SendKeys(subCommentText);
+            firstMainComment.FindElement(By.CssSelector(".addCommentBtn")).Click();
+
+            wait.Until(b => firstMainComment.FindElements(By.CssSelector(".firstSub-comment"))
+            .Where(c => c.FindElement(By.CssSelector(".userName")).Text.Equals(username) &&
+            c.FindElement(By.CssSelector(".comment-content")).Text.Equals(subCommentText))
+            .Count() > 0);
+
+            var firstSubComment = firstMainComment.FindElement(By.CssSelector(".firstSub-comment"));
+            var firstSubCommentContent = firstSubComment.FindElement(By.CssSelector(".comment-content")).Text;
+            var firstSubCommentAuthorUsername = firstSubComment.FindElement(By.CssSelector(".userName")).Text;
+
+            Assert.Equal(subCommentText, firstSubCommentContent);
+            Assert.Equal(username, firstSubCommentAuthorUsername);
+        }
+
+        [Fact]
+        public void AddVideoSubCommentShouldWorkCorrectlyAfterRefresh()
+        {
+            this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
+            this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
+            this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
+
+            var username = this.Login(GlobalValues.UserRoleName);
+
+            string commentText = new string('a', 33);
+            this.AddNewMainComment(commentText);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
+
+            this.browser.Navigate().GoToUrl(this.browser.Url);
+
+            // Add subcomment
+            var firstMainComment = this.browser.FindElement(By.CssSelector(".main-comment"));
+            firstMainComment.FindElement(By.CssSelector(".reply-button")).Click();
+
+            wait.Until(b => firstMainComment.FindElement(By.TagName("textarea")).Displayed);
+
+            var subCommentText = new string('a', 22);
+            firstMainComment.FindElement(By.TagName("textarea")).SendKeys(subCommentText);
+            firstMainComment.FindElement(By.CssSelector(".addCommentBtn")).Click();
+
+            wait.Until(b => firstMainComment.FindElements(By.CssSelector(".firstSub-comment"))
+            .Where(c => c.FindElement(By.CssSelector(".userName")).Text.Equals(username) &&
+            c.FindElement(By.CssSelector(".comment-content")).Text.Equals(subCommentText))
+            .Count() > 0);
+
+            var firstSubComment = firstMainComment.FindElement(By.CssSelector(".firstSub-comment"));
+            var firstSubCommentContent = firstSubComment.FindElement(By.CssSelector(".comment-content")).Text;
+            var firstSubCommentAuthorUsername = firstSubComment.FindElement(By.CssSelector(".userName")).Text;
+
+            Assert.Equal(subCommentText, firstSubCommentContent);
+            Assert.Equal(username, firstSubCommentAuthorUsername);
+        }
+
+        [Fact]
+        public void AddVideoSecondLevelSubCommentShouldWorkCorrectly()
+        {
+            this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
+            this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
+            this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
+
+            var username = this.Login(GlobalValues.UserRoleName);
+
+            string commentText = new string('a', 33);
+            this.AddNewMainComment(commentText);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
+
+            // Add subcomment
+            var firstMainComment = this.browser.FindElement(By.CssSelector(".main-comment"));
+            firstMainComment.FindElement(By.CssSelector(".reply-button")).Click();
+
+            wait.Until(b => firstMainComment.FindElement(By.TagName("textarea")).Displayed);
+
+            var subCommentText = new string('a', 22);
+            firstMainComment.FindElement(By.TagName("textarea")).SendKeys(subCommentText);
+            firstMainComment.FindElement(By.CssSelector(".addCommentBtn")).Click();
+
+            wait.Until(b => firstMainComment.FindElements(By.CssSelector(".firstSub-comment"))
+            .Where(c => c.FindElement(By.CssSelector(".userName")).Text.Equals(username) &&
+            c.FindElement(By.CssSelector(".comment-content")).Text.Equals(subCommentText))
+            .Count() > 0);
+
+            var firstSubComment = this.browser.FindElement(By.CssSelector(".firstSub-comment"));
+            firstSubComment.FindElement(By.CssSelector(".reply-button")).Click();
+
+            wait.Until(b => firstSubComment.FindElement(By.TagName("textarea")).Displayed);
+
+            var secondLevelSubCommentText = new string('a', 11);
+            firstSubComment.FindElement(By.TagName("textarea")).SendKeys(secondLevelSubCommentText);
+            firstSubComment.FindElement(By.CssSelector(".addCommentBtn")).Click();
+
+            wait.Until(b => firstSubComment.FindElements(By.CssSelector(".secondSub-comment"))
+            .Where(c => c.FindElement(By.CssSelector(".userName")).Text.Equals(username) &&
+            c.FindElement(By.CssSelector(".comment-content")).Text.Equals(secondLevelSubCommentText))
+            .Count() > 0);
+
+            var secondSubcomment = firstSubComment.FindElement(By.CssSelector(".secondSub-comment"));
+            var secondSubommentContent = secondSubcomment.FindElement(By.CssSelector(".comment-content")).Text;
+            var secondSubcommentAuthorUsername = secondSubcomment.FindElement(By.CssSelector(".userName")).Text;
+
+            Assert.Equal(secondLevelSubCommentText, secondSubommentContent);
+            Assert.Equal(username, secondSubcommentAuthorUsername);
+
+            this.browser.Navigate().Refresh();
+
+            var subcommentBtns = this.browser.FindElements(By.CssSelector(".showSubcomments")).ToList();
+            foreach (var btn in subcommentBtns)
+            {
+                btn.Click();
+            }
+
+            var secondSubcommentPostRefresh = this.browser.FindElement(
+                By.CssSelector(".firstSub-comment .secondSub-comment"));
+            var secondSubommentPostRefreshContent = secondSubcommentPostRefresh.FindElement(
+                By.CssSelector(".comment-content")).Text;
+            var secondSubcommentPostRefreshAuthorUsername = secondSubcommentPostRefresh.FindElement(
+                By.CssSelector(".userName")).Text;
+
+            Assert.Equal(secondLevelSubCommentText, secondSubommentPostRefreshContent);
             Assert.Equal(username, secondSubcommentPostRefreshAuthorUsername);
         }
 

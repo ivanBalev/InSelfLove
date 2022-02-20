@@ -1,48 +1,46 @@
 ﻿document.querySelectorAll('.deleteCommentBtn').forEach(btn =>
-    btn.addEventListener('click', e => openDeleteConfirmModal(e)));
-
+    btn.addEventListener('click', e => addCommentIdToConfirmationModalClasslist(e)));
 
 document.querySelector('.delete-comment-confirm-btn')
     .addEventListener('click', (e) => confirmCommentDelete(e));
 
-function openDeleteConfirmModal(e) {
-    // Get comment id
-    let commentId = e.target.parentElement.parentElement.parentElement.parentElement
-        .parentElement.parentElement.parentElement.parentElement.parentElement.id;
-    // Add id to confirm button classlist to use after confirmation
+function addCommentIdToConfirmationModalClasslist(e) {
+    let commentId = e.target.closest('div[class*=-comment]').id;
     document.querySelector('.delete-comment-confirm-btn').classList.add(commentId);
-    $('#confirm-comment-delete').modal();
 }
 
 function confirmCommentDelete(e) {
     let commentId = e.target.classList[e.target.classList.length - 1];
-    let token = document.querySelector('input[name=__RequestVerificationToken]').value;
+    let csfrToken = document.querySelector('input[name=__RequestVerificationToken]').value;
     // Return btn classlist to default state
     e.target.classList.remove(commentId);
 
-    $.ajax({
-        type: "POST",
-        url: '/api/DeleteComment',
-        data: {
-            Id: commentId,
+    fetch('/api/DeleteComment?id=' + commentId, {
+        method: 'delete',
+        headers: {
+            'X-CSRF-TOKEN': csfrToken,
         },
-        headers: { 'X-CSRF-TOKEN': token },
-        success: function () {
-            // Remove deleted comment
-            $('#' + commentId).remove();
-
-            // If last comment was just deleted(hidden)
-            if (document.querySelectorAll('#comments .comment').length === 1) {
-                // Hide 'Comments' subtitle
-                document.querySelectorAll('#comments .subtitle')[1].style.display = 'none';
-            }
-        },
-        error: function () {
-            console.log('error')
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.log('server error');
+        };
+        // Remove comment from DOM
+        let commentElement = document.getElementById(commentId);
+        commentElement.parentElement.removeChild(commentElement);
+        // If no comments left on page
+        if (document.querySelectorAll('#comments-section .comment').length === 0) {
+            // Hide 'Comments' subtitle
+            document.querySelectorAll('#comments-section .subtitle')[1].style.display = 'none';
         }
     })
+    .catch(error => {
+        console.log('fetch error');
+    });
 
-    $('#confirm-comment-delete').modal('hide');
+    // Hide confirmation modal
+    let modalElement = document.getElementById('confirm-comment-delete');
+    bootstrap.Modal.getInstance(modalElement).hide();
 }
 
-export {openDeleteConfirmModal }
+export { addCommentIdToConfirmationModalClasslist }

@@ -95,7 +95,17 @@
     }
 
     .navbar .contact {
-        margin-left: 3vmax !important;
+        margin-top: 8px !important;
+        margin-left: 0px !important;
+        width: 104px !important;
+    }
+
+    .navbar .contact .nav-link {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        background-color: rgb(146,171,149);
+        color: white;
+        border-radius: 5px;
     }
 
     #sidebar {
@@ -119,20 +129,6 @@
 
     .alert .green-btn {
         padding: 5px !important;
-    }
-
-    .navbar .contact {
-        margin-top: 8px !important;
-        margin-left: 0px !important;
-        width: 104px !important;
-    }
-
-    .navbar .contact .nav-link {
-        padding-left: 8px !important;
-        padding-right: 8px !important;
-        background-color: rgb(146,171,149);
-        color: white;
-        border-radius: 5px;
     }
 }
 
@@ -407,8 +403,22 @@ lite-youtube {
     white-space: nowrap;
 }
 
+#cookieConsent {
+    padding: 0.75rem 1.25rem;
+    background-color: #d1ecf1;
+    position: fixed;
+    bottom: 0px;
+    z-index: 3;
+}
+
 #cookieConsent a {
     color: #2d4643 !important;
+    text-decoration: none;
+}
+
+#cookieConsent .btn-close {
+    font-size: 0.7rem;
+    font-weight: 700;
 }
 
 .socialMedia a {

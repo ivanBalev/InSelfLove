@@ -13,18 +13,14 @@
 <div id="cookieConsent" class="alert alert-info alert-dismissible fade show row mb-0 mt-5 mx-1" role="alert">
     <div class="col md-9 mt-1">
         <span>
-            @localizer["We use cookies to improve your experience."] <a asp-area="" asp-controller="Home" asp-action="Privacy">@localizer["Learn More"]</a>.
+            @localizer["We use cookies to improve your experience."] <a class="fw-bold" asp-area="" asp-controller="Home" asp-action="Privacy">@localizer["Learn More"]</a>.
         </span>
-    </div>
-    <div class="col-md-3">
-        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
+        <button type="button" class="btn btn-outline-secondary btn-sm mx-2" data-bs-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
             <span aria-hidden="true">@localizer["Accept"]</span>
         </button>
     </div>
-    <button type="button" class="close mt-1" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-
+       
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
     <script src="~/Custom/js/cookieConsent.js"></script>
 }

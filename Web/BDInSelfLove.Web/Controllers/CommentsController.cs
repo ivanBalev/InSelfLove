@@ -50,7 +50,7 @@
             return this.View("_CommentSinglePartial", commentViewModel);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Authorize]
         [Route("api/EditComment")]
         public async Task<ActionResult> Edit(CommentEditInputModel inputModel)
@@ -67,7 +67,7 @@
             return result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest();
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Authorize]
         [Route("api/DeleteComment")]
         public async Task<ActionResult> Delete(int id)

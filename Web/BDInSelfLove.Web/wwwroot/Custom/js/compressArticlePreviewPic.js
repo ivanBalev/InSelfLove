@@ -16,7 +16,7 @@ uploadField.onchange = function () {
     };
 
     // Set file name so user knows the upload is successful
-    $('#upload-previewPic-info').html(fileToLoad.name);
+    document.getElementById('upload-previewPic-info').innerHTML = fileToLoad.name;
 
     let fileReader = new FileReader();
     fileReader.onload = function (fileLoadedEvent) {

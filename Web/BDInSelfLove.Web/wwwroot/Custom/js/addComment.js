@@ -1,6 +1,6 @@
 ﻿import { showAddCommentBox } from './commentsHideDisplayItems.js';
 import { editCommentDisplay, saveCommentEdit } from './editComment.js';
-import { openDeleteConfirmModal } from './deleteComment.js';
+import { addCommentIdToConfirmationModalClasslist } from './deleteComment.js';
 
 const cultureIsEn = document.cookie.match('Culture')?.input.substr(-2) === 'en';
 
@@ -36,7 +36,7 @@ function addAddCommentButtonFunctionality(e) {
             element.querySelector('.editCommentBtn').addEventListener('click', e => editCommentDisplay(e.target));
             element.querySelector('.save-edit-btn').addEventListener('click', e => saveCommentEdit(e));
 
-            element.querySelector('.deleteCommentBtn').addEventListener('click', e => openDeleteConfirmModal(e));
+            element.querySelector('.deleteCommentBtn').addEventListener('click', e => addCommentIdToConfirmationModalClasslist(e));
 
             if (!document.querySelector('#all-comments')) {
                 // No comments on page
@@ -72,7 +72,6 @@ function addAddCommentButtonFunctionality(e) {
                     .insertBefore(element, parentComment.querySelector('.card-body').nextSibling);
                 parentComment.querySelector('.comment-box').style.display = 'none';
                 parentComment.querySelector('.comment-buttons').style.display = 'flex';
-                //hideAddCommentBox(e.target);
             }
             // Clear text box
             form.querySelector('[name=Content]').value = '';
@@ -116,10 +115,4 @@ function preparePageForCommentInsertion() {
     let commentsSection = document.querySelector('#comments-section');
     commentsSection.append(commentsTitleElement);
     document.querySelector('#comments-section').append(commentsWrapper);
-}
-
-function hideAddCommentBox(btn) {
-    console.log(btn.closest('.card'));
-    //btn.closest('.comment-box').style.display = 'none';
-    //btn.closest('.card').querySelector('.comment-buttons').style.display = 'flex';
 }

@@ -21,26 +21,31 @@ function saveCommentEdit(e) {
     let commentId = e.target.parentElement.parentElement.querySelector('#Id').value;
     let content = e.target.parentElement.parentElement.querySelector('[name=Content]').value;
     let articleId = e.target.parentElement.parentElement.querySelector('#ArticleId').value;
-    $.ajax({
-        type: "POST",
-        url: '/api/EditComment',
-        data: {
-            Id: commentId,
-            Content: content,
-            ArticleId: articleId,
+
+
+    fetch('/api/EditComment', {
+        method: 'put',
+        headers: {
+            'X-CSRF-TOKEN': token,
+            'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         },
-        headers: { 'X-CSRF-TOKEN': token },
-        success: function () {
+        body: `Id=${commentId}&Content=${content}&ArticleId=${articleId}`,
+    })
+        .then(response => {
+            if (!response.ok) {
+                console.log('server error');
+            };
+
             // Update comment content and return to default view
             e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').textContent = content;
             e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.edit-comment').style.display = 'none';
             e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-buttons').style.display = 'flex';
             e.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.comment-content').style.display = 'block';
-        },
-        error: function () {
-            console.log('error')
-        }
-    })
+        })
+        .catch(error => {
+            console.log('fetch error');
+        });
+
 }
 
 export { editCommentDisplay, saveCommentEdit }
