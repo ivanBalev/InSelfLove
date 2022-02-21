@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Accept" xml:space="preserve">
-    <value>Приеми</value>
+    <value>Приемам</value>
   </data>
   <data name="Learn More" xml:space="preserve">
     <value>Научи повече</value>
   </data>
   <data name="We use cookies to improve your experience." xml:space="preserve">
-    <value>Използвам бисквитки, за да си прекараш по-добре на сайта.</value>
+    <value>Приемате ли използването на бисквитки?</value>
   </data>
 </root>

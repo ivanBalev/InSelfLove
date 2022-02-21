@@ -94,19 +94,9 @@
         padding-left: 5px !important;
     }
 
-    .navbar .contact {
-        margin-top: 8px !important;
-        margin-left: 0px !important;
-        width: 104px !important;
-    }
-
-    .navbar .contact .nav-link {
-        padding-left: 8px !important;
-        padding-right: 8px !important;
-        background-color: rgb(146,171,149);
-        color: white;
-        border-radius: 5px;
-    }
+        .navbar .contact {
+            margin-left: 0px !important;
+        }
 
     #sidebar {
         padding-left: 0px;
@@ -209,25 +199,28 @@ form .form-group {
     margin-right: 2.5vmax;
 }
 
-.navbar .contact {
-    margin-left: 22vmax;
-}
-
-.navbar-light .navbar-nav .nav-link {
+.navbar .navbar-nav .nav-link {
     color: rgba(0, 0, 0);
     padding-right: 28px;
 }
 
+.navbar .contact {
+    margin-left: 22vmax;
+    display: inline-block;
+}
+
 .navbar .contact .nav-link {
-    padding-right: 8px !important;
     background-color: rgb(146,171,149);
     color: white;
     border-radius: 5px;
+    /*gypsy fix(padding-right addded to all nav-link elements already, forcing btn to have too much padding)*/
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
-    .navbar .contact .nav-link:hover {
-        color: black;
-    }
+.navbar .contact .nav-link:hover {
+    color: black;
+}
 
 .nav-item.dropdown {
     margin-bottom: 7px;
@@ -404,21 +397,22 @@ lite-youtube {
 }
 
 #cookieConsent {
-    padding: 0.75rem 1.25rem;
-    background-color: #d1ecf1;
+    border-color: rgb(146,171,149);
+    border: 1px solid;
+    background-color: white;
     position: fixed;
+    display: block;
+    width: 100%;
+    margin-right: 0.5rem !important;
     bottom: 0px;
-    z-index: 3;
+    z-index: 9999;
 }
 
-#cookieConsent a {
-    color: #2d4643 !important;
-    text-decoration: none;
-}
-
-#cookieConsent .btn-close {
+.btn-close {
     font-size: 0.7rem;
     font-weight: 700;
+    padding-left: 0px!important;
+    padding-bottom: 0px!important;
 }
 
 .socialMedia a {
@@ -514,6 +508,10 @@ a .card img {
 
 .calendar-container {
     background-color: white !important;
+}
+
+.alert {
+    opacity: 0.9;
 }
 
 .alert .green-btn:hover {
@@ -739,11 +737,12 @@ a .card img {
     background-color: rgb(146,171,149);
     color: white;
     border-radius: 5px;
+    text-decoration: none;
 }
 
-    .green-btn:hover {
-        color: black;
-    }
+.green-btn:hover {
+    color: black;
+}
 
 #bookAppointmentModal label {
     font-size: 18px;

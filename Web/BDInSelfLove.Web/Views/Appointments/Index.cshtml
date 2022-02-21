@@ -12,11 +12,16 @@
 }
 @if (!userIsAdmin)
 {
-    <div class="alert alert-success alert-dismissible mb-0" role="alert" style="display:none;">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <span>@localizer["NoAvailableApppointments"]</span>
-        <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
+
+<div class="row mb-0 mx-2 alert alert-success alert-dismissible d-block" role="alert">
+    <div class="col">
+        <span>
+            @localizer["NoAvailableApppointments"] <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
+        </span>
     </div>
+
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 }
 
 <div class="container calendar-container mt-4 py-4">
