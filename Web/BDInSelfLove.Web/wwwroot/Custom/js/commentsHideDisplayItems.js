@@ -40,9 +40,11 @@ document.querySelectorAll('.showSubcomments').forEach(btn => btn.addEventListene
     // Find all lower-level subcomments and show them
     Array.from(e.target.closest('.card').children).forEach(c => {
         let classList = c.classList.value;
-        if (classList.includes('-comment') || classList.includes('hideSubcomments')) {
+        if (classList.includes('-comment')) {
             c.style.display = 'block';
         }
+
+        e.target.closest('.reply-subcomments-group').querySelector('.hideSubcomments').style.display = 'block';
     });
     // Hide 'showSubcomments' button
     e.target.style.display = 'none';
@@ -53,11 +55,12 @@ document.querySelectorAll('.hideSubcomments').forEach(btn => btn.addEventListene
     // Find all lower-level subcomments and hide them
     Array.from(e.target.closest('.card').children).forEach(c => {
         let classList = c.classList.value;
-        if (classList.includes('-comment') || classList.includes('hideSubcomments')) {
+        if (classList.includes('-comment')) {
             c.style.display = 'none';
         } else if (classList.includes('card-body')) {
             // Show 'showSubcomments' button
             c.querySelector('.showSubcomments').style.display = 'block';
+            c.querySelector('.hideSubcomments').style.display = 'none';
         }
     });
 }));

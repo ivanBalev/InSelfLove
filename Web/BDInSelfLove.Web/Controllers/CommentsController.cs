@@ -53,7 +53,7 @@
         [HttpPut]
         [Authorize]
         [Route("api/EditComment")]
-        public async Task<ActionResult> Edit(CommentEditInputModel inputModel)
+        public async Task<ActionResult> Edit([FromBody] CommentEditInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
             {

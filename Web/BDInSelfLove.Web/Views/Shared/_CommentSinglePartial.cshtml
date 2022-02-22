@@ -38,6 +38,11 @@
         ViewData["width"] = "30";
         ViewData["height"] = "30";
     }
+
+    // Variables
+    bool userIsSignedIn = this.SignInManager.IsSignedIn(this.User);
+    bool commentsAvailable = Model.SubComments.Count > 0;
+    bool userOwnsComment = this.UserManager.GetUserId(this.User) == Model.UserId;
 }
 
 <div id="@Model.Id" class="@(commentLevel)-comment @(commentLevel == "main" ? null : "align-self-end")">
@@ -61,7 +66,7 @@
                     </p>
                     <div class="row">
                         <div class="col">
-                            @if (this.SignInManager.IsSignedIn(this.User))
+                            @if (userIsSignedIn)
                             {
                                 <partial name="_CommentAddPartial" model="@(new CommentInputModel {
                                                                     ArticleId = Model.ArticleId, VideoId = Model.VideoId, ParentCommentId = Model.Id })" />
@@ -71,56 +76,47 @@
                             }
                         </div>
                     </div>
+
                     <div class="row comment-buttons justify-content-between">
-                        <div class="col-sm-7">
-                            <div class="row">
-                                <div class="col-sm-4 m-0 mx-2 p-0">
-                                    <button type="button" class="green-btn btn-sm border-0 reply-button px-2">
-                                        @localizer["Reply"]
-                                    </button>
-                                </div>
-                                @if (Model.SubComments.Count > 0)
-                                {
-                                    <div class="col-sm-6 ml-2 m-0 p-0">
-                                        <button class="showSubcomments btn btn-sm white-btn">
-                                            @localizer["Subcomments"]
-                                        </button>
-                                    </div>
-                                }
-                            </div>
+                        <div class="col-10 reply-subcomments-group">
+                            @if (userIsSignedIn)
+                            {
+                                <button type="button" class="green-btn btn-sm border-0 reply-button px-2">
+                                    @localizer["Reply"]
+                                </button>
+                            }
+                            @if (commentsAvailable)
+                            {
+                                <button class="showSubcomments btn btn-sm white-btn">
+                                    @localizer["Subcomments"]
+                                </button>
+                                <button class="hideSubcomments hide-subcomments-btn btn white-btn btn-sm mb-3 ms-3 align-self-start">
+                                    @localizer["Hide"]
+                                </button>
+                            }
                         </div>
 
-                        @if (this.UserManager.GetUserId(this.User) == Model.UserId || this.User.IsInRole(GlobalValues.AdministratorRoleName))
+                        @if (this.User.IsInRole(GlobalValues.AdministratorRoleName) || userOwnsComment)
                         {
-                            <div class="col-sm-5">
-                                <div class="row">
-                                    <!-- Edit button only for user's own comments -->
-                                    @if (this.UserManager.GetUserId(this.User) == Model.UserId)
-                                    {
-                                        <div class="col-4 text-end">
-                                            <img src="~/Custom/icons/edit-solid.svg" class="edit-btn editCommentBtn" alt="edit button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
-                                        </div>
-                                    }
-                                    <!-- Delete comment -->
-                                    <div class="col-5 text-start">
-                                        <img src="~/Custom/icons/trash-solid.svg" class="delete-btn deleteCommentBtn" data-bs-toggle="modal" data-bs-target="#confirm-comment-delete" alt="delete button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
-                                    </div>
-                                </div>
+                            <div class="col-2 px-0">
+                                <!-- Edit button only for user's own comments -->
+                                @if (userOwnsComment)
+                                {
+                                    <img src="~/Custom/icons/edit-solid.svg" class="edit-btn editCommentBtn d-inline-block" alt="edit button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                                }
+                                <!-- Delete comment -->
+                                <img src="~/Custom/icons/trash-solid.svg" class="delete-btn deleteCommentBtn d-inline-block ms-1" data-bs-toggle="modal" data-bs-target="#confirm-comment-delete" alt="delete button" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
                             </div>
                         }
                     </div>
                 </div>
 
-                @if (@Model.SubComments.Count > 0)
+                @if (commentsAvailable)
                 {
                     @foreach (var item in Model.SubComments)
                     {
                         <partial name="_CommentSinglePartial" model="@item" />
                     }
-
-                    <button class="hideSubcomments hide-subcomments-btn btn white-btn btn-sm mb-3 ms-3 align-self-start">
-                        @localizer["Hide"]
-                    </button>
                 }
             </div>
         </div>

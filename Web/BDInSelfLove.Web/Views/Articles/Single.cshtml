@@ -45,7 +45,7 @@
                         }
                         <!-- Content -->
                         <div class="row justify-content-around mt-2 ">
-                            <div class="col-md-10" id="single-article-content">
+                            <div class="col-md-11" id="single-article-content">
                                 @(Html.Raw(Model.SanitizedContent))
                             </div>
                         </div>
@@ -72,5 +72,4 @@
     <script type="module" src="~/Custom/js/editComment.js"></script>
     <script type="module" src="~/Custom/js/deleteComment.js"></script>
     <script type="module" src="~/Custom/js/addComment.js"></script>
-    <partial name="_ValidationScriptsPartial" />
 }

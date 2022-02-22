@@ -16,7 +16,7 @@
                     <iframe title="Psychotherapy video" class="embed-responsive-item" src="@Model.Url"></iframe>
                 </div>
                 <div class="text-center mb-2 mt-2">
-                    <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
+                    <span class="text-black text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
                 </div>
                 <!-- Delete button if user is admin -->
                 @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
@@ -55,5 +55,4 @@
     <script type="module" src="~/Custom/js/editComment.js"></script>
     <script type="module" src="~/Custom/js/deleteComment.js"></script>
     <script type="module" src="~/Custom/js/addComment.js"></script>
-    <partial name="_ValidationScriptsPartial" />
 }

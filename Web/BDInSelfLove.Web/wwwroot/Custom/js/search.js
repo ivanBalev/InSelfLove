@@ -12,28 +12,31 @@
         let action = hrefArray[1].split('?')[0];
         let controller = hrefArray[0];
 
-        $.ajax({
-            type: "GET",
-            url: `/api/${controller}/${action}`,
-            data: {
-                page: page,
-                searchTerm: searchTerm,
-            },
-            success: function (data) {
+        fetch(`/api/${controller}/${action}?page=${page}&searchTerm=${searchTerm}`)
+            .then(response => {
+                if (!response.ok) {
+                    console.log('server error');
+                    return;
+                };
+
+                return response.text();
+            })
+            .then(data => {
+                // Replace data
                 if (action === "Video") {
-                    $('#all-videos').replaceWith(data);
+                    let allVideos = document.getElementById('all-videos');
+                    allVideos.innerHTML = '';
+                    allVideos.innerHTML = data;
                     equalizeVideoPreviewHeight();
                     paginationScripts('#all-videos');
                 } else {
-                    $('#all-articles').replaceWith(data);
+                    let allArticles= document.getElementById('all-articles');
+                    allArticles.innerHTML = '';
+                    allArticles.innerHTML = data;
                     equalizeArticlePreviewHeight();
                     paginationScripts('#all-articles');
                 }
-            },
-            error: function (err) {
-                alert('Error');
-            }
-        })
+            });
     }));
 }
 

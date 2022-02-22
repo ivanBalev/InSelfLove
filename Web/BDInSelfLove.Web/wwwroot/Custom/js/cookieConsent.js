@@ -1,6 +1,6 @@
 ﻿(function () {
-    var button = document.querySelector("#cookieConsent button[data-cookie-string]");
-    button.addEventListener("click", function () {
-        document.cookie = button.dataset.cookieString;
+    var acceptCookiesBtn = document.querySelector("#cookieConsent button[data-cookie-string]");
+    acceptCookiesBtn?.addEventListener("click", function () {
+        document.cookie = acceptCookiesBtn.dataset.cookieString;
     }, false);
 })();

@@ -1,9 +1,13 @@
-﻿let timezoneCookieName = "timezoneIANA";
-let timezoneCookieValue = decodeURIComponent(getCookie(timezoneCookieName));
-let currentTimezoneValue = Intl.DateTimeFormat().resolvedOptions().timeZone;
-// If timezone cookie doesn't exist || it doesn't match the current timezone
-if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneValue) !== 0) {
-    setCookie(timezoneCookieName, currentTimezoneValue);
+﻿let consentCookie = getCookie(".AspNet.Consent");
+
+if (consentCookie !== undefined) {
+    let timezoneCookieName = "timezoneIANA";
+    let timezoneCookieValue = decodeURIComponent(getCookie(timezoneCookieName));
+    let currentTimezoneValue = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // If timezone cookie doesn't exist || it doesn't match the current timezone
+    if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneValue) !== 0) {
+        setCookie(timezoneCookieName, currentTimezoneValue);
+    }
 }
 
 function getCookie(name) {
