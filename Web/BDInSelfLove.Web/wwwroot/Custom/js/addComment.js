@@ -19,13 +19,14 @@ function addAddCommentButtonFunctionality(e) {
     let ParentCommentId = form.querySelector('[name=ParentCommentId]').value || null;
     let ArticleId = form.querySelector('[name=ArticleId]').value || null;
     let VideoId = form.querySelector('[name=VideoId]').value || null;
+    let ResourceUrl = window.location.href;
     // Validate input
     if (Content.length < 2 || (ArticleId === null && VideoId === null)) {
         alert("Моля, въведете повече от 2 символа.");
         return;
     }
 
-    postData('/api/CreateComment', { Content, ParentCommentId, ArticleId, VideoId }, csfrToken)
+    postData('/api/CreateComment', { Content, ParentCommentId, ArticleId, VideoId, ResourceUrl }, csfrToken)
         .then(data => {
             var element = htmlToElement(data);
 

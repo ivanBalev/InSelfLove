@@ -171,11 +171,17 @@
   <data name="Issue description:" xml:space="preserve">
     <value>Описание на проблема:</value>
   </data>
+  <data name="Log in" xml:space="preserve">
+    <value>Влез</value>
+  </data>
   <data name="NoAvailableApppointments" xml:space="preserve">
     <value>В календара няма свободни часове. Иди на </value>
   </data>
   <data name="Phone number:" xml:space="preserve">
     <value>Телефонен номер:</value>
+  </data>
+  <data name="Please log in to book an appointment" xml:space="preserve">
+    <value>Моля, влезте в профила си, за да запазите час</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Запази</value>

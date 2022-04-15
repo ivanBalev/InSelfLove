@@ -17,7 +17,8 @@
 
     public class HomePageTests : IClassFixture<SeleniumServerFactory<TestStartup>>, IDisposable
     {
-        private const int TotalItemsCount = 3;
+        private const int ArticlesCount = 5;
+        private const int VideosCount = 5;
 
         private readonly SeleniumServerFactory<TestStartup> server;
         private readonly IWebDriver browser;
@@ -49,8 +50,8 @@
             {
                 var articleService = scope.ServiceProvider.GetRequiredService<IArticleService>();
                 var videoService = scope.ServiceProvider.GetRequiredService<IVideoService>();
-                dbArticles = await articleService.GetAll(TotalItemsCount).ToListAsync();
-                dbVideos = await videoService.GetAll(TotalItemsCount).ToListAsync();
+                dbArticles = await articleService.GetAll(ArticlesCount).ToListAsync();
+                dbVideos = await videoService.GetAll(VideosCount).ToListAsync();
             }
 
             // Determine which is latest

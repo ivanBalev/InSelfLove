@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,7 +26,6 @@ namespace BDInSelfLove.Web.Tests
             this.browser = new ChromeDriver(opts);
             this.testStringUri = server.RootUri + "/Search?searchTerm=test nonExistentText";
 
-            this.browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
             this.browser.Manage().Window.Maximize();
         }
 
@@ -87,34 +87,33 @@ namespace BDInSelfLove.Web.Tests
         [Fact]
         public void ArticlesPaginationWorksCorrectly()
         {
+            this.browser.Navigate().GoToUrl("https://inselflove.com");
+
             this.browser.Navigate().GoToUrl(this.testStringUri);
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
 
             this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
                 .FirstOrDefault(pl => pl.Text.Equals("2"))
                 .Click();
 
-            this.WaitForAjax();
             Assert.Single(this.PageArticles);
 
             this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
                 .FirstOrDefault(pl => pl.Text.Equals("1"))
                 .Click();
 
-            this.WaitForAjax();
             Assert.Equal(this.PageArticles.Count, DisplayedItemsCount);
 
             this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
                 .LastOrDefault()
                 .Click();
 
-            this.WaitForAjax();
             Assert.Single(this.PageArticles);
 
             this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
                 .FirstOrDefault()
                 .Click();
 
-            this.WaitForAjax();
             Assert.Equal(this.PageArticles.Count, DisplayedItemsCount);
         }
 
@@ -122,33 +121,32 @@ namespace BDInSelfLove.Web.Tests
         public void VideosPaginationWorksCorrectly()
         {
             this.browser.Navigate().GoToUrl(this.testStringUri);
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(b => b.FindElements(By.CssSelector("#cookieConsent .btn-accept")).Count > 0);
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
 
             this.VideosPagination.FindElements(By.CssSelector(".page-link"))
                 .FirstOrDefault(pl => pl.Text.Equals("2"))
                 .Click();
 
-            this.WaitForAjax();
             Assert.Single(this.PageVideos);
 
             this.VideosPagination.FindElements(By.CssSelector(".page-link"))
                 .FirstOrDefault(pl => pl.Text.Equals("1"))
                 .Click();
 
-            this.WaitForAjax();
             Assert.Equal(this.PageVideos.Count, DisplayedItemsCount);
 
             this.VideosPagination.FindElements(By.CssSelector(".page-link"))
                 .LastOrDefault()
                 .Click();
 
-            this.WaitForAjax();
             Assert.Single(this.PageVideos);
 
             this.VideosPagination.FindElements(By.CssSelector(".page-link"))
                 .FirstOrDefault()
                 .Click();
 
-            this.WaitForAjax();
             Assert.Equal(this.PageVideos.Count, DisplayedItemsCount);
         }
 
@@ -164,20 +162,6 @@ namespace BDInSelfLove.Web.Tests
             {
                 this.server?.Dispose();
                 this.browser?.Dispose();
-            }
-        }
-
-        private void WaitForAjax()
-        {
-            while (true)
-            {
-                if ((bool)((IJavaScriptExecutor)this.browser)
-                .ExecuteScript("return jQuery.active == 0"))
-                {
-                    break;
-                }
-
-                Thread.Sleep(500);
             }
         }
     }

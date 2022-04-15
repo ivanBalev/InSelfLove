@@ -1,39 +1,39 @@
 {
   "version": "1.0",
   "defaultProvider": "jsdelivr",
-    "libraries": [
-        {
-            "library": "jquery-validation@1.19.1",
-            "destination": "wwwroot/lib/jquery-validation/",
-            "files": [
-                "dist/jquery.validate.js",
-                "dist/jquery.validate.min.js"
-            ]
-        },
-        {
-            "library": "jquery-validation-unobtrusive@3.2.11",
-            "destination": "wwwroot/lib/jquery-validation-unobtrusive/",
-            "files": [
-                "dist/jquery.validate.unobtrusive.js",
-                "dist/jquery.validate.unobtrusive.min.js"
-            ]
-        },
-        {
-            "library": "lite-youtube-embed@0.2.0",
-            "destination": "wwwroot/lib/lite-youtube-embed/"
-        },
-        {
-            "library": "fullcalendar@5.10.2",
-            "destination": "wwwroot/lib/fullcalendar/"
-        },
-        {
-            "library": "bootstrap@5.1.3",
-            "destination": "wwwroot/lib/bootstrap/"
-        },
-        {
-            "provider": "cdnjs",
-            "library": "popper.js@2.11.2",
-            "destination": "wwwroot/lib/popper.js/"
-        }
-    ]
+  "libraries": [
+    {
+      "library": "jquery-validation@1.19.1",
+      "destination": "wwwroot/lib/jquery-validation/",
+      "files": [
+        "dist/jquery.validate.js",
+        "dist/jquery.validate.min.js"
+      ]
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/",
+      "files": [
+        "dist/jquery.validate.unobtrusive.js",
+        "dist/jquery.validate.unobtrusive.min.js"
+      ]
+    },
+    {
+      "library": "lite-youtube-embed@0.2.0",
+      "destination": "wwwroot/lib/lite-youtube-embed/"
+    },
+    {
+      "library": "fullcalendar@5.10.2",
+      "destination": "wwwroot/lib/fullcalendar/"
+    },
+    {
+      "library": "bootstrap@5.1.3",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "popper.js@2.11.2",
+      "destination": "wwwroot/lib/popper.js/"
+    },
+  ]
 }

@@ -23,7 +23,7 @@
                 return localTime;
             }
 
-            return TimeZoneInfo.ConvertTimeToUtc(localTime, GetTimezone(timezone));
+            return TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(localTime, DateTimeKind.Unspecified), GetTimezone(timezone));
         }
 
         public static DateTime ToLocalTime(DateTime utcTime, string timezone)

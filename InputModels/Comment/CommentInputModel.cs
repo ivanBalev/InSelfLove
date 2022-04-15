@@ -14,5 +14,7 @@ namespace BDInSelfLove.Web.InputModels.Comment
         public int? VideoId { get; set; }
 
         public int? ParentCommentId { get; set; }
+
+        public string ResourceUrl { get; set; }
     }
 }

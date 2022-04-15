@@ -2,7 +2,7 @@
 let searchField = document.getElementById('searchTerm');
 
 searchModal.addEventListener('shown.bs.modal', function () {
-    searchField.focus()
+    searchField.focus();
 });
 
 document.getElementsByClassName('search-btn')[0].addEventListener('click', function (e) {

@@ -312,11 +312,11 @@
 
             Assert.Equal(articles.Count, dbArticles.Count);
 
-            for (int i = 0; i < articles.Count; i++)
+            foreach (var article in articles)
             {
-                Assert.Equal(articles[i].Title, dbArticles[i].Title);
-                Assert.Equal(articles[i].ImageUrl, dbArticles[i].ImageUrl);
-                Assert.Equal(articles[i].Content, dbArticles[i].Content);
+                Assert.Contains(dbArticles, a => a.Title.Equals(article.Title));
+                Assert.Contains(dbArticles, a => a.ImageUrl.Equals(article.ImageUrl));
+                Assert.Contains(dbArticles, a => a.Content.Equals(article.Content));
             }
         }
 
@@ -344,11 +344,11 @@
 
             Assert.Equal(filteredArticles.Count, dbArticles.Count);
 
-            for (int i = 0; i < filteredArticles.Count; i++)
+            foreach (var filteredArticle in filteredArticles)
             {
-                Assert.Equal(filteredArticles[i].Title, dbArticles[i].Title);
-                Assert.Equal(filteredArticles[i].ImageUrl, dbArticles[i].ImageUrl);
-                Assert.Equal(filteredArticles[i].Content, dbArticles[i].Content);
+                Assert.Contains(dbArticles, a => a.Title.Equals(filteredArticle.Title));
+                Assert.Contains(dbArticles, a => a.ImageUrl.Equals(filteredArticle.ImageUrl));
+                Assert.Contains(dbArticles, a => a.Content.Equals(filteredArticle.Content));
             }
         }
 

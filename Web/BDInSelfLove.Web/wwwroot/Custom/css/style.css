@@ -48,9 +48,9 @@
     }
 }
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1367px) {
     .navbar .contact {
-        margin-left: 12vmax !important;
+        margin-left: 8vmax !important;
     }
 }
 
@@ -60,6 +60,11 @@
         margin-right: 5vw !important;
         margin-left: 2vw !important;
         padding-left: 0px !important;
+    }
+
+    .showcase-wrapper h2 {
+        font-size: 5vmin !important;
+        font-weight: 700 !important;
     }
 }
 
@@ -78,7 +83,17 @@
         margin-left: auto !important;
         margin-right: auto !important;
         display: block;
+        border: 0px !important;
         width: 75% !important;
+    }
+
+    #about-home {
+        display: flex;
+        flex-flow: column;
+    }
+
+    .profile-anchor {
+        padding: 0 !important;
     }
 
     .navbar-brand {
@@ -99,15 +114,6 @@
 
     #sidebar {
         padding-left: 0px;
-    }
-
-    #showcase .showcase-wrapper {
-        margin-top: 8vh !important;
-    }
-
-    .showcase-wrapper h2 {
-        font-size: 5vmin !important;
-        font-weight: 700 !important;
     }
 }
 
@@ -194,8 +200,8 @@ form .form-group {
 }
 
 .navbar .container {
-    margin-left: 2.5vmax;
-    margin-right: 2.5vmax;
+    margin-left: 2.5vw;
+    margin-right: 2.5vw;
 }
 
 .navbar .navbar-nav .nav-link {
@@ -233,7 +239,7 @@ form .form-group {
 #showcase {
     position: relative;
     background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg");
-    height: 400px;
+    height: 45vh;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -241,10 +247,9 @@ form .form-group {
 }
 
 #showcase .showcase-wrapper {
-    width: 90%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 10vh;
+    margin-top: 5vh;
 }
 
 .showcase-wrapper h1 {
@@ -267,7 +272,7 @@ form .form-group {
 
 #slimShowcase {
     background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg");
-    height: 200px;
+    height: 20vh;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -278,6 +283,7 @@ form .form-group {
     width: 90%;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 5vh;
 }
 
 #slimShowcase h1 {
@@ -292,7 +298,7 @@ form .form-group {
     height: 100%;
 }
 
-#info-header {
+.info-header {
     width: 50%;
     margin: auto;
 }
@@ -415,21 +421,11 @@ lite-youtube {
 }
 
 .socialMedia a {
-    padding: 0px !important;
-    margin: 0px;
+    padding: 5px !important;
     position: relative;
 }
-
-.fa-facebook-f {
-    color: #3b5998 !important;
-    font-size: 1.2rem !important;
-}
-
-.fa-instagram {
-    color: #cd486b !important;
-    font-size: 1.5rem !important;
-    position: absolute;
-    margin-top: -19px;
+.instagram-icon {
+    padding-bottom: 2px;
 }
 
 #manageNav li a {
@@ -438,9 +434,9 @@ lite-youtube {
     background-color: transparent;
 }
 
-    #manageNav li a.active {
-        background-color: #e9ecef;
-    }
+#manageNav li a.active {
+    background-color: #e9ecef;
+}
 
 .white-btn {
     color: black;
@@ -448,15 +444,8 @@ lite-youtube {
     white-space: nowrap;
 }
 
-    .white-btn:hover {
-        background-color: rgb(146,171,149);
-    }
-
-
-a .card img {
-    height: 200px;
-    max-height: 100%;
-    width: auto;
+.white-btn:hover {
+    background-color: rgb(146,171,149);
 }
 
 .dailyTimeSlot {
@@ -464,10 +453,52 @@ a .card img {
 }
 
 .fc-event {
-    margin-top: 3px;
+    margin-top: 2px;
     margin-bottom: 3px;
+    font-size: 16px;
+    background-color: white;
 }
 
+.fc-event:hover {
+    cursor: pointer;
+}
+
+.fc-event-main {
+    padding-top: 10px !important; 
+    text-align: center;
+}
+
+.fc-event.green {
+    border-color: rgb(146,171,149);
+}
+
+.fc-event.green:hover {
+    background-color: rgb(146,171,149);
+}
+
+.fc-event.green .fc-event-main {
+    color: rgb(146,171,149);
+}
+
+.fc-event.green .fc-event-main:hover {
+    color: black;
+}
+
+.fc-event.yellow {
+    border-color: rgb(255, 193, 7);
+}
+
+.fc-event.yellow:hover {
+    background-color: rgb(255, 193, 7);
+}
+
+.fc-event.yellow .fc-event-main {
+    color: rgb(255, 193, 7);
+}
+
+.fc-event.yellow .fc-event-main:hover {
+    color: black;
+}
 
 .active .page-link {
     background-color: rgb(146,171,149) !important;
@@ -487,23 +518,32 @@ a .card img {
     display: none;
 }
 
-.fc-today {
+.fc-day-today {
     background: #efefef !important;
 }
 
-.fc-prev-button, .fc-next-button {
-    width: 13.4vw;
-}
-
-.fc-left .fc-prev-button, .fc-right .fc-next-button {
+.fc-button {
     background-color: rgb(146,171,149);
+    width: 13.4vw;
     color: white;
     background-image: none;
 }
 
-    .fc-left .fc-prev-button:hover, .fc-right .fc-next-button:hover {
-        color: black;
-    }
+.fc-button:hover {
+    color: black !important;
+}
+
+.fc-button {
+    background-color: rgb(146,171,149) !important;
+    color: white !important;
+    background-image: none !important;
+    border: 0!important;
+}
+
+.fc-col-header-cell-cushion {
+    color: black;
+    text-decoration: none;
+}
 
 .calendar-container {
     background-color: white !important;
@@ -529,24 +569,47 @@ a .card img {
     font-size: 24px;
 }
 
-#about .profile-pic {
+.profile-pic {
+    position: relative;
     width: 90%;
     border: 10px solid;
-    border-color: rgb(146,171,149);
+    border-color: rgb(239,239,239);
     margin-top: 50px;
-    margin-bottom: -1px;
     margin-left: 21px;
-    margin-right: -1px;
+    box-shadow: 0 0 0 5px rgb(146,171,149);
+}
+
+.home-profile-pic {
+    position: relative;
+    height: 90%;
+    border: 10px solid;
+    border-color: rgb(239,239,239);
+    box-shadow: 0 0 0 5px rgb(146,171,149);
+}
+
+.preview-img-wrapper {
+    height: 200px !important;
+}
+
+.about-hello-h2 {
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.about-preview {
+    text-align: left;
+}
+
+.about-preview-text {
+    font-size: 14px;
+}
+
+.about-preview-footer {
+    background-color: rgb(239,239,239);
 }
 
 #about p {
-    text-align: justify;
-    text-indent: 20px;
-}
-
-#about .wrapper-row {
-    margin-left: 15vmin;
-    margin-right: 15vmin;
+    text-align: left;
 }
 
 #about .content-col .first-paragraph {
@@ -593,6 +656,11 @@ a .card img {
     filter: invert(74%) sepia(9%) saturate(584%) hue-rotate(76deg) brightness(88%) contrast(87%);
     width: 18px;
     height: 16.8px;
+}
+
+.add-icon {
+    width: 45px;
+    height: 45px;
 }
 
 .delete-btn {
@@ -679,6 +747,13 @@ a .card img {
 .article-preview .card-img-top {
     min-width: 100%;
     object-fit: cover;
+    height: 200px;
+    max-height: 100%;
+    width: auto;
+}
+
+p {
+    hyphens: manual;
 }
 
 .small, small {

@@ -1,9 +1,9 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Home.ArticlePreviewViewModel
-@{ 
+@{
     var previewPic = (Model.PreviewImageBlob == null || Model.PreviewImageBlob.Length < 10) ? Model.ImageUrl : "data:image/jpeg;base64," + System.Convert.ToBase64String(Model.PreviewImageBlob);
 }
 
-<div class="article-preview" id="@Model.Id">
+<div class="article-preview home-preview-item" id="@Model.Id">
     <a asp-controller="Articles" asp-action="Single" asp-route-slug="@Model.Slug">
         <div class="card article-card">
             <div>
@@ -18,9 +18,11 @@
             </div>
             <div class="card-footer border-0 pb-0">
                 <div class="row float-end">
-                    <div class="col-1 btn-to-singleArticle"><img src="~/Custom/icons/chevron-right-solid.svg" class="right-arrow-icon" alt="right arrow icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license"/></div>
+                    <div class="col-1 btn-to-singleArticle"><img src="~/Custom/icons/chevron-right-solid.svg" class="right-arrow-icon" alt="right arrow icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" /></div>
                 </div>
             </div>
         </div>
     </a>
 </div>
+
+

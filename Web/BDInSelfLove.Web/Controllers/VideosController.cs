@@ -35,7 +35,7 @@
                 .Map<VideoViewModel>(await this.VideoService
                 .GetBySlug(slug));
 
-            for (int i = 0; i < viewModel.Comments.Count; i++)
+            for (int i = 0; i < viewModel?.Comments.Count; i++)
             {
                 viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(
                     viewModel.Comments[i].CreatedOn, this.TimezoneIdFromCookie);
@@ -84,7 +84,6 @@
 
             return this.RedirectToAction("Single", new { slug });
         }
-
 
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)

@@ -11,7 +11,7 @@ namespace BDInSelfLove.Web.InputModels.Appointment
 
         public string[] TimeSlotsString { get; set; } = new string[0];
 
-        public DateTime Date => DateTime.ParseExact(DateString, "MM-dd-yyyy", CultureInfo.InvariantCulture);
+        public DateTime Date => DateTime.ParseExact(DateString, "M-d-yyyy", CultureInfo.InvariantCulture);
 
         public DateTime[] TimeSlots => TimeSlotsString?.Select(ts =>
         {

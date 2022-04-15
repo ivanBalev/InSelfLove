@@ -8,6 +8,9 @@ if (consentCookie !== undefined) {
     if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneValue) !== 0) {
         setCookie(timezoneCookieName, currentTimezoneValue);
     }
+} else {
+    let appointmentsAnchor = document.querySelector('a[href$="api/Appointments"]');
+    appointmentsAnchor.href = appointmentsAnchor.href + '?timezone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
 function getCookie(name) {

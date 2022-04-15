@@ -7,5 +7,7 @@
         public DateTime WorkdayStart { get; set; }
 
         public DateTime WorkdayEnd { get; set; }
+
+        public AppointmentViewModel[] Appointments { get; set; }
     }
 }

@@ -20,15 +20,17 @@ function saveCommentEdit(e) {
         .querySelector('input[name=__RequestVerificationToken]').value;
     let Id = e.target.parentElement.parentElement.querySelector('#Id').value;
     let Content = e.target.parentElement.parentElement.querySelector('[name=Content]').value;
-    let ArticleId = e.target.parentElement.parentElement.querySelector('#ArticleId').value;
+    let ArticleId = e.target.parentElement.parentElement.querySelector('#ArticleId').value ?? null;
+    let VideoId = e.target.parentElement.parentElement.querySelector('#VideoId').value ?? null
 
     putData(
         '/api/EditComment',
         'put',
-        { Id, Content, ArticleId },
+        `Id=${Id}&Content=${Content}&ArticleId=${ArticleId}&VideoId=${VideoId}`,
         csfrToken)
         .then(response => {
             if (!response.ok) {
+                console.log(response.text);
                 console.log('server error');
             };
 
@@ -43,14 +45,14 @@ function saveCommentEdit(e) {
         });
 
 
-    async function putData(url = '', method, data = {}, csfrToken) {
+    async function putData(url = '', method, data, csfrToken) {
         const response = await fetch(url, {
             method,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'X-CSRF-TOKEN': csfrToken,
             },
-            body: JSON.stringify(data)
+            body: data,
         });
         return response;
     }

@@ -171,11 +171,17 @@
   <data name="Issue description:" xml:space="preserve">
     <value>Issue description:</value>
   </data>
+  <data name="Log in" xml:space="preserve">
+    <value>Log in</value>
+  </data>
   <data name="NoAvailableApppointments" xml:space="preserve">
     <value>No available appointments in calendar. Go to </value>
   </data>
   <data name="Phone number:" xml:space="preserve">
     <value>Phone number:</value>
+  </data>
+  <data name="Please log in to book an appointment" xml:space="preserve">
+    <value>Please log in to book an appointment</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

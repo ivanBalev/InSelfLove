@@ -61,7 +61,10 @@
             dbArticle.ImageUrl = article.ImageUrl;
             dbArticle.PreviewImageBlob = article.PreviewImageBlob;
             dbArticle.Slug = article.Slug;
-            dbArticle.CreatedOn = article.CreatedOn;
+            if (article.CreatedOn.Year > 1000)
+            {
+                dbArticle.CreatedOn = article.CreatedOn;
+            }
 
             this.articleRepository.Update(dbArticle);
             await this.articleRepository.SaveChangesAsync();
@@ -92,8 +95,7 @@
                 query = query.Search(x => x.Content.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
-            query = query.OrderByDescending(c => c.CreatedOn.Date)
-                .ThenByDescending(c => c.CreatedOn.TimeOfDay).Skip(skip);
+            query = query.OrderByDescending(c => c.CreatedOn).Skip(skip);
 
             if (take.HasValue)
             {
@@ -156,7 +158,6 @@
             var articles = this.articleRepository.All()
                .Where(a => a.Id != articleId)
                .OrderByDescending(c => c.CreatedOn.Date)
-               .ThenByDescending(c => c.CreatedOn.TimeOfDay)
                .Take(articlesCount);
 
             return articles;

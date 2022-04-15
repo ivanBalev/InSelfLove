@@ -26,6 +26,7 @@ namespace BDInSelfLove.Web.InputModels.Article
 
         public virtual void CreateMappings(IProfileExpression configuration)
         {
+            // Convert preview img from blob to byte[].
             configuration.CreateMap<ArticleCreateInputModel, Data.Models.Article>().ForMember(
                 m => m.PreviewImageBlob,
                 opt => opt.MapFrom(x => Convert.FromBase64String(x.PreviewImage

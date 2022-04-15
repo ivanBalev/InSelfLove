@@ -21,7 +21,8 @@
 
     public class HomeController : Controller
     {
-        private const int IndexItemsCount = 3;
+        private const int IndexVideosCount = 3;
+        private const int IndexArticlesCount = 5;
         private const string StatusMessage = "StatusMessage";
         private const string UserEmailBody = "UserEmailBody";
         private const string AdminEmailBodyTemplate = "AdminEmailBodyTemplate";
@@ -48,8 +49,8 @@
 
         public async Task<IActionResult> Index()
         {
-            var lastArticles = await this.articleService.GetAll(IndexItemsCount).To<ArticlePreviewViewModel>().ToListAsync();
-            var lastVideos = await this.videoService.GetAll(IndexItemsCount).To<VideoPreviewViewModel>().ToListAsync();
+            var lastArticles = await this.articleService.GetAll(IndexArticlesCount).To<ArticlePreviewViewModel>().ToListAsync();
+            var lastVideos = await this.videoService.GetAll(IndexVideosCount).To<VideoPreviewViewModel>().ToListAsync();
             var viewModel = new HomeViewModel(lastArticles, lastVideos);
             return this.View(viewModel);
         }

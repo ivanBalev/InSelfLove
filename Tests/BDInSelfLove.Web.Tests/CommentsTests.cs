@@ -41,6 +41,7 @@
         [Fact]
         public void AddArticleCommentShouldWorkCorrectly()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
             this.browser.FindElements(By.CssSelector(".article-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
             var username = this.Login(GlobalValues.UserRoleName);
@@ -62,9 +63,10 @@
         [Fact]
         public void AddArticleSubCommentShouldWorkCorrectly()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
             // Click article with seeded comments
-            this.browser.FindElements(By.CssSelector(".article-preview")).
-                Where(a => a.GetAttribute("id").Equals(ArticleWithCommentsId))
+            this.browser.FindElements(By.CssSelector(".article-preview"))
+                .Where(a => a.GetAttribute("id").Equals(ArticleWithCommentsId))
                 .FirstOrDefault()
                 .Click();
 
@@ -99,6 +101,8 @@
         [Fact]
         public void AddArticleSecondLevelSubCommentShouldWorkCorrectly()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+
             // Click article with seeded comments
             this.browser.FindElements(By.CssSelector(".article-preview")).
                 Where(a => a.GetAttribute("id").Equals(ArticleWithCommentsId))
@@ -159,6 +163,8 @@
         [Fact]
         public void AddVideoCommentShouldWorkCorrectly()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+
             this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
@@ -182,6 +188,8 @@
         [Fact]
         public void AddVideoCommentShouldWorkCorrectlyAfterRefresh()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+
             this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
@@ -207,6 +215,8 @@
         [Fact]
         public void AddVideoSubCommentShouldWorkCorrectly()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+
             this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
@@ -245,6 +255,8 @@
         [Fact]
         public void AddVideoSubCommentShouldWorkCorrectlyAfterRefresh()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+
             this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
@@ -285,6 +297,8 @@
         [Fact]
         public void AddVideoSecondLevelSubCommentShouldWorkCorrectly()
         {
+            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+
             this.browser.FindElements(By.CssSelector("a[href='/Videos']")).FirstOrDefault().Click();
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
@@ -335,6 +349,7 @@
 
             this.browser.Navigate().Refresh();
 
+            wait.Until(b => b.FindElements(By.CssSelector(".showSubcomments")).Count > 0);
             var subcommentBtns = this.browser.FindElements(By.CssSelector(".showSubcomments")).ToList();
             foreach (var btn in subcommentBtns)
             {
@@ -370,23 +385,8 @@
             this.UsernameInputField.SendKeys(username);
             this.PasswordInputField.SendKeys(password);
             this.SubmitBtn.Click();
-            this.WaitForAjax();
 
             return username;
-        }
-
-        private void WaitForAjax()
-        {
-            while (true)
-            {
-                if ((bool)((IJavaScriptExecutor)this.browser)
-                .ExecuteScript("return jQuery.active == 0"))
-                {
-                    break;
-                }
-
-                Thread.Sleep(500);
-            }
         }
 
         public void Dispose()

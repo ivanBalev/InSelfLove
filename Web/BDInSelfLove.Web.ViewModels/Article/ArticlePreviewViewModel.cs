@@ -3,13 +3,13 @@
     using System;
     using System.Net;
     using System.Text.RegularExpressions;
-    using AutoMapper;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
 
     public class ArticlePreviewViewModel : IMapFrom<Article>
     {
         private const int PreviewContentLength = 320;
+        private const int WordsCount = 60;
 
         public int Id { get; set; }
 
@@ -30,9 +30,12 @@
                 var noHtmlTags = Regex.Replace(this.Content, @"<[^>]+>", string.Empty);
                 noHtmlTags = WebUtility.HtmlDecode(noHtmlTags);
 
-                if ((noHtmlTags + this.Title).Length > PreviewContentLength)
+                string[] contentArr = noHtmlTags.Split(' ');
+                if (contentArr.Length > WordsCount)
                 {
-                    noHtmlTags = noHtmlTags.Substring(0, PreviewContentLength - this.Title.Length) + "...";
+                    string[] shortenedContent = new string[WordsCount];
+                    Array.Copy(contentArr, shortenedContent, WordsCount);
+                    return string.Join(' ', shortenedContent) + "...";
                 }
 
                 return noHtmlTags;

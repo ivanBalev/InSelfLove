@@ -91,8 +91,7 @@
                 query = query.Search(x => x.AssociatedTerms.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
-            query = query.Distinct().OrderByDescending(c => c.CreatedOn.Date)
-               .ThenByDescending(c => c.CreatedOn.TimeOfDay).Skip(skip);
+            query = query.Distinct().OrderByDescending(c => c.CreatedOn).Skip(skip);
 
             if (take.HasValue)
             {
@@ -120,8 +119,7 @@
         {
             var videos = this.videosRepository.All()
                .Where(v => v.Id != videoId)
-                 .OrderByDescending(c => c.CreatedOn.Date)
-               .ThenByDescending(c => c.CreatedOn.TimeOfDay)
+               .OrderByDescending(c => c.CreatedOn.Date)
                .Take(videosCount);
 
             return videos;
@@ -148,7 +146,10 @@
             dbVideo.Url = video.Url;
             dbVideo.AssociatedTerms = video.AssociatedTerms;
             dbVideo.Slug = video.Slug;
-            dbVideo.CreatedOn = video.CreatedOn;
+            if (video.CreatedOn.Year > 1000)
+            {
+                dbVideo.CreatedOn = video.CreatedOn;
+            }
 
             this.videosRepository.Update(dbVideo);
             await this.videosRepository.SaveChangesAsync();

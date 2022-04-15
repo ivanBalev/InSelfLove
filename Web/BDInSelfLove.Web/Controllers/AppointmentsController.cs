@@ -18,7 +18,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Localization;
 
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AppointmentsController : BaseController
@@ -49,17 +48,16 @@
         }
 
         [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string timezone)
         {
             await this.UpdateUserTimezone();
-            return this.View(await this.GetIndexViewModel());
+            return this.View(await this.GetIndexViewModel(timezone));
         }
 
         [HttpPost]
         [Route("Create")]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
-        public async Task<IActionResult> Create([FromForm] AvailabilityInputModel availabilityInput)
+        public async Task<IActionResult> Create([FromBody] AvailabilityInputModel availabilityInput)
         {
             var timezoneId = await this.TimezoneId();
 
@@ -72,31 +70,10 @@
             return this.Ok();
         }
 
-        // TODO: Index should also return all appointments to avoid unnecessary initial request
-        [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult<AppointmentViewModel[]>> GetAll()
-        {
-            string userId = this.userManager.GetUserId(this.User);
-            bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
-            var timezoneId = await this.TimezoneId();
-
-            var appointments = (await this.appointmentService
-                .GetAll(userId, userIsAdmin)
-                .To<AppointmentViewModel>()
-                .ToArrayAsync())
-                .Select(a =>
-                 {
-                     a.Start = TimezoneHelper.ToLocalTime(a.Start, timezoneId);
-                     return a;
-                 }).ToArray();
-
-            return appointments;
-        }
-
         [HttpPost]
+        [Authorize]
         [Route("Book")]
-        public async Task<IActionResult> Book([FromForm] AppointmentInputModel inputModel)
+        public async Task<IActionResult> Book([FromBody] AppointmentInputModel inputModel)
         {
             if (!this.ModelState.IsValid)
             {
@@ -112,20 +89,21 @@
         [HttpPost]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         [Route("Approve")]
-        public async Task<ActionResult> Approve([FromForm] int id)
+        public async Task<ActionResult> Approve([FromBody] AppointmentManipulateModel input)
         {
-            Appointment appointment = await this.appointmentService.Approve(id);
+            Appointment appointment = await this.appointmentService.Approve(input.Id);
             await this.SendApprovalEmail(appointment);
             return this.Ok();
         }
 
         [HttpPost]
+        [Authorize]
         [Route("Cancel")]
-        public async Task<ActionResult> Cancel([FromForm] int id)
+        public async Task<ActionResult> Cancel([FromBody] AppointmentManipulateModel input)
         {
             var user = await this.userManager.GetUserAsync(this.User);
             bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
-            Appointment appointment = await this.appointmentService.GetById(id);
+            Appointment appointment = await this.appointmentService.GetById(input.Id);
 
             // Allow only admin to cancel others' appointments
             if (appointment.UserId != user.Id && !userIsAdmin)
@@ -148,11 +126,12 @@
         [HttpPost]
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         [Route("SetWorkingHours")]
-        public async Task<ActionResult> SetWorkingHours([FromForm] string startHour, [FromForm] string endHour)
+        public async Task<ActionResult> SetWorkingHours([FromBody] WorkingHoursInputModel input)
         {
             // Currently working only with 00 minutes
-            var localStartHour = DateTime.ParseExact(startHour.Split(':')[0], "H", CultureInfo.InvariantCulture);
-            var localEndHour = DateTime.ParseExact(endHour.Split(':')[0], "H", CultureInfo.InvariantCulture);
+            var localStartHour = DateTime.Now.Date.AddHours(double.Parse(input.StartHour.Split(':')[0]));
+            var localEndHour = DateTime.Now.Date.AddHours(double.Parse(input.EndHour.Split(':')[0]));
+
             var timezoneId = await this.TimezoneId();
 
             GlobalValues.WorkDayStartUTC = TimezoneHelper.ToUTCTime(localStartHour, timezoneId);
@@ -177,7 +156,7 @@
             string userCurrentWindowsTimezoneId = TimezoneHelper.GetTimezone(this.TimezoneIdFromCookie).Id;
             var user = await this.userManager.GetUserAsync(this.User);
 
-            if (user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
+            if (user != null && user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
             {
                 user.WindowsTimezoneId = userCurrentWindowsTimezoneId;
                 await this.userManager.UpdateAsync(user);
@@ -267,22 +246,37 @@
             return (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
         }
 
-        private async Task<AppointmentIndexViewModel> GetIndexViewModel()
+        private async Task<AppointmentIndexViewModel> GetIndexViewModel(string queryTimezone)
         {
-            var timezoneId = await this.TimezoneId();
+            var timezoneId = await this.TimezoneId(queryTimezone);
+
+            string userId = this.userManager.GetUserId(this.User);
+            bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
+
+            var appointments = (await this.appointmentService
+                .GetAll(userId ??= "-1", userIsAdmin)
+                .To<AppointmentViewModel>()
+                .ToArrayAsync())
+                .Select(a =>
+                {
+                    a.Start = TimezoneHelper.ToLocalTime(a.Start, timezoneId);
+                    return a;
+                }).ToArray();
+
             return new AppointmentIndexViewModel
             {
                 WorkdayStart = TimezoneHelper.ToLocalTime(GlobalValues.WorkDayStartUTC, timezoneId),
                 WorkdayEnd = TimezoneHelper.ToLocalTime(GlobalValues.WorkDayEndUTC, timezoneId),
+                Appointments = appointments,
             };
         }
 
-        private async Task<string> TimezoneId()
+        private async Task<string> TimezoneId(string queryTimezone = null)
         {
             if (this.TimezoneIdFromCookie == null)
             {
                 var user = await this.userManager.GetUserAsync(this.User);
-                return user.WindowsTimezoneId;
+                return user?.WindowsTimezoneId ?? queryTimezone;
             }
 
             return this.TimezoneIdFromCookie;

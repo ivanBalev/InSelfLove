@@ -18,7 +18,7 @@
         <div class="form-group">
             <label class="btn white-btn">
                 @localizer["or upload an image"]
-                <input type="file" asp-for="@Model.Image" hidden onchange="$('#upload-file-info').html(this.files[0].name); $('#ImageUrl').val('')">
+                <input id="image-upload" type="file" asp-for="@Model.Image" hidden>
             </label>
             <span class='label label-info' id="upload-file-info"></span>
             <span asp-validation-for="@Model.Image" class="text-danger"></span>
@@ -57,6 +57,12 @@
 @section Scripts {
     <script src="~/Custom/js/compressArticlePreviewPic.js"></script>
     <script src="~/Custom/js/datePicker.js"></script>
+    <script>
+        document.getElementById('image-upload').addEventListener('change', function (e) {
+            document.getElementById('upload-file-info').textContent = this.files[0].name;
+            document.getElementById('ImageUrl').textContent = '';
+        });
+    </script>
 }
 
 @section Links {

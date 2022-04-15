@@ -1,6 +1,6 @@
 ﻿const equalizeArticlePreviewHeight = () => {
 
-    let DOMelements = document.querySelectorAll('.article-card .card-body');
+    let DOMelements = document.querySelectorAll('.card-body');
     let elements = Array.from(DOMelements);
     let randomElementHeight = elements[0].offsetHeight;
 
