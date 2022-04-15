@@ -205,6 +205,9 @@
 		<Content Update="wwwroot\Custom\js\editComment.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\Custom\js\fullcalendar.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\Custom\js\homeVideoTitleLengthAdjust.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
