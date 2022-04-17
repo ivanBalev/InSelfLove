@@ -1,7 +1,7 @@
 ﻿const cacheDefaultName = 'inselflove';
 const domainNames = ['inselflove', 'localhost'];
-const staticCacheName = cacheDefaultName + '-static-v1.9111';
-const dynamicCacheName = cacheDefaultName + '-dynamic-v1.9111';
+const staticCacheName = cacheDefaultName + '-static-v1.0';
+const dynamicCacheName = cacheDefaultName + '-dynamic-v1.0';
 const dynamicCacheMaxSize = 40;
 const assets = [
     '/Custom/img/wonder.png',

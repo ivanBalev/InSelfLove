@@ -2,6 +2,8 @@
 {
     using System;
     using System.Linq;
+    using System.Text.RegularExpressions;
+
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
@@ -17,8 +19,11 @@
                 new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
 
             // Escape non-ASCII characters in redirect header (returnUrl has Cyrillic letters)
-            returnUrl = "~/" + string.Join("/", returnUrl.Substring(2).Split("/")
-                                     .Select(s => System.Net.WebUtility.UrlEncode(s)));
+            if (Regex.IsMatch(returnUrl, @"\p{IsCyrillic}"))
+            {
+                returnUrl = "~/" + string.Join("/", returnUrl.Substring(2).Split("/")
+                                    .Select(s => System.Net.WebUtility.UrlEncode(s)));
+            }
 
             return this.LocalRedirect(returnUrl);
         }

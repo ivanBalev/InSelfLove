@@ -3,14 +3,16 @@
 
 @{ this.ViewData["Title"] = localizer["Content not found"].Value; }
 
-<partial name="_SlimShowcasePartial" model="@(ViewData["Title"] ?? "`")" />
+<div id="error-page">
+    <partial name="_SlimShowcasePartial" model="@(ViewData["Title"] ?? "`")" />
 
-<div class="text-center my-2">
-    <img src="~/Custom/img/wonder.png" height="300" alt="Content not found"/>
-    <h5>@localizer["Please try one of the links below:"]</h5>
-    <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">@localizer["Home"]</a>
-    <a class="btn btn-outline-secondary" asp-controller="Appointments" asp-action="Index">@localizer["Schedule an Appointment"]</a>
-    <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Contacts">@localizer["Contact"]</a>
-    <a class="btn btn-outline-secondary" asp-controller="Articles" asp-action="Index">@localizer["Articles"]</a>
-    <a class="btn btn-outline-secondary" asp-controller="Videos" asp-action="Index">@localizer["Videos"]</a>
+    <div class="text-center my-2">
+        <img src="~/Custom/img/wonder.png" height="300" alt="Content not found" />
+        <h5>@localizer["Please try one of the links below:"]</h5>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">@localizer["Home"]</a>
+        <a class="btn btn-outline-secondary" asp-controller="Appointments" asp-action="Index">@localizer["Schedule an Appointment"]</a>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Contacts">@localizer["Contact"]</a>
+        <a class="btn btn-outline-secondary" asp-controller="Articles" asp-action="Index">@localizer["Articles"]</a>
+        <a class="btn btn-outline-secondary" asp-controller="Videos" asp-action="Index">@localizer["Videos"]</a>
+    </div>
 </div>

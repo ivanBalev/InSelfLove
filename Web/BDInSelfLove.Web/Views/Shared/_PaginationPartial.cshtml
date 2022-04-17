@@ -24,8 +24,8 @@
                 }
 
                 @{
-                    var startPage = Model.CurrentPage > 6 ? Model.CurrentPage - 5 : 1;
-                    var endPage = Model.CurrentPage + 4 > Model.PagesCount ? Model.PagesCount : Model.CurrentPage + 4;
+                    var startPage = Model.CurrentPage > 3 ? Model.CurrentPage - 2 : 1;
+                    var endPage = Model.CurrentPage + 2 > Model.PagesCount ? Model.PagesCount : Model.CurrentPage + 2;
 
                     for (int i = startPage; i <= endPage; i++)
                     {

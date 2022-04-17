@@ -78,8 +78,12 @@
         margin-top: 7vmin;
     }
 
+    #about .first-paragraph-col {
+        padding-top: 1rem!important;
+    }
+
     .profile-pic {
-        margin-top: -110px !important;
+        margin-top: -10vh !important;
         margin-left: auto !important;
         margin-right: auto !important;
         display: block;
@@ -108,9 +112,9 @@
         padding-left: 5px !important;
     }
 
-        .navbar .contact {
-            margin-left: 0px !important;
-        }
+    .navbar .contact {
+        margin-left: 0px !important;
+    }
 
     #sidebar {
         padding-left: 0px;
@@ -279,14 +283,18 @@ form .form-group {
 }
 
 #slimShowcase .slimShowcase-wrapper {
-    width: 90%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 5vh;
 }
 
-#slimShowcase h1 {
+#slimShowcase .title-text {
+    font-size: 7.5vmin;
     color: white;
+}
+
+#error-page #slimShowcase .title-text {
+    font-size: 6vmin;
 }
 
 .dark-overlay {
@@ -358,11 +366,6 @@ lite-youtube {
 
 #main-footer {
     color: rgb(146,171,149);
-}
-
-.title-text {
-    font-size: 7.5vmin;
-    color: black;
 }
 
 #explore-videos-section h1 {
