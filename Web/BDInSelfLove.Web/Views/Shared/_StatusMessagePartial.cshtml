@@ -1,14 +1,23 @@
 ﻿@model string
 
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@if (this.Context.Request.Headers.ContainsKey("X-CSRF-TOKEN"))
+{
+    this.Layout = null;
+}
+
 @if (!String.IsNullOrEmpty(Model))
 {
-    <div class="row alert alert-@(Model.StartsWith("Error") ? "danger" : "success") alert-dismissible d-block" role="alert">
-        <div class="col">
-            <span>
-                @Model
-            </span>
-        </div>
+    <div class="container">
+        <div class="row alert alert-@(Model.Equals(localizer["Error"]) ? "danger" : "success") alert-dismissible d-block" role="alert">
+            <div class="col">
+                <span>
+                    @Model
+                </span>
+            </div>
 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </div>
 }

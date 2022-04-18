@@ -120,7 +120,10 @@
   <data name="AdminEmailBodyTemplate" xml:space="preserve">
     <value>&lt;div&gt;{0}&lt;/div&gt;&lt;div&gt;Име: {1} {2}&lt;/div&gt;&lt;div&gt;Телефон: {3}&lt;/div&gt;</value>
   </data>
-  <data name="StatusMessage" xml:space="preserve">
+  <data name="Error" xml:space="preserve">
+    <value>Грешка. Моля, опитай по-късно.</value>
+  </data>
+  <data name="Success" xml:space="preserve">
     <value>Имейлът ти е получен. Благодаря!</value>
   </data>
   <data name="UserEmailBody" xml:space="preserve">

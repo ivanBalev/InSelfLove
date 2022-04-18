@@ -9,6 +9,7 @@
 @{
     ViewData["Title"] = @localizer["Contact"].Value;
     var administratorEmail = (await this.UserManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName))[0].Email;
+    var siteKey = "6LdSQIIfAAAAAO787M08KaNncgzfLpOO6VknjOeF";
 }
 
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
@@ -47,7 +48,7 @@
                             @localizer["Please fill out this form to contact me."]
                         </h3>
                         <hr>
-                        <form asp-controller="Home" asp-action="Contacts">
+                        <form id="contacts-form" asp-controller="Home" asp-action="Contacts">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -106,7 +107,13 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
 }
 
+
+@section HeadScripts {
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=@(siteKey)"></script>
+}
+
 @section Scripts {
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
     <script src="~/Custom/js/leaflet.js"></script>
+    <script src="~/Custom/js/recaptcha.js"></script>
 }

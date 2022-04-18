@@ -7,6 +7,7 @@
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
+    using BDInSelfLove.Services.Data.Recaptcha;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
@@ -18,33 +19,41 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Localization;
+    using Microsoft.Extensions.Logging;
 
     public class HomeController : Controller
     {
         private const int IndexVideosCount = 3;
         private const int IndexArticlesCount = 5;
-        private const string StatusMessage = "StatusMessage";
+        private const string SuccessMessage = "Success";
         private const string UserEmailBody = "UserEmailBody";
         private const string AdminEmailBodyTemplate = "AdminEmailBodyTemplate";
+        private const string ErrorMessage = "Error";
 
         private readonly IStringLocalizer<HomeController> localizer;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IArticleService articleService;
+        private readonly IRecaptchaService recaptchaService;
         private readonly IVideoService videoService;
         private readonly IEmailSender emailSender;
+        private readonly ILogger logger;
 
         public HomeController(
+            ILogger<HomeController> logger,
             IEmailSender emailSender,
             IVideoService videoService,
             IArticleService articleService,
+            IRecaptchaService recaptchaService,
             UserManager<ApplicationUser> userManager,
             IStringLocalizer<HomeController> localizer)
         {
             this.articleService = articleService;
+            this.recaptchaService = recaptchaService;
             this.videoService = videoService;
             this.emailSender = emailSender;
             this.userManager = userManager;
             this.localizer = localizer;
+            this.logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -61,16 +70,23 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Contacts(ContactFormInputModel userInfo)
+        public async Task<IActionResult> Contacts([FromBody] ContactFormInputModel userInfo)
         {
             if (!this.ModelState.IsValid)
             {
-                this.ViewData["Error"] = "Error. Please try again.";
-                return this.View();
+                return this.View("_StatusMessagePartial", this.localizer[ErrorMessage].ToString());
             }
 
-            await this.SubmitContactForm(userInfo);
-            return this.RedirectToAction("Index");
+            string verificationErrors = await this.recaptchaService.VerifyAsync(userInfo.RecaptchaToken, userInfo.RecaptchaExpectedAction);
+
+            if (!string.IsNullOrEmpty(verificationErrors))
+            {
+                this.logger.LogWarning(verificationErrors);
+                return this.BadRequest();
+            }
+            var msg = this.localizer[SuccessMessage].ToString();
+            //await this.SubmitContactForm(userInfo);
+            return this.View("_StatusMessagePartial", this.localizer[SuccessMessage].ToString());
         }
 
         public IActionResult About()
@@ -110,7 +126,7 @@
                 subject: GlobalValues.SystemName,
                 htmlContent: this.localizer[UserEmailBody]);
 
-            this.TempData["StatusMessage"] = this.localizer[StatusMessage];
+            this.TempData["StatusMessage"] = this.localizer[SuccessMessage];
         }
     }
 }

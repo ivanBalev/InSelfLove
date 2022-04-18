@@ -21,5 +21,9 @@ namespace BDInSelfLove.Web.InputModels.Contact
         public string LastName { get; set; }
 
         public string FirstName { get; set; }
+
+        public string RecaptchaToken { get; set; }
+
+        public string RecaptchaExpectedAction { get; set; }
     }
 }

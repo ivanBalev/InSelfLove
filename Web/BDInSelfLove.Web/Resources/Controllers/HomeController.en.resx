@@ -120,7 +120,10 @@
   <data name="AdminEmailBodyTemplate" xml:space="preserve">
     <value>&lt;div&gt;{0}&lt;/div&gt;&lt;div&gt;Name: {1} {2}&lt;/div&gt;&lt;div&gt;Phone: {3}&lt;/div&gt;</value>
   </data>
-  <data name="StatusMessage" xml:space="preserve">
+  <data name="Error" xml:space="preserve">
+    <value>Error. Please try again later.</value>
+  </data>
+  <data name="Success" xml:space="preserve">
     <value>Your email has been received. Thank you!</value>
   </data>
   <data name="UserEmailBody" xml:space="preserve">

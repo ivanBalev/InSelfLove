@@ -47,6 +47,11 @@
                 .Map<ArticleViewModel>(await this.ArticleService
                 .GetBySlug(slug));
 
+            if (viewModel == null)
+            {
+                return this.NotFound();
+            }
+
             for (int i = 0; i < viewModel?.Comments.Count; i++)
             {
                 viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(

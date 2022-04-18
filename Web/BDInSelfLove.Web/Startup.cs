@@ -15,6 +15,7 @@
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.CloudinaryServices;
     using BDInSelfLove.Services.Data.Comments;
+    using BDInSelfLove.Services.Data.Recaptcha;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
@@ -170,6 +171,7 @@
             services.AddTransient<ICloudinaryService, CloudinaryService>();
             services.AddTransient<IAppointmentService, AppointmentService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IRecaptchaService, RecaptchaService>();
 
             // Development exceptions
             services.AddDatabaseDeveloperPageExceptionFilter();
