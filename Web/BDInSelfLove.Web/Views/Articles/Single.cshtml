@@ -59,15 +59,15 @@
             <partial name="_ArticleDeleteConfirmPartial" model="@Model.Id" />
         </div>
         <!-- Suggested articles -->
-        <vc:sidebar article-id="@Model.Id" video-id="0"></vc:sidebar>
+        <vc:sidebar is-article="true" date="@Model.CreatedOn"></vc:sidebar>
     </div>
     <!-- Suggested videos -->
-    <vc:bottombar is-article="true"></vc:bottombar>
+    <vc:bottombar is-article="true" date="@Model.CreatedOn"></vc:bottombar>
 </div>
 
 @section Scripts
 {
-    <script src="~/Custom/js/previewVideoHeightEqualize.js"></script>
+    <script src="~/Custom/js/equalizeVideoHeight.js"></script>
     <script type="module" src="~/Custom/js/commentsHideDisplayItems.js"></script>
     <script type="module" src="~/Custom/js/editComment.js"></script>
     <script type="module" src="~/Custom/js/deleteComment.js"></script>

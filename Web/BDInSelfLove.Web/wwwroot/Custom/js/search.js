@@ -27,13 +27,13 @@
                     let allVideos = document.getElementById('all-videos');
                     allVideos.innerHTML = '';
                     allVideos.innerHTML = data;
-                    equalizeVideoPreviewHeight();
+                    equalizeVideoHeight();
                     paginationScripts('#all-videos');
                 } else {
                     let allArticles= document.getElementById('all-articles');
                     allArticles.innerHTML = '';
                     allArticles.innerHTML = data;
-                    equalizeArticlePreviewHeight();
+                    equalizeArticleHeight();
                     paginationScripts('#all-articles');
                 }
             });

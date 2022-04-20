@@ -3,13 +3,13 @@
     var previewPic = (Model.PreviewImageBlob == null || Model.PreviewImageBlob.Length < 10) ? Model.ImageUrl : "data:image/jpeg;base64," + System.Convert.ToBase64String(Model.PreviewImageBlob);
 }
 
-<div class="article-preview home-preview-item" id="@Model.Id">
+<div class="article-preview" id="@Model.Id">
     <a asp-controller="Articles" asp-action="Single" asp-route-slug="@Model.Slug">
         <div class="card article-card">
             <div>
                 <img class="card-img-top img-fluid" src="@previewPic" alt="Article image">
             </div>
-            <div class="card-body bg-light pt-1 text-left">
+            <div class="card-body bg-light pt-1 text-left article-resize">
                 <small>@Model.CreatedOn.ToString("dd/MM/yyyy")</small>
                 <div class="card-title mb-1">@Model.Title</div>
                 <p class="card-text text-left">

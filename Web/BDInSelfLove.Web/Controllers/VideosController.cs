@@ -1,7 +1,7 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
     using System.Threading.Tasks;
-
+    using System.Web;
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Videos;
@@ -31,6 +31,7 @@
         [Route("Videos/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
+            slug = HttpUtility.UrlDecode(slug);
             var viewModel = AutoMapperConfig.MapperInstance
                 .Map<VideoViewModel>(await this.VideoService
                 .GetBySlug(slug));

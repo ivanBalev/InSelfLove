@@ -351,6 +351,10 @@ lite-youtube {
     max-width: 100%;
 }
 
+#all-comments {
+    background-color: white;
+}
+
 .edit-comment, .comment-box {
     display: none;
 }
@@ -391,6 +395,11 @@ lite-youtube {
 
 #mapid {
     height: 500px;
+}
+
+.grecaptcha-badge {
+    z-index: 9999;
+    position: relative;
 }
 
 #loginPage a {
@@ -579,6 +588,14 @@ lite-youtube {
     margin-top: 50px;
     margin-left: 21px;
     box-shadow: 0 0 0 5px rgb(146,171,149);
+}
+
+.hardcode-contact .card {
+    height: 100%;
+}
+
+.email-contact .card {
+    height: 100%;
 }
 
 .home-profile-pic {

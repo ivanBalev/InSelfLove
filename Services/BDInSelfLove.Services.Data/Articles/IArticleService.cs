@@ -1,5 +1,7 @@
 ﻿namespace BDInSelfLove.Services.Data.Articles
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -19,6 +21,6 @@
 
         Task<Article> GetBySlug(string slug);
 
-        IQueryable<Article> GetSideArticles(int articlesCount, int articleId = 0);
+        Task<IList<Article>> GetSideArticles(int articlesCount, DateTime date);
     }
 }

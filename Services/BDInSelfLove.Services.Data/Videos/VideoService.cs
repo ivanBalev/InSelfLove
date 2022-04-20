@@ -110,17 +110,34 @@
                 throw new ArgumentException(nameof(dbVideo));
             }
 
-
             this.videosRepository.Delete(dbVideo);
             return await this.videosRepository.SaveChangesAsync();
         }
 
-        public IQueryable<Video> GetSideVideos(int videosCount, int videoId = 0)
+        public async Task<IList<Video>> GetSideVideos(int videosCount, DateTime date)
         {
-            var videos = this.videosRepository.All()
-               .Where(v => v.Id != videoId)
-               .OrderByDescending(c => c.CreatedOn.Date)
-               .Take(videosCount);
+            // TODO: would really prefer to do randomization in db rather than in memory.
+            // At present, it seems it requires doing changes to the dbContext class that
+            // would entail changes for all other methods in the current service
+            // Namely not creating a table in memory that corresponds to the one in sql db
+            // Which would enable the queries to be executed. At present, they're being
+            // mixed with the automatically-generated query by EF.
+            var videos = await this.videosRepository.All()
+              .Where(v => DateTime.Compare(v.CreatedOn, date) < 0)
+              .OrderByDescending(v => v.CreatedOn)
+              .Take(videosCount)
+              .ToListAsync();
+
+            if (videos.Count < videosCount)
+            {
+                var additionalVideosNeeded = videosCount - videos.Count;
+
+                videos.AddRange(await this.videosRepository.All()
+               .Where(a => DateTime.Compare(a.CreatedOn, date) > 0)
+               .OrderBy(v => v.CreatedOn)
+               .Take(additionalVideosNeeded)
+               .ToListAsync());
+            }
 
             return videos;
         }

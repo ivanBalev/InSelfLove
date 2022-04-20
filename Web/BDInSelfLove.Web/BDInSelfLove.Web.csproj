@@ -205,6 +205,9 @@
 		<Content Update="wwwroot\Custom\js\editComment.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\Custom\js\equalizeArticleHeight.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\Custom\js\fullcalendar.js">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -217,10 +220,7 @@
 		<Content Update="wwwroot\Custom\js\leaflet.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="wwwroot\Custom\js\previewArticleHeightEqualize.js">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Update="wwwroot\Custom\js\previewVideoHeightEqualize.js">
+		<Content Update="wwwroot\Custom\js\equalizeVideoHeight.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\Custom\js\profilePictureCompression.js">

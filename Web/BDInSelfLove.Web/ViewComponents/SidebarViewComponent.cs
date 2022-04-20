@@ -1,8 +1,9 @@
 ﻿namespace BDInSelfLove.Web.ViewComponents
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
@@ -25,25 +26,27 @@
             this.articleService = articleService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int articleId = 0, int videoId = 0)
+        public async Task<IViewComponentResult> InvokeAsync(bool isArticle, DateTime date)
         {
             var viewModel = new SuggestedViewModel();
 
-            if (videoId != 0)
+            if (!isArticle)
             {
+                // TODO: HORRID
                 // Suggest more videos only for videos page.
-                viewModel.Videos = await this.videoService
-               .GetSideVideos(SidebarItemsCount, videoId)
-               .To<VideoPreviewViewModel>()
-               .ToListAsync();
+                viewModel.Videos = (await this.videoService
+               .GetSideVideos(SidebarItemsCount, date))
+               .Select(v => AutoMapperConfig.MapperInstance.Map<Video, VideoPreviewViewModel>(v))
+               .ToList();
             }
             else
             {
+                // TODO: HORRID
                 // Suggest more articles only for articles page.
-                viewModel.Articles = await this.articleService
-               .GetSideArticles(SidebarItemsCount, articleId)
-               .To<ArticlePreviewViewModel>()
-               .ToListAsync();
+                viewModel.Articles = (await this.articleService
+               .GetSideArticles(SidebarItemsCount, date))
+               .Select(a => AutoMapperConfig.MapperInstance.Map<Article, ArticlePreviewViewModel>(a))
+               .ToList();
             }
 
             return this.View(viewModel);

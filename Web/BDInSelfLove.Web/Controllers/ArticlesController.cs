@@ -7,7 +7,7 @@
     using System.Net;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-
+    using System.Web;
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
@@ -43,6 +43,7 @@
         [Route("Articles/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
+            slug = HttpUtility.UrlDecode(slug);
             var viewModel = AutoMapperConfig.MapperInstance
                 .Map<ArticleViewModel>(await this.ArticleService
                 .GetBySlug(slug));

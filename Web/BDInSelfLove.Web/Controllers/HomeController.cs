@@ -84,8 +84,8 @@
                 this.logger.LogWarning(verificationErrors);
                 return this.BadRequest();
             }
-            var msg = this.localizer[SuccessMessage].ToString();
-            //await this.SubmitContactForm(userInfo);
+
+            await this.SubmitContactForm(userInfo);
             return this.View("_StatusMessagePartial", this.localizer[SuccessMessage].ToString());
         }
 
@@ -125,8 +125,6 @@
                 to: userInfo.Email,
                 subject: GlobalValues.SystemName,
                 htmlContent: this.localizer[UserEmailBody]);
-
-            this.TempData["StatusMessage"] = this.localizer[SuccessMessage];
         }
     }
 }

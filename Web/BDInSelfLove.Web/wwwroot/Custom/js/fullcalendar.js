@@ -147,7 +147,7 @@ function showDetailsInAppointmentDetailsModal() {
     detailsModal.querySelector('.detailsGroup').style.display = 'block';
     detailsModal.querySelector('.statusGroup').style.display = 'block';
     // Hide approve button if appointment is already approved
-    if (selectedAppointment.isApproved) {
+    if (selectedAppointment.IsApproved) {
         detailsModal.querySelector('#approveAppointment').style.display = 'none';
     } else {
         detailsModal.querySelector('#approveAppointment').style.display = 'block';

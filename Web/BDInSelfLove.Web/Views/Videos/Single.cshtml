@@ -42,15 +42,15 @@
             <partial name="_VideoDeleteConfirmPartial" model="@Model.Id" />
         </div>
         <!-- Suggested videos -->
-        <vc:sidebar article-id="0" video-id="@Model.Id"></vc:sidebar>
+        <vc:sidebar is-article="false" date="@Model.CreatedOn"></vc:sidebar>
     </div>
     <!-- Suggested articles -->
-    <vc:bottombar is-article="false"></vc:bottombar>
+    <vc:bottombar is-article="false" date="@Model.CreatedOn"></vc:bottombar>
 </div>
 
 @section Scripts
 {
-    <script src="~/Custom/js/previewArticleHeightEqualize.js"></script>
+    <script src="~/Custom/js/equalizeArticleHeight.js"></script>
     <script type="module" src="~/Custom/js/commentsHideDisplayItems.js"></script>
     <script type="module" src="~/Custom/js/editComment.js"></script>
     <script type="module" src="~/Custom/js/deleteComment.js"></script>

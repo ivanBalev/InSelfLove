@@ -1,5 +1,7 @@
 ﻿namespace BDInSelfLove.Services.Data.Videos
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -13,10 +15,9 @@
 
         Task<int> Delete(int id);
 
-        IQueryable<Video> GetSideVideos(int videosCount, int videoId = 0);
+        Task<IList<Video>> GetSideVideos(int videosCount, DateTime date);
 
         IQueryable<Video> GetById(int id);
-
 
         Task<Video> GetBySlug(string slug);
 

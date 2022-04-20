@@ -153,12 +153,30 @@
             return article;
         }
 
-        public IQueryable<Article> GetSideArticles(int articlesCount, int articleId = 0)
+        public async Task<IList<Article>> GetSideArticles(int articlesCount, DateTime date)
         {
-            var articles = this.articleRepository.All()
-               .Where(a => a.Id != articleId)
-               .OrderByDescending(c => c.CreatedOn.Date)
-               .Take(articlesCount);
+            // TODO: would really prefer to do randomization in db rather than in memory.
+            // At present, it seems it requires doing changes to the dbContext class that
+            // would entail changes for all other methods in the current service
+            // Namely not creating a table in memory that corresponds to the one in sql db
+            // Which would enable the queries to be executed. At present, they're being
+            // mixed with the automatically-generated query by EF.
+            var articles = await this.articleRepository.All()
+               .Where(a => DateTime.Compare(a.CreatedOn, date) < 0)
+               .OrderByDescending(a => a.CreatedOn)
+               .Take(articlesCount)
+               .ToListAsync();
+
+            if (articles.Count < articlesCount)
+            {
+                var additionalArticlesNeeded = articlesCount - articles.Count;
+
+                articles.AddRange(await this.articleRepository.All()
+               .Where(a => DateTime.Compare(a.CreatedOn, date) > 0)
+               .OrderBy(a => a.CreatedOn)
+               .Take(additionalArticlesNeeded)
+               .ToListAsync());
+            }
 
             return articles;
         }
