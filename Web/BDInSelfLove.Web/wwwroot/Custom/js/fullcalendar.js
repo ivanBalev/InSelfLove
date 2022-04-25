@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
         height: 'auto',
         locale: culture,
         select: select,
-        longPressDelay: 1,
         events: appointments,
         eventClick: function (info) {
             selectedAppointment = info.event.extendedProps;

@@ -230,7 +230,7 @@
                     path.EndsWith(".jpg") || path.EndsWith(".png") || path.EndsWith(".svg") ||
                     path.EndsWith(".ttf"))
                     {
-                        TimeSpan maxAge = new TimeSpan(7, 0, 0, 0);
+                        TimeSpan maxAge = new TimeSpan(1, 0, 0, 0);
                         r.Context.Response.Headers.Append("Cache-Control", "public, max-age=" + maxAge.TotalSeconds.ToString("0"));
                     }
                 },

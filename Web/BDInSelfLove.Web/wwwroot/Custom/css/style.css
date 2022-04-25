@@ -171,7 +171,6 @@ html, body {
 
 #single-article .card-img-top {
     object-fit: contain;
-    max-height: 909px;
 }
 
 #single-article .card-body p {
@@ -263,7 +262,7 @@ form .form-group {
 }
 
 .showcase-wrapper h2 {
-    font-size: 7.8vmin;
+    font-size: 6.5vmin;
     letter-spacing: 2px;
     font-weight: 900;
     color: white;
@@ -599,24 +598,22 @@ lite-youtube {
 }
 
 .home-profile-pic {
-    position: relative;
-    height: 90%;
+    /*Positions element relative to its container(element's top left corner is right in the middle of its parent)*/
+    left: 50%;
+    top: 50%;
+    /*Positions element realative to itself (up half its own lenght and left half its own width)*/
+    transform: translate(-50%, -50%);
+    /*Result is that elements is centered exactly, without parent needing to have fixed size. Pretty cool.*/
+    height: 80%;
+    width: auto;
     border: 10px solid;
     border-color: rgb(239,239,239);
     box-shadow: 0 0 0 5px rgb(146,171,149);
 }
 
-.preview-img-wrapper {
-    height: 200px !important;
-}
-
 .about-hello-h2 {
     font-size: 20px;
     letter-spacing: 2px;
-}
-
-.about-preview {
-    text-align: left;
 }
 
 .about-preview-text {
@@ -724,16 +721,6 @@ lite-youtube {
     cursor: pointer;
 }
 
-#single-article-container {
-    padding-left: 4vw;
-    padding-right: 4vw;
-}
-
-#single-video-container {
-    padding-left: 4vw;
-    padding-right: 4vw;
-}
-
 #side-videos h1 {
     font-size: 20px;
 }
@@ -764,11 +751,7 @@ lite-youtube {
 }
 
 .article-preview .card-img-top {
-    min-width: 100%;
     object-fit: cover;
-    height: 200px;
-    max-height: 100%;
-    width: auto;
 }
 
 p {

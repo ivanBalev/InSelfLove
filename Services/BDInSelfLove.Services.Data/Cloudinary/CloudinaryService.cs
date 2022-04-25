@@ -34,6 +34,8 @@
                 {
                     Folder = "article_images",
                     File = new FileDescription(fileName, ms),
+                    UseFilename = true,
+                    UniqueFilename = false,
                 };
 
                 uploadResult = this.cloudinaryUtility.Upload(uploadParams);

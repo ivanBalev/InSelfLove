@@ -239,7 +239,7 @@
             if (inputModel.Image != null)
             {
                 inputModel.ImageUrl = await this.cloudinaryService
-                .UploadPicture(inputModel.Image, Guid.NewGuid().ToString());
+                .UploadPicture(inputModel.Image, inputModel.Image.FileName.Split('.')[0]);
             }
         }
 

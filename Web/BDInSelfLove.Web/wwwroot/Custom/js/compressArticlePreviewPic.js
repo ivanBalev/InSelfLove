@@ -1,8 +1,13 @@
-﻿let uploadField = document.getElementById("originalPreviewPic");
+﻿document.getElementById("originalPreviewPic").onchange = e => handlePreviewPicture(e);
+document.getElementById("Image").onchange = e => {
+    document.getElementById('upload-file-info').innerHTML = e.target.files[0].name;
+    document.getElementById('ImageUrl').value = '';
+    handlePreviewPicture(e);
+};
 
-uploadField.onchange = function () {
-
-    let filesSelected = this.files;
+function handlePreviewPicture (e) {
+    let filesSelected = e.target.files;
+    console.log(filesSelected);
     // Something needs to be uploaded in order to proceed
     if (filesSelected.length === 0) {
         return;
@@ -10,7 +15,7 @@ uploadField.onchange = function () {
 
     let fileToLoad = filesSelected[0];
     // Max file size is 10 mb
-    if (this.files[0].size > (10 * 1024 * 1024)) {
+    if (fileToLoad.size > (10 * 1024 * 1024)) {
         alert("File needs to be less than 10 MB.");
         this.value = "";
     };
@@ -22,8 +27,9 @@ uploadField.onchange = function () {
     fileReader.onload = function (fileLoadedEvent) {
 
         let imgBase64 = fileLoadedEvent.target.result;
-        const maxWidth = 500;
-        const maxHeight = 200;
+        // 16 x 9, little larger than max size of preview img(bootstrap-controlled)
+        const maxWidth = 700;
+        const maxHeight = 394;
 
         compressImage(imgBase64, maxWidth, maxHeight)
             .then(function (newImg) {
@@ -60,7 +66,7 @@ function compressImage(base64, maxWidth, maxHeight) {
             const ctx = canvas.getContext('2d')
             ctx.drawImage(img, 0, 0, width, height)
 
-            resolve(canvas.toDataURL('image/jpeg', 0.9))
+            resolve(canvas.toDataURL('image/jpeg', 1))
         }
         img.onerror = function (err) {
             reject(err)

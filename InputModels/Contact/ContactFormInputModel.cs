@@ -11,7 +11,6 @@ namespace BDInSelfLove.Web.InputModels.Contact
         [Required(ErrorMessage = "Please enter more than 30 characters.")]
         public string Message { get; set; }
 
-        [Phone]
         public string PhoneNumber { get; set; }
 
         [Required]

@@ -109,7 +109,7 @@
                 .HasForeignKey(ac => ac.VideoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Article>(entity => entity.Property(x => x.PreviewImageBlob).HasColumnType("blob"));
+            builder.Entity<Article>(entity => entity.Property(x => x.PreviewImageBlob).HasColumnType("mediumblob"));
 
             builder.Entity<ApplicationUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));
             builder.Entity<ApplicationRole>(entity => entity.Property(m => m.Id).HasMaxLength(85));
