@@ -20,15 +20,19 @@ namespace BDInSelfLove.Data.Models
             this.Comments = new HashSet<Comment>();
         }
 
-        // Audit info
         public DateTime CreatedOn { get; set; }
 
         public DateTime? ModifiedOn { get; set; }
 
-        // Deletable entity
         public bool IsDeleted { get; set; }
 
         public DateTime? DeletedOn { get; set; }
+
+        public string ProfilePhoto { get; set; }
+
+        public bool IsBanned { get; set; }
+
+        public string WindowsTimezoneId { get; set; }
 
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
 
@@ -36,14 +40,10 @@ namespace BDInSelfLove.Data.Models
 
         public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
 
-        public string ProfilePhoto { get; set; }
-
         public virtual ICollection<Appointment> Appointments { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
 
-        public bool IsBanned { get; set; }
-
-        public string WindowsTimezoneId { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
     }
 }

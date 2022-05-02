@@ -1,6 +1,7 @@
 ﻿namespace BDInSelfLove.Data
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
@@ -31,6 +32,10 @@
         public DbSet<Appointment> Appointments { get; set; }
 
         public DbSet<Comment> Comments { get; set; }
+
+        public DbSet<Course> Courses { get; set; }
+
+        public DbSet<CourseVideo> CourseVideos { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 
@@ -109,6 +114,22 @@
                 .HasForeignKey(ac => ac.VideoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Course>()
+                .HasMany(c => c.Users)
+                .WithMany(u => u.Courses)
+                .UsingEntity<Dictionary<string, object>>(
+                "AspNetUserCourses",
+                j => j
+                    .HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey("UserId"),
+                j => j
+                    .HasOne<Course>()
+                    .WithMany()
+                    .HasForeignKey("CourseId"));
+
+
+            builder.Entity<Course>(entity => entity.Property(x => x.Id).HasMaxLength(85));
             builder.Entity<Article>(entity => entity.Property(x => x.PreviewImageBlob).HasColumnType("mediumblob"));
 
             builder.Entity<ApplicationUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));

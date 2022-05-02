@@ -1,0 +1,55 @@
+﻿@model BDInSelfLove.Web.ViewModels.Courses.CoursesIndexViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@*Create course modal*@
+<div id="create-course-modal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@localizer["Create Course"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="CreateCourse" id="create-course-form">
+                    <div class="form-group">
+                        <label>@localizer["Course name"]</label>
+                        <input asp-for="@Model.CourseCreateInputModel.Title" class="form-control" />
+                        <span asp-validation-for="@Model.CourseCreateInputModel.Title" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn green-btn">@localizer["Create"]</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@* End of Create course modal *@
+<div class="container">
+    <div class="row">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-course-modal">
+            Create Course
+        </button>
+    </div>
+    <div id="all-videos" class="py-4">
+        <div class="row">
+            @foreach (var course in Model.Courses)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="course-preview">
+                        <a asp-action="Course"  asp-route-id="@course.Id">
+                            <div class="pb-1">
+                                <div class="preview-wrapper">
+                                    <img class="img-fluid w-100" src="https://source.unsplash.com/random/300x201" alt="Course preview image" />
+                                </div>
+                                <h1 class="mx-4 mt-1 course-resize">@course.Title</h1>
+                                <div class="border-0 pb-0">
+                                    <div class="row float-end">
+                                        <div class="col-1 btn-to-singleVideo"><img src="~/Custom/icons/chevron-right-solid.svg" class="right-arrow-icon" alt="right arrow icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

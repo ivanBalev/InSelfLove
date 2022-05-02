@@ -1,0 +1,100 @@
+﻿@model List<BDInSelfLove.Web.ViewModels.Courses.CourseVideoPreviewViewModel>
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@*Create video modal*@
+<div id="create-video-modal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@localizer["Create Video"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" method="post" asp-action="CreateCourseVideo"
+                      enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;">
+                    <dl>
+                        <dt>
+                            <label for="file">File</label>
+                        </dt>
+                        <dd>
+                            <input id="file" type="file" name="file" />
+                        </dd>
+                        
+                        <dd>
+                            <input id="CourseId" type="hidden" name="CourseId" value="@TempData["CourseId"]" />
+                        </dd>
+                    </dl>
+
+                    <input class="btn" type="submit" value="Upload" />
+
+                    <div style="margin-top:15px">
+                        <output form="uploadForm" name="result"></output>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@* End of Create video modal *@
+
+
+<div class="container">
+    <div class="row">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-video-modal">
+            Create Video
+        </button>
+    </div>
+    <div class="row">
+        @foreach (var video in Model)
+        {
+            @*1st video needs to be somehow differentiated from the others that will be greyed out if user hasnt paid*@
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="video-preview">
+                    <a asp-action="CourseVideo" asp-route-id="@video.Id">
+                        <div class="pb-1">
+                            <div class="preview-wrapper">
+                                <img class="img-fluid w-100" src="https://source.unsplash.com/random/300x201" alt="Video preview image" />
+                                <img class="play-btn" src="~/Custom/img/ytPlay1.png" />
+                            </div>
+                            <h1 class="mx-4 mt-1 video-resize">@video.Title</h1>
+                            <div class="border-0 pb-0">
+                                <div class="row float-end">
+                                    <div class="col-1 btn-to-singleVideo"><img src="~/Custom/icons/chevron-right-solid.svg" class="right-arrow-icon" alt="right arrow icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" /></div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        "use strict";
+
+        async function AJAXSubmit(oFormElement) {
+            const formData = new FormData(oFormElement);
+
+            try {
+                const response = await fetch(oFormElement.action + '/' + location.href.split('/').at(-1), {
+                    method: 'POST',
+                    body: formData
+                });
+
+                oFormElement.elements.namedItem("result").value =
+                    'Result: ' + response.status + ' ' + response.statusText;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+    </script>
+}

@@ -15,6 +15,7 @@
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.CloudinaryServices;
     using BDInSelfLove.Services.Data.Comments;
+    using BDInSelfLove.Services.Data.Courses;
     using BDInSelfLove.Services.Data.Recaptcha;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
@@ -172,6 +173,7 @@
             services.AddTransient<IAppointmentService, AppointmentService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<IRecaptchaService, RecaptchaService>();
+            services.AddTransient<ICourseService, CourseService>();
 
             // Development exceptions
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -243,6 +245,14 @@
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            // Buffer on disk if needed
+            // Causes stream error
+            //app.Use((context, next) =>
+            //{
+            //    context.Request.EnableBuffering();
+            //    return next();
+            //});
 
             app.UseEndpoints(
                 endpoints =>

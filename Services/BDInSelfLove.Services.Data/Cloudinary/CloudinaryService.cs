@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Services.Data.CloudinaryServices
 {
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -30,12 +31,22 @@
 
             using (var ms = new MemoryStream(destinationData))
             {
+                // TODO: Implement responsive breakpoints after website layout is finalized.
+                // Changes of media using srcset and sizes attributes can be really tricky.
                 ImageUploadParams uploadParams = new ImageUploadParams
                 {
                     Folder = "article_images",
                     File = new FileDescription(fileName, ms),
                     UseFilename = true,
                     UniqueFilename = false,
+                    //EagerTransforms = new List<Transformation>()
+                    //{
+                    //    new EagerTransformation().Width(400).Height(400)
+                    //      .Crop("crop").Gravity("face"),
+                    //    new Transformation().Width(660).Height(400)
+                    //      .Crop("pad").Background("blue"),
+                    //},
+                    //ResponsiveBreakpoints = { },
                 };
 
                 uploadResult = this.cloudinaryUtility.Upload(uploadParams);

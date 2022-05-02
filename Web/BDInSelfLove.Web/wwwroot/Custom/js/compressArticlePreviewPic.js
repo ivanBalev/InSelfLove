@@ -2,12 +2,14 @@
 document.getElementById("Image").onchange = e => {
     document.getElementById('upload-file-info').innerHTML = e.target.files[0].name;
     document.getElementById('ImageUrl').value = '';
-    handlePreviewPicture(e);
+    if (e.target.files[0].size > 0.5 * 1024 * 1024) {
+        // Conversion to base64 increases size of smaller images
+        handlePreviewPicture(e);
+    }
 };
 
-function handlePreviewPicture (e) {
+function handlePreviewPicture(e) {
     let filesSelected = e.target.files;
-    console.log(filesSelected);
     // Something needs to be uploaded in order to proceed
     if (filesSelected.length === 0) {
         return;
@@ -22,7 +24,6 @@ function handlePreviewPicture (e) {
 
     // Set file name so user knows the upload is successful
     document.getElementById('upload-previewPic-info').innerHTML = fileToLoad.name;
-
     let fileReader = new FileReader();
     fileReader.onload = function (fileLoadedEvent) {
 
@@ -33,6 +34,7 @@ function handlePreviewPicture (e) {
 
         compressImage(imgBase64, maxWidth, maxHeight)
             .then(function (newImg) {
+                console.log(newImg);
                 document.querySelector('#PreviewImage').value = newImg;
             });
     }
