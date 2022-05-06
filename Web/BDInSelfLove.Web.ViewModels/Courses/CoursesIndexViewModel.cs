@@ -8,6 +8,6 @@
     {
         public CourseCreateInputModel CourseCreateInputModel { get; set; }
 
-        public List<CourseViewModel> Courses { get; set; }
+        public List<CoursePreviewViewModel> Courses { get; set; }
     }
 }

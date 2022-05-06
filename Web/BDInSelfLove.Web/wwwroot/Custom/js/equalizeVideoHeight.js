@@ -2,6 +2,9 @@
 const equalizeVideoHeight = function () {
     let DOMvideos = document.querySelectorAll('.video-resize');
     let videosArray = Array.from(DOMvideos);
+    if (videosArray.length === 0) {
+        return;
+    }
     let randomVideoHeight = videosArray[0].offsetHeight;
 
     if (videosArray.some(e => e.offsetHeight != randomVideoHeight)) {

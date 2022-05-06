@@ -114,21 +114,6 @@
                 .HasForeignKey(ac => ac.VideoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Course>()
-                .HasMany(c => c.Users)
-                .WithMany(u => u.Courses)
-                .UsingEntity<Dictionary<string, object>>(
-                "AspNetUserCourses",
-                j => j
-                    .HasOne<ApplicationUser>()
-                    .WithMany()
-                    .HasForeignKey("UserId"),
-                j => j
-                    .HasOne<Course>()
-                    .WithMany()
-                    .HasForeignKey("CourseId"));
-
-
             builder.Entity<Course>(entity => entity.Property(x => x.Id).HasMaxLength(85));
             builder.Entity<Article>(entity => entity.Property(x => x.PreviewImageBlob).HasColumnType("mediumblob"));
 

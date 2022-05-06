@@ -17,19 +17,19 @@ namespace BDInSelfLove.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.11");
 
-            modelBuilder.Entity("AspNetUserCourses", b =>
+            modelBuilder.Entity("ApplicationUserCourse", b =>
                 {
-                    b.Property<string>("CourseId")
+                    b.Property<string>("ApplicationUsersId")
                         .HasColumnType("varchar(85)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("CoursesId")
                         .HasColumnType("varchar(85)");
 
-                    b.HasKey("CourseId", "UserId");
+                    b.HasKey("ApplicationUsersId", "CoursesId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CoursesId");
 
-                    b.ToTable("AspNetUserCourses");
+                    b.ToTable("ApplicationUserCourse");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.ApplicationRole", b =>
@@ -314,6 +314,12 @@ namespace BDInSelfLove.Data.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime");
 
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PriceId")
+                        .HasColumnType("text");
+
                     b.Property<string>("ThumbnailLink")
                         .HasColumnType("text");
 
@@ -363,6 +369,47 @@ namespace BDInSelfLove.Data.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("CourseVideos");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Payment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(767)");
+
+                    b.Property<long>("AmountTotal")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("varchar(85)");
+
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CourseId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
@@ -516,17 +563,17 @@ namespace BDInSelfLove.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("AspNetUserCourses", b =>
+            modelBuilder.Entity("ApplicationUserCourse", b =>
                 {
-                    b.HasOne("BDInSelfLove.Data.Models.Course", null)
+                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("ApplicationUsersId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", null)
+                    b.HasOne("BDInSelfLove.Data.Models.Course", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("CoursesId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
@@ -585,6 +632,13 @@ namespace BDInSelfLove.Data.Migrations
                     b.HasOne("BDInSelfLove.Data.Models.Course", null)
                         .WithMany("CourseVideos")
                         .HasForeignKey("CourseId");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Payment", b =>
+                {
+                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
@@ -656,6 +710,8 @@ namespace BDInSelfLove.Data.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Logins");
+
+                    b.Navigation("Payments");
 
                     b.Navigation("Roles");
                 });

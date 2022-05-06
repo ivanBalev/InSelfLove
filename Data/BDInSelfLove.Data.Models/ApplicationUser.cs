@@ -18,6 +18,8 @@ namespace BDInSelfLove.Data.Models
             this.Logins = new HashSet<IdentityUserLogin<string>>();
             this.Appointments = new HashSet<Appointment>();
             this.Comments = new HashSet<Comment>();
+            this.Courses = new HashSet<Course>();
+            this.Payments = new HashSet<Payment>();
         }
 
         public DateTime CreatedOn { get; set; }
@@ -45,5 +47,7 @@ namespace BDInSelfLove.Data.Models
         public virtual ICollection<Comment> Comments { get; set; }
 
         public virtual ICollection<Course> Courses { get; set; }
+
+        public virtual ICollection<Payment> Payments { get; set; }
     }
 }

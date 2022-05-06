@@ -7,16 +7,17 @@
 
     public interface ICourseService
     {
-        Task<int> CreateCourse(string guid, string title);
+        Task<string> CreateCourse(string title, string thumbnailLink, string priceId, long price);
 
         IQueryable<Course> GetAll();
 
-        IQueryable<CourseVideo> GetById(string id);
+        IQueryable<Course> GetById(string id);
 
         Task<int> CreateCourseVideo(string guid, string title, string courseId);
 
         IQueryable<CourseVideo> GetCoursePreviewVideo(string courseVideoId);
 
         IQueryable<CourseVideo> GetCourseVideo(string courseVideoId);
+
     }
 }

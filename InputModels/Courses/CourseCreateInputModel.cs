@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDInSelfLove.Web.InputModels.Courses
 {
     public class CourseCreateInputModel
     {
+        [Required]
         public string Title { get; set; }
+
+        public string ThumbnailLink { get; set; }
+
+        public IFormFile ThumbnailImage { get; set; }
+
+        [Required]
+        public long Price { get; set; }
     }
 }

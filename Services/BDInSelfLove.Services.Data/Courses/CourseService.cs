@@ -11,25 +11,32 @@
     {
         private readonly IDeletableEntityRepository<Course> courseRepository;
         private readonly IDeletableEntityRepository<CourseVideo> courseVideoRepository;
+        private readonly IDeletableEntityRepository<ApplicationUser> userRepository;
 
         public CourseService(
             IDeletableEntityRepository<Course> courseRepository,
-            IDeletableEntityRepository<CourseVideo> courseVideoRepository)
+            IDeletableEntityRepository<CourseVideo> courseVideoRepository,
+            IDeletableEntityRepository<ApplicationUser> userRepository)
         {
             this.courseRepository = courseRepository;
             this.courseVideoRepository = courseVideoRepository;
+            this.userRepository = userRepository;
         }
 
-        public async Task<int> CreateCourse(string guid, string title)
+        public async Task<string> CreateCourse(string title, string thumbnailLink, string priceId, long price)
         {
             var course = new Course
             {
-                Id = guid,
                 Title = title,
+                ThumbnailLink = thumbnailLink,
+                PriceId = priceId,
+                Price = price,
             };
 
             await this.courseRepository.AddAsync(course);
-            return await this.courseRepository.SaveChangesAsync();
+            await this.courseRepository.SaveChangesAsync();
+
+            return course.Id;
         }
 
         public async Task<int> CreateCourseVideo(string guid, string title, string courseId)
@@ -43,7 +50,7 @@
 
             var course = await this.courseRepository.All().FirstOrDefaultAsync(x => x.Id.Equals(courseId));
 
-            if(course.CourseVideos.Count() == 0)
+            if (course.CourseVideos.Count() == 0)
             {
                 courseVideo.IsPreview = true;
             }
@@ -57,9 +64,9 @@
             return this.courseRepository.All();
         }
 
-        public IQueryable<CourseVideo> GetById(string id)
+        public IQueryable<Course> GetById(string id)
         {
-            return this.courseVideoRepository.All().Where(x => x.CourseId.Equals(id));
+            return this.courseRepository.All().Where(c => c.Id.Equals(id)).Include(c => c.CourseVideos);
         }
 
         public IQueryable<CourseVideo> GetCoursePreviewVideo(string courseVideoId)

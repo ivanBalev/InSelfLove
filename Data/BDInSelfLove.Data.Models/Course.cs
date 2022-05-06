@@ -1,5 +1,6 @@
 ﻿namespace BDInSelfLove.Data.Models
 {
+    using System;
     using System.Collections.Generic;
 
     using BDInSelfLove.Data.Common.Models;
@@ -8,15 +9,20 @@
     {
         public Course()
         {
-            this.Users = new HashSet<ApplicationUser>();
+            this.ApplicationUsers = new HashSet<ApplicationUser>();
             this.CourseVideos = new HashSet<CourseVideo>();
+            this.Id = Guid.NewGuid().ToString();
         }
 
         public string Title { get; set; }
 
         public string ThumbnailLink { get; set; }
 
-        public virtual ICollection<ApplicationUser> Users { get; set; }
+        public string PriceId { get; set; }
+
+        public long Price { get; set; }
+
+        public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
 
         public virtual ICollection<CourseVideo> CourseVideos { get; set; }
     }

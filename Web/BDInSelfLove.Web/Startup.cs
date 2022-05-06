@@ -17,6 +17,7 @@
     using BDInSelfLove.Services.Data.Comments;
     using BDInSelfLove.Services.Data.Courses;
     using BDInSelfLove.Services.Data.Recaptcha;
+    using BDInSelfLove.Services.Data.Stripe;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
@@ -35,6 +36,7 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Stripe;
 
     public class Startup
     {
@@ -92,7 +94,7 @@
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Cloudinary setup
-            Account cloudinaryCredentials = new Account(
+            CloudinaryDotNet.Account cloudinaryCredentials = new CloudinaryDotNet.Account(
                 this.configuration["Cloudinary:CloudName"],
                 this.configuration["Cloudinary:ApiKey"],
                 this.configuration["Cloudinary:ApiSecret"]);
@@ -174,6 +176,7 @@
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<IRecaptchaService, RecaptchaService>();
             services.AddTransient<ICourseService, CourseService>();
+            services.AddTransient<IStripeService, StripeService>();
 
             // Development exceptions
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -206,6 +209,8 @@
 
                 new ApplicationDbContextSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
+
+            StripeConfiguration.ApiKey = this.configuration["Stripe:ApiKey"];
 
             if (this.environment.IsDevelopment())
             {
