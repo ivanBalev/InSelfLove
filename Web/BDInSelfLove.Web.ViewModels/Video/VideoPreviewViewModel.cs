@@ -11,7 +11,7 @@
 
         public string Title { get; set; }
 
-        public string Slug => this.Title.ToLower().Replace(' ', '-');
+        public string Slug { get; set; }
 
         public string Url { get; set; }
 

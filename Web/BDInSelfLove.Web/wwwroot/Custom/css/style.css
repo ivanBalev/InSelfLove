@@ -115,10 +115,6 @@
     .navbar .contact {
         margin-left: 0px !important;
     }
-
-    #sidebar {
-        padding-left: 0px;
-    }
 }
 
 @media screen and (max-width: 768px) {

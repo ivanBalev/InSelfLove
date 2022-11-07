@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS0006: Metadata file 'C:\Users\T460s\Desktop\Web Project\InSelfLove_DeploymentVersion\ASP.NET-MVC-Template-master\ASP.NET Core\Web\BDInSelfLove.Web\bin\Debug\net5.0\ref\BDInSelfLove.Web.dll' could not be found
+dotnet_diagnostic.CS0006.severity = warning

@@ -16,7 +16,7 @@ uploadField.onchange = function () {
     };
 
     // Set file name so user knows the upload is successful
-    document.getElementById('#upload-file-info').innerHTML = fileToLoad.name;
+    document.getElementById('upload-file-info').innerHTML = fileToLoad.name;
 
     let fileReader = new FileReader();
     fileReader.onload = function (fileLoadedEvent) {

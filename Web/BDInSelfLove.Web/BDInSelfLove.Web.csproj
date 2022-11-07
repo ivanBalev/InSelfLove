@@ -26,6 +26,7 @@
 		<AdditionalFiles Include="..\..\stylecop.json" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Include="..\..\.editorconfig" Link=".editorconfig" />
 		<None Include="wwwroot\Custom\fonts\montserrat-v15-latin_cyrillic-300.svg">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

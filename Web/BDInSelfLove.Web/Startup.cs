@@ -73,6 +73,7 @@
                     new CultureInfo("en"),
                     new CultureInfo("bg"),
                 };
+
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("bg");
                 options.SupportedCultures = cultures;
                 options.SupportedUICultures = cultures;
@@ -105,22 +106,19 @@
 
             services.AddResponseCaching();
 
-            // External Logins
-            if (this.environment.EnvironmentName.Equals("testing"))
-            {
-                services.AddAuthentication();
-            }
-            else
-            {
-                services.AddAuthentication()
-               .AddGoogle(googleOptions =>
-               {
-                   IConfigurationSection googleAuthNSection =
-                                  this.configuration.GetSection("Authentication:Google");
+            var authBuilder = services.AddAuthentication();
 
-                   googleOptions.ClientId = googleAuthNSection["ClientId"];
-                   googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-               })
+            // External Logins
+            if (!this.environment.EnvironmentName.Equals("testing"))
+            {
+                authBuilder.AddGoogle(googleOptions =>
+                {
+                    IConfigurationSection googleAuthNSection =
+                                   this.configuration.GetSection("Authentication:Google");
+
+                    googleOptions.ClientId = googleAuthNSection["ClientId"];
+                    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+                })
                .AddFacebook(facebookOptions =>
                {
                    facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];

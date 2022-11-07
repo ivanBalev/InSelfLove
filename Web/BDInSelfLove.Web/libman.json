@@ -32,7 +32,7 @@
     },
     {
       "provider": "cdnjs",
-      "library": "popper.js@2.11.2",
+      "library": "popper.js@2.11.6",
       "destination": "wwwroot/lib/popper.js/"
     },
   ]

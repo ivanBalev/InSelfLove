@@ -3,6 +3,7 @@ using AutoMapper;
 using BDInSelfLove.Services.Mapping;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace BDInSelfLove.Web.InputModels.Article
 {
@@ -22,7 +23,7 @@ namespace BDInSelfLove.Web.InputModels.Article
 
         public DateTime CreatedOn { get; set; }
 
-        public string Slug => this.Title.ToLower().Replace(' ', '-');
+        public string Slug => Regex.Replace(this.Title.ToLower().Replace(' ', '-'), "[^a-zа-я0-9-_~]+", string.Empty);
 
         public virtual void CreateMappings(IProfileExpression configuration)
         {

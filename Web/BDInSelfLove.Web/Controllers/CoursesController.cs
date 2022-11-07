@@ -140,11 +140,12 @@
                 ApplicationUserId = userCourseInfo[0].Split(": ")[1],
                 CourseId = userCourseInfo[1].Split(": ")[1],
                 StripeCustomerId = session.CustomerId,
-                AmountTotal = (long)session.AmountTotal / 100, // Just a quirk of the stripe api
+                AmountTotal = (long)session.AmountTotal,
             };
 
             await this.stripeService.StorePayment(payment);
-            //TODO: Send the customer a receipt email
+
+            // TODO: Send the customer a receipt email
         }
 
         [HttpGet]

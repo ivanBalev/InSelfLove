@@ -63,6 +63,8 @@
 
         public async Task<int> StorePayment(Payment payment)
         {
+            payment.AmountTotal = payment.AmountTotal / 100; // Just a quirk of the stripe api
+
             var course = await this.courseRepository.All().Include(c => c.ApplicationUsers).FirstOrDefaultAsync(c => c.Id.Equals(payment.CourseId));
             var user = await this.userRepository.All().Include(u => u.Courses).FirstOrDefaultAsync(u => u.Id.Equals(payment.ApplicationUserId));
 

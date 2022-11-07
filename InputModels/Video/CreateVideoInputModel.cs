@@ -1,6 +1,7 @@
 ﻿using BDInSelfLove.Services.Mapping;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace BDInSelfLove.Web.InputModels.Video
 {
@@ -18,7 +19,7 @@ namespace BDInSelfLove.Web.InputModels.Video
         [Display(Name = "Key words associated with your video's content")]
         public string AssociatedTerms { get; set; }
 
-        public string Slug => this.Title.ToLower().Replace(' ', '-');
+        public string Slug => Regex.Replace(this.Title.ToLower().Replace(' ', '-'), "[^a-zа-я0-9-_~]+", string.Empty);
 
         public DateTime CreatedOn { get; set; }
     }

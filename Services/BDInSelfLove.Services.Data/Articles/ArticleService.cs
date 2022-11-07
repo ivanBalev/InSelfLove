@@ -36,7 +36,7 @@
 
             await this.articleRepository.AddAsync(article);
             await this.articleRepository.SaveChangesAsync();
-            return article.Title.ToLower().Replace(' ', '-');
+            return article.Slug;
         }
 
         public async Task<string> Edit(Article article)
@@ -69,7 +69,7 @@
             this.articleRepository.Update(dbArticle);
             await this.articleRepository.SaveChangesAsync();
 
-            return dbArticle.Title.ToLower().Replace(' ', '-');
+            return dbArticle.Slug;
         }
 
         public async Task<int> Delete(int id)

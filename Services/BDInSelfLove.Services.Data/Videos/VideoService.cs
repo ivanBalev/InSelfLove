@@ -36,7 +36,7 @@
 
             await this.videosRepository.AddAsync(video);
             await this.videosRepository.SaveChangesAsync();
-            return video.Title.ToLower().Replace(' ', '-');
+            return video.Slug;
         }
 
         public async Task<Video> GetBySlug(string slug)
