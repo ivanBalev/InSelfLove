@@ -365,3 +365,6 @@ Web/BDInSelfLove.Web/appsettings.json
 /SandboxTests/inselflove-9fa3d13660d8.json
 Tests/BDInSelfLove.Services.Data.Tests/appsettings.test.json
 Tests/BDInSelfLove.Web.Tests/appsettings.test.json
+Web/BDInSelfLove.Web/Views/Home/Contacts.cshtml
+Services/BDInSelfLove.Services.Data/Recaptcha/RecaptchaService.cs
+Web/BDInSelfLove.Web/wwwroot/Custom/js/recaptcha.js
