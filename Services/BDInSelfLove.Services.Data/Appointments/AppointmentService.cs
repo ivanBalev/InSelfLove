@@ -2,11 +2,13 @@
 {
     using System;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
     public class AppointmentService : IAppointmentService
     {
@@ -25,9 +27,11 @@
                 throw new ArgumentException(nameof(utcDate));
             }
 
-            var sameDayVacantSlots = await this.appointmentRepository.All()
-                .Where(a => DateTime.Compare(utcDate.Date, a.UtcStart.Date) == 0)
-                .Where(a => a.UserId == null).ToListAsync();
+            var sameDaySlos = await this.appointmentRepository.All()
+                .Where(a => DateTime.Compare(utcDate.Date, a.UtcStart.Date) == 0).ToListAsync();
+
+            var sameDayVacantSlots = sameDaySlos
+                .Where(a => a.UserId == null).ToList();
 
             // Delete current vacant slots
             foreach (var slot in sameDayVacantSlots)
@@ -40,7 +44,7 @@
                 return await this.appointmentRepository.SaveChangesAsync();
             }
 
-            // Create new vacant slots and add to DB
+            // Create new vacant slots and add to db
             foreach (var dateTime in utcSlots)
             {
                 var appointmentForDB = new Appointment { UtcStart = dateTime };
@@ -59,8 +63,21 @@
                 throw new ArgumentException();
             }
 
+            // ; character caused JS to crash. Then I found out I wasn't sanitizing what was entering db.
+            // Not cool lol
+            appointmentDescription = Regex.Replace(appointmentDescription, "[*'\",_&#^@;]", string.Empty);
+
             var dbAppointment = await this.appointmentRepository.All()
                  .SingleOrDefaultAsync(a => a.Id == appointmentId);
+
+            var userAppointmentsForDay = await this.appointmentRepository.All()
+                                           .Where(x => x.UserId == userId && DateTime.Compare(dbAppointment.UtcStart.Date, x.UtcStart.Date) == 0).ToListAsync();
+
+            if(userAppointmentsForDay.Count > 1)
+            {
+                throw new ArgumentException(nameof(dbAppointment.UtcStart));
+            }
+
 
             if (dbAppointment == null)
             {
@@ -81,22 +98,9 @@
             return dbAppointment;
         }
 
-        public IQueryable<Appointment> GetAll(string userId, bool userIsAdmin)
+        public IQueryable<Appointment> GetAll(bool userIsAdmin, string userId = "-1")
         {
-            var query = this.appointmentRepository.All();
-            if (!userIsAdmin)
-            {
-                // Take only user's own and upcoming vacant appointments
-                query = query.Where(a => a.UserId == userId ||
-                                        (a.UserId == null && DateTime.Compare(a.UtcStart, DateTime.UtcNow) > 0));
-            }
-            else
-            {
-                // Take only upcoming appointments
-                query = query.Where(a => !(a.UserId == null && DateTime.Compare(a.UtcStart, DateTime.UtcNow) <= 0));
-            }
-
-            return query;
+            return this.appointmentRepository.All();
         }
 
         public async Task<Appointment> GetById(int id)

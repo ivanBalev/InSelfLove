@@ -5,23 +5,33 @@
     using AutoMapper;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
+    using Newtonsoft.Json;
 
     public class AppointmentViewModel : IMapFrom<Appointment>, IHaveCustomMappings
     {
+        [JsonProperty("id")]
         public int Id { get; set; }
 
+        [JsonProperty("start")]
         public DateTime Start { get; set; }
 
-        public bool IsOwn { get; set; }
+        [JsonProperty("title")]
+        public string Title => this.Start.ToString("HH:mm");
 
+        [JsonProperty("isApproved")]
         public bool IsApproved { get; set; }
 
+        [JsonProperty("isUnavailable")]
+        public bool IsUnavailable { get; set; }
+
+        [JsonProperty("userName")]
         public string UserUserName { get; set; }
 
-        public string UserEmail { get; set; }
-
+        // TODO: why do I need userId?
+        [JsonProperty("userId")]
         public string UserId { get; set; }
 
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         public void CreateMappings(IProfileExpression configuration)

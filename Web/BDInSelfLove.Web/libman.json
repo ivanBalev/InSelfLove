@@ -35,5 +35,10 @@
       "library": "popper.js@2.11.6",
       "destination": "wwwroot/lib/popper.js/"
     },
+    //{
+    //  "provider": "jsdelivr",
+    //  "library": "passive-events-support@1.0.33",
+    //  "destination": "wwwroot/lib/passive-events-support"
+    //}
   ]
 }

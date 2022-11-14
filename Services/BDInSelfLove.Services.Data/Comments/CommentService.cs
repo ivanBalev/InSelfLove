@@ -20,6 +20,7 @@
 
         public async Task<int> Create(Comment comment)
         {
+            // TODO: Sanitize content on input as well
             if (string.IsNullOrEmpty(comment.UserId) || string.IsNullOrWhiteSpace(comment.UserId) ||
                 string.IsNullOrEmpty(comment.Content) || string.IsNullOrWhiteSpace(comment.Content) ||
                 (comment.ArticleId == null && comment.VideoId == null))

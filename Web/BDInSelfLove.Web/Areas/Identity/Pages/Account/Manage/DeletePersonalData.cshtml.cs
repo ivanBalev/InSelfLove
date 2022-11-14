@@ -74,7 +74,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
             }
 
             var userAppointmentIds = await this.appointmentService
-                .GetAll(user.Id, false)
+                .GetAll(false, user.Id)
                 .ToArrayAsync();
 
             foreach (var appointment in userAppointmentIds)

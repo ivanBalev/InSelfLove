@@ -1,12 +1,14 @@
-﻿const userIsAdmin = document.getElementById('btnWorkingHours') !== null;
+﻿// TODO: this is stupid. You can do better
+const userIsAdmin = document.getElementById('btnWorkingHours') !== null;
 const culture = document.cookie.match('Culture')?.input.substr(-2) || 'bg';
+// TODO: this is also stupid. Take from cookie
 const userIsLoggedIn = document.querySelector('a[href*="Logout"]') !== null;
 const cultureIsEn = culture === 'en';
 const csfrToken = document.querySelector("#csfrToken input[name=__RequestVerificationToken]").value;
 const shortWeekdayNames = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
 const todayShortName = new Date().toString().split(' ')[0];
 const themeColor = "#92ab95";
-const yellowColor = "#ffc107";
+const yellowColor = "#EEB440";
 const clockwiseArrowSymbol = '\u27F3';
 const plusSymbol = '+';
 const checkmarkSymbol = '\u2713';
@@ -15,7 +17,7 @@ const standardWorkingHours = { start: workingHoursArray[0], end: workingHoursArr
 
 // Alert messages
 const approved = cultureIsEn ? 'Approved' : 'Одобрен';
-const awaitingApproval = cultureIsEn ? 'Awaiting approval' : 'Очаква одобрение';
+const awaitingApproval = cultureIsEn ? 'Awaiting approval' : 'Очаква потвърждение';
 const genericError = cultureIsEn ? 'Error' : 'Грешка';
 const appointmentDescriptionError = cultureIsEn ? 'Please enter more than 30 characters' :
     'Моля, въведи повече от 30 символа';
@@ -41,90 +43,178 @@ const patientIssueDescription = document.getElementById('patientIssueDescription
 
 let currentSelectedDate = '';
 let availableDailySlots = [];
-let selectedAppointment = null;
+let currentAppointment = null;
+// TODO: what if we have no appointments from server?
+const allAppointments = document.querySelector('.dbEvents').textContent
+    .split(';').filter(n => n)
+    .map(x => {
+        return x;
+    })
+    .map(e => JSON.parse(e));
+const availableAppointments = allAppointments?.filter(a => !a.isUnavailable && new Date(a.start) > new Date());
 
+
+// MAIN FUNCTION
 document.addEventListener('DOMContentLoaded', function () {
 
-    let appointments = GetAppointments();
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         selectable: true,
-        initialView: 'timeGridWeek',
-        firstDay: shortWeekdayNames[todayShortName],
+        initialView: 'custom',
+        firstDay: 1, //Monday
         headerToolbar: {
-            start: 'prev', center: 'title', end: 'next'
+            start: 'prev', end: 'next'
         },
         titleFormat: {
             year: '2-digit', month: 'short', day: 'numeric'
         },
         views: {
-            timeGridWeek: {
-                dayHeaderFormat: { weekday: 'short' }
+            custom: {
+                dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric' },
+                type: 'dayGridWeek',
+                duration: { days: 3 },
+                dayCount: 3
             }
         },
         allDaySlot: false,
+        slotLabelInterval: { days: 1 },
         slotMinTime: standardWorkingHours.start + ':00:00',
         slotMaxTime: standardWorkingHours.end + ':00:00',
         height: 'auto',
         locale: culture,
         select: select,
-        events: appointments,
-        eventClick: function (info) {
-            selectedAppointment = info.event.extendedProps;
-            // Appointment available for booking
-            if (info.event.extendedProps.UserUserName === null && !userIsAdmin) {
-                if (!userIsLoggedIn) {
-                    bootstrap.Modal.getOrCreateInstance(loginModal).show();
+        events: allAppointments,
+        eventDisplay: 'block',
+        eventBackgroundColor: 'white',
+        eventBorderColor: '#92ab95',
+        displayEventTime: false,
+        eventClick: function (arg) {
+            const appt = getCurrentAppt(arg);
+            const isOldAvailableAppt = new Date(appt.start) < new Date() && appt.userId == null;
+
+            if (userIsAdmin) {
+                showAppointmentDetails();
+            }
+
+            if (isOldAvailableAppt) {
+                return;
+            }
+
+            if (userIsAdmin) {
+                showAppointmentDetails();
+                return;
+            } else {
+                if (appt.isUnavailable) {
+                    return;
+                }
+                if (appt.userId != 0 && appt.userId != null) {
+                    // own appt
+                    showAppointmentDetails();
                     return;
                 }
 
-                bootstrap.Modal.getOrCreateInstance(bookModal).show();
-                return;
+                if (appt.userId == null && userIsLoggedIn) {
+                    // COLLOSAL SHITE
+                    // TODO: Next time anything date-related needs changing
+                    // date library will need introducing. Under no cinrcumstances
+                    // should one continute working this way.
+
+                    const sameDayAppts = allAppointments.filter(x => {
+                        const xDate = new Date(x.start.toString().split(' ').slice(0, 4).join(' '))
+                            .toString().split(' ').slice(0, 4).join(' ');
+                        const currentApptDate = appt.start.toString().split(' ').slice(0, 4).join(' ');
+                        return xDate == currentApptDate;
+                    });
+
+                    if (sameDayAppts.find(x => x.userId != null)) {
+                        alert('Вече имате запазен час за този ден');
+                        return;
+                    }
+
+                    bootstrap.Modal.getOrCreateInstance(bookModal).show();
+                } else {
+                    bootstrap.Modal.getOrCreateInstance(loginModal).show();
+                }
             }
-            setUpAppointmentDetailsModal();
         },
         eventClassNames: function (arg) {
-            if (!arg.event.extendedProps.IsApproved && arg.event.extendedProps.UserUserName) {
-                // Awaiting approval
-                return ['yellow'];
+            const appt = getCurrentAppt(arg);
+            const isOldAppt = new Date(appt.start) < new Date() && appt.userId == null;
+
+            if (isOldAppt) {
+                // Greyed out: non-clckable
+                return ['gray'];
             }
-            // Approved or available
-            return ['green'];
-        },
-        eventContent: function (arg) {
-            if (!arg.event.extendedProps.IsApproved) {
-                // Available : Awaiting approval
-                return arg.event.extendedProps.UserUserName === null ? plusSymbol : clockwiseArrowSymbol;
+            if (appt.isApproved) {
+                return ['green'];
+            }
+            if (appt.userId !== null && !appt.isApproved) {
+                return ['yellow'];
             } else {
-                // Approved
-                return checkmarkSymbol;
+                if (appt.isUnavailable) {
+                    return ['gray']
+                }
             }
         },
     })
 
     calendar.render();
+
+    if (userIsLoggedIn) {
+        const pendingUpcoming = allAppointments.filter(x => x.userId != null &&
+           !x.isApproved && new Date(x.start) > new Date());
+        console.log(pendingUpcoming);
+        if (pendingUpcoming.length > 0) {
+            calendar.gotoDate(new Date(pendingUpcoming.sort(x => new Date(x.start))[0].start));
+            return;
+        }
+
+        if (!userIsAdmin) {
+            const approvedUpcoming = allAppointments.filter(x => x.isApproved);
+            if (approvedUpcoming.length > 0) {
+                console.log(approvedUpcoming)
+                calendar.gotoDate(new Date(approvedUpcoming.sort(x => new Date(x.start))[0].start));
+                return;
+            }
+        }
+    }
+
+    // Scroll horizontally to first available appointment
+    if (availableAppointments.length > 0) {
+        calendar.gotoDate(new Date(availableAppointments[0].start));
+    }
 });
+// END OF MAIN FUNCTION
+
+function getCurrentAppt(arg) {
+    // Not sure why fullcalendar breaks viewModels up
+    const appt = {
+        ...arg.event.extendedProps,
+        id: arg.event.id,
+        start: arg.event.start,
+    };
+    currentAppointment = appt;
+    return appt;
+}
 
 // Appointment details modal setup
-function setUpAppointmentDetailsModal() {
-    let datelocaleStringArr = new Date(selectedAppointment.Start)
+function showAppointmentDetails() {
+    // Get appointment date and hour
+    let datelocaleStringArr = new Date(currentAppointment.start)
         .toLocaleString(`${culture}-${culture.toUpperCase()}`).split(', ');
-    let day = datelocaleStringArr[0];
-    let startHour = datelocaleStringArr[1];
-    let startHourArr = startHour.split(':');
-    let endHour = (parseInt(startHourArr[0]) + 1) + ':' + startHourArr.slice(1).join(':');
+    let date = datelocaleStringArr[0];
+    let hour = datelocaleStringArr[1];
 
-    detailsModal.querySelector('.date').textContent = day;
-    detailsModal.querySelector('.start').textContent = startHour;
-    detailsModal.querySelector('.end').textContent = endHour;
+    // Populate fields
+    detailsModal.querySelector('.date').textContent = date;
+    detailsModal.querySelector('.start').textContent = hour;
 
-    if (userIsAdmin && selectedAppointment.UserUserName === null) {
+    if (userIsAdmin && currentAppointment.userName === null) {
         // Admin's own unoccupied appointment slot
         hideDetailsInAppointmentDetailsModal();
     } else {
-        detailsModal.querySelector('.username').textContent = selectedAppointment.UserUserName;
-        detailsModal.querySelector('.details').textContent = selectedAppointment.Description;
-        setUpStatusInAppointmentDetailsModal(selectedAppointment.IsApproved);
+        detailsModal.querySelector('.username').textContent = currentAppointment.userName;
+        detailsModal.querySelector('.details').textContent = currentAppointment.description;
+        setUpStatusInAppointmentDetailsModal(currentAppointment.isApproved);
         if (userIsAdmin) {
             // Details fields can only have been with hidden state for admin.
             showDetailsInAppointmentDetailsModal();
@@ -146,7 +236,7 @@ function showDetailsInAppointmentDetailsModal() {
     detailsModal.querySelector('.detailsGroup').style.display = 'block';
     detailsModal.querySelector('.statusGroup').style.display = 'block';
     // Hide approve button if appointment is already approved
-    if (selectedAppointment.IsApproved) {
+    if (currentAppointment.isApproved) {
         detailsModal.querySelector('#approveAppointment').style.display = 'none';
     } else {
         detailsModal.querySelector('#approveAppointment').style.display = 'block';
@@ -172,7 +262,10 @@ function clearDailyAvailability() {
 };
 
 function select(selectInfo) {
-    if (selectInfo.start.getTime() < new Date().getTime() || !userIsAdmin) {
+    const selectedDate = new Date(new Date(selectInfo.start).toString().split(' ').slice(0, 4).join(' '));
+    const currentDate = new Date(new Date().toString().split(' ').slice(0, 4).join(' '));
+
+    if (selectedDate < currentDate || !userIsAdmin) {
         return;
     }
 
@@ -207,33 +300,6 @@ function select(selectInfo) {
     }
 })();
 
-function GetAppointments() {
-    let dbEvents = document.querySelector('.dbEvents').textContent.split(';').filter(n => n).map(e => JSON.parse(e));
-    let appointments = [];
-    let availableAppointmentsPresent = false;
-
-    for (const currentEvent of dbEvents) {
-        if (!availableAppointmentsPresent && currentEvent.UserUserName === null) {
-            availableAppointmentsPresent = true;
-        }
-
-        // Set event start and end in the format requested by fullcalendar
-        // TODO: below is utter shite but works
-        let startDate = new Date(currentEvent.Start);
-        currentEvent.start = startDate;
-        //currentEvent.end = new Date(new Date(currentEvent.start).setHours(startDate.getHours() + 1));
-
-        appointments.push(currentEvent);
-    }
-
-    if (!availableAppointmentsPresent && !userIsAdmin) {
-        // Show 'no available appointments' alert
-        document.querySelector('.alert').style.display = 'block';
-    }
-
-    return appointments;
-}
-
 async function postData(url = '', data = {}, csfrToken) {
     const response = await fetch(url, {
         method: 'POST',
@@ -247,6 +313,8 @@ async function postData(url = '', data = {}, csfrToken) {
 }
 
 submitDailyAvailabilityBtn.addEventListener('click', function () {
+    // TODO: Check for overlapping slots
+
     postData(
         '/api/appointments/Create',
         {
@@ -269,8 +337,8 @@ sendAppointmentBtn.addEventListener('click', function () {
     }
 
     let data = {
-        Id: selectedAppointment.Id,
-        Description: userIssueDescription,
+        id: currentAppointment.id,
+        description: userIssueDescription,
     }
 
     postData(
@@ -286,13 +354,13 @@ sendAppointmentBtn.addEventListener('click', function () {
 
 approveBtn?.addEventListener('click', function () {
     // No point in approving past appointment
-    if (new Date(selectedAppointment.Start) < new Date()) {
+    if (new Date(currentAppointment.start) < new Date()) {
         return;
     }
 
     postData(
         '/api/appointments/Approve',
-        { id: selectedAppointment.Id },
+        { id: currentAppointment.id },
         csfrToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
@@ -305,7 +373,7 @@ approveBtn?.addEventListener('click', function () {
 
 cancelBtn.addEventListener('click', function () {
     // No point in approving past appointment
-    if (new Date(selectedAppointment.Start) < new Date()) {
+    if (new Date(currentAppointment.start) < new Date()) {
         return;
     }
 
@@ -316,7 +384,7 @@ cancelBtn.addEventListener('click', function () {
 confirmCancelBtn.addEventListener('click', function () {
     postData(
         '/api/appointments/Cancel',
-        { id: selectedAppointment.Id },
+        { id: currentAppointment.id },
         csfrToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(cancelConfirmModal).hide();

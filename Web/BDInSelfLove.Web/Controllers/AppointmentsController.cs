@@ -61,11 +61,12 @@
         {
             var timezoneId = await this.TimezoneId();
 
+            // TODO: this needs to be in middleware
             DateTime[] utcTimeSlots = availabilityInput.TimeSlots
                 .Select(ts => TimezoneHelper.ToUTCTime(ts, timezoneId)).ToArray();
 
             var result = await this.appointmentService
-                .Create(utcTimeSlots,  availabilityInput.Date);
+                .Create(utcTimeSlots, availabilityInput.Date);
 
             return this.Ok();
         }
@@ -254,15 +255,75 @@
             bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
 
             var appointments = (await this.appointmentService
-                .GetAll(userId ??= "-1", userIsAdmin)
+                .GetAll(userIsAdmin, userId)
                 .To<AppointmentViewModel>()
                 .ToArrayAsync())
                 .Select(a =>
                 {
                     a.Start = TimezoneHelper.ToLocalTime(a.Start, timezoneId);
-                    return a;
-                }).ToArray();
+                    if (userIsAdmin)
+                    {
+                        return a;
+                    }
+                    else if (userId != null)
+                    {
+                        // user is logged
+                        if (userId != a.UserId && a.UserId != null)
+                        {
+                            // aptmnt is another user's
+                            // Clear data for occupied appointments, but still provide to client to display
+                            return new AppointmentViewModel
+                            {
+                                Start = a.Start,
+                                IsUnavailable = true,
+                            };
+                        }
 
+                        // appt is own
+                        return a;
+                    }
+                    else
+                    {
+                        // user is n/a
+                        if (DateTime.Compare(a.Start, DateTime.UtcNow) <= 0)
+                        {
+                            // Old slot
+                            return new AppointmentViewModel
+                            {
+                                Start = a.Start,
+                                IsUnavailable = true,
+                            };
+                        }
+                        else
+                        {
+                            return new AppointmentViewModel
+                            {
+                                Start = a.Start,
+                                IsUnavailable = a.UserId != null ? true : false ,
+                            };
+                        }
+                    }
+
+                    //// not own appointment      occupied         user not admin
+                    //if ((a.UserId != userId && a.UserId != null && !userIsAdmin) ||
+                    //    DateTime.Compare(a.Start, DateTime.UtcNow) <= 0)
+                    //{
+                    //    a.Start = TimezoneHelper.ToLocalTime(a.Start, timezoneId);
+
+                    //    // Clear data for occupied appointments, but still provide to client to display
+                    //    return new AppointmentViewModel
+                    //    {
+                    //        Start = a.Start,
+                    //        IsUnavailable = true,
+                    //    };
+                    //}
+                    //a.Start = TimezoneHelper.ToLocalTime(a.Start, timezoneId);
+                    //return a;
+                })
+                .OrderBy(x => x.Start)
+                .ToArray();
+
+            // TODO: does grayed out appointment have a title?
             return new AppointmentIndexViewModel
             {
                 WorkdayStart = TimezoneHelper.ToLocalTime(GlobalValues.WorkDayStartUTC, timezoneId),

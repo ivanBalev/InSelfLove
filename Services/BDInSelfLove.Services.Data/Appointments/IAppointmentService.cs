@@ -10,7 +10,7 @@
     {
         Task<int> Create(DateTime[] utcSlots, DateTime utcDate);
 
-        IQueryable<Appointment> GetAll(string userId, bool userIsAdmin);
+        IQueryable<Appointment> GetAll(bool userIsAdmin, string userId);
 
         Task<Appointment> Book(int appointmentId, string appointmentDescription, string userId);
 

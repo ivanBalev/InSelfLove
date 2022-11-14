@@ -495,27 +495,152 @@ lite-youtube {
     cursor: pointer;
 }
 
-.fc-event {
+/*Green - rgb(146,171,149)*/
+/*Yellow - rgb(255, 193, 7)*/
+
+/*.fc-event {
     margin-top: 2px;
     margin-bottom: 3px;
     font-size: 16px;
     background-color: white;
+}*/
+
+.fc-header-toolbar {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
 }
 
-.fc-event:hover {
+.fc-event-time {
+    color: #92ab95;
+}
+
+.fc-daygrid-event {
+    margin: 16px !important;
+}
+
+/*green*/
+.fc-daygrid-event.green {
+    background-color: #92ab95 !important;
+}
+
+.fc-daygrid-event.green:hover {
+    background-color: white !important;
+}
+
+.fc-daygrid-event.green .fc-event-title {
+    color: white !important; 
+}
+
+.fc-daygrid-event.green:hover .fc-event-title {
+    color: black !important; 
+}
+
+.fc-daygrid-event.green:hover .fc-event-title-container {
+    background-color: white !important;
+}
+
+/*yellow*/
+    .fc-daygrid-event.yellow {
+        background-color: #EEB440 !important;
+        border-color: #EEB440 !important;
+    }
+
+.fc-daygrid-event.yellow:hover {
+    background-color: white !important;
+}
+
+.fc-daygrid-event.yellow .fc-event-title {
+    color: black !important; 
+}
+
+.fc-daygrid-event.yellow:hover .fc-event-title {
+    color: black !important; 
+}
+
+.fc-daygrid-event.yellow:hover .fc-event-title-container {
+    background-color: white !important;
+}
+
+/*gray*/
+.fc-daygrid-event.gray {
+    background: repeating-linear-gradient(-45deg,transparent,transparent 5px,#efefef 0,#efefef 10px);
+}
+
+.fc-daygrid-event.gray:hover {
+    cursor: default !important;
+}
+
+.fc-daygrid-event.gray:hover {
+    cursor: default !important;
+}
+
+.fc-daygrid-event.gray .fc-event-title {
+    color: black !important;
+}
+
+.fc-daygrid-event.gray:hover .fc-event-title {
+    color: black !important;
+    cursor: default;
+}
+
+    .fc-daygrid-event.gray:hover .fc-event-title-container {
+        background-color: none;
+        background: repeating-linear-gradient(-45deg,transparent,transparent 5px,#f1f5f9 0,#f1f5f9 10px);
+        cursor: default;
+    }
+
+/*default*/
+.fc-event-title-container {
+    min-height: 50px;
+    position: relative;
     cursor: pointer;
 }
 
-.fc-event-main {
-    padding-top: 10px !important; 
+.fc-event-title-container:hover {
+    background-color: #92ab95;
+}
+
+.fc-event-title-container:hover .fc-event-title {
+    color: white;
+}
+
+.fc-event-title-container.green:hover {
+    background-color: white;
+}
+
+.fc-event-title-container.green:hover .fc-event-title {
+    background-color: white;
+    color: #92ab95;
+}
+
+.fc-event-title {
+    color: black;
+    /*How to center vertically*/
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.fc-event-main-frame {
     text-align: center;
 }
 
-.fc-event.green {
-    border-color: rgb(146,171,149);
+.fc-col-header-cell-cushion:hover {
+    color: black;
+    cursor:default;
 }
 
-.fc-event.green:hover {
+/*
+.fc-daygrid-event-harness {
+    border: thick;
+    border-color: rgb(146,171,149) !important;
+}*/
+/*.fc-event-main {
+    padding-top: 10px !important; 
+    text-align: center;
+}*/
+/*.fc-event.green:hover {
     background-color: rgb(146,171,149);
 }
 
@@ -542,7 +667,7 @@ lite-youtube {
 .fc-event.yellow .fc-event-main:hover {
     color: black;
 }
-
+*/
 .active .page-link {
     background-color: rgb(146,171,149) !important;
     border-color: rgb(146,171,149) !important;
@@ -565,22 +690,17 @@ lite-youtube {
     background: #efefef !important;
 }
 
-.fc-button {
-    background-color: rgb(146,171,149);
-    width: 13.4vw;
-    color: white;
-    background-image: none;
-}
-
 .fc-button:hover {
     color: black !important;
+    background-color: white;
 }
 
 .fc-button {
-    background-color: rgb(146,171,149) !important;
+    width: 13.4vw;
+    background-color: #92ab95 !important;
     color: white !important;
     background-image: none !important;
-    border: 0!important;
+    border: 2px solid #92ab95 !important;
 }
 
 .fc-col-header-cell-cushion {
@@ -590,6 +710,7 @@ lite-youtube {
 
 .calendar-container {
     background-color: white !important;
+    min-height: 400px;
 }
 
 .alert {
@@ -606,6 +727,7 @@ lite-youtube {
 
 #calendar {
     background-color: white;
+    min-height: 400px;
 }
 
 .email-contact h3 {

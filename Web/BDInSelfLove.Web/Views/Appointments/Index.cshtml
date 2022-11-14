@@ -3,6 +3,7 @@
 @using BDInSelfLove.Data.Models
 @using Microsoft.AspNetCore.Identity
 @using System.Text.Json;
+@using Newtonsoft.Json;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
@@ -18,24 +19,27 @@
     var apps = string.Empty;
     foreach (var appointment in Model.Appointments)
     {
-        apps = apps + JsonSerializer.Serialize(appointment) + ";";
+        apps = apps + JsonConvert.SerializeObject(appointment) + ";";
     }
     apps = apps.TrimEnd(';');
 
     <div class="d-none dbEvents">@apps</div>
 }
 
-@*No available appointments notification*@
-@if (!userIsAdmin)
-{
-    <div class="alert alert-success alert-dismissible mb-0" role="alert" style="display:none;">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        <span>@localizer["NoAvailableApppointments"]</span>
-        <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
-    </div>
-}
+<div class="container">
+    @*No available appointments notification*@
+    @if (!userIsAdmin)
+    {
+        <div class="alert alert-success alert-dismissible mb-0" role="alert" style="display:@(Model.Appointments.Length > 0 ? "none" : "block")">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <span>@localizer["NoAvailableApppointments"]</span>
+            <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
+        </div>
+    }
+    <div id="calendar" class="mt-3" workingHours="@Model.WorkdayStart.Hour-@Model.WorkdayEnd.Hour"></div>
+</div>
 
-<div class="container calendar-container mt-4 py-4">
+<div class="">
     @*Modals*@
     @*Login modal*@
     <div id="loginModal" class="modal fade" role="dialog">
@@ -85,11 +89,23 @@
                     <div class="container">
                         <div class="row justify-content-center">
                             @{
+                                var counter = 0;
                                 for (int i = Model.WorkdayStart.Hour; i < Model.WorkdayEnd.Hour; i++)
                                 {
-                                    <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
-                                        @(i.ToString() + ":00")
-                                    </div>
+                                    if (counter % 2 == 0)
+                                    {
+                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                            @(i.ToString() + ":00")
+                                        </div>
+                                        i--;
+                                    }
+                                    else
+                                    {
+                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                            @(i.ToString() + ":30")
+                                        </div>
+                                    }
+                                    counter++;
                                 }
                             }
                         </div>
@@ -119,22 +135,18 @@
                             <label class="text-center text-black-50  border-bottom">@localizer["Start:"]</label>
                             <div class="start"></div>
                         </div>
-                        <div class="form-group col">
-                            <label class="text-center text-black-50  border-bottom">@localizer["End:"]</label>
-                            <div class="end"></div>
-                        </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col-6 usernameGroup">
+                    <div class="row mt-3">
+                        <div class="form-group col usernameGroup">
                             <label class="text-black-50 border-bottom">@localizer["Username:"]</label>
-                            <span class="username"></span>
+                            <span class="username d-block"></span>
                         </div>
-                        <div class="form-group col-6 statusGroup">
+                        <div class="form-group col statusGroup">
                             <label class="text-center text-black-50  border-bottom statusLabel">@localizer["Status:"] </label>
-                            <span class="status font-weight-bold"></span>
+                            <span class="status font-weight-bold d-block"></span>
                         </div>
                     </div>
-                    <div class="form-group detailsGroup mb-0">
+                    <div class="form-group detailsGroup mb-0 mt-3">
                         <label class="text-center text-black-50  border-bottom">@localizer["Details:"] </label>
                         <p class="details mb-0" style="word-wrap: break-word;"></p>
                     </div>
@@ -144,7 +156,7 @@
                     {
                         <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
                     }
-                    <button id="btnDelete" class="btn btn-outline-danger">@localizer["Cancel"]</button>
+                    <button id="btnDelete" class="btn white-btn">@localizer["Cancel"]</button>
                 </div>
             </div>
         </div>
@@ -202,8 +214,6 @@
             <button id="btnWorkingHours" class="green-btn border-0 btn mb-3" data-bs-toggle="modal" data-bs-target="#workingHours">@localizer["Standard Working Hours"]</button>
         </div>
     }
-
-    <div id="calendar" workingHours="@Model.WorkdayStart.Hour-@Model.WorkdayEnd.Hour"></div>
 </div>
 
 @section HeadScripts {
@@ -213,6 +223,51 @@
 @section Scripts {
     <script src="~/Custom/js/fullcalendar.js"></script>
     <script src="~/Custom/js/timezone.js"></script>
+    @*<script>
+        window.passiveSupport = { 
+            debug: true,
+            listeners: [
+                {
+                    element: 'div.fc-daygrid-day-frame.fc-scrollgrid-sync-inner',
+                    event: 'touchmove',
+                },
+                {
+                    element: 'div.fc-event-title-container',
+                    event: 'touchend',
+                },
+                {
+                    element: 'button.btn-close',
+                    event: 'touchend',
+                },
+                {
+                    element: 'div.fc-event-title.fc-sticky',
+                    event: 'touchend',
+                },
+                {
+                    element: 'div#appointmentDetailsModal.modal.fade.show',
+                    event: 'touchend',
+                },
+                {
+                    element: 'button#btnDelete.btn.white-btn',
+                    event: 'touchend',
+                },
+                {
+                    element: 'div#cancelAppointmentConfirm.modal.fade.show',
+                    event: 'touchend',
+                },
+                {
+                    element: 'span.fc-icon.fc-icon-chevron-left',
+                    event: 'touchend',
+                },
+                {
+                    element: 'span.fc-icon.fc-icon-chevron-right',
+                    event: 'touchend',
+                },
+            ]
+        };
+    </script>
+    <script type="text/javascript" src="~/lib/passive-events-support/dist/main.min.js"></script>
+    *@
 }
 
 @section Links {

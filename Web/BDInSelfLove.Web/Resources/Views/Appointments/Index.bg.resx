@@ -133,7 +133,7 @@
     <value>Запази час</value>
   </data>
   <data name="Briefly describe your issue" xml:space="preserve">
-    <value>Разкажете накратко за проблема си</value>
+    <value>Моля, споделете за проблема си</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Откажи</value>
@@ -205,7 +205,7 @@
     <value>Статус:</value>
   </data>
   <data name="This will be shared only with your therapist" xml:space="preserve">
-    <value>Ще бъде споделен единствено с терапевта</value>
+    <value>минимум 30 символа</value>
   </data>
   <data name="Username:" xml:space="preserve">
     <value>Потребител:</value>

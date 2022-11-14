@@ -15,8 +15,13 @@ namespace BDInSelfLove.Web.InputModels.Appointment
 
         public DateTime[] TimeSlots => TimeSlotsString?.Select(ts =>
         {
-            // We work only with 00 minutes currently
-            double hours = double.Parse(ts.Split(':')[0]);
+            var slotArr = ts.Split(':');
+            double hours = double.Parse(slotArr[0]);
+            if (slotArr[1] != "00")
+            {
+                hours += 0.5;
+            }
+
             return Date.AddHours(hours);
         }).ToArray();
     }
