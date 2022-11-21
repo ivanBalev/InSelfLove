@@ -11,6 +11,8 @@ namespace BDInSelfLove.Common
 
         public const string UserRoleName = "User";
 
+
+        // TODO: Save these in some file
         public static DateTime WorkDayStartUTC = DateTime.ParseExact("07:00:00", "HH:mm:ss", CultureInfo.InvariantCulture);
 
         public static DateTime WorkDayEndUTC = DateTime.ParseExact("15:00:00", "HH:mm:ss", CultureInfo.InvariantCulture);

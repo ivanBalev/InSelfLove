@@ -21,6 +21,7 @@
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
+    using BDInSelfLove.Web.Controllers.Helpers;
     using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels;
     using CloudinaryDotNet;
@@ -159,6 +160,7 @@
             services.AddScoped(typeof(IDeletableEntityRepository<>), typeof(EfDeletableEntityRepository<>));
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
+            services.AddScoped<IViewRender, ViewRender>();
 
             services.AddResponseCompression(options =>
             {

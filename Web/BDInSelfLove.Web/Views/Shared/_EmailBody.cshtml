@@ -1,0 +1,34 @@
+﻿@model BDInSelfLove.Web.ViewModels.Appointment.AppointmentEmail;
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer;
+
+@{
+    var bodyText = "";
+
+    // TODO: needs enum || class
+    if (Model.Status.Equals("NewAppointment"))
+    {
+        bodyText = string.Format(localizer["NewAppointment"].Value, Model.Start.ToString("dd MMMM HH:mm"));
+    }
+    else if (Model.Status.Equals("AwaitingApproval"))
+    {
+        bodyText = string.Format(localizer["AwaitingApproval"].Value, Model.Start.ToString("dd MMMM HH:mm"));
+    }
+    else if (Model.Status.Equals("Cancellation"))
+    {
+        bodyText = localizer["Cancellation"].Value;
+    }
+    else if (Model.Status.Equals("Confirmation"))
+    {
+        bodyText = string.Format(localizer["Confirmation"].Value, Model.Start.ToString("dd MMMM HH:mm"));
+    }
+}
+
+<div>Здравейте, </div>
+<div></div>
+<div>
+    <p>
+        @bodyText
+    </p>
+</div>
+<div></div>
+<div>Поздрави!</div>

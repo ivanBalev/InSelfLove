@@ -7,8 +7,7 @@
         [Required]
         public int Id { get; set; }
 
-        [Required]
-        [MinLength(30)]
+        [MaxLength(1000)]
         public string Description { get; set; }
     }
 }

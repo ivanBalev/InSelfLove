@@ -11,6 +11,7 @@
 
 @{
     bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
+    bool usersFirstAppt = !Model.Appointments.Any(x => x.UserId != null);
 }
 
 
@@ -22,15 +23,17 @@
         apps = apps + JsonConvert.SerializeObject(appointment) + ";";
     }
     apps = apps.TrimEnd(';');
+    var availableAppointments = Model.Appointments.Where(x =>
+        !x.IsUnavailable && DateTime.Compare(x.Start.ToUniversalTime(), DateTime.UtcNow) > 0).ToArray();
 
     <div class="d-none dbEvents">@apps</div>
 }
 
 <div class="container">
     @*No available appointments notification*@
-    @if (!userIsAdmin)
+    @if (!userIsAdmin && availableAppointments.Length == 0)
     {
-        <div class="alert alert-success alert-dismissible mb-0" role="alert" style="display:@(Model.Appointments.Length > 0 ? "none" : "block")">
+        <div class="alert alert-success alert-dismissible mb-0" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <span>@localizer["NoAvailableApppointments"]</span>
             <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
@@ -58,17 +61,22 @@
         </div>
     </div>
     @*Book appointment modal*@
+
     <div id="bookAppointmentModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body pb-0">
-                    <div class="modal-header text-center p-0 pb-3">
-                        <h4 class="modal-title w-100">@localizer["Briefly describe your issue"]</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="form-group issueDescription">
-                        <textarea id="patientIssueDescription" rows="3" class="form-control px-2" placeholder="@localizer["This will be shared only with your therapist"]"></textarea>
-                    </div>
+                    @if (usersFirstAppt)
+                    {
+                        <div class="modal-header text-center p-0 pb-3">
+
+                            <h4 class="modal-title w-100">@localizer["Briefly describe your issue"]</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="form-group issueDescription">
+                            <textarea id="patientIssueDescription" rows="4" class="form-control px-2" placeholder="@localizer["This will be shared only with your therapist"]"></textarea>
+                        </div>
+                    }
                 </div>
 
                 <div class="modal-footer justify-content-center pt-0 border-0">
@@ -77,6 +85,8 @@
             </div>
         </div>
     </div>
+
+
     @*Daily availability modal*@
     <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -155,6 +165,8 @@
                     @if (userIsAdmin)
                     {
                         <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
+                        <button type="button" id="occupyAppointment" class="btn white-btn">@localizer["Occupy"]</button>
+
                     }
                     <button id="btnDelete" class="btn white-btn">@localizer["Cancel"]</button>
                 </div>
@@ -224,7 +236,7 @@
     <script src="~/Custom/js/fullcalendar.js"></script>
     <script src="~/Custom/js/timezone.js"></script>
     @*<script>
-        window.passiveSupport = { 
+        window.passiveSupport = {
             debug: true,
             listeners: [
                 {

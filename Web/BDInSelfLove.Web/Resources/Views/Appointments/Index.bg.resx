@@ -133,7 +133,7 @@
     <value>Запази час</value>
   </data>
   <data name="Briefly describe your issue" xml:space="preserve">
-    <value>Моля, споделете за проблема си</value>
+    <value>Моля, опишете накратко</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Откажи</value>
@@ -177,6 +177,9 @@
   <data name="NoAvailableApppointments" xml:space="preserve">
     <value>В календара няма свободни часове. Иди на </value>
   </data>
+  <data name="Occupy" xml:space="preserve">
+    <value>Неналичен</value>
+  </data>
   <data name="Phone number:" xml:space="preserve">
     <value>Телефонен номер:</value>
   </data>
@@ -187,7 +190,7 @@
     <value>Запази</value>
   </data>
   <data name="Send" xml:space="preserve">
-    <value>Изпрати</value>
+    <value>Запази час</value>
   </data>
   <data name="Set Daily Availability" xml:space="preserve">
     <value>Свободни часове за деня</value>
@@ -205,7 +208,7 @@
     <value>Статус:</value>
   </data>
   <data name="This will be shared only with your therapist" xml:space="preserve">
-    <value>минимум 30 символа</value>
+    <value>Kакво искате да обсъдим на консултацията? Или оставете телефонен номер, на който да ви потърся.</value>
   </data>
   <data name="Username:" xml:space="preserve">
     <value>Потребител:</value>

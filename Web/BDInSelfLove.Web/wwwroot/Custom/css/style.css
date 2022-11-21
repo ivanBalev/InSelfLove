@@ -518,6 +518,10 @@ lite-youtube {
     margin: 16px !important;
 }
 
+.fc-daygrid-event:hover {
+    background-color: #92ab95 !important; 
+}
+
 /*green*/
 .fc-daygrid-event.green {
     background-color: #92ab95 !important;
@@ -615,6 +619,7 @@ lite-youtube {
 
 .fc-event-title {
     color: black;
+    font-weight: 600;
     /*How to center vertically*/
     margin: 0;
     position: absolute;
@@ -696,6 +701,8 @@ lite-youtube {
 }
 
 .fc-button {
+    margin-left: 16px !important;
+    margin-right: 16px !important;
     width: 13.4vw;
     background-color: #92ab95 !important;
     color: white !important;
@@ -705,6 +712,7 @@ lite-youtube {
 
 .fc-col-header-cell-cushion {
     color: black;
+    font-weight: 300;
     text-decoration: none;
 }
 

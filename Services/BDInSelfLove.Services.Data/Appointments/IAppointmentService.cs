@@ -20,6 +20,8 @@
 
         Task<Appointment> Approve(int id);
 
+        Task<Appointment> Occupy(int id, string adminId);
+
         Task<int> Cancel(Appointment appointment);
     }
 }

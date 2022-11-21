@@ -14,6 +14,14 @@ const plusSymbol = '+';
 const checkmarkSymbol = '\u2713';
 const workingHoursArray = document.querySelector('#calendar').getAttribute('workingHours').split('-');
 const standardWorkingHours = { start: workingHoursArray[0], end: workingHoursArray[1] };
+let dayCount = 5;
+
+if (
+    navigator.userAgent.match(/Android/i) ||
+    navigator.userAgent.match(/iPhone/i)
+) {
+    dayCount = 3;
+}
 
 // Alert messages
 const approved = cultureIsEn ? 'Approved' : 'Одобрен';
@@ -71,8 +79,8 @@ document.addEventListener('DOMContentLoaded', function () {
             custom: {
                 dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric' },
                 type: 'dayGridWeek',
-                duration: { days: 3 },
-                dayCount: 3
+                duration: { days: dayCount },
+                dayCount: dayCount
             }
         },
         allDaySlot: false,
@@ -122,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const xDate = new Date(x.start.toString().split(' ').slice(0, 4).join(' '))
                             .toString().split(' ').slice(0, 4).join(' ');
                         const currentApptDate = appt.start.toString().split(' ').slice(0, 4).join(' ');
+
                         return xDate == currentApptDate;
                     });
 
@@ -144,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Greyed out: non-clckable
                 return ['gray'];
             }
-            if (appt.isApproved) {
+            if (appt.isApproved && !appt.isUnavailable) {
                 return ['green'];
             }
             if (appt.userId !== null && !appt.isApproved) {
@@ -161,8 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (userIsLoggedIn) {
         const pendingUpcoming = allAppointments.filter(x => x.userId != null &&
-           !x.isApproved && new Date(x.start) > new Date());
-        console.log(pendingUpcoming);
+            !x.isApproved && new Date(x.start) > new Date());
         if (pendingUpcoming.length > 0) {
             calendar.gotoDate(new Date(pendingUpcoming.sort(x => new Date(x.start))[0].start));
             return;
@@ -171,7 +179,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!userIsAdmin) {
             const approvedUpcoming = allAppointments.filter(x => x.isApproved);
             if (approvedUpcoming.length > 0) {
-                console.log(approvedUpcoming)
                 calendar.gotoDate(new Date(approvedUpcoming.sort(x => new Date(x.start))[0].start));
                 return;
             }
@@ -209,6 +216,7 @@ function showAppointmentDetails() {
     detailsModal.querySelector('.start').textContent = hour;
 
     if (userIsAdmin && currentAppointment.userName === null) {
+        document.querySelector('#occupyAppointment').style.display = 'inline-block';
         // Admin's own unoccupied appointment slot
         hideDetailsInAppointmentDetailsModal();
     } else {
@@ -216,6 +224,9 @@ function showAppointmentDetails() {
         detailsModal.querySelector('.details').textContent = currentAppointment.description;
         setUpStatusInAppointmentDetailsModal(currentAppointment.isApproved);
         if (userIsAdmin) {
+            // Appt occupied by admin. Hide 'Occupy' btn
+            document.querySelector('#occupyAppointment').style.display = 'none';
+
             // Details fields can only have been with hidden state for admin.
             showDetailsInAppointmentDetailsModal();
         }
@@ -330,11 +341,17 @@ submitDailyAvailabilityBtn.addEventListener('click', function () {
 
 sendAppointmentBtn.addEventListener('click', function () {
     // Validate description
-    let userIssueDescription = bookModal.querySelector('#patientIssueDescription').value.trim();
-    if (userIssueDescription == '' || userIssueDescription.length < 30) {
-        alert(appointmentDescriptionError)
-        return;
+
+    let issueDescriptionField = bookModal.querySelector('#patientIssueDescription');
+    let userIssueDescription = "";
+    if (issueDescriptionField) {
+        userIssueDescription = issueDescriptionField.value.trim();
+        if (userIssueDescription.length < 10) {
+            alert('Моля, опишете накратко или въведете телефонен номер');
+            return;
+        }
     }
+
 
     let data = {
         id: currentAppointment.id,
@@ -347,7 +364,6 @@ sendAppointmentBtn.addEventListener('click', function () {
         csfrToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(bookModal).hide();
-            patientIssueDescription.value = '';
             window.location.reload();
         });
 });
@@ -411,3 +427,17 @@ workingHoursSubmitBtn.addEventListener('click', function () {
             alert(genericError);
         });
 });
+
+document.querySelector('#occupyAppointment')?.addEventListener('click', function () {
+    postData(
+        '/api/appointments/Occupy',
+        { id: currentAppointment.id },
+        csfrToken)
+        .then(() => {
+            bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
+            window.location.reload();
+        })
+        .catch(() => {
+            alert(genericError);
+        });
+})

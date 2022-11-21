@@ -56,8 +56,7 @@
 
         public async Task<Appointment> Book(int appointmentId, string appointmentDescription, string userId)
         {
-            if (appointmentId < 1 || string.IsNullOrEmpty(appointmentDescription) ||
-                string.IsNullOrWhiteSpace(appointmentDescription) || string.IsNullOrEmpty(userId) ||
+            if (appointmentId < 1 || string.IsNullOrEmpty(userId) ||
                 string.IsNullOrWhiteSpace(userId))
             {
                 throw new ArgumentException();
@@ -73,11 +72,10 @@
             var userAppointmentsForDay = await this.appointmentRepository.All()
                                            .Where(x => x.UserId == userId && DateTime.Compare(dbAppointment.UtcStart.Date, x.UtcStart.Date) == 0).ToListAsync();
 
-            if(userAppointmentsForDay.Count > 1)
+            if (userAppointmentsForDay.Count > 0)
             {
                 throw new ArgumentException(nameof(dbAppointment.UtcStart));
             }
-
 
             if (dbAppointment == null)
             {
@@ -106,6 +104,7 @@
         public async Task<Appointment> GetById(int id)
         {
             return await this.appointmentRepository.All()
+                .Include(x => x.User)
                 .SingleOrDefaultAsync(appointment => appointment.Id == id);
         }
 
@@ -148,6 +147,22 @@
             appointment.IsApproved = false;
             this.appointmentRepository.Update(appointment);
             return await this.appointmentRepository.SaveChangesAsync();
+        }
+
+        public async Task<Appointment> Occupy(int id, string adminId)
+        {
+            var appointment = await this.appointmentRepository.All().SingleOrDefaultAsync(a => a.Id == id);
+
+            if (appointment == null)
+            {
+                throw new ArgumentNullException(nameof(appointment));
+            }
+
+            appointment.UserId = adminId;
+            appointment.IsApproved = true;
+            this.appointmentRepository.Update(appointment);
+            await this.appointmentRepository.SaveChangesAsync();
+            return appointment;
         }
     }
 }
