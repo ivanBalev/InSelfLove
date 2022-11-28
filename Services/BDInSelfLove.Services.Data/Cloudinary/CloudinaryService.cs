@@ -41,8 +41,8 @@
                     UniqueFilename = false,
                     //EagerTransforms = new List<Transformation>()
                     //{
-                    //    new EagerTransformation().Width(400).Height(400)
-                    //      .Crop("crop").Gravity("face"),
+                    //    new EagerTransformation().AspectRatio(16, 9)
+                    //      .Crop("crop")/*.Gravity("face")*/,
                     //    new Transformation().Width(660).Height(400)
                     //      .Crop("pad").Background("blue"),
                     //},
@@ -57,6 +57,8 @@
                 return null;
             }
 
+            // TODO: store img url for preview img and data for full article img
+            // single quality for preview img.
             return uploadResult?.SecureUrl.AbsoluteUri;
         }
 

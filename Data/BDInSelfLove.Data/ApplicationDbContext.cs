@@ -114,7 +114,6 @@
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Course>(entity => entity.Property(x => x.Id).HasMaxLength(85));
-            builder.Entity<Article>(entity => entity.Property(x => x.PreviewImageBlob).HasColumnType("mediumblob"));
 
             builder.Entity<ApplicationUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));
             builder.Entity<ApplicationRole>(entity => entity.Property(m => m.Id).HasMaxLength(85));

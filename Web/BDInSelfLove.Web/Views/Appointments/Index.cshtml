@@ -33,7 +33,7 @@
     @*No available appointments notification*@
     @if (!userIsAdmin && availableAppointments.Length == 0)
     {
-        <div class="alert alert-success alert-dismissible mb-0" role="alert">
+        <div class="alert alert-dismissible bg-white mb-0" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <span>@localizer["NoAvailableApppointments"]</span>
             <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
@@ -230,6 +230,8 @@
 
 @section HeadScripts {
     <script src="~/lib/fullcalendar/main.js"></script>
+    <link rel="stylesheet" href="~/Custom/css/calendar.css">
+
 }
 
 @section Scripts {

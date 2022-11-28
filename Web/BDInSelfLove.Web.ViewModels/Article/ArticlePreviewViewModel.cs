@@ -42,8 +42,8 @@
             }
         }
 
-        public string ImageUrl { get; set; }
+        public string PreviewImageUrl { get; set; }
 
-        public byte[] PreviewImageBlob { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

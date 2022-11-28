@@ -22,12 +22,9 @@
     }
 
     .article-date {
-        font-size: 12px !important;
+        font-size: 16px !important;
     }
 
-    #about p {
-        font-size: 13px !important;
-    }
 
     #about .profile-image-wrapper {
         padding-right: 17px !important;
@@ -127,19 +124,21 @@
     }
 }
 
-@media screen and (max-width: 600px) {
-    /*gypsy fix*/
-    html {
-        overflow-y: scroll;
-        overflow-x: hidden;
+@media screen and (max-width: 650px) {
+    .showcase-wrapper h1 {
+        font-size: 16px !important;
     }
+
 }
 
-@media screen and (max-width: 220px) {
-    /*reverse-gypsy fix*/
-    html {
-        overflow-y: scroll;
-        overflow-x: scroll;
+@media screen and (max-width: 500px) {
+
+    .showcase-wrapper h2 {
+        font-size: 24px !important;
+    }
+
+    #showcase {
+        height: 75vh !important;
     }
 }
 
@@ -150,10 +149,12 @@
 body {
     margin-top: 55px !important;
     background-color: rgb(239,239,239) !important;
+
 }
 
 html, body {
     font-family: 'PT Sans Caption', sans-serif;
+    height: 100%;
 }
 
 #single-article .card-title {
@@ -162,7 +163,7 @@ html, body {
 }
 
 #single-article span {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 #single-article .card-img-top {
@@ -214,7 +215,7 @@ form .form-group {
 
 .navbar .contact .nav-link {
     background-color: rgb(146,171,149);
-    color: white;
+    color: black;
     border-radius: 5px;
     /*gypsy fix(padding-right addded to all nav-link elements already, forcing btn to have too much padding)*/
     padding-left: 0.5rem;
@@ -222,7 +223,7 @@ form .form-group {
 }
 
 .navbar .contact .nav-link:hover {
-    color: black;
+    color: white;
 }
 
 .nav-item.dropdown {
@@ -236,7 +237,7 @@ form .form-group {
 
 #showcase {
     position: relative;
-    background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg");
+    background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/fl_progressive/v1620506959/aididie6_ke76hz.jpg");
     height: 45vh;
     background-repeat: no-repeat;
     background-size: cover;
@@ -269,7 +270,7 @@ form .form-group {
 }
 
 #slimShowcase {
-    background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/v1620506959/aididie6_ke76hz.jpg");
+    background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/fl_progressive/v1620506959/aididie6_ke76hz.jpg");
     height: 20vh;
     background-repeat: no-repeat;
     background-size: cover;
@@ -366,6 +367,9 @@ form .form-group {
     aspect-ratio: 16 / 9;
 }
 
+.container#video-carousel {
+}
+
 #video-carousel .carousel-control-prev,
 #video-carousel .carousel-control-next {
     height: 50%;
@@ -398,10 +402,31 @@ lite-youtube {
 
 .hide-subcomments-btn {
     display: none;
+    font-size: 16px;
+}
+
+.save-edit-btn {
+    font-size: 16px;
+}
+
+.addCommentBtn {
+    font-size: 16px;
+}
+
+.reply-button {
+    font-size: 16px;
+}
+
+.showSubcomments {
+    font-size: 16px;
+}
+
+#load-comments-btn {
+    font-size: 16px;
 }
 
 #main-footer {
-    color: rgb(146,171,149);
+    color: black;
 }
 
 #explore-videos-section h1 {
@@ -437,6 +462,18 @@ lite-youtube {
 #loginPage a {
     color: black !important;
     text-decoration: none !important;
+}
+
+#loginPage #frgtPswdSpan {
+    margin-right: 30px !important;
+}
+
+#frgtPswdSpan a {
+    font-size: 16px;
+}
+
+#registerSpan a {
+    font-size: 16px;
 }
 
 #loginPage .checkbox {
@@ -623,6 +660,7 @@ lite-youtube {
     /*How to center vertically*/
     margin: 0;
     position: absolute;
+    font-size: 16px;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -780,7 +818,7 @@ lite-youtube {
 }
 
 .about-preview-text {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .about-preview-footer {
@@ -909,12 +947,17 @@ lite-youtube {
 }
 
 .article-preview .card-text {
-    font-size: 14px;
+    font-size: 16px;
     min-height: 150px;
 }
 
 .article-preview .card-img-top {
     object-fit: cover;
+}
+
+.article-preview small {
+    font-size: 16px !important;
+    font-weight: 100;
 }
 
 p {
@@ -974,13 +1017,13 @@ p {
 /*FullCalendar*/
 .green-btn {
     background-color: rgb(146,171,149);
-    color: white;
+    color: black;
     border-radius: 5px;
     text-decoration: none;
 }
 
 .green-btn:hover {
-    color: black;
+    color: white;
 }
 
 #bookAppointmentModal label {
@@ -989,7 +1032,7 @@ p {
 }
 
 #bookAppointmentModal #patientIssueDescription {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .calendar-container .modal-title {

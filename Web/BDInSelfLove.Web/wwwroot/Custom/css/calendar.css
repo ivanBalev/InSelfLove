@@ -1,0 +1,42 @@
+﻿/*Showcase fix for iOS - fixed background unsupported */
+@supports (-webkit-touch-callout: none) {
+    html, body {
+        background-attachment: scroll !important;
+    }
+}
+
+@media screen and (max-width: 500px) {
+
+    html, body {
+        background-attachment: scroll !important;
+    }
+}
+
+main {
+    background: rgba(45,70,67, 0.75);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+html, body {
+    position: relative;
+    background: url("https://res.cloudinary.com/dzcajpx0y/image/upload/fl_progressive/v1620506959/aididie6_ke76hz.jpg");
+    height: 45vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;
+    height: 100%;
+}
+
+footer {
+    background: rgba(45,70,67, 0.75);
+    top: 0;
+    left: 0;
+}
+
+footer p {
+    color: white;
+}

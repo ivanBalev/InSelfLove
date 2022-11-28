@@ -12,13 +12,13 @@ namespace BDInSelfLove.Web.InputModels.Article
 
         public byte[] PreviewImageBlob { get; set; }
 
-        public override void CreateMappings(IProfileExpression configuration)
-        {
-            // Convert preview img from base64 to byte[].
-            configuration.CreateMap<ArticleEditInputModel, Data.Models.Article>().ForMember(
-                m => m.PreviewImageBlob,
-                opt => opt.MapFrom(x => Convert.FromBase64String(x.PreviewImage
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)[1])));
-        }
+        //public override void CreateMappings(IProfileExpression configuration)
+        //{
+        //    // Convert preview img from base64 to byte[].
+        //    configuration.CreateMap<ArticleEditInputModel, Data.Models.Article>().ForMember(
+        //        m => m.PreviewImageBlob,
+        //        opt => opt.MapFrom(x => Convert.FromBase64String(x.PreviewImage
+        //        .Split(',', StringSplitOptions.RemoveEmptyEntries)[1])));
+        //}
     }
 }

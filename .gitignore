@@ -368,3 +368,7 @@ Tests/BDInSelfLove.Web.Tests/appsettings.test.json
 Web/BDInSelfLove.Web/Views/Home/Contacts.cshtml
 Services/BDInSelfLove.Services.Data/Recaptcha/RecaptchaService.cs
 Web/BDInSelfLove.Web/wwwroot/Custom/js/recaptcha.js
+Web/BDInSelfLove.Web/wwwroot/Custom/js/recaptcha.js
+Web/BDInSelfLove.Web/wwwroot/Custom/js/recaptcha.js
+Web/BDInSelfLove.Web/Views/Home/Contacts.cshtml
+Services/BDInSelfLove.Services.Data/Recaptcha/RecaptchaService.cs

@@ -241,6 +241,12 @@
                 inputModel.ImageUrl = await this.cloudinaryService
                 .UploadPicture(inputModel.Image, inputModel.Image.FileName.Split('.')[0]);
             }
+
+            if (inputModel.PreviewImage != null)
+            {
+                inputModel.PreviewImageUrl = await this.cloudinaryService
+                .UploadPicture(inputModel.PreviewImage, inputModel.PreviewImage.FileName.Split('.')[0]);
+            }
         }
 
         private async Task<string> GetAsync(string uri)

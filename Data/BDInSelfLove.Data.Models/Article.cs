@@ -24,7 +24,7 @@
         [Required]
         public string ImageUrl { get; set; }
 
-        public byte[] PreviewImageBlob { get; set; }
+        public string PreviewImageUrl { get; set; }
 
         public string UserId { get; set; }
 

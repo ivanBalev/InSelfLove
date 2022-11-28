@@ -65,27 +65,29 @@
                             <input asp-for="Input.Password" class="form-control" />
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
-                        <div class="form-group mb-0 d-flex justify-content-between">
+                        <div class="form-group mb-0 justify-content-between">
                             <div class="checkbox d-inline">
                                 <label asp-for="Input.RememberMe">
                                     <input asp-for="Input.RememberMe" />
                                     <span>@localizer["Remember me?"]</span>
                                 </label>
                             </div>
-                            <span>
-                                <span> <a class="ml-2 btn white-btn btn-sm" id="forgot-password" asp-page="./ForgotPassword">@localizer["Forgotten password?"]</a>  </span>
-                                <span class="ml-2 btn white-btn btn-sm"> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@localizer["Register"]</a>  </span>
-                            </span>
+                            <div class="my-4">
+                                <span>
+                                    <span id="frgtPswdSpan" class="mr-5"> <a class="ml-2 btn white-btn btn-sm" id="forgot-password" asp-page="./ForgotPassword">@localizer["Forgotten password?"]</a>  </span>
+                                    <span id="registerSpan" class="ml-5 btn white-btn btn-sm"> <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@localizer["Register"]</a>  </span>
+                                </span>
+                            </div>
+
                         </div>
                         <div class="form-group">
-                            <button type="submit" class="btn green-btn mt-3" id="login-btn">@localizer["Log in"]</button>
+                            <button type="submit" class="btn green-btn" id="login-btn">@localizer["Log in"]</button>
                         </div>
                     </form>
                 </section>
 
             </div>
             <div class="col-md-6 col-md-offset-2">
-
             </div>
         </div>
     </div>

@@ -59,7 +59,8 @@
             dbArticle.Title = article.Title;
             dbArticle.Content = article.Content;
             dbArticle.ImageUrl = article.ImageUrl;
-            dbArticle.PreviewImageBlob = article.PreviewImageBlob;
+            dbArticle.PreviewImageUrl = article.PreviewImageUrl
+                ;
             dbArticle.Slug = article.Slug;
             if (article.CreatedOn.Year > 1000)
             {
