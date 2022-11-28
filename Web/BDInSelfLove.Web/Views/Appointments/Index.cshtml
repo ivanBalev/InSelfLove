@@ -10,6 +10,7 @@
 
 
 @{
+    ViewData["Title"] = @localizer["Запази час"].Value;
     bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
     bool usersFirstAppt = !Model.Appointments.Any(x => x.UserId != null);
 }

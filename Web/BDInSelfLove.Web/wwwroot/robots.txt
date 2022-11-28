@@ -1,3 +1,6 @@
 User-agent: *
-Allow: /
-Sitemap: https://inselflove.com/sitemap.xml
+
+Disallow: /Identity/
+Disallow: /Search
+
+Sitemap: https://www.inselflove.com/sitemap.xml
