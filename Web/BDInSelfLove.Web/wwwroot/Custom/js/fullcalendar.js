@@ -37,6 +37,13 @@ const approveBtn = document.getElementById('approveAppointment');
 const cancelBtn = document.getElementById('btnDelete');
 const confirmCancelBtn = document.getElementsByClassName('confirmCancelAppointment')[0];
 const workingHoursSubmitBtn = document.getElementById('workingHoursSubmitBtn');
+const onSiteDetailsMsg = document.querySelector('#onSiteDetailsMsg');
+const onSiteDetailsToggle = document.querySelector('#onSiteDetailsToggle');
+const onsiteDetailsCheckbox = onSiteDetailsToggle?.querySelector('.toggle-checkbox');
+
+const onSiteBookMsg = document.querySelector('#onSiteBookMsg');
+const onSiteBookToggle = document.querySelector('#onSiteBookToggle');
+const onsiteBookCheckbox = onSiteBookToggle?.querySelector('.toggle-checkbox');
 
 // Modals
 const bookModal = document.getElementById('bookAppointmentModal');
@@ -101,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (userIsAdmin) {
                 showAppointmentDetails();
+                return;
             }
 
             if (isOldAvailableAppt) {
@@ -137,6 +145,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (sameDayAppts.find(x => x.userId != null)) {
                         alert('Вече имате запазен час за този ден');
                         return;
+                    }
+
+                    // Set up onsite
+                    if (appt.canBeOnSite) {
+                        onSiteBookMsg.style.display = 'none';
+                        onSiteBookToggle.style.display = 'block';
+                        onsiteBookCheckbox.checked = false;
+                    } else {
+                        onSiteBookToggle.style.display = 'none';
+                        onSiteBookMsg.style.display = 'block';
+                        onSiteBookMsg.textContent = 'Онлайн сесия';
                     }
 
                     bootstrap.Modal.getOrCreateInstance(bookModal).show();
@@ -211,9 +230,38 @@ function showAppointmentDetails() {
     let date = datelocaleStringArr[0];
     let hour = datelocaleStringArr[1];
 
-    // Populate fields
+    // Populate date & time fields
     detailsModal.querySelector('.date').textContent = date;
     detailsModal.querySelector('.start').textContent = hour;
+
+    // Set up onsite slider
+    if (userIsAdmin) {
+        if (currentAppointment.userId !== null) {
+            onSiteDetailsToggle.style.display = 'none';
+            onSiteDetailsMsg.style.display = 'block';
+
+            if (currentAppointment.isOnSite) {
+                onSiteDetailsMsg.textContent = 'Сесия на живо';
+            } else {
+                onSiteDetailsMsg.textContent = 'Онлайн сесия';
+            }
+        }
+        else {
+            onSiteDetailsToggle.style.display = 'block';
+            onSiteDetailsMsg.style.display = 'none';
+            if (currentAppointment.canBeOnSite) {
+                onsiteDetailsCheckbox.checked = true;
+            } else {
+                onsiteDetailsCheckbox.checked = false;
+            }
+        }
+    } else {
+        if (currentAppointment.isOnSite) {
+            onSiteDetailsMsg.textContent = 'Сесия на живо';
+        } else {
+            onSiteDetailsMsg.textContent = 'Онлайн сесия';
+        }
+    }
 
     if (userIsAdmin && currentAppointment.userName === null) {
         document.querySelector('#occupyAppointment').style.display = 'inline-block';
@@ -341,9 +389,10 @@ submitDailyAvailabilityBtn.addEventListener('click', function () {
 
 sendAppointmentBtn.addEventListener('click', function () {
     // Validate description
-
     let issueDescriptionField = bookModal.querySelector('#patientIssueDescription');
     let userIssueDescription = "";
+
+    // We don't have this field if user has already had an appointment
     if (issueDescriptionField) {
         userIssueDescription = issueDescriptionField.value.trim();
         if (userIssueDescription.length < 10) {
@@ -352,10 +401,10 @@ sendAppointmentBtn.addEventListener('click', function () {
         }
     }
 
-
     let data = {
         id: currentAppointment.id,
         description: userIssueDescription,
+        isOnSite: onsiteBookCheckbox.checked,
     }
 
     postData(
@@ -441,3 +490,44 @@ document.querySelector('#occupyAppointment')?.addEventListener('click', function
             alert(genericError);
         });
 })
+
+// Accessible & visible only to admin (SSR cshtml)
+onsiteDetailsCheckbox?.addEventListener('change', function () {
+    if (currentAppointment.userId !== null) {
+        // Appt is either taken or awaiting approval -> cannot change appt location at this point
+        alert('Часът вече е зает.')
+        return;
+    }
+
+    postData(
+        '/api/appointments/SetOnSite',
+        { id: currentAppointment.id, canBeOnSite: onsiteDetailsCheckbox.checked },
+        csfrToken)
+        .then(() => {
+            bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
+            window.location.reload();
+        })
+        .catch(() => {
+            alert(genericError);
+        });
+})
+
+// For admin
+//                          Available apptmnt -> bookApptmntModal
+//                          Scenario 1 - Apptmnt is available
+//                              btn toggle only changes state in db
+//                          Taken apptmnt -> apptmntDetailsModal
+//                          Scenario 2 - Apptmnt is pending approval
+//                              btn switches on -> email we can do it in person if client wants
+//                              btn switches off -> email to tell client we cannot do it in person
+//                          Scenario 3 - Apptmnt is approved
+//                              same as scenario 2
+
+// For user
+//                          Scenario 1 - Available -> bookAppointment Modal
+//                              btn is off but can be switched on(or vice versa) if admin has allowed -> send admin email in both cases
+//                              if admin hasn't allowed, btn is greyed out + msg this apptmnt is only online
+//                          Scenario 2 - Pending -> Apptmnt details modal
+//                              user can still switch btn state -> send email to admin
+//                          Scenario 3 - Approved -> Apptmnt details modal
+//                              user can still switch state -> will put apptmnt back into 'awaiting approval' mode

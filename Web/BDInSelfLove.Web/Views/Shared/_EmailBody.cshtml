@@ -29,6 +29,15 @@
     <p>
         @bodyText
     </p>
+    @if (Model.Status.Equals("NewAppointment") || Model.Status.Equals("AwaitingApproval"))
+    {
+        <p>
+           <b>@(Model.IsOnSite ? "Сесия на живо" : "Онлайн сесия")</b>
+        </p>
+        <p>
+            Описание: @Model.Description
+        </p>
+    }
 </div>
 <div></div>
 <div>Поздрави!</div>

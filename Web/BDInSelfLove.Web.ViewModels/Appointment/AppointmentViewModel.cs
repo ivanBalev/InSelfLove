@@ -24,10 +24,15 @@
         [JsonProperty("isUnavailable")]
         public bool IsUnavailable { get; set; }
 
+        [JsonProperty("isOnSite")]
+        public bool IsOnSite { get; set; }
+
+        [JsonProperty("canBeOnSite")]
+        public bool CanBeOnSite { get; set; }
+
         [JsonProperty("userName")]
         public string UserUserName { get; set; }
 
-        // TODO: why do I need userId?
         [JsonProperty("userId")]
         public string UserId { get; set; }
 

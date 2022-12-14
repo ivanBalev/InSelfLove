@@ -8,7 +8,6 @@
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
     public class AppointmentService : IAppointmentService
     {
@@ -54,7 +53,7 @@
             return await this.appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task<Appointment> Book(int appointmentId, string appointmentDescription, string userId)
+        public async Task<Appointment> Book(int appointmentId, string appointmentDescription, bool isOnSite, string userId)
         {
             if (appointmentId < 1 || string.IsNullOrEmpty(userId) ||
                 string.IsNullOrWhiteSpace(userId))
@@ -62,8 +61,6 @@
                 throw new ArgumentException();
             }
 
-            // ; character caused JS to crash. Then I found out I wasn't sanitizing what was entering db.
-            // Not cool lol
             appointmentDescription = Regex.Replace(appointmentDescription, "[*'\",_&#^@;]", string.Empty);
 
             var dbAppointment = await this.appointmentRepository.All()
@@ -82,7 +79,7 @@
                 throw new ArgumentException(nameof(appointmentId));
             }
 
-            if (dbAppointment.UserId != null)
+            if (dbAppointment.UserId != null || (dbAppointment.CanBeOnSite == false && isOnSite == true))
             {
                 throw new UnauthorizedAccessException(nameof(dbAppointment));
             }
@@ -90,6 +87,7 @@
             // Update
             dbAppointment.Description = appointmentDescription;
             dbAppointment.UserId = userId;
+            dbAppointment.IsOnSite = isOnSite;
             this.appointmentRepository.Update(dbAppointment);
             await this.appointmentRepository.SaveChangesAsync();
 
@@ -133,6 +131,23 @@
             this.appointmentRepository.Update(appointment);
             await this.appointmentRepository.SaveChangesAsync();
             return appointment;
+        }
+
+        public async Task<Appointment> SetOnSite(int apptId, bool canBeOnSite)
+        {
+            var appt = await this.appointmentRepository.All().FirstOrDefaultAsync(x => x.Id == apptId);
+
+            if (appt == null)
+            {
+                throw new ArgumentNullException(nameof(appt));
+            }
+
+            appt.CanBeOnSite = canBeOnSite;
+
+            this.appointmentRepository.Update(appt);
+            await this.appointmentRepository.SaveChangesAsync();
+
+            return appt;
         }
 
         public async Task<int> Cancel(Appointment appointment)

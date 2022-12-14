@@ -12,7 +12,7 @@
 
         IQueryable<Appointment> GetAll(bool userIsAdmin, string userId);
 
-        Task<Appointment> Book(int appointmentId, string appointmentDescription, string userId);
+        Task<Appointment> Book(int appointmentId, string appointmentDescription, bool isOnSite, string userId);
 
         Task<Appointment> GetById(int id);
 
@@ -21,6 +21,8 @@
         Task<Appointment> Approve(int id);
 
         Task<Appointment> Occupy(int id, string adminId);
+
+        Task<Appointment> SetOnSite(int apptId, bool canBeOnSite);
 
         Task<int> Cancel(Appointment appointment);
     }

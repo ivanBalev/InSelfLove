@@ -3,14 +3,16 @@ using System;
 using BDInSelfLove.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BDInSelfLove.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221128183559_Appointments-IsOnSite-Property")]
+    partial class AppointmentsIsOnSiteProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -166,9 +168,6 @@ namespace BDInSelfLove.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    b.Property<bool>("CanBeOnSite")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime");

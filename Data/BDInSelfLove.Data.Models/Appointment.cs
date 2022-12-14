@@ -20,5 +20,9 @@
         public string UserId { get; set; }
 
         public bool IsApproved { get; set; }
+
+        public bool CanBeOnSite { get; set; }
+
+        public bool IsOnSite { get; set; }
     }
 }

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
 
     using BDInSelfLove.Common;
@@ -100,7 +99,7 @@
             }
 
             var user = await this.userManager.GetUserAsync(this.User);
-            var appointment = await this.appointmentService.Book(inputModel.Id, inputModel.Description, user.Id);
+            var appointment = await this.appointmentService.Book(inputModel.Id, inputModel.Description, inputModel.IsOnSite, user.Id);
             await this.SendEmail(appointment, false, "NewAppointment");
             await this.SendEmail(appointment, true, "AwaitingApproval");
             return this.Ok();
@@ -122,6 +121,15 @@
         public async Task<ActionResult> Occupy([FromBody] AppointmentManipulateModel input)
         {
             var appt = await this.appointmentService.Occupy(input.Id, (await this.GetUser(true)).Id);
+            return this.Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Route("SetOnSite")]
+        public async Task<ActionResult> SetOnSite([FromBody] AppointmentManipulateModel input)
+        {
+            await this.appointmentService.SetOnSite(input.Id, input.CanBeOnSite);
             return this.Ok();
         }
 
@@ -211,6 +219,8 @@
             {
                 Start = TimezoneHelper.ToLocalTime(apptmnt.UtcStart, recipientTimezoneId),
                 Status = status,
+                Description = apptmnt.Description,
+                IsOnSite = apptmnt.IsOnSite,
             };
 
             // Compose email
@@ -249,6 +259,7 @@
             a.Start = TimezoneHelper.ToLocalTime(a.Start, timezoneId);
             if (userIsAdmin)
             {
+                // Appt occupied by unregistered user over phone/fb
                 if (a.UserId == adminId)
                 {
                     a.IsUnavailable = true;
@@ -258,7 +269,7 @@
             }
             else if (userId != null)
             {
-                // user is logged
+                // user is logged in
                 if (userId != a.UserId && a.UserId != null)
                 {
                     // aptmnt is another user's

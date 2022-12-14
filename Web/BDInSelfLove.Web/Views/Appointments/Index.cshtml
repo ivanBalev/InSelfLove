@@ -43,7 +43,7 @@
     <div id="calendar" class="mt-3" workingHours="@Model.WorkdayStart.Hour-@Model.WorkdayEnd.Hour"></div>
 </div>
 
-<div class="">
+<div>
     @*Modals*@
     @*Login modal*@
     <div id="loginModal" class="modal fade" role="dialog">
@@ -61,12 +61,13 @@
             </div>
         </div>
     </div>
-    @*Book appointment modal*@
 
+    @*Book appointment modal*@
     <div id="bookAppointmentModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body pb-0">
+                    
                     @if (usersFirstAppt)
                     {
                         <div class="modal-header text-center p-0 pb-3">
@@ -78,6 +79,14 @@
                             <textarea id="patientIssueDescription" rows="4" class="form-control px-2" placeholder="@localizer["This will be shared only with your therapist"]"></textarea>
                         </div>
                     }
+                    <div class="mt-3 mb-3 text-center">
+                        <p class="mb-0" id="onSiteBookMsg"></p>
+                        <label id="onSiteBookToggle" class="toggle">
+                            <input class="toggle-checkbox" type="checkbox">
+                            <div class="toggle-switch"></div>
+                            <span class="toggle-label">На живо?</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="modal-footer justify-content-center pt-0 border-0">
@@ -86,7 +95,6 @@
             </div>
         </div>
     </div>
-
 
     @*Daily availability modal*@
     <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
@@ -128,6 +136,7 @@
             </div>
         </div>
     </div>
+
     @*Appointment details modal*@
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -161,13 +170,24 @@
                         <label class="text-center text-black-50  border-bottom">@localizer["Details:"] </label>
                         <p class="details mb-0" style="word-wrap: break-word;"></p>
                     </div>
+                    <div class="form-group mt-3">
+                        <label class="text-center text-black-50  border-bottom">Локация </label>
+                        <p id="onSiteDetailsMsg"></p>
+                        @if(userIsAdmin)
+                        {
+                        <label id="onSiteDetailsToggle" class="toggle">
+                            <input class="toggle-checkbox" type="checkbox">
+                            <div class="toggle-switch"></div>
+                            <span class="toggle-label">На живо?</span>
+                        </label>
+                        }
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-center pt-0 border-0">
                     @if (userIsAdmin)
                     {
                         <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
                         <button type="button" id="occupyAppointment" class="btn white-btn">@localizer["Occupy"]</button>
-
                     }
                     <button id="btnDelete" class="btn white-btn">@localizer["Cancel"]</button>
                 </div>
