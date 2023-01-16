@@ -56,7 +56,7 @@
             for (int i = 0; i < viewModel?.Comments.Count; i++)
             {
                 viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(
-                    viewModel.Comments[i].CreatedOn, this.TimezoneIdFromCookie);
+                    viewModel.Comments[i].CreatedOn, this.UserTimezoneIdFromCookie);
             }
 
             return this.View(viewModel);

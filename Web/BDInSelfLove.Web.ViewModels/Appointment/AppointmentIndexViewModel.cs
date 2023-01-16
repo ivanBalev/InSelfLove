@@ -1,6 +1,7 @@
 ﻿namespace BDInSelfLove.Web.ViewModels.Appointment
 {
     using System;
+    using System.Collections.Generic;
 
     public class AppointmentIndexViewModel
     {
@@ -8,6 +9,6 @@
 
         public DateTime WorkdayEnd { get; set; }
 
-        public AppointmentViewModel[] Appointments { get; set; }
+        public IEnumerable<AppointmentViewModel> Appointments { get; set; }
     }
 }

@@ -6,7 +6,7 @@
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.ViewModels.Comment;
-    using Ganss.XSS;
+    using Ganss.Xss;
 
     public class ArticleViewModel : IMapFrom<Article>
     {

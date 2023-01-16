@@ -6,18 +6,36 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace BDInSelfLove.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220211131950_SlugsRevertedDueToSqlRawExecutionIssues")]
-    partial class SlugsRevertedDueToSqlRawExecutionIssues
+    [Migration("20230116160632_Initial_2023")]
+    partial class Initial2023
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.11");
+                .HasAnnotation("ProductVersion", "7.0.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("ApplicationUserCourse", b =>
+                {
+                    b.Property<string>("ApplicationUsersId")
+                        .HasColumnType("varchar(85)");
+
+                    b.Property<string>("CoursesId")
+                        .HasColumnType("varchar(85)");
+
+                    b.HasKey("ApplicationUsersId", "CoursesId");
+
+                    b.HasIndex("CoursesId");
+
+                    b.ToTable("ApplicationUserCourse");
+                });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.ApplicationRole", b =>
                 {
@@ -27,19 +45,19 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -57,7 +75,7 @@ namespace BDInSelfLove.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.ApplicationUser", b =>
@@ -71,13 +89,13 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -96,10 +114,10 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -110,19 +128,19 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("varchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ProfilePhoto")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("tinyint(1)");
@@ -132,7 +150,7 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("varchar(256)");
 
                     b.Property<string>("WindowsTimezoneId")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -145,7 +163,7 @@ namespace BDInSelfLove.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Appointment", b =>
@@ -154,14 +172,17 @@ namespace BDInSelfLove.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<bool>("CanBeOnSite")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("tinyint(1)");
@@ -169,14 +190,17 @@ namespace BDInSelfLove.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsOnSite")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(85)");
 
                     b.Property<DateTime>("UtcStart")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -195,33 +219,33 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<byte[]>("PreviewImageBlob")
-                        .HasColumnType("blob");
+                    b.Property<string>("PreviewImageUrl")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Slug")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(85)");
@@ -245,19 +269,19 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("ParentCommentId")
                         .HasColumnType("int");
@@ -283,6 +307,122 @@ namespace BDInSelfLove.Data.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Course", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(85)
+                        .HasColumnType("varchar(85)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PriceId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ThumbnailLink")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.CourseVideo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("CourseId")
+                        .HasColumnType("varchar(85)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsPreview")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ThumbnailLink")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("CourseVideos");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Payment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<long>("AmountTotal")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("varchar(85)");
+
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CourseId")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Payment");
+                });
+
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
                 {
                     b.Property<int>("Id")
@@ -290,29 +430,29 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AssociatedTerms")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Slug")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(85)");
@@ -334,10 +474,10 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
@@ -347,7 +487,7 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -358,10 +498,10 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -371,7 +511,7 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -385,7 +525,7 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("varchar(85)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -395,7 +535,7 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -410,7 +550,7 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -427,11 +567,26 @@ namespace BDInSelfLove.Data.Migrations
                         .HasColumnType("varchar(85)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("ApplicationUserCourse", b =>
+                {
+                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationUsersId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BDInSelfLove.Data.Models.Course", null)
+                        .WithMany()
+                        .HasForeignKey("CoursesId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Appointment", b =>
@@ -481,6 +636,20 @@ namespace BDInSelfLove.Data.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Video");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.CourseVideo", b =>
+                {
+                    b.HasOne("BDInSelfLove.Data.Models.Course", null)
+                        .WithMany("CourseVideos")
+                        .HasForeignKey("CourseId");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Payment", b =>
+                {
+                    b.HasOne("BDInSelfLove.Data.Models.ApplicationUser", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>
@@ -553,6 +722,8 @@ namespace BDInSelfLove.Data.Migrations
 
                     b.Navigation("Logins");
 
+                    b.Navigation("Payments");
+
                     b.Navigation("Roles");
                 });
 
@@ -564,6 +735,11 @@ namespace BDInSelfLove.Data.Migrations
             modelBuilder.Entity("BDInSelfLove.Data.Models.Comment", b =>
                 {
                     b.Navigation("SubComments");
+                });
+
+            modelBuilder.Entity("BDInSelfLove.Data.Models.Course", b =>
+                {
+                    b.Navigation("CourseVideos");
                 });
 
             modelBuilder.Entity("BDInSelfLove.Data.Models.Video", b =>

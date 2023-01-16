@@ -1,6 +1,7 @@
 ﻿namespace BDInSelfLove.Services.Data.Appointments
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@
     {
         Task<int> Create(DateTime[] utcSlots, DateTime utcDate);
 
-        IQueryable<Appointment> GetAll(bool userIsAdmin, string userId);
+        Task<IEnumerable<Appointment>> GetAll(string userId, string adminId);
 
         Task<Appointment> Book(int appointmentId, string appointmentDescription, bool isOnSite, string userId);
 
@@ -20,10 +21,10 @@
 
         Task<Appointment> Approve(int id);
 
-        Task<Appointment> Occupy(int id, string adminId);
+        Task Occupy(int id, string adminId);
 
         Task<Appointment> SetOnSite(int apptId, bool canBeOnSite);
 
-        Task<int> Cancel(Appointment appointment);
+        Task<int> Cancel(Appointment appointment, string userId, string adminId);
     }
 }

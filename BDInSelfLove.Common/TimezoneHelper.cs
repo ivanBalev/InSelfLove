@@ -13,7 +13,15 @@
                 return null;
             }
 
-            return TZConvert.GetTimeZoneInfo(timezoneId);
+            try
+            {
+                return TZConvert.GetTimeZoneInfo(timezoneId);
+            }
+            catch (Exception)
+            {
+                // Set timezone to default value if non-existent timezone is provided
+                return TZConvert.GetTimeZoneInfo("Europe/Sofia");
+            }
         }
 
         public static DateTime ToUTCTime(DateTime localTime, string timezone)
@@ -33,9 +41,7 @@
                 return utcTime;
             }
 
-            TimeZoneInfo userWindowsTimezone = TZConvert.GetTimeZoneInfo(GetTimezone(timezone).Id);
-            DateTime userLocalTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, userWindowsTimezone);
-            return userLocalTime;
+            return TimeZoneInfo.ConvertTimeFromUtc(utcTime, GetTimezone(timezone));
         }
     }
 }

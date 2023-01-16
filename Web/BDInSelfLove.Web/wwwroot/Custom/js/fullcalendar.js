@@ -1,7 +1,5 @@
-﻿// TODO: this is stupid. You can do better
-const userIsAdmin = document.getElementById('btnWorkingHours') !== null;
+﻿const userIsAdmin = document.getElementById('btnWorkingHours') !== null;
 const culture = document.cookie.match('Culture')?.input.substr(-2) || 'bg';
-// TODO: this is also stupid. Take from cookie
 const userIsLoggedIn = document.querySelector('a[href*="Logout"]') !== null;
 const cultureIsEn = culture === 'en';
 const csfrToken = document.querySelector("#csfrToken input[name=__RequestVerificationToken]").value;
@@ -16,6 +14,7 @@ const workingHoursArray = document.querySelector('#calendar').getAttribute('work
 const standardWorkingHours = { start: workingHoursArray[0], end: workingHoursArray[1] };
 let dayCount = 5;
 
+// Reduce weekdays per page for smaller screens
 if (
     navigator.userAgent.match(/Android/i) ||
     navigator.userAgent.match(/iPhone/i)
@@ -37,10 +36,12 @@ const approveBtn = document.getElementById('approveAppointment');
 const cancelBtn = document.getElementById('btnDelete');
 const confirmCancelBtn = document.getElementsByClassName('confirmCancelAppointment')[0];
 const workingHoursSubmitBtn = document.getElementById('workingHoursSubmitBtn');
+const occupyBtn = document.querySelector('#occupyAppointment');
+
+// Onsite-related btn/msg
 const onSiteDetailsMsg = document.querySelector('#onSiteDetailsMsg');
 const onSiteDetailsToggle = document.querySelector('#onSiteDetailsToggle');
 const onsiteDetailsCheckbox = onSiteDetailsToggle?.querySelector('.toggle-checkbox');
-
 const onSiteBookMsg = document.querySelector('#onSiteBookMsg');
 const onSiteBookToggle = document.querySelector('#onSiteBookToggle');
 const onsiteBookCheckbox = onSiteBookToggle?.querySelector('.toggle-checkbox');
@@ -59,15 +60,8 @@ const patientIssueDescription = document.getElementById('patientIssueDescription
 let currentSelectedDate = '';
 let availableDailySlots = [];
 let currentAppointment = null;
-// TODO: what if we have no appointments from server?
-const allAppointments = document.querySelector('.dbEvents').textContent
-    .split(';').filter(n => n)
-    .map(x => {
-        return x;
-    })
-    .map(e => JSON.parse(e));
+const allAppointments = document.querySelector('.dbEvents').textContent.split(';').filter(n => n).map(x => x).map(e => JSON.parse(e));
 const availableAppointments = allAppointments?.filter(a => !a.isUnavailable && new Date(a.start) > new Date());
-
 
 // MAIN FUNCTION
 document.addEventListener('DOMContentLoaded', function () {
@@ -102,101 +96,28 @@ document.addEventListener('DOMContentLoaded', function () {
         eventBackgroundColor: 'white',
         eventBorderColor: '#92ab95',
         displayEventTime: false,
-        eventClick: function (arg) {
-            const appt = getCurrentAppt(arg);
-            const isOldAvailableAppt = new Date(appt.start) < new Date() && appt.userId == null;
-
-            if (userIsAdmin) {
-                showAppointmentDetails();
-                return;
-            }
-
-            if (isOldAvailableAppt) {
-                return;
-            }
-
-            if (userIsAdmin) {
-                showAppointmentDetails();
-                return;
-            } else {
-                if (appt.isUnavailable) {
-                    return;
-                }
-                if (appt.userId != 0 && appt.userId != null) {
-                    // own appt
-                    showAppointmentDetails();
-                    return;
-                }
-
-                if (appt.userId == null && userIsLoggedIn) {
-                    // COLLOSAL SHITE
-                    // TODO: Next time anything date-related needs changing
-                    // date library will need introducing. Under no cinrcumstances
-                    // should one continute working this way.
-
-                    const sameDayAppts = allAppointments.filter(x => {
-                        const xDate = new Date(x.start.toString().split(' ').slice(0, 4).join(' '))
-                            .toString().split(' ').slice(0, 4).join(' ');
-                        const currentApptDate = appt.start.toString().split(' ').slice(0, 4).join(' ');
-
-                        return xDate == currentApptDate;
-                    });
-
-                    if (sameDayAppts.find(x => x.userId != null)) {
-                        alert('Вече имате запазен час за този ден');
-                        return;
-                    }
-
-                    // Set up onsite
-                    if (appt.canBeOnSite) {
-                        onSiteBookMsg.style.display = 'none';
-                        onSiteBookToggle.style.display = 'block';
-                        onsiteBookCheckbox.checked = false;
-                    } else {
-                        onSiteBookToggle.style.display = 'none';
-                        onSiteBookMsg.style.display = 'block';
-                        onSiteBookMsg.textContent = 'Онлайн сесия';
-                    }
-
-                    bootstrap.Modal.getOrCreateInstance(bookModal).show();
-                } else {
-                    bootstrap.Modal.getOrCreateInstance(loginModal).show();
-                }
-            }
-        },
-        eventClassNames: function (arg) {
-            const appt = getCurrentAppt(arg);
-            const isOldAppt = new Date(appt.start) < new Date() && appt.userId == null;
-
-            if (isOldAppt) {
-                // Greyed out: non-clckable
-                return ['gray'];
-            }
-            if (appt.isApproved && !appt.isUnavailable) {
-                return ['green'];
-            }
-            if (appt.userId !== null && !appt.isApproved) {
-                return ['yellow'];
-            } else {
-                if (appt.isUnavailable) {
-                    return ['gray']
-                }
-            }
-        },
+        eventClick: eventClick,
+        eventClassNames: eventClassNames,
     })
 
     calendar.render();
+    scrollToCorrectDay(calendar);
+});
+// END OF MAIN FUNCTION
 
+function scrollToCorrectDay(calendar) {
     if (userIsLoggedIn) {
+        // Scroll to first appointment that's awaiting approval
         const pendingUpcoming = allAppointments.filter(x => x.userId != null &&
-            !x.isApproved && new Date(x.start) > new Date());
+            !x.isApproved && new Date(x.start) >= new Date());
         if (pendingUpcoming.length > 0) {
             calendar.gotoDate(new Date(pendingUpcoming.sort(x => new Date(x.start))[0].start));
             return;
         }
 
         if (!userIsAdmin) {
-            const approvedUpcoming = allAppointments.filter(x => x.isApproved);
+            // Scroll to user's first approved appointment
+            const approvedUpcoming = allAppointments.filter(x => !x.isUnavailable && x.isApproved && new Date(x.start) >= new Date());
             if (approvedUpcoming.length > 0) {
                 calendar.gotoDate(new Date(approvedUpcoming.sort(x => new Date(x.start))[0].start));
                 return;
@@ -204,12 +125,58 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Scroll horizontally to first available appointment
+    // Scroll to first available appointment
     if (availableAppointments.length > 0) {
         calendar.gotoDate(new Date(availableAppointments[0].start));
     }
-});
-// END OF MAIN FUNCTION
+
+}
+
+function eventClassNames(arg) {
+    // Set up appointments' style
+    const appt = getCurrentAppt(arg);
+
+    if (appt.isUnavailable) {
+        return ['gray']
+    }
+
+    if (appt.isApproved) {
+        return ['green'];
+    }
+
+    // Appointment is awaiting approval (is not approved but has userId attributed)
+    if (appt.userId !== null) {
+        return ['yellow'];
+    }
+}
+
+// When user clicks on an appointment slot
+function eventClick(arg) {
+    // Get appointment
+    const appt = getCurrentAppt(arg);
+
+    if (appt.isUnavailable) {
+        return;
+    }
+
+    if (!userIsLoggedIn) {
+        // Pull up login modal
+        bootstrap.Modal.getOrCreateInstance(loginModal).show();
+        return;
+    }
+
+    // User is admin or this is user's own appointment
+    if (userIsAdmin || appt.userId != null) {
+        // Show appointment details
+        showAppointmentDetails();
+        return;
+    }
+
+    // Appointment is available
+    if (appt.userId == null && userIsLoggedIn) {
+        showBookingModal(appt);
+    }
+}
 
 function getCurrentAppt(arg) {
     // Not sure why fullcalendar breaks viewModels up
@@ -222,8 +189,67 @@ function getCurrentAppt(arg) {
     return appt;
 }
 
+// Booking modal is only for users, not admin
+function showBookingModal(appt) {
+    // Set up onsite functionality
+    if (appt.canBeOnSite) {
+        // Hide message
+        onSiteBookMsg.style.display = 'none';
+        // Show slider
+        onSiteBookToggle.style.display = 'block';
+        // Set slider value
+        onsiteBookCheckbox.checked = false;
+    } else {
+        // Hide slider
+        onSiteBookToggle.style.display = 'none';
+        // Show message
+        onSiteBookMsg.style.display = 'block';
+        // Set message content
+        onSiteBookMsg.textContent = 'Онлайн сесия';
+    }
+
+    bootstrap.Modal.getOrCreateInstance(bookModal).show();
+}
+
 // Appointment details modal setup
 function showAppointmentDetails() {
+    setUpDateAndTime();
+    setUpOnsiteSlider();
+
+    if (userIsAdmin) {
+        setUpDetailsForAdmin();
+    } else {
+        setUpDetailsForUser();
+    }
+
+    bootstrap.Modal.getOrCreateInstance(detailsModal).show();
+}
+
+function setUpDetailsForAdmin() {
+    // Appointment is occupied
+    if (currentAppointment.userId !== null) {
+        occupyBtn.style.display = 'none';
+        // Show user info
+        showDetailsInAppointmentDetailsModal();
+        setUpDetailsForUser();
+    }
+
+    // Appointment is available
+    if (currentAppointment.userId === null) {
+        occupyBtn.style.display = 'inline-block';
+        // Hide user info
+        hideDetailsInAppointmentDetailsModal();
+    }
+}
+
+function setUpDetailsForUser() {
+    // Populate username, details and status message
+    detailsModal.querySelector('.username').textContent = currentAppointment.userName;
+    detailsModal.querySelector('.details').textContent = currentAppointment.description;
+    setUpStatusInAppointmentDetailsModal(currentAppointment.isApproved);
+}
+
+function setUpDateAndTime() {
     // Get appointment date and hour
     let datelocaleStringArr = new Date(currentAppointment.start)
         .toLocaleString(`${culture}-${culture.toUpperCase()}`).split(', ');
@@ -233,54 +259,39 @@ function showAppointmentDetails() {
     // Populate date & time fields
     detailsModal.querySelector('.date').textContent = date;
     detailsModal.querySelector('.start').textContent = hour;
+}
 
-    // Set up onsite slider
+function setUpOnsiteSlider() {
     if (userIsAdmin) {
+        // Appointment is approved/awaits approval
         if (currentAppointment.userId !== null) {
+            // Admin is not allowed to change onsite property value
             onSiteDetailsToggle.style.display = 'none';
+            // Admin only sees whether apptmnt is onsite or online
             onSiteDetailsMsg.style.display = 'block';
-
-            if (currentAppointment.isOnSite) {
-                onSiteDetailsMsg.textContent = 'Сесия на живо';
-            } else {
-                onSiteDetailsMsg.textContent = 'Онлайн сесия';
-            }
+            // Set the appropriate message depending on isonsite property
+            onSiteDetailsMsg.textContent = currentAppointment.isOnSite ? 'Сесия на живо' : 'Онлайн сесия';
         }
-        else {
+
+        // Appointment is available
+        if (currentAppointment.userId === null) {
+            // Admin can still change apptmnt onsite property value
             onSiteDetailsToggle.style.display = 'block';
+            // Set onsite slider button state
+            onsiteDetailsCheckbox.checked = currentAppointment.canBeOnSite ? true : false;
+            // Hide onsite value message 
             onSiteDetailsMsg.style.display = 'none';
-            if (currentAppointment.canBeOnSite) {
-                onsiteDetailsCheckbox.checked = true;
-            } else {
-                onsiteDetailsCheckbox.checked = false;
-            }
         }
     } else {
+        // User is not admin
+        // This is user's own appointment 
+        // Its isonsite property value can no longer be changed
         if (currentAppointment.isOnSite) {
             onSiteDetailsMsg.textContent = 'Сесия на живо';
         } else {
             onSiteDetailsMsg.textContent = 'Онлайн сесия';
         }
     }
-
-    if (userIsAdmin && currentAppointment.userName === null) {
-        document.querySelector('#occupyAppointment').style.display = 'inline-block';
-        // Admin's own unoccupied appointment slot
-        hideDetailsInAppointmentDetailsModal();
-    } else {
-        detailsModal.querySelector('.username').textContent = currentAppointment.userName;
-        detailsModal.querySelector('.details').textContent = currentAppointment.description;
-        setUpStatusInAppointmentDetailsModal(currentAppointment.isApproved);
-        if (userIsAdmin) {
-            // Appt occupied by admin. Hide 'Occupy' btn
-            document.querySelector('#occupyAppointment').style.display = 'none';
-
-            // Details fields can only have been with hidden state for admin.
-            showDetailsInAppointmentDetailsModal();
-        }
-    }
-
-    bootstrap.Modal.getOrCreateInstance(detailsModal).show();
 }
 
 function hideDetailsInAppointmentDetailsModal() {
@@ -320,20 +331,23 @@ function clearDailyAvailability() {
     }
 };
 
+// Sets up daily availability
 function select(selectInfo) {
     const selectedDate = new Date(new Date(selectInfo.start).toString().split(' ').slice(0, 4).join(' '));
     const currentDate = new Date(new Date().toString().split(' ').slice(0, 4).join(' '));
 
+    // Past dates cannot be clicked on and dates can only be clicked on by admin
     if (selectedDate < currentDate || !userIsAdmin) {
         return;
     }
 
-    clearDailyAvailability();
     currentSelectedDate = `${selectInfo.start.getMonth() + 1}-${selectInfo.start.getDate()}-${selectInfo.start.getFullYear()}`;
-    let modalElement = document.getElementById('dailyAvailabilityModal');
-    bootstrap.Modal.getOrCreateInstance(modalElement).show();
+    clearDailyAvailability();
+    bootstrap.Modal.getOrCreateInstance(dailyAvailabilityModal).show();
 }
 
+// Adds/removes appointment slots from availableDailySlots collection before admin hits Submit
+// Applies to dailyAvailabilityModal
 (function setUpDailyWorkingHours() {
     if (!userIsAdmin) {
         return;
@@ -373,7 +387,6 @@ async function postData(url = '', data = {}, csfrToken) {
 
 submitDailyAvailabilityBtn.addEventListener('click', function () {
     // TODO: Check for overlapping slots
-
     postData(
         '/api/appointments/Create',
         {
@@ -381,29 +394,26 @@ submitDailyAvailabilityBtn.addEventListener('click', function () {
             timeSlotsString: availableDailySlots,
         },
         csfrToken)
-        .then(data => {
+        .then(() => {
             bootstrap.Modal.getOrCreateInstance(dailyAvailabilityModal).hide();
             window.location.reload();
         });
 });
 
 sendAppointmentBtn.addEventListener('click', function () {
-    // Validate description
-    let issueDescriptionField = bookModal.querySelector('#patientIssueDescription');
-    let userIssueDescription = "";
-
     // We don't have this field if user has already had an appointment
-    if (issueDescriptionField) {
-        userIssueDescription = issueDescriptionField.value.trim();
-        if (userIssueDescription.length < 10) {
-            alert('Моля, опишете накратко или въведете телефонен номер');
-            return;
-        }
+    let patientIssueDescription = bookModal.querySelector('#patientIssueDescription')?.value.trim();
+
+    // Validate description
+    if (patientIssueDescription.length < 10) {
+        alert('Моля, опишете накратко или въведете телефонен номер');
+        return;
     }
 
+    // Set up input model
     let data = {
         id: currentAppointment.id,
-        description: userIssueDescription,
+        description: patientIssueDescription,
         isOnSite: onsiteBookCheckbox.checked,
     }
 
@@ -477,7 +487,7 @@ workingHoursSubmitBtn.addEventListener('click', function () {
         });
 });
 
-document.querySelector('#occupyAppointment')?.addEventListener('click', function () {
+occupyBtn?.addEventListener('click', function () {
     postData(
         '/api/appointments/Occupy',
         { id: currentAppointment.id },
@@ -493,12 +503,6 @@ document.querySelector('#occupyAppointment')?.addEventListener('click', function
 
 // Accessible & visible only to admin (SSR cshtml)
 onsiteDetailsCheckbox?.addEventListener('change', function () {
-    if (currentAppointment.userId !== null) {
-        // Appt is either taken or awaiting approval -> cannot change appt location at this point
-        alert('Часът вече е зает.')
-        return;
-    }
-
     postData(
         '/api/appointments/SetOnSite',
         { id: currentAppointment.id, canBeOnSite: onsiteDetailsCheckbox.checked },
@@ -511,23 +515,3 @@ onsiteDetailsCheckbox?.addEventListener('change', function () {
             alert(genericError);
         });
 })
-
-// For admin
-//                          Available apptmnt -> bookApptmntModal
-//                          Scenario 1 - Apptmnt is available
-//                              btn toggle only changes state in db
-//                          Taken apptmnt -> apptmntDetailsModal
-//                          Scenario 2 - Apptmnt is pending approval
-//                              btn switches on -> email we can do it in person if client wants
-//                              btn switches off -> email to tell client we cannot do it in person
-//                          Scenario 3 - Apptmnt is approved
-//                              same as scenario 2
-
-// For user
-//                          Scenario 1 - Available -> bookAppointment Modal
-//                              btn is off but can be switched on(or vice versa) if admin has allowed -> send admin email in both cases
-//                              if admin hasn't allowed, btn is greyed out + msg this apptmnt is only online
-//                          Scenario 2 - Pending -> Apptmnt details modal
-//                              user can still switch btn state -> send email to admin
-//                          Scenario 3 - Approved -> Apptmnt details modal
-//                              user can still switch state -> will put apptmnt back into 'awaiting approval' mode

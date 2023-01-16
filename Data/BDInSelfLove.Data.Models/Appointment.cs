@@ -1,7 +1,7 @@
 ﻿namespace BDInSelfLove.Data.Models
 {
     using System;
-
+    using System.ComponentModel.DataAnnotations.Schema;
     using BDInSelfLove.Data.Common.Models;
 
     public class Appointment : BaseDeletableModel<int>
@@ -24,5 +24,8 @@
         public bool CanBeOnSite { get; set; }
 
         public bool IsOnSite { get; set; }
+
+        [NotMapped]
+        public bool IsUnavailable { get; set; }
     }
 }

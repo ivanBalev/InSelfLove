@@ -89,8 +89,9 @@
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
+            var connString = this.configuration.GetConnectionString("MySql");
             services.AddDbContext<ApplicationDbContext>(
-                options => options.UseMySQL(this.configuration.GetConnectionString("MySql")));
+                options => options.UseMySql(connString, ServerVersion.AutoDetect(connString)));
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();

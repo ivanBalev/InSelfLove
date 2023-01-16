@@ -5,7 +5,7 @@
     using System.Text.RegularExpressions;
 
     using BDInSelfLove.Services.Mapping;
-    using Ganss.XSS;
+    using Ganss.Xss;
 
     public class CommentViewModel : IMapFrom<Data.Models.Comment>
     {

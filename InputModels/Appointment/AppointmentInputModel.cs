@@ -5,6 +5,7 @@
     public class AppointmentInputModel
     {
         [Required]
+        [Range(1, int.MaxValue)]
         public int Id { get; set; }
 
         [MaxLength(1000)]

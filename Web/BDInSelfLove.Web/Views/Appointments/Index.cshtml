@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 @using System.Text.Json;
 @using Newtonsoft.Json;
+
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
@@ -13,6 +14,9 @@
     ViewData["Title"] = @localizer["Запази час"].Value;
     bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
     bool usersFirstAppt = !Model.Appointments.Any(x => x.UserId != null);
+
+    var returnUrl = this.Context.Request.QueryString.Value;
+    ;
 }
 
 
@@ -56,7 +60,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center pt-0 border-0">
-                    <a class="btn green-btn" href="/Identity/Account/Login?ReturnUrl=/api/Appointments">@localizer["Log in"]</a>
+                    <a class="btn green-btn" href=@("/Identity/Account/Login?ReturnUrl=/api/Appointments" + returnUrl)>@localizer["Log in"]</a>
                 </div>
             </div>
         </div>

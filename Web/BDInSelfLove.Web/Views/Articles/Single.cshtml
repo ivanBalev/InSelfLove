@@ -16,13 +16,11 @@
 
     var endP = string.Join('/', Model.ImageUrl.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
 
-    var maika = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
+    var articlePic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
     .Width("auto")
-    .Crop("fill")).BuildImageTag(endP, new StringDictionary("class=card-img-top"));
-
-    //var podga = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
-    //.AspectRatio("16:9").Gravity("auto").Crop("fill").Chain()
-    //      .Quality("auto").FetchFormat("auto")).BuildImageTag("v1669478768/madidid_jfgjae", new StringDictionary("class=card-img-top"));
+    .Crop("fill"))
+    .Secure(true)
+    .BuildImageTag(endP, new StringDictionary("class=card-img-top"));
 }
 
 <div class="container">
@@ -37,9 +35,7 @@
                         <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
                     </div>
                     <div class="img-wrapper text-center">
-                        @*<img class="card-img-top" src="@Model.ImageUrl" alt="Article image">*@
-                        @Html.Raw(maika)
-                        @*@Html.Raw(podga)*@
+                        @Html.Raw(articlePic)
                     </div>
                     <!-- Edit and Delete buttons if user is admin -->
                     @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))

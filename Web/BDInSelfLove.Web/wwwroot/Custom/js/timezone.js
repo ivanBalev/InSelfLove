@@ -9,10 +9,12 @@ if (consentCookie !== undefined) {
         setCookie(timezoneCookieName, currentTimezoneValue);
     }
 } else {
+    // Set query parameter with the current timezone
     let appointmentsAnchor = document.querySelector('a[href$="api/Appointments"]');
     appointmentsAnchor.href = appointmentsAnchor.href + '?timezone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
+// Helper functions
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);

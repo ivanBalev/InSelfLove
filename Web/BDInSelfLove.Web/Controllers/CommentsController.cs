@@ -52,7 +52,7 @@
             var commentViewModel = await this.commentService.GetById(commentId)
                 .To<CommentViewModel>().FirstOrDefaultAsync();
             commentViewModel.CreatedOn = TimezoneHelper
-                .ToLocalTime(commentViewModel.CreatedOn, this.TimezoneIdFromCookie);
+                .ToLocalTime(commentViewModel.CreatedOn, this.UserTimezoneIdFromCookie);
 
             return this.View("_CommentSinglePartial", commentViewModel);
         }
