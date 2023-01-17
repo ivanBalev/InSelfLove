@@ -122,8 +122,8 @@
 
         public async Task<Appointment> Book(int appointmentId, string appointmentDescription, bool isOnSite, string userId)
         {
-            // Sanitize description
-            appointmentDescription = Regex.Replace(appointmentDescription, "[*'\",_&#^@;]", string.Empty);
+            // Sanitize description  // Description is null if this is not user's first appointment
+            appointmentDescription = Regex.Replace(appointmentDescription ?? string.Empty, "[*'\",_&#^@;]", string.Empty);
 
             // Get appointment from db
             var dbAppointment = await this.appointmentRepository.All()

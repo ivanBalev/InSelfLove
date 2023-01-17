@@ -37,8 +37,19 @@ footer {
     left: 0;
 }
 
-footer p {
-    color: white;
+    footer p {
+        color: white;
+    }
+
+/* Fixes bug with slot titles when upgraded to v6.0*/
+.fc-sticky {
+    position: absolute !important;
+}
+
+
+div.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+    touch-action: manipulation !important;
+    
 }
 
 /*SLIDER*/

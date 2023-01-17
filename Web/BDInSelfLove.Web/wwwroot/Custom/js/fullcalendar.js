@@ -85,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         allDaySlot: false,
+        // Fix for select event firing only after 1-second touch hold (value default is 1000 ms)
+        selectLongPressDelay: 1,
         slotLabelInterval: { days: 1 },
         slotMinTime: standardWorkingHours.start + ':00:00',
         slotMaxTime: standardWorkingHours.end + ':00:00',
@@ -405,7 +407,7 @@ sendAppointmentBtn.addEventListener('click', function () {
     let patientIssueDescription = bookModal.querySelector('#patientIssueDescription')?.value.trim();
 
     // Validate description
-    if (patientIssueDescription.length < 10) {
+    if (patientIssueDescription?.length < 10) {
         alert('Моля, опишете накратко или въведете телефонен номер');
         return;
     }

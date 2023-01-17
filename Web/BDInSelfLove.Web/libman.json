@@ -23,7 +23,7 @@
       "destination": "wwwroot/lib/lite-youtube-embed/"
     },
     {
-      "library": "fullcalendar@5.10.2",
+      "library": "fullcalendar@6.0.3",
       "destination": "wwwroot/lib/fullcalendar/"
     },
     {
@@ -34,11 +34,6 @@
       "provider": "cdnjs",
       "library": "popper.js@2.11.6",
       "destination": "wwwroot/lib/popper.js/"
-    },
-    //{
-    //  "provider": "jsdelivr",
-    //  "library": "passive-events-support@1.0.33",
-    //  "destination": "wwwroot/lib/passive-events-support"
-    //}
+    }
   ]
 }

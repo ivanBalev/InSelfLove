@@ -71,7 +71,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body pb-0">
-                    
+
                     @if (usersFirstAppt)
                     {
                         <div class="modal-header text-center p-0 pb-3">
@@ -177,13 +177,13 @@
                     <div class="form-group mt-3">
                         <label class="text-center text-black-50  border-bottom">Локация </label>
                         <p id="onSiteDetailsMsg"></p>
-                        @if(userIsAdmin)
+                        @if (userIsAdmin)
                         {
-                        <label id="onSiteDetailsToggle" class="toggle">
-                            <input class="toggle-checkbox" type="checkbox">
-                            <div class="toggle-switch"></div>
-                            <span class="toggle-label">На живо?</span>
-                        </label>
+                            <label id="onSiteDetailsToggle" class="toggle">
+                                <input class="toggle-checkbox" type="checkbox">
+                                <div class="toggle-switch"></div>
+                                <span class="toggle-label">На живо?</span>
+                            </label>
                         }
                     </div>
                 </div>
@@ -254,7 +254,7 @@
 </div>
 
 @section HeadScripts {
-    <script src="~/lib/fullcalendar/main.js"></script>
+    <script src="~/lib/fullcalendar/index.global.js"></script>
     <link rel="stylesheet" href="~/Custom/css/calendar.css">
 
 }
@@ -262,53 +262,6 @@
 @section Scripts {
     <script src="~/Custom/js/fullcalendar.js"></script>
     <script src="~/Custom/js/timezone.js"></script>
-    @*<script>
-        window.passiveSupport = {
-            debug: true,
-            listeners: [
-                {
-                    element: 'div.fc-daygrid-day-frame.fc-scrollgrid-sync-inner',
-                    event: 'touchmove',
-                },
-                {
-                    element: 'div.fc-event-title-container',
-                    event: 'touchend',
-                },
-                {
-                    element: 'button.btn-close',
-                    event: 'touchend',
-                },
-                {
-                    element: 'div.fc-event-title.fc-sticky',
-                    event: 'touchend',
-                },
-                {
-                    element: 'div#appointmentDetailsModal.modal.fade.show',
-                    event: 'touchend',
-                },
-                {
-                    element: 'button#btnDelete.btn.white-btn',
-                    event: 'touchend',
-                },
-                {
-                    element: 'div#cancelAppointmentConfirm.modal.fade.show',
-                    event: 'touchend',
-                },
-                {
-                    element: 'span.fc-icon.fc-icon-chevron-left',
-                    event: 'touchend',
-                },
-                {
-                    element: 'span.fc-icon.fc-icon-chevron-right',
-                    event: 'touchend',
-                },
-            ]
-        };
-    </script>
-    <script type="text/javascript" src="~/lib/passive-events-support/dist/main.min.js"></script>
-    *@
-}
 
-@section Links {
-    <link href='~/lib/fullcalendar/main.css' rel='stylesheet' />
+
 }
