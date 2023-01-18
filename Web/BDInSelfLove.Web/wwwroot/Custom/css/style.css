@@ -12,39 +12,6 @@
     }
 }
 
-@media screen and (max-width: 500px) {
-    #single-article .card-body p {
-        font-size: 16px !important;
-    }
-
-    #single-article .card-title {
-        font-size: 17px !important;
-    }
-
-    .article-date {
-        font-size: 16px !important;
-    }
-
-
-    #about .profile-image-wrapper {
-        padding-right: 17px !important;
-        padding-bottom: 0px !important;
-    }
-
-    #about .row {
-        margin-left: 0vmin !important;
-        margin-right: 0vmin !important;
-    }
-
-    .calendar-container {
-        padding-top: 8px !important;
-    }
-
-    .fc-header-toolbar {
-        margin-bottom: 5px !important;
-    }
-}
-
 @media screen and (max-width: 1367px) {
     .navbar .contact {
         margin-left: 8vmax !important;
@@ -139,6 +106,28 @@
 
     #showcase {
         height: 75vh !important;
+    }
+
+    #single-article .card-body p {
+        font-size: 16px !important;
+    }
+
+    #single-article .card-title {
+        font-size: 17px !important;
+    }
+
+    .article-date {
+        font-size: 16px !important;
+    }
+
+    #about .profile-image-wrapper {
+        padding-right: 17px !important;
+        padding-bottom: 0px !important;
+    }
+
+    #about .row {
+        margin-left: 0vmin !important;
+        margin-right: 0vmin !important;
     }
 }
 
@@ -367,9 +356,6 @@ form .form-group {
     aspect-ratio: 16 / 9;
 }
 
-.container#video-carousel {
-}
-
 #video-carousel .carousel-control-prev,
 #video-carousel .carousel-control-next {
     height: 50%;
@@ -532,185 +518,6 @@ lite-youtube {
     cursor: pointer;
 }
 
-/*Green - rgb(146,171,149)*/
-/*Yellow - rgb(255, 193, 7)*/
-
-/*.fc-event {
-    margin-top: 2px;
-    margin-bottom: 3px;
-    font-size: 16px;
-    background-color: white;
-}*/
-
-.fc-header-toolbar {
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
-}
-
-.fc-event-time {
-    color: #92ab95;
-}
-
-.fc-daygrid-event {
-    margin: 16px !important;
-}
-
-.fc-daygrid-event:hover {
-    background-color: #92ab95 !important; 
-}
-
-/*green*/
-.fc-daygrid-event.green {
-    background-color: #92ab95 !important;
-}
-
-.fc-daygrid-event.green:hover {
-    background-color: white !important;
-}
-
-.fc-daygrid-event.green .fc-event-title {
-    color: white !important; 
-}
-
-.fc-daygrid-event.green:hover .fc-event-title {
-    color: black !important; 
-}
-
-.fc-daygrid-event.green:hover .fc-event-title-container {
-    background-color: white !important;
-}
-
-/*yellow*/
-    .fc-daygrid-event.yellow {
-        background-color: #EEB440 !important;
-        border-color: #EEB440 !important;
-    }
-
-.fc-daygrid-event.yellow:hover {
-    background-color: white !important;
-}
-
-.fc-daygrid-event.yellow .fc-event-title {
-    color: black !important; 
-}
-
-.fc-daygrid-event.yellow:hover .fc-event-title {
-    color: black !important; 
-}
-
-.fc-daygrid-event.yellow:hover .fc-event-title-container {
-    background-color: white !important;
-}
-
-/*gray*/
-.fc-daygrid-event.gray {
-    background: repeating-linear-gradient(-45deg,transparent,transparent 5px,#efefef 0,#efefef 10px);
-}
-
-.fc-daygrid-event.gray:hover {
-    cursor: default !important;
-}
-
-.fc-daygrid-event.gray:hover {
-    cursor: default !important;
-}
-
-.fc-daygrid-event.gray .fc-event-title {
-    color: black !important;
-}
-
-.fc-daygrid-event.gray:hover .fc-event-title {
-    color: black !important;
-    cursor: default;
-}
-
-    .fc-daygrid-event.gray:hover .fc-event-title-container {
-        background-color: none;
-        background: repeating-linear-gradient(-45deg,transparent,transparent 5px,#f1f5f9 0,#f1f5f9 10px);
-        cursor: default;
-    }
-
-/*default*/
-.fc-event-title-container {
-    min-height: 50px;
-    position: relative;
-    cursor: pointer;
-}
-
-.fc-event-title-container:hover {
-    background-color: #92ab95;
-}
-
-.fc-event-title-container:hover .fc-event-title {
-    color: white;
-}
-
-.fc-event-title-container.green:hover {
-    background-color: white;
-}
-
-.fc-event-title-container.green:hover .fc-event-title {
-    background-color: white;
-    color: #92ab95;
-}
-
-.fc-event-title {
-    color: black;
-    font-weight: 600;
-    /*How to center vertically*/
-    margin: 0;
-    position: absolute;
-    font-size: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.fc-event-main-frame {
-    text-align: center;
-}
-
-.fc-col-header-cell-cushion:hover {
-    color: black;
-    cursor:default;
-}
-
-/*
-.fc-daygrid-event-harness {
-    border: thick;
-    border-color: rgb(146,171,149) !important;
-}*/
-/*.fc-event-main {
-    padding-top: 10px !important; 
-    text-align: center;
-}*/
-/*.fc-event.green:hover {
-    background-color: rgb(146,171,149);
-}
-
-.fc-event.green .fc-event-main {
-    color: rgb(146,171,149);
-}
-
-.fc-event.green .fc-event-main:hover {
-    color: black;
-}
-
-.fc-event.yellow {
-    border-color: rgb(255, 193, 7);
-}
-
-.fc-event.yellow:hover {
-    background-color: rgb(255, 193, 7);
-}
-
-.fc-event.yellow .fc-event-main {
-    color: rgb(255, 193, 7);
-}
-
-.fc-event.yellow .fc-event-main:hover {
-    color: black;
-}
-*/
 .active .page-link {
     background-color: rgb(146,171,149) !important;
     border-color: rgb(146,171,149) !important;
@@ -725,55 +532,12 @@ lite-youtube {
     margin-bottom: 6px;
 }
 
-.fc-today-button, .fc-agendaWeek-button {
-    display: none;
-}
-
-.fc-day-today {
-    background: #efefef !important;
-}
-
-.fc-button:hover {
-    color: black !important;
-    background-color: white;
-}
-
-.fc-button {
-    margin-left: 16px !important;
-    margin-right: 16px !important;
-    width: 13.4vw;
-    background-color: #92ab95 !important;
-    color: white !important;
-    background-image: none !important;
-    border: 2px solid #92ab95 !important;
-}
-
-.fc-col-header-cell-cushion {
-    color: black;
-    font-weight: 300;
-    text-decoration: none;
-}
-
-.calendar-container {
-    background-color: white !important;
-    min-height: 400px;
-}
-
 .alert {
     opacity: 0.9;
 }
 
 .alert .green-btn:hover {
     text-decoration: none !important;
-}
-
-.fc-center h2 {
-    font-size: 1.6em;
-}
-
-#calendar {
-    background-color: white;
-    min-height: 400px;
 }
 
 .email-contact h3 {
@@ -1014,7 +778,6 @@ p {
     color: inherit;
 }
 
-/*FullCalendar*/
 .green-btn {
     background-color: rgb(146,171,149);
     color: black;
@@ -1026,42 +789,10 @@ p {
     color: white;
 }
 
-#bookAppointmentModal label {
-    font-size: 16px;
-    font-weight: 900;
-}
-
-#onSiteBookMsg {
-    font-size: 16px;
-    font-weight: 900;
-}
-
-#bookAppointmentModal #patientIssueDescription {
-    font-size: 16px;
-}
-
-.calendar-container .modal-title {
-    font-size: 18px;
-    font-weight: 900;
-}
-
-#appointmentDetailsModal #btnDelete {
-    white-space: nowrap;
-}
-
 #contact #submit-btn span {
     display: inline-block;
     margin-bottom: 3px;
     margin-top: 3px;
-}
-
-/*Calendar set working hours*/
-::-webkit-datetime-edit {
-    display: none;
-}
-
-::-webkit-calendar-picker-indicator {
-    padding-right: 10px;
 }
 
 .video-title {

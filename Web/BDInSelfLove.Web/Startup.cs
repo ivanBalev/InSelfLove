@@ -25,6 +25,7 @@
     using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels;
     using CloudinaryDotNet;
+    using Google.Api;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -89,6 +90,22 @@
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
+            // Bundling & Minification
+            //if (!this.environment.IsDevelopment())
+            //{
+            services.AddWebOptimizer(pipeline =>
+            {
+                pipeline.AddCssBundle(
+                    "/css/bundle.css",
+                    "lib/bootstrap/dist/css/bootstrap.min.css",
+                    "lib/lite-youtube-embed/src/lite-yt-embed.min.css",
+                    "lib/leaflet.js/dist/leaflet.css",
+                    "Custom/css/style.css");
+                pipeline.MinifyCssFiles("Custom/css/calendar.css", "Custom/css/stripe-style.css");
+            });
+            //}
+
+
             var connString = this.configuration.GetConnectionString("MySql");
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySql(connString, ServerVersion.AutoDetect(connString)));
@@ -136,13 +153,13 @@
                 });
 
             // TODO: this doesn't seem to be used anywhere
-            var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions()
-            {
-                Path = "/",
-                HttpOnly = false,
-                IsEssential = true,
-                Expires = DateTime.Now.AddMonths(1),
-            };
+            //var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions()
+            //{
+            //    Path = "/",
+            //    HttpOnly = false,
+            //    IsEssential = true,
+            //    Expires = DateTime.Now.AddMonths(1),
+            //};
 
             services.AddControllersWithViews(configure =>
             {
@@ -227,7 +244,7 @@
             app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
             app.UseResponseCompression();
-
+            app.UseWebOptimizer();
             app.UseStaticFiles(new StaticFileOptions()
             {
                 OnPrepareResponse =

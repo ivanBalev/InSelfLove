@@ -10,6 +10,10 @@
     html, body {
         background-attachment: scroll !important;
     }
+
+    .fc-header-toolbar {
+        margin-bottom: 5px !important;
+    }
 }
 
 main {
@@ -37,19 +41,13 @@ footer {
     left: 0;
 }
 
-    footer p {
-        color: white;
-    }
+footer p {
+    color: white;
+}
 
 /* Fixes bug with slot titles when upgraded to v6.0*/
 .fc-sticky {
     position: absolute !important;
-}
-
-
-div.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-    touch-action: manipulation !important;
-    
 }
 
 /*SLIDER*/
@@ -105,3 +103,223 @@ div.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
     top: 2px;
 }
 /*END OF SLIDER*/
+
+/*nqkvi shemi*/
+
+/*Green - rgb(146,171,149)*/
+/*Yellow - rgb(255, 193, 7)*/
+
+.fc-header-toolbar {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+}
+
+.fc-event-time {
+    color: #92ab95;
+}
+
+.fc-daygrid-event {
+    margin: 16px !important;
+}
+
+.fc-daygrid-event:hover {
+    background-color: #92ab95 !important;
+}
+
+/*green*/
+.fc-daygrid-event.green {
+    background-color: #92ab95 !important;
+}
+
+.fc-daygrid-event.green:hover {
+    background-color: white !important;
+}
+
+.fc-daygrid-event.green .fc-event-title {
+    color: white !important;
+}
+
+.fc-daygrid-event.green:hover .fc-event-title {
+    color: black !important;
+}
+
+.fc-daygrid-event.green:hover .fc-event-title-container {
+    background-color: white !important;
+}
+
+/*yellow*/
+.fc-daygrid-event.yellow {
+    background-color: #EEB440 !important;
+    border-color: #EEB440 !important;
+}
+
+.fc-daygrid-event.yellow:hover {
+    background-color: white !important;
+}
+
+.fc-daygrid-event.yellow .fc-event-title {
+    color: black !important;
+}
+
+.fc-daygrid-event.yellow:hover .fc-event-title {
+    color: black !important;
+}
+
+.fc-daygrid-event.yellow:hover .fc-event-title-container {
+    background-color: white !important;
+}
+
+/*gray*/
+.fc-daygrid-event.gray {
+    background: repeating-linear-gradient(-45deg,transparent,transparent 5px,#efefef 0,#efefef 10px);
+}
+
+.fc-daygrid-event.gray:hover {
+    cursor: default !important;
+}
+
+.fc-daygrid-event.gray:hover {
+    cursor: default !important;
+}
+
+.fc-daygrid-event.gray .fc-event-title {
+    color: black !important;
+}
+
+.fc-daygrid-event.gray:hover .fc-event-title {
+    color: black !important;
+    cursor: default;
+}
+
+.fc-daygrid-event.gray:hover .fc-event-title-container {
+    background-color: none;
+    background: repeating-linear-gradient(-45deg,transparent,transparent 5px,#f1f5f9 0,#f1f5f9 10px);
+    cursor: default;
+}
+
+/*default*/
+.fc-event-title-container {
+    min-height: 50px;
+    position: relative;
+    cursor: pointer;
+}
+
+.fc-event-title-container:hover {
+    background-color: #92ab95;
+}
+
+.fc-event-title-container:hover .fc-event-title {
+    color: white;
+}
+
+.fc-event-title-container.green:hover {
+    background-color: white;
+}
+
+.fc-event-title-container.green:hover .fc-event-title {
+    background-color: white;
+    color: #92ab95;
+}
+
+.fc-event-title {
+    color: black;
+    font-weight: 600;
+    /*How to center vertically*/
+    margin: 0;
+    position: absolute;
+    font-size: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.fc-event-main-frame {
+    text-align: center;
+}
+
+.fc-col-header-cell-cushion:hover {
+    color: black;
+    cursor: default;
+}
+
+.fc-today-button, .fc-agendaWeek-button {
+    display: none;
+}
+
+.fc-day-today {
+    background: #efefef !important;
+}
+
+.fc-button:hover {
+    color: black !important;
+    background-color: white;
+}
+
+.fc-button {
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    width: 13.4vw;
+    background-color: #92ab95 !important;
+    color: white !important;
+    background-image: none !important;
+    border: 2px solid #92ab95 !important;
+}
+
+.fc-col-header-cell-cushion {
+    color: black;
+    font-weight: 300;
+    text-decoration: none;
+}
+
+.calendar-container {
+    background-color: white !important;
+    min-height: 400px;
+}
+
+.fc-center h2 {
+    font-size: 1.6em;
+}
+
+#calendar {
+    background-color: white;
+    min-height: 400px;
+}
+
+/*nqkvi shemi*/
+
+#bookAppointmentModal label {
+    font-size: 16px;
+    font-weight: 900;
+}
+
+#onSiteBookMsg {
+    font-size: 16px;
+    font-weight: 900;
+}
+
+#bookAppointmentModal #patientIssueDescription {
+    font-size: 16px;
+}
+
+.calendar-container .modal-title {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+#appointmentDetailsModal #btnDelete {
+    white-space: nowrap;
+}
+
+/*Calendar set working hours*/
+::-webkit-datetime-edit {
+    display: none;
+}
+
+::-webkit-calendar-picker-indicator {
+    padding-right: 10px;
+}
+
+/*fixes background shift when bootstrap modal is opened*/
+body.modal-open {
+    overflow: auto !important;
+    padding-right: 0px !important;
+} 

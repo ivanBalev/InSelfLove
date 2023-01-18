@@ -10,7 +10,8 @@
         {
             if (timezoneId == null)
             {
-                return null;
+                // Default timezone
+                return TZConvert.GetTimeZoneInfo("Europe/Sofia");
             }
 
             try
@@ -36,11 +37,6 @@
 
         public static DateTime ToLocalTime(DateTime utcTime, string timezone)
         {
-            if (timezone == null)
-            {
-                return utcTime;
-            }
-
             return TimeZoneInfo.ConvertTimeFromUtc(utcTime, GetTimezone(timezone));
         }
     }

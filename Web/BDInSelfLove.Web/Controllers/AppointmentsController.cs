@@ -208,7 +208,7 @@
             if (userCurrentTimezone == null)
             {
                 // Try and return what's stored in db or return nothing
-                return user.WindowsTimezoneId ?? null;
+                return user?.WindowsTimezoneId ?? null;
             }
 
             // Convert user's current timezone to windows timezone
