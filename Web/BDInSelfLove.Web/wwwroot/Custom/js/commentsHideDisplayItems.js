@@ -78,6 +78,3 @@ function showAddCommentBox(btn) {
         btn.closest('.card').querySelector('.comment-box').style.display = 'block';
     })
 }
-
-export { showAddCommentBox };
-

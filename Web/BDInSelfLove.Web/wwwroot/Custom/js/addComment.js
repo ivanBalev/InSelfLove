@@ -1,8 +1,4 @@
-﻿import { showAddCommentBox } from './commentsHideDisplayItems.js';
-import { editCommentDisplay, saveCommentEdit } from './editComment.js';
-import { addCommentIdToConfirmationModalClasslist } from './deleteComment.js';
-
-const cultureIsEn = document.cookie.match('Culture')?.input.substr(-2) === 'en';
+﻿const cultureIsEn = document.cookie.match('Culture')?.input.substr(-2) === 'en';
 
 document.querySelectorAll('.addCommentBtn')
     .forEach(b => b.addEventListener('click', e => {

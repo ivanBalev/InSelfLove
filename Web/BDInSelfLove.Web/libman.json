@@ -25,9 +25,16 @@
       "destination": "wwwroot/lib/leaflet.js/"
     },
     {
-      "provider": "jsdelivr",
       "library": "thedatepicker@2.1.6",
       "destination": "wwwroot/lib/the-datepicker.js"
+    },
+    {
+      "library": "tinymce@5.10.7",
+      "destination": "wwwroot/lib/tinyMce"
+    },
+    {
+      "library": "cloudinary-core@2.3.0",
+      "destination": "wwwroot/lib/cloudinary"
     }
   ]
 }

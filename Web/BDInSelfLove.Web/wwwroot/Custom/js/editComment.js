@@ -57,5 +57,3 @@ function saveCommentEdit(e) {
         return response;
     }
 }
-
-export { editCommentDisplay, saveCommentEdit }

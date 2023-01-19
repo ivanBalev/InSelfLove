@@ -42,5 +42,3 @@ function confirmCommentDelete(e) {
     let modalElement = document.getElementById('confirm-comment-delete');
     bootstrap.Modal.getInstance(modalElement).hide();
 }
-
-export { addCommentIdToConfirmationModalClasslist }

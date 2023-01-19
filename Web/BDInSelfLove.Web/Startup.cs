@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Reflection;
 
     using BDInSelfLove.Data;
@@ -32,6 +33,7 @@
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -100,8 +102,16 @@
                     "lib/bootstrap/dist/css/bootstrap.min.css",
                     "lib/lite-youtube-embed/src/lite-yt-embed.min.css",
                     "lib/leaflet.js/dist/leaflet.css",
+                    "lib/the-datepicker.js/dist/the-datepicker.min.css",
                     "Custom/css/style.css");
                 pipeline.MinifyCssFiles("Custom/css/calendar.css", "Custom/css/stripe-style.css");
+
+                pipeline.AddJavaScriptBundle(
+                    "/js/articleCreateAndEditHeadBundle.js",
+                    "lib/tinyMce/tinymce.min.js",
+                    "Custom/js/tinyMce.js",
+                    "lib/the-datepicker.js/dist/the-datepicker.min.js"
+                    );
             });
             //}
 
@@ -152,15 +162,6 @@
                     options.CheckConsentNeeded = context => true;
                 });
 
-            // TODO: this doesn't seem to be used anywhere
-            //var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions()
-            //{
-            //    Path = "/",
-            //    HttpOnly = false,
-            //    IsEssential = true,
-            //    Expires = DateTime.Now.AddMonths(1),
-            //};
-
             services.AddControllersWithViews(configure =>
             {
                 configure.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
@@ -183,6 +184,9 @@
             services.AddResponseCompression(options =>
             {
                 options.EnableForHttps = true;
+                // WebOptimizer output type is text/js which is not recognized by default 
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "text/javascript" });
             });
 
             // Application services
@@ -268,14 +272,6 @@
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            // Buffer on disk if needed
-            // Causes stream error
-            //app.Use((context, next) =>
-            //{
-            //    context.Request.EnableBuffering();
-            //    return next();
-            //});
 
             app.UseEndpoints(
                 endpoints =>
