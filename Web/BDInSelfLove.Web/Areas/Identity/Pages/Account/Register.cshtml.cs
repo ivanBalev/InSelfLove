@@ -6,10 +6,12 @@
     using System.Text;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
-
+    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Data.CloudinaryServices;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.UI.Services;
     using Microsoft.AspNetCore.Mvc;
@@ -25,17 +27,20 @@
 
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICloudinaryService _cloudinaryService;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            ICloudinaryService cloudinaryService,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _cloudinaryService = cloudinaryService;
             _logger = logger;
             _emailSender = emailSender;
         }
@@ -66,11 +71,12 @@
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+
             public string ConfirmPassword { get; set; }
 
-            public string ProfilePicture { get; set; }
-
             public string TimezoneIANA { get; set; }
+
+            public IFormFile ProfilePicture { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -91,17 +97,14 @@
                     return Page();
                 }
 
-                string windowsTimezoneId = null;
-                if (this.Input.TimezoneIANA != null)
-                {
-                    windowsTimezoneId = TZConvert.GetTimeZoneInfo(this.Input.TimezoneIANA).Id;
-                }
+                string windowsTimezoneId = TimezoneHelper.GetTimezone(this.Input.TimezoneIANA)?.Id ?? null;
 
                 var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email, WindowsTimezoneId = windowsTimezoneId };
 
-                if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)
+                if (this.Input.ProfilePicture != null)
                 {
-                    user.ProfilePhoto = this.Input.ProfilePicture;
+                    user.ProfilePhoto = await this._cloudinaryService
+                        .UploadPicture(this.Input.ProfilePicture, this.Input.ProfilePicture.FileName.Split('.')[0]);
                 }
                 else
                 {

@@ -107,11 +107,44 @@
                 pipeline.MinifyCssFiles("Custom/css/calendar.css", "Custom/css/stripe-style.css");
 
                 pipeline.AddJavaScriptBundle(
-                    "/js/articleCreateAndEditHeadBundle.js",
-                    "lib/tinyMce/tinymce.min.js",
-                    "Custom/js/tinyMce.js",
-                    "lib/the-datepicker.js/dist/the-datepicker.min.js"
-                    );
+                    "/js/layout.js",
+                    "/lib/popper.js/umd/popper.min.js",
+                    "/lib/bootstrap/dist/js/bootstrap.min.js",
+                    "/Custom/js/pwa.js",
+                    "/Custom/js/copyrightjs.js",
+                    "/Custom/js/collapseNavbar.js",
+                    "/Custom/js/cookieConsent.js",
+                    "/Custom/js/timezone.js",
+                    "/lib/lite-youtube-embed/src/lite-yt-embed.min.js",
+                    "/Custom/js/homeVideoTitleLengthAdjust.js",
+                    "/Custom/js/equalizeArticleHeight.js",
+                    "/Custom/js/equalizeVideoHeight.js",
+                    "/Custom/js/searchNav.js",
+                    "/Custom/js/searchPagination.js");
+
+                pipeline.AddJavaScriptBundle(
+                    "/js/comments.js",
+                    "/Custom/js/commentsHideDisplayItems.js",
+                    "/Custom/js/editComment.js",
+                    "/Custom/js/deleteComment.js",
+                    "/Custom/js/addComment.js");
+
+                pipeline.AddJavaScriptBundle(
+                    "/js/cloudinary.js",
+                    "/lib/cloudinary/cloudinary-core-shrinkwrap.min.js",
+                    "/Custom/js/cloudinary.js");
+
+                pipeline.AddJavaScriptBundle(
+                    "/js/calendar.js",
+                    "/lib/fullcalendar/index.global.min.js",
+                    "/Custom/js/fullcalendar.js");
+
+                pipeline.AddJavaScriptBundle(
+                    "/js/contacts.js",
+                    "/lib/leaflet.js/dist/leaflet.js",
+                    "/Custom/js/leaflet.js",
+                    "/Custom/js/recaptcha.js");
+
             });
             //}
 

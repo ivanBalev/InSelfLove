@@ -1,4 +1,4 @@
-﻿document.querySelectorAll('.video-title').forEach(t => {
+﻿document.querySelectorAll('.video-title')?.forEach(t => {
     let innerText = t.innerText;
     let windowWidth = window.innerWidth;
 

@@ -2,9 +2,12 @@
 @using Microsoft.AspNetCore.Identity
 @using BDInSelfLove.Data.Models
 @using BDInSelfLove.Common
+@using CloudinaryDotNet;
+
 
 @model BDInSelfLove.Web.ViewModels.Comment.CommentViewModel
 
+@inject CloudinaryDotNet.Cloudinary Cloudinary
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
@@ -18,6 +21,7 @@
 
     string commentLevel = "";
 
+    // This partial is recursive. We use ViewData to determine the comment's level(main or subcomment)
     // Profile pic sizing
     if (Model.ParentCommentId == null)
     {
@@ -39,6 +43,15 @@
         ViewData["height"] = "30";
     }
 
+    var endP = string.Join('/', Model.UserProfilePhoto.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
+
+    var profilePic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
+    .Width(ViewData["width"]?.ToString() ?? "64")
+    .Height(ViewData["height"]?.ToString() ?? "64")
+    .Crop("fill"))
+    .Secure(true)
+    .BuildImageTag(endP, new StringDictionary("class=d-block rounded-circle", "alt=User profile photo"));
+
     // Variables
     bool userIsSignedIn = this.SignInManager.IsSignedIn(this.User);
     bool commentsAvailable = Model.SubComments.Count > 0;
@@ -51,9 +64,7 @@
             <div class="card border-0">
                 <div class="card-header bg-white border-0">
                     <div class="media flex-wrap w-100 align-items-center">
-                        <img src="@(Model.UserProfilePhoto == null ? "../Custom/img/avatar.png" : Model.UserProfilePhoto)"
-                             width="@ViewData["width"]" height="@ViewData["height"]"
-                             class="d-block rounded-circle" alt="User profile photo">
+                       @Html.Raw(profilePic)
                         <div class="media-body mx-3">
                             <div><span class="userName">@Model.UserUserName</span></div>
                             <div class="text-muted small">@Model.CreatedOn.ToString("dd MMMM yyyy HH:mm")</div>

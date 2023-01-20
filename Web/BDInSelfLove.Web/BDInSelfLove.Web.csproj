@@ -218,7 +218,7 @@
 		<Content Update="wwwroot\Custom\js\homeVideoTitleLengthAdjust.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="wwwroot\Custom\js\initialSeatch.js">
+		<Content Update="wwwroot\Custom\js\searchNav.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\Custom\js\leaflet.js">
@@ -227,13 +227,10 @@
 		<Content Update="wwwroot\Custom\js\equalizeVideoHeight.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="wwwroot\Custom\js\profilePictureCompression.js">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		<Content Update="wwwroot\Custom\js\pwa.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="wwwroot\Custom\js\search.js">
+		<Content Update="wwwroot\Custom\js\searchPagination.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\Custom\js\setTimezoneOnRegister.js">

@@ -1,4 +1,9 @@
 ﻿const paginationScripts = function (refresherId) {
+    // script is intended only for the search page for now. Articles' & Videos' pagination is not loaded dynamically
+    if (!document.getElementById('search-page')) {
+        return;
+    }
+
     if (refresherId === undefined) {
         refresherId = '';
     }

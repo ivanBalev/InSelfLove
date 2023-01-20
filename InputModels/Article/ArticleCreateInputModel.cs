@@ -25,14 +25,5 @@ namespace BDInSelfLove.Web.InputModels.Article
         public DateTime CreatedOn { get; set; }
 
         public string Slug => Regex.Replace(this.Title.ToLower().Replace(' ', '-'), "[^a-zа-я0-9-_~]+", string.Empty);
-
-        //public virtual void CreateMappings(IProfileExpression configuration)
-        //{
-        //    // Convert preview img from base64 to byte[].
-        //    configuration.CreateMap<ArticleCreateInputModel, Data.Models.Article>().ForMember(
-        //        m => m.PreviewImageBlob,
-        //        opt => opt.MapFrom(x => Convert.FromBase64String(x.PreviewImage
-        //        .Split(',', StringSplitOptions.RemoveEmptyEntries)[1])));
-        //}
     }
 }

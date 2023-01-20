@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using BDInSelfLove.Data.Models;
+using BDInSelfLove.Services.Data.CloudinaryServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,13 +14,16 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ICloudinaryService cloudinaryService;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            this.cloudinaryService = cloudinaryService;
         }
 
         public string Username { get; set; }
@@ -37,7 +42,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
-            public string ProfilePicture { get; set; }
+            public IFormFile ProfilePicture { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -88,9 +93,10 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if (this.Input.ProfilePicture != null && this.Input.ProfilePicture.Length * (3 / 4) < 10 * 1024 * 1024)
+            if (this.Input.ProfilePicture != null)
             {
-                user.ProfilePhoto = this.Input.ProfilePicture;
+                user.ProfilePhoto = await this.cloudinaryService
+               .UploadPicture(this.Input.ProfilePicture, this.Input.ProfilePicture.FileName.Split('.')[0]);
                 await this._userManager.UpdateAsync(user);
             }
 

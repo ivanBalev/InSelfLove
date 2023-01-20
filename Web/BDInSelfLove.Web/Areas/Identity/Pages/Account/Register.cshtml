@@ -52,9 +52,9 @@
                     }
                     <hr />
                 </section>
-                <form id="profile-form" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <form id="profile-form" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
                     <div asp-validation-summary="All" class="text-danger"></div>
-                    <input class="timezone-IANA" type="hidden" asp-for="Input.TimezoneIANA" />
+                    <input type="hidden" asp-for="Input.TimezoneIANA" />
                     <div class="form-group">
                         <label>@localizer["Username"]</label>
                         <input asp-for="Input.Username" class="form-control" />
@@ -76,11 +76,10 @@
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label for="originalProfilePic" class="btn white-btn mb-0">
+                        <label class="btn white-btn mb-3">
                             @localizer["Upload profile picture"]
-                            <input type="file" id="originalProfilePic" hidden>
+                            <input type="file" asp-for="Input.ProfilePicture" hidden>
                         </label>
-                        <span class='label label-info' id="upload-file-info"></span>
                     </div>
                     <div>
                         <button type="submit" class="btn green-btn">@localizer["Register"]</button>
@@ -90,8 +89,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script src="~/Custom/js/setTimezoneOnRegister.js"></script>
-    <script src="~/Custom/js/profilePictureCompression.js"></script>
-}

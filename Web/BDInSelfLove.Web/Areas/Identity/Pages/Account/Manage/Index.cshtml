@@ -1,10 +1,22 @@
 ﻿@page
 @model IndexModel
+
+@using CloudinaryDotNet;
+
+@inject CloudinaryDotNet.Cloudinary Cloudinary
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 @{
     ViewData["Title"] = localizer["Profile"].Value;
     ViewData["ActivePage"] = ManageNavPages.Index;
+
+    var endP = string.Join('/', Model.ProfilePicture.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
+
+    var profilePic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
+    .Width("auto")
+    .Crop("fill"))
+    .Secure(true)
+    .BuildImageTag(endP, new StringDictionary("class=d-block img-fluid", "alt=Profile picture"));
 }
 
 
@@ -20,24 +32,21 @@
                 <div class="form-group mb-0">
                     <label>@localizer["Profile picture"]</label>
                     <div class="mb-3">
-                        <img src=@(Model.ProfilePicture == null ? "../../Custom/img/avatar.png" : Model.ProfilePicture) alt="Profile picture" class="d-block img-fluid">
+                        @Html.Raw(profilePic)
                     </div>
-                    <label for="originalProfilePic" class="btn white-btn mb-3">
+
+                    <label class="btn white-btn mb-3">
                         @localizer["Upload new profile picture"]
-                        <input type="file" id="originalProfilePic" hidden>
+                        <input type="file" asp-for="@Model.ProfilePicture" hidden>
                     </label>
-                    <span class='label label-info' id="upload-file-info"></span>
-                    <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
                 </div>
                 <button id="update-profile-button" type="submit" class="btn green-btn">@localizer["Save"]</button>
             </form>
         </div>
-        
     </div>
 </div>
 
-
-@section Scripts {
-    <script src="~/Custom/js/profilePictureCompression.js"></script>
+@section Scripts
+    {
+    <script src="~/js/cloudinary.js"></script>
 }
-

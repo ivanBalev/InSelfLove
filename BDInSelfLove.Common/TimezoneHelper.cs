@@ -8,12 +8,6 @@
     {
         public static TimeZoneInfo GetTimezone(string timezoneId)
         {
-            if (timezoneId == null)
-            {
-                // Default timezone
-                return TZConvert.GetTimeZoneInfo("Europe/Sofia");
-            }
-
             try
             {
                 return TZConvert.GetTimeZoneInfo(timezoneId);
