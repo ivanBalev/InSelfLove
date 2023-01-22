@@ -85,7 +85,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your password has been set.";
+            StatusMessage = "Паролава ви е зададена.";
 
             return RedirectToPage();
         }

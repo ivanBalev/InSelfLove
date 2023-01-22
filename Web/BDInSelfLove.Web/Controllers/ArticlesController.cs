@@ -13,15 +13,17 @@
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.CloudinaryServices;
     using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.Controllers.Helpers;
     using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels.Article;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    public class ArticlesController : PreviewAndPaginationController
+    public class ArticlesController : PaginationHelper
     {
         private readonly ICloudinaryService cloudinaryService;
+        private readonly IArticleService articleService;
 
         public ArticlesController(
             ICloudinaryService cloudinaryService,
@@ -29,34 +31,34 @@
             : base(articleService)
         {
             this.cloudinaryService = cloudinaryService;
+            this.articleService = articleService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1)
         {
-            var viewModel = await this.GetArticlesPreviewAndPagination(page);
-
-            return this.View(viewModel);
+            return this.View(await this.GetArticlesPreview(page));
         }
 
         [HttpGet]
         [Route("Articles/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
-            slug = HttpUtility.UrlDecode(slug);
+            // Get info for client
             var viewModel = AutoMapperConfig.MapperInstance
-                .Map<ArticleViewModel>(await this.ArticleService
+                .Map<ArticleViewModel>(await this.articleService
                 .GetBySlug(slug));
 
+            // Return 404 if article doesn't exist
             if (viewModel == null)
             {
                 return this.NotFound();
             }
 
-            for (int i = 0; i < viewModel?.Comments.Count; i++)
+            // Adjust comments CreatedOn to user's local time
+            foreach (var comment in viewModel.Comments)
             {
-                viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(
-                    viewModel.Comments[i].CreatedOn, this.UserTimezoneIdFromCookie);
+                comment.CreatedOn = TimezoneHelper.ToLocalTime(comment.CreatedOn, this.UserTimezoneIdFromCookie);
             }
 
             return this.View(viewModel);
@@ -79,7 +81,7 @@
             //int syllablesResult = await this.EnterContentSyllables(inputModel);
             await this.SetArticlePhoto(inputModel);
 
-            string slug = await this.ArticleService
+            string slug = await this.articleService
                 .Create(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
 
             //if (syllablesResult != 1)
@@ -94,7 +96,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await this.ArticleService.GetById(id)
+            var model = await this.articleService.GetById(id)
                 .To<ArticleEditInputModel>().FirstOrDefaultAsync();
 
             return this.View(model);
@@ -106,7 +108,7 @@
         {
             await this.SetArticlePhoto(inputModel);
 
-            string slug = await this.ArticleService
+            string slug = await this.articleService
                 .Edit(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
 
             return this.RedirectToAction("Single", new { slug });
@@ -116,7 +118,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)
         {
-            await this.ArticleService.Delete(id);
+            await this.articleService.Delete(id);
 
             return this.Redirect("/");
         }

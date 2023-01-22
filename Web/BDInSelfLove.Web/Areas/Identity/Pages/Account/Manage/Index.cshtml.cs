@@ -82,16 +82,16 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
-                }
-            }
+            //var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            //if (Input.PhoneNumber != phoneNumber)
+            //{
+            //    var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+            //    if (!setPhoneResult.Succeeded)
+            //    {
+            //        var userId = await _userManager.GetUserIdAsync(user);
+            //        throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
+            //    }
+            //}
 
             if (this.Input.ProfilePicture != null)
             {
@@ -101,7 +101,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
             }
 
             await this._signInManager.RefreshSignInAsync(user);
-            this.StatusMessage = "Your profile has been updated";
+            this.StatusMessage = "Профилът ви е обновен";
             return this.RedirectToPage();
         }
     }

@@ -4,10 +4,11 @@
 
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.Videos;
+    using BDInSelfLove.Web.Controllers.Helpers;
     using BDInSelfLove.Web.ViewModels.Search;
     using Microsoft.AspNetCore.Mvc;
 
-    public class SearchController : PreviewAndPaginationController
+    public class SearchController : PaginationHelper
     {
         private const string ArticleActionName = "Article";
         private const string VideoActionName = "Video";
@@ -24,8 +25,8 @@
             var viewModel = new IndexSearchViewModel
             {
                 SearchTerm = searchTerm,
-                ArticlesPagination = await this.GetArticlesPreviewAndPagination(1, searchTerm, ArticleActionName),
-                VideosPagination = await this.GetVideosPreviewAndPagination(1, searchTerm, VideoActionName),
+                ArticlesPagination = await this.GetArticlesPreview(1, searchTerm, ArticleActionName),
+                VideosPagination = await this.GetVideosPreview(1, searchTerm, VideoActionName),
             };
             return this.View(viewModel);
         }
@@ -33,14 +34,14 @@
         [Route("api/Search/Article")]
         public async Task<IActionResult> Article(int page, string searchTerm)
         {
-            var viewModel = await this.GetArticlesPreviewAndPagination(page, searchTerm, ArticleActionName);
+            var viewModel = await this.GetArticlesPreview(page, searchTerm, ArticleActionName);
             return this.View("_ArticlesAllPartial", viewModel);
         }
 
         [Route("api/Search/Video")]
         public async Task<IActionResult> Video(int page, string searchTerm)
         {
-            var viewModel = await this.GetVideosPreviewAndPagination(page, searchTerm, VideoActionName);
+            var viewModel = await this.GetVideosPreview(page, searchTerm, VideoActionName);
             return this.View("_VideosAllPartial", viewModel);
         }
     }

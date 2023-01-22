@@ -6,6 +6,7 @@
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
+    using BDInSelfLove.Web.Controllers.Helpers;
     using BDInSelfLove.Web.Infrastructure.Filters.ActionFilters;
     using BDInSelfLove.Web.InputModels.Video;
     using BDInSelfLove.Web.ViewModels.Video;
@@ -13,17 +14,20 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    public class VideosController : PreviewAndPaginationController
+    public class VideosController : PaginationHelper
     {
+        private readonly IVideoService videoService;
+
         public VideosController(
             IVideoService videoService)
             : base(videoService)
         {
+            this.videoService = videoService;
         }
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            var viewModel = await this.GetVideosPreviewAndPagination(page);
+            var viewModel = await this.GetVideosPreview(page);
 
             return this.View(viewModel);
         }
@@ -33,7 +37,7 @@
         {
             slug = HttpUtility.UrlDecode(slug);
             var viewModel = AutoMapperConfig.MapperInstance
-                .Map<VideoViewModel>(await this.VideoService
+                .Map<VideoViewModel>(await this.videoService
                 .GetBySlug(slug));
 
             if (viewModel == null)
@@ -65,7 +69,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(CreateVideoInputModel inputModel)
         {
-            string slug = await this.VideoService
+            string slug = await this.videoService
                 .Create(AutoMapperConfig.MapperInstance.Map<Video>(inputModel));
 
             return this.RedirectToAction("Single", new { slug });
@@ -75,7 +79,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await this.VideoService.GetById(id)
+            var model = await this.videoService.GetById(id)
                 .To<EditVideoInputModel>().FirstOrDefaultAsync();
 
             return this.View(model);
@@ -85,7 +89,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Edit(EditVideoInputModel inputModel)
         {
-            string slug = await this.VideoService
+            string slug = await this.videoService
                 .Edit(AutoMapperConfig.MapperInstance.Map<Video>(inputModel));
 
             return this.RedirectToAction("Single", new { slug });
@@ -94,7 +98,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)
         {
-            await this.VideoService.Delete(id);
+            await this.videoService.Delete(id);
 
             return this.Redirect("/");
         }

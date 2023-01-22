@@ -113,11 +113,6 @@
 
         public async Task<Article> GetBySlug(string slug)
         {
-            if (slug == null)
-            {
-                return null;
-            }
-
             var article = await this.articleRepository.All()
                 .Where(a => a.Slug.Equals(slug.ToLower()))
                 .Select(x => new Article

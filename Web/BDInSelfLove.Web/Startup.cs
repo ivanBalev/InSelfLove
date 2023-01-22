@@ -26,7 +26,6 @@
     using BDInSelfLove.Web.InputModels.Article;
     using BDInSelfLove.Web.ViewModels;
     using CloudinaryDotNet;
-    using Google.Api;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -92,6 +91,7 @@
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
+            // TODO: Make debugging easier
             // Bundling & Minification
             //if (!this.environment.IsDevelopment())
             //{

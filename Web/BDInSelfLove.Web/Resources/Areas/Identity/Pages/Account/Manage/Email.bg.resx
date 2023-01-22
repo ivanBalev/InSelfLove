@@ -130,6 +130,6 @@
     <value>Нов имейл</value>
   </data>
   <data name="Send verification email" xml:space="preserve">
-    <value>Изпрати верификационен имейл</value>
+    <value>Изпрати имейл за потвърждение</value>
   </data>
 </root>
