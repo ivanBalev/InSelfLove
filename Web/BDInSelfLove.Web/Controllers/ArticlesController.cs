@@ -5,9 +5,10 @@
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using System.Web;
+
     using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
@@ -19,6 +20,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Newtonsoft.Json.Linq;
 
     public class ArticlesController : PaginationHelper
     {
@@ -44,21 +46,15 @@
         [Route("Articles/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
-            // Get info for client
+            // Get info for client & create view model
             var viewModel = AutoMapperConfig.MapperInstance
-                .Map<ArticleViewModel>(await this.articleService
-                .GetBySlug(slug));
+                .Map<ArticleViewModel>(
+                await this.articleService.GetBySlug(slug, this.UserTimezoneIdFromCookie));
 
             // Return 404 if article doesn't exist
             if (viewModel == null)
             {
                 return this.NotFound();
-            }
-
-            // Adjust comments CreatedOn to user's local time
-            foreach (var comment in viewModel.Comments)
-            {
-                comment.CreatedOn = TimezoneHelper.ToLocalTime(comment.CreatedOn, this.UserTimezoneIdFromCookie);
             }
 
             return this.View(viewModel);
@@ -78,16 +74,16 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
         {
-            //int syllablesResult = await this.EnterContentSyllables(inputModel);
+            int syllablesResult = await this.EnterContentSyllables(inputModel);
             await this.SetArticlePhoto(inputModel);
 
             string slug = await this.articleService
                 .Create(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
 
-            //if (syllablesResult != 1)
-            //{
-            //    this.TempData["StatusMessage"] = "Syllabification error";
-            //}
+            if (syllablesResult != 1)
+            {
+                this.TempData["StatusMessage"] = "Syllabification error";
+            }
 
             return this.RedirectToAction("Single", new { slug });
         }
@@ -96,6 +92,7 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Edit(int id)
         {
+            // Get article & map to view/input model
             var model = await this.articleService.GetById(id)
                 .To<ArticleEditInputModel>().FirstOrDefaultAsync();
 
@@ -108,9 +105,11 @@
         {
             await this.SetArticlePhoto(inputModel);
 
+            // Edit article and return new slug(if title is updated)
             string slug = await this.articleService
                 .Edit(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
 
+            // use new slug to open edited article
             return this.RedirectToAction("Single", new { slug });
         }
 
@@ -119,7 +118,6 @@
         public async Task<IActionResult> Delete(int id)
         {
             await this.articleService.Delete(id);
-
             return this.Redirect("/");
         }
 
@@ -131,14 +129,26 @@
             var uri = "http://rechnik.chitanka.info/w/";
 
             // Remove short and hyphenated words
-            string[] longWords = Regex.Replace(content, @"<[^>]+>", string.Empty)
+            string[] longWords = Regex.Replace(content, "[^а-яА-Я -]+", string.Empty)
                                         .Split(new char[] { '-', ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                                        .Select(x => Regex.Match(x, "[а-яА-Я]{5,}").Value)
+                                        .Where(x => x.Length >= 5)
+                                        .Select(x => uri + x)
                                         .ToArray();
+            var allUris = new List<string>();
 
+            foreach (var word in longWords)
+            {
+                allUris.Add(uri + word);
+            }
+
+            var result = (await this.GetAsync(allUris))
+                .Where(x => x.Status.ToString() != "Faulted")
+                .Select(x => x.Result).ToList();
+
+            ;
             // Keep track of words that have already been modified.
             // We may have the same word in content more than once(Character capitalization).
-            var replacedWordsIndexes = new List<int>();
+            //var replacedWordsIndexes = new List<int>();
 
             for (int i = 0; i < longWords.Length; i++)
             {
@@ -147,7 +157,7 @@
 
                 try
                 {
-                    html = await this.GetAsync(uri + originalWord);
+                    //html = await this.GetAsync(uri + originalWord);
                 }
                 catch (Exception e)
                 {
@@ -163,7 +173,7 @@
                 var redirectHrefs = redirectRegex.Matches(html);
                 if (redirectHrefs.Count > 0)
                 {
-                    html = await this.GetAsync(uri + redirectHrefs.First().Groups["href"].Value);
+                    //html = await this.GetAsync(uri + redirectHrefs.First().Groups["href"].Value);
                 }
 
                 // Word is in infinitive
@@ -186,12 +196,12 @@
                 var indexOfOriginalWord = content.IndexOf(originalWord);
 
                 // If word exists more than once in original content, jump forward to the next instance of the word
-                while (replacedWordsIndexes.Contains(indexOfOriginalWord))
-                {
-                    indexOfOriginalWord = content.IndexOf(originalWord, indexOfOriginalWord + originalWord.Length);
-                }
+                //while (replacedWordsIndexes.Contains(indexOfOriginalWord))
+                //{
+                //    indexOfOriginalWord = content.IndexOf(originalWord, indexOfOriginalWord + originalWord.Length);
+                //}
 
-                replacedWordsIndexes.Add(indexOfOriginalWord);
+                //replacedWordsIndexes.Add(indexOfOriginalWord);
 
                 // Replace original word with hyphenated version
                 content = content.Remove(indexOfOriginalWord, originalWord.Length);
@@ -251,17 +261,28 @@
             }
         }
 
-        private async Task<string> GetAsync(string uri)
+        private async Task<List<Task<string>>> GetAsync(List<string> uris)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            var httpClient = new HttpClient();
+            var taskList = new List<Task<string>>();
 
-            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+            foreach (var uri in uris)
             {
-                return await reader.ReadToEndAsync();
+                // by not awaiting each call, we achieve parallelism
+                taskList.Add(httpClient.GetStringAsync(uri));
             }
+
+            try
+            {
+                // asynchronously wait until all tasks are complete
+                await Task.WhenAll(taskList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                ;
+            }
+
+            return taskList;
         }
     }
 }

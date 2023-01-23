@@ -29,8 +29,6 @@
                               new UsersSeeder(),
                               new ArticleSeeder(),
                               new VideoSeeder(),
-                              new AppointmentSeeder(),
-                              new CommentsSeeder(),
                           };
 
             foreach (var seeder in seeders)

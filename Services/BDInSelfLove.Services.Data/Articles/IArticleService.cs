@@ -19,7 +19,7 @@
 
         IQueryable<Article> GetById(int id);
 
-        Task<Article> GetBySlug(string slug);
+        Task<Article> GetBySlug(string slug, string userTimezone);
 
         Task<IList<Article>> GetSideArticles(int articlesCount, DateTime date);
     }

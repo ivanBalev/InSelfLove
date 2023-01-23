@@ -9,12 +9,17 @@
         public static string[] GetSearchItems(string searchInput)
         {
             searchInput = searchInput.ToLower();
+
+            // Leave only word characters
             searchInput = Regex.Replace(searchInput, @"[^\w\.@\- ]", string.Empty);
+
+            // Return only meaningful words
             return searchInput.Split().Where(w => !CommonWords().Contains(w)).Select(x => x.Trim()).ToArray();
         }
 
         public static IList<string> CommonWords()
         {
+            // TODO: Find a more adequate list of non-meaningful Bulgarian words
             var bgWordsString = "на, и, в, е, от, за, се, пр, с, да, по, през, са," +
                 " като, а, си, не, година, до, че, след, име, това, му, при, най, към, или, има," +
                 " които, но, дата, място, той, който, град, н, те, община, във, област, време, години," +

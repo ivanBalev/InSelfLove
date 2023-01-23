@@ -95,29 +95,38 @@
         public ICollection<Comment> ArrangeCommentHierarchy(ICollection<Comment> comments)
         {
             // Populate subcomments references
+
+            // Get all Subcomments
             foreach (var comment in comments.Where(c => c.ParentCommentId != null))
             {
+                // Find the subcomment's parent
                 var parentComment = comments.SingleOrDefault(x => x.Id == comment.ParentCommentId);
+
+                // Add the subcomment to the parent's subcomments list
                 parentComment.SubComments.Add(comment);
             }
 
-            // Remove subcomments from main structure, leaving only nested structure, and order comments
+            // Remove subcomments from main structure
+            // Leave only nested structure that we just created
+            // And order main comments by date for client
             comments = comments.Where(c => c.ParentCommentId == null)
-                  .OrderByDescending(c => c.CreatedOn.Date)
-               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
+                               .OrderByDescending(c => c.CreatedOn.Date)
+                               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
 
             // Order subcomments
-            foreach (var firstLevelSubcomment in comments)
+            foreach (var mainComment in comments)
             {
-                firstLevelSubcomment.SubComments = firstLevelSubcomment.SubComments?
-                      .OrderByDescending(c => c.CreatedOn.Date)
-               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
+                // Order 1st level subcomments
+                mainComment.SubComments = mainComment.SubComments?
+                               .OrderByDescending(c => c.CreatedOn.Date)
+                               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
 
-                foreach (var secondLevelSubcomment in firstLevelSubcomment.SubComments)
+                foreach (var subComment in mainComment.SubComments)
                 {
-                    secondLevelSubcomment.SubComments = secondLevelSubcomment.SubComments?
-                         .OrderByDescending(c => c.CreatedOn.Date)
-               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
+                    // Order 2nd level subcomments (max level of nesting is 2nd level by default)
+                    subComment.SubComments = subComment.SubComments?
+                               .OrderByDescending(c => c.CreatedOn.Date)
+                               .ThenByDescending(c => c.CreatedOn.TimeOfDay).ToList();
                 }
             }
 
