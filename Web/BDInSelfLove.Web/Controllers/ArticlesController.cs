@@ -124,57 +124,72 @@
         // Helper methods
         private async Task<int> EnterContentSyllables(ArticleCreateInputModel inputModel)
         {
+            // [^а-яА-яA-Za-z-–!?,.:;\\s\\d„“\"'()\\/&@№$#%*()_+]+
+
             var invisibleHyphenChar = "&shy;";
+
             var content = inputModel.Content;
             var uri = "http://rechnik.chitanka.info/w/";
 
-            // Remove short and hyphenated words
-            string[] longWords = Regex.Replace(content, "[^а-яА-Я -]+", string.Empty)
-                                        .Split(new char[] { '-', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+            // Remove short and duplicate words
+            string[] longWords = Regex.Replace(content, "<[^>]+>|[^а-яА-Я-–]+", " ")
+                                        .Split(new char[] { '-', '–', ' ' }, StringSplitOptions.RemoveEmptyEntries)
                                         .Where(x => x.Length >= 5)
-                                        .Select(x => uri + x)
+                                        .Select(x => x.ToLower())
+                                        .Distinct()
                                         .ToArray();
-            var allUris = new List<string>();
 
-            foreach (var word in longWords)
-            {
-                allUris.Add(uri + word);
-            }
-
-            var result = (await this.GetAsync(allUris))
+            // Get result and filter only successful
+            var result = (await this.GetAsync(longWords.Select(x => uri + x)))
                 .Where(x => x.Status.ToString() != "Faulted")
                 .Select(x => x.Result).ToList();
 
-            ;
-            // Keep track of words that have already been modified.
-            // We may have the same word in content more than once(Character capitalization).
-            //var replacedWordsIndexes = new List<int>();
+            // Get all redirects (meaning word is not in infinitive)
+            var redirectRegex = new Regex(@"<p class=""data"">(.|\n)+<a href=""/w/(?<href>[^<]+)"">(.|\n)+<\/p>");
+            var redirectIndices = new List<int>();
+            var redirectUris = new List<string>();
 
-            for (int i = 0; i < longWords.Length; i++)
+                                     // TODO: //[^\s—]+
+            var titleRegex = new Regex(@"<title>[\w\W]*<\/title>");
+            var successfulWords = new List<string>();
+
+            for (int i = 0; i < result.Count; i++)
             {
-                var originalWord = longWords[i];
-                string html = string.Empty;
+                // Keep track of all successful requests                     
+                var title = Regex.Replace(titleRegex.Match(result[i]).Value, "[^а-яА-Я]+", " ")
+                   .Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+                successfulWords.Add(title);
 
-                try
-                {
-                    //html = await this.GetAsync(uri + originalWord);
-                }
-                catch (Exception e)
-                {
-                    // 404 Word not found
-                    continue;
-                }
-
-                var redirectRegex = new Regex(@"<p class=""data"">(.|\n)+<a href=""/w/(?<href>[^<]+)"">(.|\n)+<\/p>");
-                var wordFoundRegex = new Regex(@"<div class=""data"">(?<data>(.|\n)+)</div>");
-                var termsRegex = new Regex(@"<td><a href=[^>]+>(?<term>.{6,})</a>");
-
-                // Most likely, original words won't be in infinitive, so we'll be redirected
-                var redirectHrefs = redirectRegex.Matches(html);
+                var redirectHrefs = redirectRegex.Matches(result[i]);
+               
                 if (redirectHrefs.Count > 0)
                 {
-                    //html = await this.GetAsync(uri + redirectHrefs.First().Groups["href"].Value);
+                    // Keep track of replaced words indices in original collection
+                    redirectIndices.Add(i);
+
+                    // Enter redirect uri in list for parallel requests after
+                    redirectUris.Add(uri + redirectHrefs.First().Groups["href"].Value);
                 }
+            }
+
+            // All results should be successful as unsuccessful ones were
+            // already filtered in original results collection
+            var redirectsResult = (await this.GetAsync(redirectUris))
+                .Select(x => x.Result).ToList();
+
+            // Replace redirects in original collection with new results
+            for (int i = 0; i < redirectsResult.Count; i++)
+            {
+                result[redirectIndices[i]] = redirectsResult[i];
+            }
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                var html = result[i];
+
+                // TODO: are html results in same order as original words? how to filter unsuccessful requests from longwords collection?
+                var originalWord = successfulWords[i];
+                var termsRegex = new Regex(@"<td><a href=[^>]+>(?<term>.{5,})</a>");
 
                 // Word is in infinitive
                 var matchingTerm = termsRegex.Matches(html).Select(m => m.Groups["term"].Value)
@@ -188,28 +203,34 @@
                     continue;
                 }
 
-                // Add hyphenation to original word
-                var capitalizedMatchingTerm = this.CapitalizeMatchingTerm(originalWord, matchingTerm);
-                capitalizedMatchingTerm = capitalizedMatchingTerm.Replace("-", invisibleHyphenChar);
-
                 // Get word index in original content
-                var indexOfOriginalWord = content.IndexOf(originalWord);
+                var indexOfOriginalWord = content.ToLower().IndexOf(originalWord);
 
-                // If word exists more than once in original content, jump forward to the next instance of the word
-                //while (replacedWordsIndexes.Contains(indexOfOriginalWord))
-                //{
-                //    indexOfOriginalWord = content.IndexOf(originalWord, indexOfOriginalWord + originalWord.Length);
-                //}
+                while (indexOfOriginalWord != -1)
+                {
+                    var insertionCount = 0;
 
-                //replacedWordsIndexes.Add(indexOfOriginalWord);
+                    // Replace word in content
+                    for (int j = 0; j < matchingTerm.Length; j++)
+                    {
+                        if (matchingTerm[j] == '-')
+                        {
+                            content = content.Insert(
+                                indexOfOriginalWord + j + (insertionCount * (invisibleHyphenChar.Length - 1)),
+                                invisibleHyphenChar);
 
-                // Replace original word with hyphenated version
-                content = content.Remove(indexOfOriginalWord, originalWord.Length);
-                content = content.Insert(indexOfOriginalWord, capitalizedMatchingTerm);
+                            insertionCount++;
+                        }
+                    }
+
+                    // Make sure all instances of the word are hyphenated
+                    indexOfOriginalWord = content.ToLower().IndexOf(originalWord,
+                        indexOfOriginalWord + originalWord.Length + (insertionCount * invisibleHyphenChar.Length));
+                }
             }
 
             // Check if final result matches original
-            bool contentEqualsModelContent = inputModel.Content.Equals(content.Replace(invisibleHyphenChar, string.Empty));
+            bool contentEqualsModelContent = inputModel.Content.Replace(invisibleHyphenChar, string.Empty).Equals(content.Replace(invisibleHyphenChar, string.Empty));
             if (!contentEqualsModelContent)
             {
                 return 0;
@@ -219,49 +240,7 @@
             return 1;
         }
 
-        private string CapitalizeMatchingTerm(string originalWord, string matchingTerm)
-        {
-            var matchingTermCopy = new string(matchingTerm);
-            var idxCompensation = 0;
-
-            if (originalWord.Any(c => char.IsUpper(c)))
-            {
-                for (int i = 0; i < originalWord.Length; i++)
-                {
-                    if (char.IsLower(originalWord[i]))
-                    {
-                        continue;
-                    }
-
-                    if (matchingTermCopy[i].Equals('-'))
-                    {
-                        idxCompensation++;
-                    }
-
-                    matchingTermCopy = matchingTermCopy.Remove(i + idxCompensation, 1);
-                    matchingTermCopy = matchingTermCopy.Insert(i + idxCompensation, originalWord[i].ToString());
-                }
-            }
-
-            return matchingTermCopy;
-        }
-
-        private async Task SetArticlePhoto(ArticleCreateInputModel inputModel)
-        {
-            if (inputModel.Image != null)
-            {
-                inputModel.ImageUrl = await this.cloudinaryService
-                .UploadPicture(inputModel.Image, inputModel.Image.FileName.Split('.')[0]);
-            }
-
-            if (inputModel.PreviewImage != null)
-            {
-                inputModel.PreviewImageUrl = await this.cloudinaryService
-                .UploadPicture(inputModel.PreviewImage, inputModel.PreviewImage.FileName.Split('.')[0]);
-            }
-        }
-
-        private async Task<List<Task<string>>> GetAsync(List<string> uris)
+        private async Task<List<Task<string>>> GetAsync(IEnumerable<string> uris)
         {
             var httpClient = new HttpClient();
             var taskList = new List<Task<string>>();
@@ -279,10 +258,24 @@
             }
             catch (Exception ex)
             {
-                ;
             }
 
             return taskList;
+        }
+
+        private async Task SetArticlePhoto(ArticleCreateInputModel inputModel)
+        {
+            if (inputModel.Image != null)
+            {
+                inputModel.ImageUrl = await this.cloudinaryService
+                .UploadPicture(inputModel.Image, inputModel.Image.FileName.Split('.')[0]);
+            }
+
+            if (inputModel.PreviewImage != null)
+            {
+                inputModel.PreviewImageUrl = await this.cloudinaryService
+                .UploadPicture(inputModel.PreviewImage, inputModel.PreviewImage.FileName.Split('.')[0]);
+            }
         }
     }
 }
