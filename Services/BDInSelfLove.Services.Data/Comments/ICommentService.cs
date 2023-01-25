@@ -8,7 +8,7 @@
 
     public interface ICommentService
     {
-        Task<int> Create(Comment commentServiceModel);
+        Task<int> Create(Comment commentServiceModel, string userId);
 
         IQueryable<Comment> GetById(int commentId);
 
@@ -18,6 +18,6 @@
 
         ICollection<Comment> ArrangeCommentHierarchy(ICollection<Comment> comments);
 
-        Task<Comment> SetCommentDepth(Comment comment);
+        Task SetCommentDepth(Comment comment);
     }
 }

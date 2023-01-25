@@ -8,6 +8,7 @@
     using System.Threading.Tasks;
 
     using BDInSelfLove.Common;
+    using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.CloudinaryServices;
@@ -23,14 +24,17 @@
     {
         private readonly ICloudinaryService cloudinaryService;
         private readonly IArticleService articleService;
+        private readonly IDeletableEntityRepository<Article> articleRepository;
 
         public ArticlesController(
             ICloudinaryService cloudinaryService,
-            IArticleService articleService)
+            IArticleService articleService,
+            IDeletableEntityRepository<Article> articleRepository)
             : base(articleService)
         {
             this.cloudinaryService = cloudinaryService;
             this.articleService = articleService;
+            this.articleRepository = articleRepository;
         }
 
         [HttpGet]
@@ -71,11 +75,8 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
         {
-            int syllablesResult = await this.EnterContentSyllables(inputModel);
-            if (syllablesResult == 0)
-            {
-                this.TempData["StatusMessage"] = "Syllabification error";
-            }
+            // Enter content syllables for better UX
+            //inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
 
             await this.SetArticlePhoto(inputModel);
 
@@ -100,11 +101,8 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
         {
-            int syllablesResult = await this.EnterContentSyllables(inputModel);
-            if (syllablesResult == 0)
-            {
-                this.TempData["StatusMessage"] = "Syllabification error";
-            }
+            // Enter content syllables for better UX
+            inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
 
             await this.SetArticlePhoto(inputModel);
 
@@ -124,14 +122,34 @@
             return this.Redirect("/");
         }
 
+        [HttpGet]
+        [Route("Articles/SyllabifyAllArticles")]
+        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        public async Task<IActionResult> SyllabifyAllArticles()
+        {
+            var allArticles = await this.articleRepository.All().ToListAsync();
+
+            foreach (var article in allArticles)
+            {
+                article.Content = await this.EnterContentSyllables(article.Content);
+                this.articleRepository.Update(article);
+                await this.articleRepository.SaveChangesAsync();
+
+                // Avoid overloading the server
+                System.Threading.Thread.Sleep(2000);
+            }
+
+            return this.Redirect("/");
+        }
+
         // Helper methods
-        private async Task<int> EnterContentSyllables(ArticleCreateInputModel inputModel)
+        private async Task<string> EnterContentSyllables(string articleContent)
         {
             // Character designating hyphenation for client
             var invisibleHyphenChar = "&shy;";
 
             // Create copy of original content for comparison at the end
-            var content = new string(inputModel.Content);
+            var content = new string(articleContent);
 
             // Base uri for requests
             var uri = "http://rechnik.chitanka.info/w/";
@@ -159,19 +177,23 @@
             content = this.InsertHyphens(invisibleHyphenChar, content, htmlResults, successfulWords);
 
             // Check if final result matches original
-            bool contentEqualsModelContent = inputModel.Content
-                                                       .Replace(invisibleHyphenChar, string.Empty)
-                                                       .Equals(content.Replace(invisibleHyphenChar, string.Empty));
+            bool contentEqualsModelContent = articleContent
+                                                .Replace(invisibleHyphenChar, string.Empty)
+                                                .Equals(content.Replace(invisibleHyphenChar, string.Empty));
 
             if (!contentEqualsModelContent)
             {
-                // Do nothing
-                return 0;
-            }
+                // Inform client there's been an error
+                this.TempData["StatusMessage"] = "Syllabification error. No changes to original text made";
 
-            // Replace text in input model and return success
-            inputModel.Content = content;
-            return 1;
+                // Return unchanged content
+                return articleContent;
+            }
+            else
+            {
+                // Return changed content
+                return content;
+            }
         }
 
         private string InsertHyphens(string invisibleHyphenChar, string content, List<string> htmlResults, List<string> successfulWords)
@@ -246,7 +268,6 @@
             // Title element from html containts the original word we requested
             // Easiest way I found to keep trach of which requests were successful
             // We later need the original word to extract its hyphenation from html
-            // TODO: //[^\s—]+
             var titleRegex = new Regex(@"<title>[\w\W]*<\/title>");
 
             // titleRegex gets the successful words, stored in this collection
@@ -319,12 +340,14 @@
         {
             if (inputModel.Image != null)
             {
+                // Upload to cloud & store link reference
                 inputModel.ImageUrl = await this.cloudinaryService
                 .UploadPicture(inputModel.Image, inputModel.Image.FileName.Split('.')[0]);
             }
 
             if (inputModel.PreviewImage != null)
             {
+                // Upload to cloud & store link reference
                 inputModel.PreviewImageUrl = await this.cloudinaryService
                 .UploadPicture(inputModel.PreviewImage, inputModel.PreviewImage.FileName.Split('.')[0]);
             }

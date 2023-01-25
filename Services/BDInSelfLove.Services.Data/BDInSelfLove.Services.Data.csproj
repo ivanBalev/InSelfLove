@@ -15,7 +15,6 @@
 
   <ItemGroup>
 	  <PackageReference Include="CloudinaryDotNet" Version="1.20.0" />
-	  <PackageReference Include="Google.Api.Gax" Version="4.2.0" />
 	  <PackageReference Include="Google.Cloud.RecaptchaEnterprise.V1" Version="2.2.0" />
 	  <PackageReference Include="NinjaNye.SearchExtensions" Version="3.0.1" />
 	  <PackageReference Include="Stripe.net" Version="41.2.0" />
@@ -25,10 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BDInSelfLove.Common\BDInSelfLove.Common.csproj" />
     <ProjectReference Include="..\..\Data\BDInSelfLove.Data.Common\BDInSelfLove.Data.Common.csproj" />
     <ProjectReference Include="..\..\Data\BDInSelfLove.Data.Models\BDInSelfLove.Data.Models.csproj" />
-    <ProjectReference Include="..\..\Web\BDInSelfLove.Web.ViewModels\BDInSelfLove.Web.ViewModels.csproj" />
-    <ProjectReference Include="..\BDInSelfLove.Services.Mapping\BDInSelfLove.Services.Mapping.csproj" />
   </ItemGroup>
 
 </Project>

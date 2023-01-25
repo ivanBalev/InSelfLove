@@ -77,7 +77,6 @@
 		<ProjectReference Include="..\..\Services\BDInSelfLove.Services.Data\BDInSelfLove.Services.Data.csproj" />
 		<ProjectReference Include="..\..\Services\BDInSelfLove.Services.Mapping\BDInSelfLove.Services.Mapping.csproj" />
 		<ProjectReference Include="..\..\Services\BDInSelfLove.Services.Messaging\BDInSelfLove.Services.Messaging.csproj" />
-		<ProjectReference Include="..\..\Services\BDInSelfLove.Services\BDInSelfLove.Services.csproj" />
 		<ProjectReference Include="..\BDInSelfLove.Web.Infrastructure\BDInSelfLove.Web.Infrastructure.csproj" />
 		<ProjectReference Include="..\BDInSelfLove.Web.ViewModels\BDInSelfLove.Web.ViewModels.csproj" />
 	</ItemGroup>

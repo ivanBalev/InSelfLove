@@ -7,7 +7,6 @@
 
     using BDInSelfLove.Data.Models;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore.Internal;
     using Microsoft.Extensions.DependencyInjection;
 
     internal class VideoSeeder : ISeeder

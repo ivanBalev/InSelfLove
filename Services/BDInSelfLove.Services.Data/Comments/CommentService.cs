@@ -18,17 +18,22 @@
             this.commentRepository = commentRepository;
         }
 
-        public async Task<int> Create(Comment comment)
+        public async Task<int> Create(Comment comment, string userId)
         {
-            // TODO: Sanitize content on input as well
-            if (string.IsNullOrEmpty(comment.UserId) || string.IsNullOrWhiteSpace(comment.UserId) ||
+            // Validate input
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId) ||
                 string.IsNullOrEmpty(comment.Content) || string.IsNullOrWhiteSpace(comment.Content) ||
                 (comment.ArticleId == null && comment.VideoId == null))
             {
                 throw new ArgumentException(nameof(comment));
             }
 
-            comment = await this.SetCommentDepth(comment);
+            comment.UserId = userId;
+
+            // Avoid deep nesting (2 levels max)
+            await this.SetCommentDepth(comment);
+
+            // Save to db and return Id
             await this.commentRepository.AddAsync(comment);
             await this.commentRepository.SaveChangesAsync();
             return comment.Id;
@@ -133,7 +138,8 @@
             return comments;
         }
 
-        public async Task<Comment> SetCommentDepth(Comment comment)
+        // If comment is more than 2 levels nested, set it to default max nesting of 2nd level
+        public async Task SetCommentDepth(Comment comment)
         {
             var parentCommentId = comment.ParentCommentId;
 
@@ -149,13 +155,12 @@
 
                     if (greatGrandParentCommentId != null)
                     {
+                        // Comment is 3 levels deep nested
                         // Set parent 1 level up to avoid too much nesting
                         comment.ParentCommentId = grandParentCommentId;
                     }
                 }
             }
-
-            return comment;
         }
     }
 }

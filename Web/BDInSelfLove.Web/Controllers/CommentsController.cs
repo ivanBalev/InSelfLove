@@ -43,8 +43,8 @@
 
             // Create comment
             var comment = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
-            comment.UserId = this.userManager.GetUserId(this.User);
-            var commentId = await this.commentService.Create(comment);
+
+            var commentId = await this.commentService.Create(comment, this.userManager.GetUserId(this.User));
 
             await this.NotifyAdminViaEmail(inputModel);
 
