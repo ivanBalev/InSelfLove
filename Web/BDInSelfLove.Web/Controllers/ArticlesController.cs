@@ -2,9 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -20,7 +18,6 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Newtonsoft.Json.Linq;
 
     public class ArticlesController : PaginationHelper
     {
@@ -75,15 +72,15 @@
         public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
         {
             int syllablesResult = await this.EnterContentSyllables(inputModel);
+            if (syllablesResult == 0)
+            {
+                this.TempData["StatusMessage"] = "Syllabification error";
+            }
+
             await this.SetArticlePhoto(inputModel);
 
             string slug = await this.articleService
                 .Create(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
-
-            if (syllablesResult != 1)
-            {
-                this.TempData["StatusMessage"] = "Syllabification error";
-            }
 
             return this.RedirectToAction("Single", new { slug });
         }
@@ -103,6 +100,12 @@
         [Authorize(Roles = GlobalValues.AdministratorRoleName)]
         public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
         {
+            int syllablesResult = await this.EnterContentSyllables(inputModel);
+            if (syllablesResult == 0)
+            {
+                this.TempData["StatusMessage"] = "Syllabification error";
+            }
+
             await this.SetArticlePhoto(inputModel);
 
             // Edit article and return new slug(if title is updated)
@@ -124,81 +127,72 @@
         // Helper methods
         private async Task<int> EnterContentSyllables(ArticleCreateInputModel inputModel)
         {
-            // [^а-яА-яA-Za-z-–!?,.:;\\s\\d„“\"'()\\/&@№$#%*()_+]+
-
+            // Character designating hyphenation for client
             var invisibleHyphenChar = "&shy;";
 
-            var content = inputModel.Content;
+            // Create copy of original content for comparison at the end
+            var content = new string(inputModel.Content);
+
+            // Base uri for requests
             var uri = "http://rechnik.chitanka.info/w/";
 
-            // Remove short and duplicate words
-            string[] longWords = Regex.Replace(content, "<[^>]+>|[^а-яА-Я-–]+", " ")
-                                        .Split(new char[] { '-', '–', ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                                        .Where(x => x.Length >= 5)
-                                        .Select(x => x.ToLower())
-                                        .Distinct()
-                                        .ToArray();
+            // Remove short, duplicate words, non-letter characters & tags
+            // (hyphen, en dash, em dash)
+            string[] longWords = Regex.Replace(content.ToLower(), "<[^>]+>|[^а-я-–—]+", " ")
+                                      .Split(new char[] { '-', '–', '—', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                                      .Where(x => x.Length >= 5)
+                                      .Distinct()
+                                      .ToArray();
 
-            // Get result and filter only successful
-            var result = (await this.GetAsync(longWords.Select(x => uri + x)))
+            // Get full html results and leave only successful
+            var htmlResults = (await this.GetAsync(longWords.Select(x => uri + x)))
                 .Where(x => x.Status.ToString() != "Faulted")
                 .Select(x => x.Result).ToList();
 
-            // Get all redirects (meaning word is not in infinitive)
-            var redirectRegex = new Regex(@"<p class=""data"">(.|\n)+<a href=""/w/(?<href>[^<]+)"">(.|\n)+<\/p>");
-            var redirectIndices = new List<int>();
-            var redirectUris = new List<string>();
+            // Replace redirect html with infinitive html & return successful words
+            // Can't use longWords collection further as some words most likely
+            // didn't return a successful result and we need to keep the order of
+            // collections the same for comparison in InsertHyphens method
+            List<string> successfulWords = await this.HandleRedirects(htmlResults, uri);
 
-                                     // TODO: //[^\s—]+
-            var titleRegex = new Regex(@"<title>[\w\W]*<\/title>");
-            var successfulWords = new List<string>();
+            // Insert hyphens in original content for each unique word
+            content = this.InsertHyphens(invisibleHyphenChar, content, htmlResults, successfulWords);
 
-            for (int i = 0; i < result.Count; i++)
+            // Check if final result matches original
+            bool contentEqualsModelContent = inputModel.Content
+                                                       .Replace(invisibleHyphenChar, string.Empty)
+                                                       .Equals(content.Replace(invisibleHyphenChar, string.Empty));
+
+            if (!contentEqualsModelContent)
             {
-                // Keep track of all successful requests                     
-                var title = Regex.Replace(titleRegex.Match(result[i]).Value, "[^а-яА-Я]+", " ")
-                   .Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
-                successfulWords.Add(title);
-
-                var redirectHrefs = redirectRegex.Matches(result[i]);
-               
-                if (redirectHrefs.Count > 0)
-                {
-                    // Keep track of replaced words indices in original collection
-                    redirectIndices.Add(i);
-
-                    // Enter redirect uri in list for parallel requests after
-                    redirectUris.Add(uri + redirectHrefs.First().Groups["href"].Value);
-                }
+                // Do nothing
+                return 0;
             }
 
-            // All results should be successful as unsuccessful ones were
-            // already filtered in original results collection
-            var redirectsResult = (await this.GetAsync(redirectUris))
-                .Select(x => x.Result).ToList();
+            // Replace text in input model and return success
+            inputModel.Content = content;
+            return 1;
+        }
 
-            // Replace redirects in original collection with new results
-            for (int i = 0; i < redirectsResult.Count; i++)
+        private string InsertHyphens(string invisibleHyphenChar, string content, List<string> htmlResults, List<string> successfulWords)
+        {
+            // Matches all variants of the word in html (infinitive, suffixes, plural etc.)
+            var termsRegex = new Regex(@"<td><a href=[^>]+>(?<term>.{5,})</a>");
+
+            for (int i = 0; i < htmlResults.Count; i++)
             {
-                result[redirectIndices[i]] = redirectsResult[i];
-            }
-
-            for (int i = 0; i < result.Count; i++)
-            {
-                var html = result[i];
-
-                // TODO: are html results in same order as original words? how to filter unsuccessful requests from longwords collection?
+                var html = htmlResults[i];
                 var originalWord = successfulWords[i];
-                var termsRegex = new Regex(@"<td><a href=[^>]+>(?<term>.{5,})</a>");
 
-                // Word is in infinitive
+                // Get word variant that matches our original word
                 var matchingTerm = termsRegex.Matches(html).Select(m => m.Groups["term"].Value)
                                                            .FirstOrDefault(t => t
                                                            .Replace("-", string.Empty)
-                                                           .Equals(originalWord.ToLower()));
+                                                           .Equals(originalWord));
 
                 // Make sure original word and response word match 100%
-                if (matchingTerm == null || !originalWord.ToLower().Equals(matchingTerm.Replace("-", string.Empty)))
+                if (matchingTerm == null ||
+                    !originalWord.Equals(matchingTerm.Replace("-", string.Empty)))
                 {
                     continue;
                 }
@@ -206,15 +200,18 @@
                 // Get word index in original content
                 var indexOfOriginalWord = content.ToLower().IndexOf(originalWord);
 
+                // Loop through all instances of the word in content and insert hyphens
                 while (indexOfOriginalWord != -1)
                 {
+                    // Stored for compensating lengthening of text due to insertion
                     var insertionCount = 0;
 
-                    // Replace word in content
+                    // Find hyphens in result from rechnik.chitanka.info
                     for (int j = 0; j < matchingTerm.Length; j++)
                     {
                         if (matchingTerm[j] == '-')
                         {
+                            // Insert hyphen in content
                             content = content.Insert(
                                 indexOfOriginalWord + j + (insertionCount * (invisibleHyphenChar.Length - 1)),
                                 invisibleHyphenChar);
@@ -223,21 +220,76 @@
                         }
                     }
 
-                    // Make sure all instances of the word are hyphenated
-                    indexOfOriginalWord = content.ToLower().IndexOf(originalWord,
+                    // Find next instance of the same word in our original content
+                    // Compensate for current instance + length of inserted hyphens
+                    indexOfOriginalWord = content.ToLower().IndexOf(
+                        originalWord,
                         indexOfOriginalWord + originalWord.Length + (insertionCount * invisibleHyphenChar.Length));
                 }
             }
 
-            // Check if final result matches original
-            bool contentEqualsModelContent = inputModel.Content.Replace(invisibleHyphenChar, string.Empty).Equals(content.Replace(invisibleHyphenChar, string.Empty));
-            if (!contentEqualsModelContent)
+            return content;
+        }
+
+        private async Task<List<string>> HandleRedirects(List<string> htmlResults, string uri)
+        {
+            // Regex to identify redirects (meaning word is not in infinitive)
+            var redirectRegex = new Regex(@"<p class=""data"">(.|\n)+<a href=""/w/(?<href>[^<]+)"">(.|\n)+<\/p>");
+
+            // Keeps track of the redirects' indices in original collection
+            // We need to keep the order of results
+            var redirectIndices = new List<int>();
+
+            // Collects all redirect uris for another parallel request
+            var redirectUris = new List<string>();
+
+            // Title element from html containts the original word we requested
+            // Easiest way I found to keep trach of which requests were successful
+            // We later need the original word to extract its hyphenation from html
+            // TODO: //[^\s—]+
+            var titleRegex = new Regex(@"<title>[\w\W]*<\/title>");
+
+            // titleRegex gets the successful words, stored in this collection
+            var successfulWords = new List<string>();
+
+            for (int i = 0; i < htmlResults.Count; i++)
             {
-                return 0;
+                var currentHtml = htmlResults[i];
+
+                // Remove tags & non-text characters from title element
+                // and extract only the requested word
+                var title = Regex.Replace(titleRegex.Match(currentHtml).Value, "[^а-яА-Я]+", " ")
+                   .Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+
+                // Store the requested word in collection
+                successfulWords.Add(title);
+
+                // if redirects on page ->
+                // Need to go to infinitive page for hyphenation info
+                var redirectHrefs = redirectRegex.Matches(currentHtml);
+                if (redirectHrefs.Count > 0)
+                {
+                    // Keep track of replaced words indices in original collection
+                    redirectIndices.Add(i);
+
+                    // Enter redirect uri in list for parallel requests later
+                    redirectUris.Add(uri + redirectHrefs.First().Groups["href"].Value);
+                }
             }
 
-            inputModel.Content = content;
-            return 1;
+            // All results will be successful - unsuccessful ones
+            // already filtered in original results collection
+            var redirectsResults = (await this.GetAsync(redirectUris))
+                .Select(x => x.Result).ToList();
+
+            // Replace redirects in original collection with new results
+            for (int i = 0; i < redirectsResults.Count; i++)
+            {
+                // Keeping the order words were originally entered in
+                htmlResults[redirectIndices[i]] = redirectsResults[i];
+            }
+
+            return successfulWords;
         }
 
         private async Task<List<Task<string>>> GetAsync(IEnumerable<string> uris)
