@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<CodeAnalysisRuleSet>..\..\Rules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\stylecop.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="HtmlSanitizer" Version="8.0.601" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354" PrivateAssets="all">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Data\InSelfLove.Data.Models\InSelfLove.Data.Models.csproj" />
+		<ProjectReference Include="..\..\Services\InSelfLove.Services.Mapping\InSelfLove.Services.Mapping.csproj" />
+		<ProjectReference Include="..\InSelfLove.Web.InputModels\InSelfLove.Web.InputModels.csproj" />
+	</ItemGroup>
+
+</Project>

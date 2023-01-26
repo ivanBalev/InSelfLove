@@ -1,0 +1,15 @@
+﻿@model InSelfLove.Web.Areas.Identity.Pages.Account.LoginModel.InputModel
+
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{ 
+    var searchQuery = this.Context.Request.Query["searchTerm"].ToString();
+    var searchTermString = searchQuery == "" ? null : ("?searchTerm=" + searchQuery);
+}
+
+<div id="postLogin">
+    <div class="d-lg-flex align-items-lg-center mb-3 justify-content-center">
+        <a class="btn green-btn pt-1 px-1 mr-1 py-1" asp-route-returnUrl="@(Context.Request.Path + searchTermString)" asp-area="Identity" asp-page="/Account/Login">@localizer["Log in"]</a>
+        <span class="mr-0">@localizer["to add a new comment"]</span>
+    </div>
+</div>

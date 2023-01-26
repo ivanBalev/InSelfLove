@@ -1,0 +1,17 @@
+﻿@model InSelfLove.Web.ViewModels.Courses.CourseVideoViewModal
+
+@{ 
+    var src = $"https://iframe.mediadelivery.net/embed/35207/{Model.Id}?autoplay=false";
+}
+
+<div class="container single-course-video">
+    <div class="row py-4">
+        <div>
+            <iframe src="@src"
+                    loading="lazy"
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true">
+            </iframe>
+        </div>
+    </div>
+    
+</div> 

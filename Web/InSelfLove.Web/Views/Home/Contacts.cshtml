@@ -1,0 +1,111 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using InSelfLove.Data.Models
+@using InSelfLove.Services.Data.Helpers
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@inject UserManager<ApplicationUser> UserManager
+
+@model InSelfLove.Web.InputModels.Contact.ContactFormInputModel
+
+@{
+    ViewData["Title"] = @localizer["Contact"].Value;
+    var administratorEmail = (await this.UserManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName))[0].Email;
+    var siteKey = "6LdSQIIfAAAAAO787M08KaNncgzfLpOO6VknjOeF";
+}
+
+<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
+
+<section id="contact" class="py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 hardcode-contact mt-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>@localizer["Address"]</h4>
+                        <p>@localizer["bul. Bulgaria, 60G"]</p>
+                        <hr />
+                        <h4>@localizer["Email"]</h4>
+                        <p>@administratorEmail</p>
+                        <hr />
+                        <h4>@localizer["Social Media"]</h4>
+                        <div class="text-left socialMedia">
+                            <a href="https://www.facebook.com/in.self.love/" target="_blank" class="d-inline-block mr-3"
+                               rel="noopener noreferrer">
+                                <img src="~/Custom/icons/facebook-f-brands.svg" class="facebook-icon" alt="facebook icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                            </a>
+                            <a href="https://www.instagram.com/in.self.love/" class="d-inline-block" target="_blank"
+                               rel="noopener noreferrer">
+                                <img src="~/Custom/icons/instagram-brands.svg" class="instagram-icon" alt="instagram icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                            </a>
+                        </div>
+                        <hr />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 email-contact mt-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="text-center mb-1">
+                            @localizer["Please fill out this form to contact me."]
+                        </h3>
+                        <hr>
+                        <form id="contacts-form" asp-controller="Home" asp-action="Contacts">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input asp-for="@Model.FirstName" type="text" class="form-control" placeholder="@localizer["First Name"]">
+                                        <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input asp-for="@Model.LastName" type="text" class="form-control" placeholder="@localizer["Last Name"]">
+                                        <span asp-validation-for="@Model.LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input asp-for="@Model.Email" type="text" class="form-control" placeholder="@localizer["Email"]">
+                                        <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input asp-for="@Model.PhoneNumber" type="text" class="form-control" placeholder="@localizer["Phone number"]">
+                                        <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <textarea asp-for="@Model.Message" type="text" class="form-control" placeholder="@localizer["Message"]"></textarea>
+                                        <span asp-validation-for="@Model.Message" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group mb-0">
+                                        <button type="submit" id="submit-btn" class="green-btn w-100 border-0 py-0"><span>@localizer["Submit"]</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <partial name="_StatusMessagePartial" model="@this.ViewData["Error"]?.ToString()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div id="mapid" class="col mt-4 mx-3"></div>
+        </div>
+    </div>
+</section>
+
+@section HeadScripts {
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=@(siteKey)"></script>
+}
+
+@section Scripts {
+    <script src="~/js/contacts.js"></script>
+}

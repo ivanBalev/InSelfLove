@@ -1,0 +1,14 @@
+﻿@model InSelfLove.Web.ViewModels.Video.VideosPaginationViewModel
+@using InSelfLove.Services.Data.Helpers
+@using Microsoft.AspNetCore.Identity
+@using InSelfLove.Data.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{
+    ViewData["Title"] = @localizer["All Videos"].Value;
+}
+
+<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
+<partial name="_VideosAllPartial" model="@Model" />

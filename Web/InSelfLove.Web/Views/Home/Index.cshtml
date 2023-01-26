@@ -1,0 +1,115 @@
+﻿@model InSelfLove.Web.ViewModels.Home.HomeViewModel
+
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{
+    this.ViewData["Title"] = localizer["Home Page"].Value;
+}
+
+<!-- Showcase -->
+<div id="showcase">
+    <div class="dark-overlay text-white">
+        <div class="row mx-1">
+            <div class="col text-center">
+                <div class="showcase-wrapper">
+                    <h1>@localizer[$"FEATURED {Model.FeaturedItem.Controller}"]</h1>
+                    <h2>
+                        @Model.FeaturedItem.Title
+                    </h2>
+                    <a asp-controller="@Model.FeaturedItem.Controller" asp-action="Single" asp-route-slug="@Model.FeaturedItem.Slug" class="btn btn-outline-light btn-md text-white mt-2 see-more-feature-btn">
+                        @localizer["SEE MORE"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <!-- Info Header -->
+    <div class="info-header main-info-header row text-center pt-5 my-3 pb-3">
+        <h2 class="col subtitle">@localizer["POSTS"]</h2>
+    </div>
+    <!-- Articles -->
+    <div id="home-articles" class="container py-4">
+        <div class="row">
+            @{ var idx = 0;
+                foreach (var article in Model.Articles)
+                {
+                    if (idx == 2)
+                    {
+
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div>
+                                <div class="ratio ratio-16x9">
+                                    <img class="img-fluid rounded-circle home-profile-pic"
+                                         src="https://res.cloudinary.com/dzcajpx0y/image/upload/w_250,c_scale/v1615058365/popetoCircle_gk8b5i.jpg" alt="Article image">
+                                </div>
+                                <div class="card-body article-resize">
+                                    <div class="text-center">
+                                        <h2 class="about-hello-h2">ЗДРАВЕЙ!</h2>
+                                    </div>
+                                    <p class="about-preview-text mt-3 mb-0">
+                                        Мъдрите хора са казали, че най-важната връзка е тази, която имаме със себе си. По време на
+                                        дългото ми обучение за психолог и психотерапевт, тази мисъл постоянно изскачаше в моите
+                                        анализи и работа. Осъзнавах, че колкото и да изучавам психичните разстройства, техните
+                                        симптоми и особености, винаги накрая се стигаше до връзката, която човек има със себе си. И
+                                        в случая, когато в тази връзка нямаше честност, уважение, разбиране, съчувствие, търпение и
+                                        лоялност, винаги се стигаше до някаква патология. Когато човек оправеше отношението...
+                                    </p>
+                                </div>
+                                <div class="card-footer about-preview-footer text-center border-0 pb-0">
+                                    <a asp-controller="Home" asp-action="About" class="btn white-btn">
+                                        @localizer["SEE MORE"]
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <partial name="_ArticlePreviewPartial" model="@article" />
+                    </div>
+                    idx++;
+                }
+            }
+        </div>
+        <div class="text-center">
+            <a asp-controller="Articles" asp-action="Index" class="btn mt-2 white-btn">
+                @localizer["SEE MORE"]
+            </a>
+        </div>
+    </div>
+    <!-- Videos -->
+    <div id="video-carousel" class="container pt-2 mb-4">
+        <div class="row">
+            <div class="col-sm-8 m-auto">
+                <div id="slider" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                    <!-- Arrow controls -->
+                    <a href="#slider" class="carousel-control-prev mt-5" data-bs-slide="prev" aria-label="previous video">
+                        <span class="carousel-control-prev-icon"></span>
+                    </a>
+                    <a href="#slider" class="carousel-control-next mt-5" data-bs-slide="next" aria-label="next video">
+                        <span class="carousel-control-next-icon"></span>
+                    </a>
+                    <!-- Videos -->
+                    <div class="carousel-inner">
+                        <partial name="_VideoCarouselPartial" model="Model.Videos" />
+
+                    </div>
+                    <!-- Bottom controls -->
+                    <ol class="carousel-indicators">
+                        <li class="active" data-bs-target="#slider" data-bs-slide-to="0"></li>
+                        <li data-bs-target="#slider" data-bs-slide-to="1"></li>
+                        <li data-bs-target="#slider" data-bs-slide-to="2"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-2">
+            <a asp-controller="Videos" asp-action="Index" class="btn my-4 white-btn">
+                @localizer["SEE MORE"]
+            </a>
+        </div>
+    </div>
+</div>

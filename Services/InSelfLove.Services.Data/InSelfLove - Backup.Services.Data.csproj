@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\Rules.ruleset</CodeAnalysisRuleSet>
+    <UserSecretsId>a4cdf868-b846-47ad-a7ec-93be005cb2f1</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="CloudinaryDotNet" Version="1.20.0" />
+	  <PackageReference Include="Google.Cloud.RecaptchaEnterprise.V1" Version="2.2.0" />
+	  <PackageReference Include="NinjaNye.SearchExtensions" Version="3.0.1" />
+	  <PackageReference Include="Stripe.net" Version="41.2.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="TimeZoneConverter" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\InSelfLove.Data.Common\InSelfLove.Data.Common.csproj" />
+    <ProjectReference Include="..\..\Data\InSelfLove.Data.Models\InSelfLove.Data.Models.csproj" />
+  </ItemGroup>
+
+</Project>

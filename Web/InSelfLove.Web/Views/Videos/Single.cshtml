@@ -1,0 +1,54 @@
+﻿@model InSelfLove.Web.ViewModels.Video.VideoViewModel
+@using InSelfLove.Services.Data.Helpers;
+@using Microsoft.AspNetCore.Identity
+@using InSelfLove.Data.Models
+@using InSelfLove.Web.ViewModels.Comment
+
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9 pt-4">
+            <div id="single-video" itemscope itemtype="http://schema.org/Movie">
+                <div class="ratio ratio-16x9">
+                    <iframe title="Psychotherapy video" class="embed-responsive-item" src="@Model.Url"></iframe>
+                </div>
+                <div class="text-center mb-2 mt-2">
+                    <span class="text-black text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
+                </div>
+                <!-- Delete button if user is admin -->
+                @if (this.User.IsInRole(AppConstants.AdministratorRoleName))
+                {
+                    <div class="row mt-2">
+                        <div class="col text-end">
+                            <a asp-action="Edit" asp-route-id="@Model.Id">
+                                <img class="edit-btn" src="~/Custom/icons/edit-solid.svg" alt="edit icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                            </a>
+                        </div>
+                        <div class="col">
+                            <div data-bs-toggle="modal" data-bs-target="#confirmVideoDelete">
+                                <img class="delete-btn deleteVideo" src="~/Custom/icons/trash-solid.svg" alt="delete icon" data-creator="Icon by www.fontawesome.com / https://fontawesome.com/license" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <partial name="_CommentsPartial" model="new CommentsAllViewModel {
+                                                    VideoId = Model.Id,
+                                                    Comments = Model.Comments,
+                     }" />
+            <partial name="_VideoDeleteConfirmPartial" model="@Model.Id" />
+        </div>
+        <!-- Suggested videos -->
+        <vc:sidebar is-article="false" date="@Model.CreatedOn"></vc:sidebar>
+    </div>
+    <!-- Suggested articles -->
+    <vc:bottombar is-article="false" date="@Model.CreatedOn"></vc:bottombar>
+</div>
+
+@section Scripts
+    {
+    <script src="~/js/comments.js"></script>
+}

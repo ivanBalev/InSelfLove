@@ -1,0 +1,22 @@
+﻿@model IList<InSelfLove.Web.ViewModels.Video.VideoPreviewViewModel>
+@{
+    int index = 0;
+    const string youtubeApiMainLink = "https://img.youtube.com/vi/";
+    const string youtubeApiEndpoint = "/maxresdefault.jpg";
+}
+
+@foreach (var video in Model)
+{
+    string videoId = video.Url.Split('/').Last();
+    string backgroundImg = youtubeApiMainLink + videoId + youtubeApiEndpoint;
+
+    <div id="@video.Id" class="carousel-item @(index == 0 ? "active" : "")" itemscope itemtype="http://schema.org/Movie">
+        <lite-youtube videoid="@videoId" playlabel="Play: @video.Title" style="background-image: url('@backgroundImg');">
+            <div class="video-title">@video.Title</div>
+            <button type="button" class="lty-playbtn">
+                <span class="lyt-visually-hidden">Play Video: @video.Title</span>
+            </button>
+        </lite-youtube>
+    </div>
+    @(index++);
+}

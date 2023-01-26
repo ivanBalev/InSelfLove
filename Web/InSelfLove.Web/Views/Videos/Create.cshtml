@@ -1,0 +1,38 @@
+﻿@model InSelfLove.Web.InputModels.Video.CreateVideoInputModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+<partial name="_SlimShowcasePartial" model="@localizer["Create Video"].Value" />
+
+<div class="container pb-5 mt-4">
+    <form method="post" asp-action="Create"  id="video-create-form">
+        <div class="form-group">
+            <label>@localizer["Link to your video"]</label>
+            <input asp-for="@Model.Url" class="form-control" rows="20" />
+            <span asp-validation-for="@Model.Url" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>@localizer["Its title"]</label>
+            <input asp-for="@Model.Title" class="form-control" rows="20" />
+            <span asp-validation-for="@Model.Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>@localizer["Key words associated with your video's content"]</label>
+            <input asp-for="@Model.AssociatedTerms" class="form-control" rows="20" />
+            <span asp-validation-for="@Model.AssociatedTerms" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label class="d-block">@localizer["Date"]</label>
+            <input class="w-100" id="CreatedOn" name="CreatedOn">
+        </div>
+        <button type="submit" class="btn green-btn">@localizer["Create"]</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/lib/the-datepicker.js/dist/the-datepicker.min.js"></script>
+    <script src="~/Custom/js/datePicker.js"></script>
+}
+
+@section Links {
+    <link rel="stylesheet" href="~/lib/the-datepicker.js/dist/the-datepicker.min.css">
+}
