@@ -9,6 +9,7 @@
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Data.Repositories;
     using BDInSelfLove.Services.Data.Comments;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Services.Data.Videos;
     using Microsoft.EntityFrameworkCore;
     using Xunit;

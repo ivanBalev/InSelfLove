@@ -8,6 +8,7 @@
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Comments;
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.EntityFrameworkCore;
     using NinjaNye.SearchExtensions;
 

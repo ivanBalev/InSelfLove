@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using TimeZoneConverter;
+using BDInSelfLove.Services.Data.Helpers;
 
 namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
 {
@@ -128,7 +128,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                string windowsTimezoneId = TZConvert.GetTimeZoneInfo(this.Input.TimezoneIANA).Id;
+                string windowsTimezoneId = TimezoneHelper.GetTimezone(this.Input.TimezoneIANA).Id;
                 var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, WindowsTimezoneId = windowsTimezoneId, ProfilePhoto = DefaultProfilePicture };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)

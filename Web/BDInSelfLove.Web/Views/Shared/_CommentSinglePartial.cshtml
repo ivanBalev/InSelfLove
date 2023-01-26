@@ -1,7 +1,7 @@
-﻿@using BDInSelfLove.Web.InputModels.Comment
+﻿@using BDInSelfLove.Services.Data.Helpers;
+@using BDInSelfLove.Web.InputModels.Comment
 @using Microsoft.AspNetCore.Identity
 @using BDInSelfLove.Data.Models
-@using BDInSelfLove.Common
 @using CloudinaryDotNet;
 
 
@@ -107,7 +107,7 @@
                             }
                         </div>
 
-                        @if (this.User.IsInRole(GlobalValues.AdministratorRoleName) || userOwnsComment)
+                        @if (this.User.IsInRole(AppConstants.AdministratorRoleName) || userOwnsComment)
                         {
                             <div class="col-2 px-0">
                                 <!-- Edit button only for user's own comments -->

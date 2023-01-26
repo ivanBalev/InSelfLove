@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Data.Models;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.Configuration;
@@ -24,27 +24,27 @@
 
             var admin = new ApplicationUser
             {
-                UserName = configuration[$"{GlobalValues.AdministratorRoleName}:UserName"],
-                Email = configuration[$"{GlobalValues.AdministratorRoleName}:Email"],
+                UserName = configuration[$"{AppConstants.AdministratorRoleName}:UserName"],
+                Email = configuration[$"{AppConstants.AdministratorRoleName}:Email"],
                 WindowsTimezoneId = "FLE Standard Time",
             };
 
             var guest = new ApplicationUser
             {
-                UserName = configuration[$"{GlobalValues.UserRoleName}:UserName"],
-                Email = configuration[$"{GlobalValues.UserRoleName}:Email"],
+                UserName = configuration[$"{AppConstants.UserRoleName}:UserName"],
+                Email = configuration[$"{AppConstants.UserRoleName}:Email"],
                 WindowsTimezoneId = "FLE Standard Time",
             };
 
             var adminResult = await userManager.CreateAsync(
-                admin, configuration[$"{GlobalValues.AdministratorRoleName}:Password"]);
+                admin, configuration[$"{AppConstants.AdministratorRoleName}:Password"]);
             var userResult = await userManager.CreateAsync(
-                guest, configuration[$"{GlobalValues.UserRoleName}:Password"]);
+                guest, configuration[$"{AppConstants.UserRoleName}:Password"]);
 
             if (adminResult.Succeeded && userResult.Succeeded)
             {
-                await userManager.AddToRoleAsync(admin, GlobalValues.AdministratorRoleName);
-                await userManager.AddToRoleAsync(guest, GlobalValues.UserRoleName);
+                await userManager.AddToRoleAsync(admin, AppConstants.AdministratorRoleName);
+                await userManager.AddToRoleAsync(guest, AppConstants.UserRoleName);
             }
         }
     }

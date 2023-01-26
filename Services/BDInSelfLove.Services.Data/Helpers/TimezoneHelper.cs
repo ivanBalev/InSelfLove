@@ -1,4 +1,4 @@
-﻿namespace BDInSelfLove.Common
+﻿namespace BDInSelfLove.Services.Data.Helpers
 {
     using System;
 

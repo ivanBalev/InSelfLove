@@ -2,8 +2,9 @@
 {
     using System.Threading.Tasks;
     using System.Web;
-    using BDInSelfLove.Common;
+
     using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.Controllers.Helpers;
@@ -57,7 +58,7 @@
         // Admin access only below
         [HttpGet]
         [Route("Videos/Create")]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public IActionResult Create()
         {
             return this.View();
@@ -66,7 +67,7 @@
         [HttpPost]
         [Route("Videos/Create")]
         [YoutubeLinkActionFilter]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Create(CreateVideoInputModel inputModel)
         {
             string slug = await this.videoService
@@ -76,7 +77,7 @@
         }
 
         [HttpGet]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Edit(int id)
         {
             var model = await this.videoService.GetById(id)
@@ -86,7 +87,7 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Edit(EditVideoInputModel inputModel)
         {
             string slug = await this.videoService
@@ -95,7 +96,7 @@
             return this.RedirectToAction("Single", new { slug });
         }
 
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)
         {
             await this.videoService.Delete(id);

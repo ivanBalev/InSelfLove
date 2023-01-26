@@ -6,9 +6,10 @@
     using System.Text;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
-    using BDInSelfLove.Common;
+
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.CloudinaryServices;
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -18,7 +19,6 @@
     using Microsoft.AspNetCore.Mvc.RazorPages;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Logging;
-    using TimeZoneConverter;
 
     [AllowAnonymous]
     public class RegisterModel : PageModel

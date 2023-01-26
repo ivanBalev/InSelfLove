@@ -1,4 +1,4 @@
-﻿@using BDInSelfLove.Common
+﻿@using BDInSelfLove.Services.Data.Helpers;
 @using CloudinaryDotNet;
 @using Microsoft.AspNetCore.Identity
 @using BDInSelfLove.Data.Models
@@ -38,7 +38,7 @@
                         @Html.Raw(articlePic)
                     </div>
                     <!-- Edit and Delete buttons if user is admin -->
-                    @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
+                    @if (this.User.IsInRole(AppConstants.AdministratorRoleName))
                     {
                         <div class="row mb-4">
                             <div class="col text-end">

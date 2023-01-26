@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using BDInSelfLove.Services.Messaging;
-using BDInSelfLove.Common;
+using BDInSelfLove.Services.Data.Helpers;
 using System.Linq;
 
 namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
@@ -47,7 +47,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
 
-                var admin = (await this._userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
+                var admin = (await this._userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault();
 
                 // For more information on how to enable account confirmation and password reset please 
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713

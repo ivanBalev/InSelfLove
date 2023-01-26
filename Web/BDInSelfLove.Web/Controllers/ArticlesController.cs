@@ -7,11 +7,11 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.CloudinaryServices;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.Controllers.Helpers;
     using BDInSelfLove.Web.InputModels.Article;
@@ -64,7 +64,7 @@
         // Admin acces only below
         [HttpGet]
         [Route("Articles/Create")]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public IActionResult Create()
         {
             return this.View();
@@ -72,11 +72,11 @@
 
         [HttpPost]
         [Route("Articles/Create")]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Create(ArticleCreateInputModel inputModel)
         {
             // Enter content syllables for better UX
-            //inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
+            inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
 
             await this.SetArticlePhoto(inputModel);
 
@@ -87,7 +87,7 @@
         }
 
         [HttpGet]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Edit(int id)
         {
             // Get article & map to view/input model
@@ -98,7 +98,7 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
         {
             // Enter content syllables for better UX
@@ -115,7 +115,7 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)
         {
             await this.articleService.Delete(id);
@@ -124,7 +124,7 @@
 
         [HttpGet]
         [Route("Articles/SyllabifyAllArticles")]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> SyllabifyAllArticles()
         {
             var allArticles = await this.articleRepository.All().ToListAsync();

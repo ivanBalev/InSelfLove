@@ -9,9 +9,9 @@
 
     public interface IAppointmentService
     {
-        Task<int> Create(DateTime[] utcSlots, DateTime utcDate);
+        Task<int> Create(DateTime[] timeSlots, DateTime utcDate, string adminTimezone);
 
-        Task<IEnumerable<Appointment>> GetAll(string userId, string adminId);
+        Task<IEnumerable<Appointment>> GetAll(string userId, string adminId, string userTimezone);
 
         Task<Appointment> Book(int appointmentId, string appointmentDescription, bool isOnSite, string userId);
 

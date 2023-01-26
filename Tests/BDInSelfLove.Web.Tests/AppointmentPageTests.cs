@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Threading;
 
-    using BDInSelfLove.Common;
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.Extensions.Configuration;
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
@@ -59,7 +59,7 @@
         [Fact]
         public void AvailableAppointmentCancellationWorksCorrectly()
         {
-            this.Login(GlobalValues.AdministratorRoleName);
+            this.Login(AppConstants.AdministratorRoleName);
             this.WaitForAjax();
 
             // Open first appointment details
@@ -107,7 +107,7 @@
         [Fact]
         public void AppointmentCreationWorksCorrectly()
         {
-            this.Login(GlobalValues.AdministratorRoleName);
+            this.Login(AppConstants.AdministratorRoleName);
             this.WaitForAjax();
 
             Actions actions = new Actions(this.browser);
@@ -139,7 +139,7 @@
         [Fact]
         public void OtherSameDayAvailableAppointmentsAreDeletedWhenCreatingNewAppointment()
         {
-            this.Login(GlobalValues.AdministratorRoleName);
+            this.Login(AppConstants.AdministratorRoleName);
             this.WaitForAjax();
 
             Actions actions = new Actions(this.browser);
@@ -180,7 +180,7 @@
         [Fact]
         public void AppointmentApprovalWorksCorrectly()
         {
-            this.Login(GlobalValues.AdministratorRoleName);
+            this.Login(AppConstants.AdministratorRoleName);
             this.WaitForAjax();
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
@@ -221,7 +221,7 @@
         [Fact]
         public void PendingAppointmentCancellationWorksCorrectly()
         {
-            this.Login(GlobalValues.AdministratorRoleName);
+            this.Login(AppConstants.AdministratorRoleName);
             this.WaitForAjax();
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));

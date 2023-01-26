@@ -6,10 +6,10 @@
     using System.Net.Http;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.CloudinaryServices;
     using BDInSelfLove.Services.Data.Courses;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Services.Data.Stripe;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Web.Infrastructure.Helpers;
@@ -166,7 +166,7 @@
                 .FirstOrDefaultAsync(u => u.Id.Equals(this.userManager.GetUserId(this.User)));
 
             // TODO: make it impossible to request from the front end
-            if (!this.User.IsInRole(GlobalValues.AdministratorRoleName) &&
+            if (!this.User.IsInRole(AppConstants.AdministratorRoleName) &&
                 (user == null || !user.Courses.Any(c => c.Id.Equals(courseId))))
             {
                 // Return preview video for unpaid or unregistered users (user has tried to bypass frontend validation)

@@ -4,9 +4,8 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
-
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -16,8 +15,8 @@
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
 
-            await SeedRoleAsync(roleManager, GlobalValues.AdministratorRoleName);
-            await SeedRoleAsync(roleManager, GlobalValues.UserRoleName);
+            await SeedRoleAsync(roleManager, AppConstants.AdministratorRoleName);
+            await SeedRoleAsync(roleManager, AppConstants.UserRoleName);
         }
 
         private static async Task SeedRoleAsync(RoleManager<ApplicationRole> roleManager, string roleName)

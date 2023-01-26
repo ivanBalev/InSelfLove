@@ -45,7 +45,6 @@
 		<PackageReference Include="BunnyCDN.Net.Storage" Version="1.0.4" />
 		<PackageReference Include="CloudinaryDotNet" Version="1.20.0" />
 		<PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.372" />
-		<PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.9" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.2" />
@@ -67,17 +66,16 @@
 		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354" PrivateAssets="all">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="TimeZoneConverter" Version="6.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Data\BDInSelfLove.Data.Models\BDInSelfLove.Data.Models.csproj" />
 		<ProjectReference Include="..\..\Data\BDInSelfLove.Data\BDInSelfLove.Data.csproj" />
-		<ProjectReference Include="..\..\InputModels\BDInSelfLove.Web.InputModels.csproj" />
 		<ProjectReference Include="..\..\Services\BDInSelfLove.Services.Data\BDInSelfLove.Services.Data.csproj" />
 		<ProjectReference Include="..\..\Services\BDInSelfLove.Services.Mapping\BDInSelfLove.Services.Mapping.csproj" />
 		<ProjectReference Include="..\..\Services\BDInSelfLove.Services.Messaging\BDInSelfLove.Services.Messaging.csproj" />
 		<ProjectReference Include="..\BDInSelfLove.Web.Infrastructure\BDInSelfLove.Web.Infrastructure.csproj" />
+		<ProjectReference Include="..\BDInSelfLove.Web.InputModels\BDInSelfLove.Web.InputModels.csproj" />
 		<ProjectReference Include="..\BDInSelfLove.Web.ViewModels\BDInSelfLove.Web.ViewModels.csproj" />
 	</ItemGroup>
 

@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
     using BDInSelfLove.Services.Data.Videos;
@@ -11,7 +12,6 @@
     using BDInSelfLove.Web.ViewModels.Home;
     using BDInSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     public class SidebarViewComponent : ViewComponent
     {

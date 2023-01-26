@@ -4,7 +4,7 @@
 
     public class BaseController : Controller
     {
-		// TODO: Custom Middleware?
+        // TODO: Custom Middleware?
         public string UserTimezoneIdFromCookie => this.HttpContext.Request.Cookies["timezoneIANA"];
     }
 }

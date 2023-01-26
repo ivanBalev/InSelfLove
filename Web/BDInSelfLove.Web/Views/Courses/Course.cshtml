@@ -1,10 +1,10 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Courses.CourseViewModel
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
-@using BDInSelfLove.Common
+@using BDInSelfLove.Services.Data.Helpers
 
 
 @{
-    bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
+    bool userIsAdmin = this.User.IsInRole(AppConstants.AdministratorRoleName);
 }
 
 @*Create video modal*@

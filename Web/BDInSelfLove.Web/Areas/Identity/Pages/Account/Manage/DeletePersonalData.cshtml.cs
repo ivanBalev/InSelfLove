@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using BDInSelfLove.Common;
+using BDInSelfLove.Services.Data.Helpers;
 using BDInSelfLove.Data.Models;
 using BDInSelfLove.Services.Data.Appointments;
 using Microsoft.AspNetCore.Identity;
@@ -59,7 +59,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            var admin = (await _userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault();
+            var admin = (await _userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault();
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -76,7 +76,7 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
             }
 
             var userAppointmentIds = await this.appointmentService
-                .GetAll(user.Id, admin.Id);
+                .GetAll(user.Id, admin.Id, user.WindowsTimezoneId);
 
             foreach (var appointment in userAppointmentIds)
             {

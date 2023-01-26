@@ -4,9 +4,9 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Articles;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Services.Data.Recaptcha;
     using BDInSelfLove.Services.Data.Videos;
     using BDInSelfLove.Services.Mapping;
@@ -108,22 +108,22 @@
         // Helper methods
         private async Task SubmitContactForm(ContactFormInputModel userInfo)
         {
-            string adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
+            string adminEmail = (await this.userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
 
             // Send email to admin
             await this.emailSender.SendEmailAsync(
                 from: userInfo.Email,
                 fromName: $"{userInfo.FirstName} {userInfo.LastName}",
                 to: adminEmail,
-                subject: GlobalValues.SystemName,
+                subject: AppConstants.SystemName,
                 htmlContent: string.Format(this.localizer[AdminEmailBodyTemplate], userInfo.Message, userInfo.FirstName, userInfo.LastName, userInfo.PhoneNumber));
 
             // Send email to user
             await this.emailSender.SendEmailAsync(
                 from: adminEmail,
-                fromName: GlobalValues.SystemName,
+                fromName: AppConstants.SystemName,
                 to: userInfo.Email,
-                subject: GlobalValues.SystemName,
+                subject: AppConstants.SystemName,
                 htmlContent: this.localizer[UserEmailBody]);
         }
     }

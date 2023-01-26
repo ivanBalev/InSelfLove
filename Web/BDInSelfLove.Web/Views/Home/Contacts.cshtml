@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using BDInSelfLove.Data.Models
-@using BDInSelfLove.Common
+@using BDInSelfLove.Services.Data.Helpers
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 @inject UserManager<ApplicationUser> UserManager
 
@@ -8,7 +8,7 @@
 
 @{
     ViewData["Title"] = @localizer["Contact"].Value;
-    var administratorEmail = (await this.UserManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName))[0].Email;
+    var administratorEmail = (await this.UserManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName))[0].Email;
     var siteKey = "6LdSQIIfAAAAAO787M08KaNncgzfLpOO6VknjOeF";
 }
 

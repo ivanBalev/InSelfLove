@@ -8,6 +8,7 @@
 
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.EntityFrameworkCore;
 
     public class AppointmentService : IAppointmentService
@@ -19,7 +20,7 @@
             this.appointmentRepository = appointmentRepository;
         }
 
-        public async Task<IEnumerable<Appointment>> GetAll(string userId, string adminId)
+        public async Task<IEnumerable<Appointment>> GetAll(string userId, string adminId, string userTimezone)
         {
             var userIsAdmin = userId == adminId;
             var dbQuery = this.appointmentRepository.All();
@@ -40,6 +41,13 @@
             // An appointment available to one user is not necessarily available to another
             // so we need to dynamically set availability instead of storing it in db
             this.SetAvailability(appointments, userIsAdmin, userId);
+
+            foreach (var appt in appointments)
+            {
+                // Adjust appointments' start times for user
+                appt.UtcStart = TimezoneHelper.ToLocalTime(appt.UtcStart, userTimezone);
+            }
+
             return appointments;
         }
 
@@ -50,7 +58,7 @@
                 .SingleOrDefaultAsync(appointment => appointment.Id == id);
         }
 
-        public async Task<int> Create(DateTime[] utcSlots, DateTime utcDate)
+        public async Task<int> Create(DateTime[] timeSlots, DateTime utcDate, string adminTimezone)
         {
             // We need both the individual slots and the date in case
             // an empty slots list has been sent by the admin which
@@ -73,9 +81,13 @@
             }
 
             // Create new vacant slots and add to db
-            foreach (var dateTime in utcSlots)
+            foreach (var dateTime in timeSlots)
             {
-                var appointmentForDB = new Appointment { UtcStart = dateTime };
+                // Convert appointment slots to utc time for db
+                var appointmentForDB = new Appointment
+                {
+                    UtcStart = TimezoneHelper.ToUTCTime(dateTime, adminTimezone),
+                };
                 await this.appointmentRepository.AddAsync(appointmentForDB);
             }
 

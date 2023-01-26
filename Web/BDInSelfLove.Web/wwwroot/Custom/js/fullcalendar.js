@@ -10,8 +10,8 @@ const yellowColor = "#EEB440";
 const clockwiseArrowSymbol = '\u27F3';
 const plusSymbol = '+';
 const checkmarkSymbol = '\u2713';
-const workingHoursArray = document.querySelector('#calendar').getAttribute('workingHours').split('-');
-const standardWorkingHours = { start: workingHoursArray[0], end: workingHoursArray[1] };
+const workDayStartStr = "workDayStart";
+const workDayEndStr = "workDayEnd";
 let dayCount = 5;
 
 // Reduce weekdays per page for smaller screens
@@ -88,8 +88,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Fix for select event firing only after 1-second touch hold (value default is 1000 ms)
         selectLongPressDelay: 1,
         slotLabelInterval: { days: 1 },
-        slotMinTime: standardWorkingHours.start + ':00:00',
-        slotMaxTime: standardWorkingHours.end + ':00:00',
         height: 'auto',
         locale: culture,
         select: select,
@@ -387,8 +385,21 @@ async function postData(url = '', data = {}, csfrToken) {
     return response.text();
 }
 
-submitDailyAvailabilityBtn.addEventListener('click', function () {
-    // TODO: Check for overlapping slots
+submitDailyAvailabilityBtn?.addEventListener('click', function () {
+    // Overwrite working hours cookie
+    const workDayStartCookieValue = decodeURIComponent(getCookie(workDayStartStr));
+    const workDayEndCookieValue = decodeURIComponent(getCookie(workDayEndStr));
+
+    // If cookie has expired, set default values
+    if (!workDayStartCookieValue || workDayStartCookieValue == 'undefined') {
+        setCookie(workDayStartStr, '9:00', 400);
+        setCookie(workDayEndStr, '18:00', 400);
+    } else {
+        // Overwrite with existing data
+        setCookie(workDayStartStr, workDayStartCookieValue, 400);
+        setCookie(workDayEndStr, workDayEndCookieValue, 400);
+    }
+    
     postData(
         '/api/appointments/Create',
         {
@@ -476,17 +487,13 @@ workingHoursSubmitBtn.addEventListener('click', function () {
     let startHour = document.getElementById('startHour').value;
     let endHour = document.getElementById('endHour').value;
 
-    postData(
-        '/api/appointments/SetWorkingHours',
-        { startHour, endHour },
-        csfrToken)
-        .then(() => {
-            bootstrap.Modal.getOrCreateInstance(workingHoursModal).hide();
-            window.location.reload();
-        })
-        .catch(() => {
-            alert(genericError);
-        });
+    // setCookie functions from timezone.js file
+    // Change values in cookies
+    setCookie(workDayStartStr, startHour, 400);
+    setCookie(workDayEndStr, endHour, 400);
+
+    bootstrap.Modal.getOrCreateInstance(workingHoursModal).hide();
+    window.location.reload();
 });
 
 occupyBtn?.addEventListener('click', function () {

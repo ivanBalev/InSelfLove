@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BDInSelfLove.Common\BDInSelfLove.Common.csproj" />
+    <ProjectReference Include="..\..\Services\BDInSelfLove.Services.Data\BDInSelfLove.Services.Data.csproj" />
     <ProjectReference Include="..\BDInSelfLove.Data.Common\BDInSelfLove.Data.Common.csproj" />
     <ProjectReference Include="..\BDInSelfLove.Data.Models\BDInSelfLove.Data.Models.csproj" />
   </ItemGroup>

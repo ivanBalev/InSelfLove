@@ -1,4 +1,4 @@
-﻿namespace BDInSelfLove.Services.Data
+﻿namespace BDInSelfLove.Services.Data.Helpers
 {
     using System.Collections.Generic;
     using System.Linq;

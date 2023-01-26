@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using BDInSelfLove.Services.Messaging;
-using BDInSelfLove.Common;
+using BDInSelfLove.Services.Data.Helpers;
 
 namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -100,10 +100,10 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                     pageHandler: null,
                     values: new { userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
-                var adminEmail = (await this._userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
+                var adminEmail = (await this._userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
                 await _emailSender.SendEmailAsync(
                     adminEmail,
-                    GlobalValues.SystemName,
+                    AppConstants.SystemName,
                     Input.NewEmail,
                     "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -139,11 +139,11 @@ namespace BDInSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
-            var adminEmail = (await this._userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
+            var adminEmail = (await this._userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
 
             await _emailSender.SendEmailAsync(
                 adminEmail,
-                GlobalValues.SystemName,
+                AppConstants.SystemName,
                 email,
                 "Потвърждение на имейл",
                 $"Моля, потвърдете регистрацията си като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>кликнете тук</a>.");

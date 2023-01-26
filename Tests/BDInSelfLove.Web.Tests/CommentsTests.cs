@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Threading;
 
-    using BDInSelfLove.Common;
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.Extensions.Configuration;
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
@@ -44,7 +44,7 @@
             this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
             this.browser.FindElements(By.CssSelector(".article-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             string commentText = new string('a', 33);
             this.AddNewMainComment(commentText);
@@ -72,7 +72,7 @@
 
             // Log in as user
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             // Add subcomment
             string commentText = new string('a', 33);
@@ -111,7 +111,7 @@
 
             // Log in as user
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
@@ -169,7 +169,7 @@
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
 
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             string commentText = new string('a', 33);
             this.AddNewMainComment(commentText);
@@ -194,7 +194,7 @@
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
 
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             string commentText = new string('a', 33);
             this.AddNewMainComment(commentText);
@@ -221,7 +221,7 @@
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
 
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             string commentText = new string('a', 33);
             this.AddNewMainComment(commentText);
@@ -261,7 +261,7 @@
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
 
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             string commentText = new string('a', 33);
             this.AddNewMainComment(commentText);
@@ -303,7 +303,7 @@
             this.browser.FindElements(By.CssSelector(".video-preview")).FirstOrDefault().Click();
             this.browser.FindElement(By.CssSelector("#postLogin a")).Click();
 
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
 
             string commentText = new string('a', 33);
             this.AddNewMainComment(commentText);

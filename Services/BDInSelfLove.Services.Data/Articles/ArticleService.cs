@@ -5,10 +5,10 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Common.Repositories;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Comments;
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.EntityFrameworkCore;
     using NinjaNye.SearchExtensions;
 

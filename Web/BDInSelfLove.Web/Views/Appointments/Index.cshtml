@@ -1,7 +1,7 @@
 ﻿@model BDInSelfLove.Web.ViewModels.Appointment.AppointmentIndexViewModel
-@using BDInSelfLove.Common
 @using BDInSelfLove.Data.Models
 @using Microsoft.AspNetCore.Identity
+@using BDInSelfLove.Services.Data.Helpers;
 @using System.Text.Json;
 @using Newtonsoft.Json;
 
@@ -12,13 +12,29 @@
 
 @{
     ViewData["Title"] = @localizer["Запази час"].Value;
-    bool userIsAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
+    bool userIsAdmin = this.User.IsInRole(AppConstants.AdministratorRoleName);
     bool usersFirstAppt = !Model.Appointments.Any(x => x.UserId != null);
 
     var returnUrl = this.Context.Request.QueryString.Value;
-    ;
-}
 
+    var workDayStartStr = this.Context.Request.Cookies["workDayStart"];
+    var workDayEndStr = this.Context.Request.Cookies["workDayEnd"];
+
+    var workDayStart = DateTime.Now;
+    var workDayEnd = DateTime.Now;
+
+    if(workDayStartStr == null || workDayEndStr == null)
+    {
+        workDayStart = DateTime.Now.Date.AddHours(8);
+        workDayEnd = DateTime.Now.Date.AddHours(20);
+
+    }
+    else
+    {
+        workDayStart = DateTime.Now.Date.AddHours(double.Parse(workDayStartStr.Split(':')[0]));
+        workDayEnd = DateTime.Now.Date.AddHours(double.Parse(workDayEndStr.Split(':')[0]));
+    }
+}
 
 @*Appointments from database*@
 @{
@@ -44,7 +60,7 @@
             <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
         </div>
     }
-    <div id="calendar" class="mt-3" workingHours="@Model.WorkdayStart.Hour-@Model.WorkdayEnd.Hour"></div>
+    <div id="calendar" class="mt-3"></div>
 </div>
 
 <div>
@@ -101,45 +117,48 @@
     </div>
 
     @*Daily availability modal*@
-    <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header pt-3 pb-2 text-center border-0">
-                    <h4 class="modal-title w-100">@localizer["Set Daily Availability"]</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body pt-1">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            @{
-                                var counter = 0;
-                                for (int i = Model.WorkdayStart.Hour; i < Model.WorkdayEnd.Hour; i++)
-                                {
-                                    if (counter % 2 == 0)
-                                    {
-                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
-                                            @(i.ToString() + ":00")
-                                        </div>
-                                        i--;
-                                    }
-                                    else
-                                    {
-                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
-                                            @(i.ToString() + ":30")
-                                        </div>
-                                    }
-                                    counter++;
-                                }
-                            }
-                        </div>
+    @if (userIsAdmin)
+    {
+        <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header pt-3 pb-2 text-center border-0">
+                        <h4 class="modal-title w-100">@localizer["Set Daily Availability"]</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="row w-100 justify-content-center mt-1 mb-0 pb-0 mr-5">
-                        <button type="button" id="submitDailyAvailability" class="btn green-btn ml-3 mt-2">@localizer["Save"]</button>
+                    <div class="modal-body pt-1">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                @{
+                                    var counter = 0;
+                                    for (int i = workDayStart.Hour; i < workDayEnd.Hour; i++)
+                                    {
+                                        if (counter % 2 == 0)
+                                        {
+                                            <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                                @(i.ToString() + ":00")
+                                            </div>
+                                            i--;
+                                        }
+                                        else
+                                        {
+                                            <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                                @(i.ToString() + ":30")
+                                            </div>
+                                        }
+                                        counter++;
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="row mx-5">
+                            <button type="button" id="submitDailyAvailability" class="btn green-btn mt-2">@localizer["Save"]</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 
     @*Appointment details modal*@
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">
@@ -213,6 +232,8 @@
         </div>
     </div>
     @*Working hours modal*@
+    if(userIsAdmin)
+    {
     <div id="workingHours" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -242,6 +263,8 @@
             </div>
         </div>
     </div>
+    }
+
     @*CSFR token*@
     <form id="csfrToken" method="post"></form>
     @*Working hours button*@

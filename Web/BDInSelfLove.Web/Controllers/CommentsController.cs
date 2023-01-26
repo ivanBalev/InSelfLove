@@ -3,7 +3,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Comments;
     using BDInSelfLove.Services.Mapping;
@@ -80,14 +80,14 @@
         public async Task<ActionResult> Delete(int id)
         {
             var userId = this.userManager.GetUserId(this.User);
-            var isUserAdmin = this.User.IsInRole(GlobalValues.AdministratorRoleName);
+            var isUserAdmin = this.User.IsInRole(AppConstants.AdministratorRoleName);
             var result = await this.commentService.Delete(id, userId, isUserAdmin);
             return (result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest());
         }
 
         private async Task NotifyAdminViaEmail(CommentInputModel inputModel)
         {
-            string adminEmail = (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName)).FirstOrDefault().Email;
+            string adminEmail = (await this.userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
             string userName = this.userManager.GetUserName(this.User);
 
             string emailBody = $@"<div>Имате нов коментар</div></br><br /><br />
@@ -100,7 +100,7 @@
             string emailSubject = "InSelfLove Нов Коментар";
             await this.emailSender.SendEmailAsync(
                 from: adminEmail,
-                fromName: GlobalValues.SystemName,
+                fromName: AppConstants.SystemName,
                 to: adminEmail,
                 subject: emailSubject,
                 htmlContent: emailBody);

@@ -1,5 +1,5 @@
-﻿@using BDInSelfLove.Common
-@using BDInSelfLove.Data.Models
+﻿@using BDInSelfLove.Data.Models
+@using BDInSelfLove.Services.Data.Helpers;
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
@@ -19,7 +19,7 @@
                     </a>
                 </li>
 
-                @if (this.User.IsInRole(GlobalValues.AdministratorRoleName))
+                @if (this.User.IsInRole(AppConstants.AdministratorRoleName))
                 {
 <li>
     <a class="dropdown-item" asp-area="" asp-controller="Articles" asp-action="Create">

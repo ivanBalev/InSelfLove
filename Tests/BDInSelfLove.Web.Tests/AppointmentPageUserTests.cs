@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Threading;
 
-    using BDInSelfLove.Common;
+    using BDInSelfLove.Services.Data.Helpers;
     using Microsoft.Extensions.Configuration;
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
@@ -54,7 +54,7 @@
         [Fact]
         public void AppointmentBookingWorksCorrectly()
         {
-            var username = this.Login(GlobalValues.UserRoleName);
+            var username = this.Login(AppConstants.UserRoleName);
             this.WaitForAjax();
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
@@ -85,7 +85,7 @@
         [Fact]
         public void PendingAppointmentCancellation()
         {
-            this.Login(GlobalValues.UserRoleName);
+            this.Login(AppConstants.UserRoleName);
             this.WaitForAjax();
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
@@ -131,7 +131,7 @@
         [Fact]
         public void ApprovedAppointmentCancellation()
         {
-            this.Login(GlobalValues.UserRoleName);
+            this.Login(AppConstants.UserRoleName);
             this.WaitForAjax();
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));

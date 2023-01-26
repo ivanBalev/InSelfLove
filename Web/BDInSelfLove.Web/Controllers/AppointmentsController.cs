@@ -1,12 +1,11 @@
 ﻿namespace BDInSelfLove.Web.Controllers
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BDInSelfLove.Common;
     using BDInSelfLove.Data.Models;
     using BDInSelfLove.Services.Data.Appointments;
+    using BDInSelfLove.Services.Data.Helpers;
     using BDInSelfLove.Services.Mapping;
     using BDInSelfLove.Services.Messaging;
     using BDInSelfLove.Web.Controllers.Helpers;
@@ -52,24 +51,15 @@
             string adminId = (await this.GetUser(admin: true)).Id;
 
             // Get appointments
-            var appointments = await this.appointmentService.GetAll(userId, adminId);
+            var appointments = await this.appointmentService.GetAll(userId, adminId, userTimezone);
 
             // Map db appointments to view model
             var appointmentsViewModel = appointments.Select(a =>
-                {
-                    var vm = AutoMapperConfig.MapperInstance.Map<Appointment, AppointmentViewModel>(a);
-
-                    // Adjust appointments' start times for user
-                    vm.Start = TimezoneHelper.ToLocalTime(vm.Start, userTimezone);
-                    return vm;
-                });
+                    AutoMapperConfig.MapperInstance.Map<Appointment, AppointmentViewModel>(a));
 
             var viewModel = new AppointmentIndexViewModel
             {
-                // Get workday start & end for calendar + appointments
-                WorkdayStart = TimezoneHelper.ToLocalTime(GlobalValues.WorkDayStartUTC, userTimezone),
-                WorkdayEnd = TimezoneHelper.ToLocalTime(GlobalValues.WorkDayEndUTC, userTimezone),
-                Appointments = appointmentsViewModel,
+                 Appointments = appointmentsViewModel,
             };
 
             return this.View(viewModel);
@@ -121,7 +111,7 @@
         // Admin-only methods
         [HttpPost]
         [Route("Create")]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Create([FromBody] AvailabilityInputModel availabilityInput)
         {
             if (!this.ModelState.IsValid)
@@ -131,18 +121,13 @@
 
             var adminTimezone = await this.GetUserTimezoneId();
 
-            // Convert appointment slots to utc time for db
-            DateTime[] timeSlotsInUTC = availabilityInput.TimeSlots
-                .Select(ts => TimezoneHelper.ToUTCTime(ts, adminTimezone)).ToArray();
-
             // Send slots and date to service
-            await this.appointmentService.Create(timeSlotsInUTC, availabilityInput.Date);
-
+            await this.appointmentService.Create(availabilityInput.TimeSlots, availabilityInput.Date, adminTimezone);
             return this.Ok();
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         [Route("Approve")]
         public async Task<ActionResult> Approve([FromBody] AppointmentManipulateModel input)
         {
@@ -156,7 +141,7 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         [Route("Occupy")]
         public async Task<ActionResult> Occupy([FromBody] AppointmentManipulateModel input)
         {
@@ -167,33 +152,12 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         [Route("SetOnSite")]
         public async Task<ActionResult> SetOnSite([FromBody] AppointmentManipulateModel input)
         {
             // Mark if appointment can be on site
             await this.appointmentService.SetOnSite(input.Id, input.CanBeOnSite);
-
-            return this.Ok();
-        }
-
-        [HttpPost]
-        [Authorize(Roles = GlobalValues.AdministratorRoleName)]
-        [Route("SetWorkingHours")]
-        public async Task<ActionResult> SetWorkingHours([FromBody] WorkingHoursInputModel input)
-        {
-            // TODO: store start/end times in file outside project so it doesn't get deleted after each website update
-
-            // Get start & end time hours from input
-            // Currently working only with 00 minutes
-            var localStartHour = DateTime.Now.Date.AddHours(double.Parse(input.StartHour.Split(':')[0]));
-            var localEndHour = DateTime.Now.Date.AddHours(double.Parse(input.EndHour.Split(':')[0]));
-
-            var timezoneId = await this.GetUserTimezoneId();
-
-            // Set workday start & end in global values
-            GlobalValues.WorkDayStartUTC = TimezoneHelper.ToUTCTime(localStartHour, timezoneId);
-            GlobalValues.WorkDayEndUTC = TimezoneHelper.ToUTCTime(localEndHour, timezoneId);
 
             return this.Ok();
         }
@@ -215,7 +179,8 @@
             string userCurrentWindowsTimezoneId = TimezoneHelper.GetTimezone(userCurrentTimezone).Id;
 
             // Compare current timezone from cookie/query param with stored timezone in db
-            if (user != null && user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
+            if (user != null &&
+                user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
             {
                 // Update if current & stored timezones don't match
                 user.WindowsTimezoneId = userCurrentWindowsTimezoneId;
@@ -264,7 +229,7 @@
             // Send email
             await this.emailSender.SendEmailAsync(
                 from: fromAdmin ? admin.Email : user.Email,
-                fromName: fromAdmin ? GlobalValues.SystemName : user.UserName,
+                fromName: fromAdmin ? AppConstants.SystemName : user.UserName,
                 to: fromAdmin ? user.Email : admin.Email,
                 subject: "Терапевтична сесия",
                 htmlContent: emailBody);
@@ -273,7 +238,7 @@
         private async Task<ApplicationUser> GetUser(bool admin = false)
         {
             return admin ?
-               (await this.userManager.GetUsersInRoleAsync(GlobalValues.AdministratorRoleName))
+               (await this.userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName))
                .FirstOrDefault() :
                 await this.userManager.GetUserAsync(this.User);
         }
