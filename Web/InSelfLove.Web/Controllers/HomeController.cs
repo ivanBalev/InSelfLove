@@ -1,6 +1,5 @@
 ﻿namespace InSelfLove.Web.Controllers
 {
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -12,7 +11,6 @@
     using InSelfLove.Services.Mapping;
     using InSelfLove.Services.Messaging;
     using InSelfLove.Web.InputModels.Contact;
-    using InSelfLove.Web.ViewModels;
     using InSelfLove.Web.ViewModels.Home;
     using InSelfLove.Web.ViewModels.Video;
     using Microsoft.AspNetCore.Identity;
@@ -58,9 +56,15 @@
 
         public async Task<IActionResult> Index()
         {
-            var lastArticles = await this.articleService.GetAll(IndexArticlesCount).To<ArticlePreviewViewModel>().ToListAsync();
-            var lastVideos = await this.videoService.GetAll(IndexVideosCount).To<VideoPreviewViewModel>().ToListAsync();
+            // Gather data
+            var lastArticles = await this.articleService.GetAll(IndexArticlesCount)
+                               .To<ArticlePreviewViewModel>().ToListAsync();
+            var lastVideos = await this.videoService.GetAll(IndexVideosCount)
+                             .To<VideoPreviewViewModel>().ToListAsync();
+
+            // Create view model
             var viewModel = new HomeViewModel(lastArticles, lastVideos);
+
             return this.View(viewModel);
         }
 
@@ -69,22 +73,30 @@
             return this.View();
         }
 
+        // JS Fetch request
         [HttpPost]
         public async Task<IActionResult> Contacts([FromBody] ContactFormInputModel userInfo)
         {
+            // Validate input
             if (!this.ModelState.IsValid)
             {
+                // Return status message partial for client to append to page
                 return this.View("_StatusMessagePartial", this.localizer[ErrorMessage].ToString());
             }
 
-            string verificationErrors = await this.recaptchaService.VerifyAsync(userInfo.RecaptchaToken, userInfo.RecaptchaExpectedAction);
+            // Assert data is sent by actual user
+            string verificationErrors = await this.recaptchaService.VerifyAsync(
+                                        userInfo.RecaptchaToken, userInfo.RecaptchaExpectedAction);
 
+            // If user is bot
             if (!string.IsNullOrEmpty(verificationErrors))
             {
+                // Log error & return bad request
                 this.logger.LogWarning(verificationErrors);
                 return this.BadRequest();
             }
 
+            // Submit contact form & confirm to user
             await this.SubmitContactForm(userInfo);
             return this.View("_StatusMessagePartial", this.localizer[SuccessMessage].ToString());
         }
@@ -99,24 +111,34 @@
             return this.View();
         }
 
+        // Prevent client from caching the response
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
+            return this.View();
         }
 
         // Helper methods
         private async Task SubmitContactForm(ContactFormInputModel userInfo)
         {
-            string adminEmail = (await this.userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
+            string adminEmail = (await this.userManager.GetUsersInRoleAsync(
+                                AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
+
+            // Email bodies are stored in resource file
+            // Not ideal but does the job at least for now
 
             // Send email to admin
             await this.emailSender.SendEmailAsync(
-                from: userInfo.Email,
-                fromName: $"{userInfo.FirstName} {userInfo.LastName}",
-                to: adminEmail,
-                subject: AppConstants.SystemName,
-                htmlContent: string.Format(this.localizer[AdminEmailBodyTemplate], userInfo.Message, userInfo.FirstName, userInfo.LastName, userInfo.PhoneNumber));
+                                   from: userInfo.Email,
+                                   fromName: $"{userInfo.FirstName} {userInfo.LastName}",
+                                   to: adminEmail,
+                                   subject: AppConstants.SystemName,
+                                   htmlContent: string.Format(
+                                                this.localizer[AdminEmailBodyTemplate],
+                                                userInfo.Message,
+                                                userInfo.FirstName,
+                                                userInfo.LastName,
+                                                userInfo.PhoneNumber));
 
             // Send email to user
             await this.emailSender.SendEmailAsync(

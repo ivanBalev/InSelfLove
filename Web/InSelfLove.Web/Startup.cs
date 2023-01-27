@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Reflection;
 
+    using CloudinaryDotNet;
     using InSelfLove.Data;
     using InSelfLove.Data.Common;
     using InSelfLove.Data.Common.Repositories;
@@ -25,7 +26,6 @@
     using InSelfLove.Web.Controllers.Helpers;
     using InSelfLove.Web.InputModels.Article;
     using InSelfLove.Web.ViewModels;
-    using CloudinaryDotNet;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -143,7 +143,7 @@
                     "/js/contacts.js",
                     "/lib/leaflet.js/dist/leaflet.js",
                     "/Custom/js/leaflet.js",
-                    "/Custom/js/recaptcha.js");
+                    "/Custom/js/contacts.js");
 
             });
             //}

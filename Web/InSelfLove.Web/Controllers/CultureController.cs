@@ -13,16 +13,18 @@
         [HttpPost]
         public IActionResult SetCulture(string culture, string returnUrl)
         {
+            // Add culture cookie to response
             this.Response.Cookies.Append(
                 CookieRequestCultureProvider.DefaultCookieName,
                 CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
                 new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
 
-            // Escape non-ASCII characters in redirect header (returnUrl has Cyrillic letters)
+            // If returnUrl has Cyrillic letters
             if (Regex.IsMatch(returnUrl, @"\p{IsCyrillic}"))
             {
+                // Escape non-ASCII characters in redirect header
                 returnUrl = "~/" + string.Join("/", returnUrl.Substring(2).Split("/")
-                                    .Select(s => System.Net.WebUtility.UrlEncode(s)));
+                                    .Select(System.Net.WebUtility.UrlEncode));
             }
 
             return this.LocalRedirect(returnUrl);

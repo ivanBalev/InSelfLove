@@ -1,21 +1,25 @@
 ﻿const csfrToken = document.querySelector("form input[name=__RequestVerificationToken]").value;
-const siteKey = "6LdSQIIfAAAAAO787M08KaNncgzfLpOO6VknjOeF";
+const siteKey = "6LeUiIAfAAAAAHHzOdr30-6LdSQIIfAAAAAO787M08KaNncgzfLpOO6VknjOeF";
 const expectedAction = "SUBMIT_CONTACT_FORM";
 
 document.getElementById('contacts-form').addEventListener('submit', function (e) {
+    // Prevent default http request
     e.preventDefault();
+
+    // Gather data from all contact form fields
     const data = Object.fromEntries(new FormData(e.target).entries());
 
-    // Validation
+    // Validate required fields
     if (!isEmail(data.Email)) {
-        alert('Invalid email');
+        alert('Невалиден имейл адрес');
         return;
     }
     if (data.Message.length < 30) {
-        alert('Message needs to be at least 30 characters long.');
+        alert('Моля, въведете повече от 30 символа.');
         return;
     }
 
+    // grecaptcha comes from the head script we insert in Contacts.cshtml
     grecaptcha.enterprise.ready(function () {
         grecaptcha.enterprise.execute(siteKey, { action: expectedAction })
             .then(function (token) {
@@ -24,7 +28,10 @@ document.getElementById('contacts-form').addEventListener('submit', function (e)
 
                 postData('/Home/Contacts', data, csfrToken)
                     .then(res => {
+                        // Insert response html (status message)
                         document.getElementsByTagName('nav')[0].after(htmlToElement(res));
+
+                        // Reset contact form
                         document.getElementById('contacts-form').reset();
                     });
             });

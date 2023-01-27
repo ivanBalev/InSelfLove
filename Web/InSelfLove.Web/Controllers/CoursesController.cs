@@ -16,6 +16,7 @@
     using InSelfLove.Web.Infrastructure.ModelBinders;
     using InSelfLove.Web.InputModels.Courses;
     using InSelfLove.Web.ViewModels.Courses;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Features;
     using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,7 @@
     using Newtonsoft.Json;
     using Stripe;
 
+    // TODO: this feature hasn't been released yet. All main functionality works correctly.
     public class CoursesController : Controller
     {
         private const string BaseUri = "https://video.bunnycdn.com/library/";
@@ -57,6 +59,7 @@
         }
 
         [HttpGet]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Index()
         {
             var viewModel = new CoursesIndexViewModel()
@@ -70,6 +73,7 @@
         }
 
         [HttpPost]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> CreateCourse(CourseCreateInputModel inputModel)
         {
             await this.SetThumbnailImage(inputModel);
@@ -79,6 +83,7 @@
         }
 
         [HttpPost]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> BuyCourse(string courseId, string priceId)
         {
             var userId = this.userManager.GetUserId(this.User);
@@ -94,6 +99,7 @@
 
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Payment()
         {
             var json = await new StreamReader(this.HttpContext.Request.Body).ReadToEndAsync();
@@ -130,25 +136,8 @@
             }
         }
 
-        private async Task FulfillOrder(Stripe.Checkout.Session session)
-        {
-            // Get user reference info set in BuyCourse Action
-            var userCourseInfo = session.ClientReferenceId.Split(", ");
-
-            var payment = new Payment
-            {
-                ApplicationUserId = userCourseInfo[0].Split(": ")[1],
-                CourseId = userCourseInfo[1].Split(": ")[1],
-                StripeCustomerId = session.CustomerId,
-                AmountTotal = (long)session.AmountTotal,
-            };
-
-            await this.stripeService.StorePayment(payment);
-
-            // TODO: Send the customer a receipt email
-        }
-
         [HttpGet]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Course(string id)
         {
             var courseVideos = await this.courseService.GetById(id)
@@ -159,6 +148,7 @@
         }
 
         [HttpGet]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> CourseVideo(string id, string courseId)
         {
             var user = await this.userManager.Users
@@ -183,6 +173,7 @@
         [DisableFormValueModelBindingAttribute]
         [RequestSizeLimit(1073741824)]
         [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> CreateCourseVideo()
         {
             if (!MultipartRequestHelper.IsMultipartContentType(this.Request.ContentType))
@@ -242,6 +233,25 @@
             var result = await this.courseService.CreateCourseVideo(courseVideoGuid, fileName.Split('.')[0], courseGuid);
             return this.Created(nameof(CoursesController), null);
         }
+
+        private async Task FulfillOrder(Stripe.Checkout.Session session)
+        {
+            // Get user reference info set in BuyCourse Action
+            var userCourseInfo = session.ClientReferenceId.Split(", ");
+
+            var payment = new Payment
+            {
+                ApplicationUserId = userCourseInfo[0].Split(": ")[1],
+                CourseId = userCourseInfo[1].Split(": ")[1],
+                StripeCustomerId = session.CustomerId,
+                AmountTotal = (long)session.AmountTotal,
+            };
+
+            await this.stripeService.StorePayment(payment);
+
+            // TODO: Send the customer a receipt email
+        }
+
 
         // This should probably not be inside the controller class
         private async Task<string> UploadFile(Stream stream, string fileName)

@@ -1,10 +1,11 @@
-﻿@model ErrorViewModel
-@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-@{ this.ViewData["Title"] = localizer["Content not found"].Value; }
+@{
+    this.ViewData["Title"] = localizer["Content not found"].Value; 
+}
 
 <div id="error-page">
-    <partial name="_SlimShowcasePartial" model="@(ViewData["Title"] ?? "`")" />
+    <partial name="_SlimShowcasePartial" model="@(ViewData["Title"])" />
 
     <div class="text-center my-2">
         <img src="~/Custom/img/wonder.png" height="300" alt="Content not found" />
