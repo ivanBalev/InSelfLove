@@ -1,5 +1,5 @@
 ﻿const csfrToken = document.querySelector("form input[name=__RequestVerificationToken]").value;
-const siteKey = "6LeUiIAfAAAAAHHzOdr30-6LdSQIIfAAAAAO787M08KaNncgzfLpOO6VknjOeF";
+const siteKey = "6LdSQIIfAAAAAO787M08KaNncgzfLpOO6VknjOeF";
 const expectedAction = "SUBMIT_CONTACT_FORM";
 
 document.getElementById('contacts-form').addEventListener('submit', function (e) {
