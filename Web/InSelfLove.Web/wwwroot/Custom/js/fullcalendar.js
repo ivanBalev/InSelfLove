@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         views: {
             custom: {
-                dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric' },
+                dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true },
                 type: 'dayGridWeek',
                 duration: { days: dayCount },
                 dayCount: dayCount
@@ -483,7 +483,7 @@ confirmCancelBtn.addEventListener('click', function () {
         });
 });
 
-workingHoursSubmitBtn.addEventListener('click', function () {
+workingHoursSubmitBtn?.addEventListener('click', function () {
     let startHour = document.getElementById('startHour').value;
     let endHour = document.getElementById('endHour').value;
 

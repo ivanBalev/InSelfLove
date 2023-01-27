@@ -139,6 +139,9 @@ body {
     margin-top: 55px !important;
     background-color: rgb(239,239,239) !important;
 
+    /*fixes background shift when bootstrap modal is opened*/
+    overflow: auto !important;
+    padding-right: 0px !important;
 }
 
 html, body {

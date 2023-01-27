@@ -15,28 +15,32 @@
 
     public class ViewRender : IViewRender
     {
-        private IRazorViewEngine _viewEngine;
-        private ITempDataProvider _tempDataProvider;
-        private IServiceProvider _serviceProvider;
+        private readonly IRazorViewEngine viewEngine;
+        private readonly ITempDataProvider tempDataProvider;
+        private readonly IServiceProvider serviceProvider;
 
         public ViewRender(
             IRazorViewEngine viewEngine,
             ITempDataProvider tempDataProvider,
             IServiceProvider serviceProvider)
         {
-            _viewEngine = viewEngine;
-            _tempDataProvider = tempDataProvider;
-            _serviceProvider = serviceProvider;
+            this.viewEngine = viewEngine;
+            this.tempDataProvider = tempDataProvider;
+            this.serviceProvider = serviceProvider;
         }
 
+        // Finds view and returns it stringified
         public async Task<string> RenderPartialViewToString<TModel>(string name, TModel model)
         {
-            var actionContext = GetActionContext();
+            // Default empty action context
+            var actionContext = this.GetActionContext();
 
-            var viewEngineResult = _viewEngine.FindView(actionContext, $"{name}", false);
+            // Get view engine result
+            var viewEngineResult = this.viewEngine.FindView(actionContext, name, isMainPage: false);
 
             if (!viewEngineResult.Success)
             {
+                // Throw exception if view is not found
                 throw new InvalidOperationException(string.Format("Couldn't find view '{0}'", name));
             }
 
@@ -44,23 +48,24 @@
 
             using (var output = new StringWriter())
             {
+                // Provide view context with default empty data + out model for the view to render
                 var viewContext = new ViewContext(
-                    actionContext,
-                    view,
-                    new ViewDataDictionary<TModel>(
-                        metadataProvider: new EmptyModelMetadataProvider(),
-                        modelState: new ModelStateDictionary())
-                    {
-                        Model = model
-                    },
-                    new TempDataDictionary(
-                        actionContext.HttpContext,
-                        _tempDataProvider),
-                    output,
-                    new HtmlHelperOptions());
+                                      actionContext,
+                                      view,
+                                      new ViewDataDictionary<TModel>(
+                                          metadataProvider: new EmptyModelMetadataProvider(),
+                                          modelState: new ModelStateDictionary())
+                                      {
+                                          Model = model,
+                                      },
+                                      new TempDataDictionary(
+                                          actionContext.HttpContext,
+                                          this.tempDataProvider),
+                                      output,
+                                      new HtmlHelperOptions());
 
-                view.RenderAsync(viewContext).GetAwaiter().GetResult();
-
+                // Render view
+                await view.RenderAsync(viewContext);
                 return output.ToString();
             }
         }
@@ -69,7 +74,7 @@
         {
             var httpContext = new DefaultHttpContext
             {
-                RequestServices = _serviceProvider,
+                RequestServices = this.serviceProvider,
             };
 
             return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());

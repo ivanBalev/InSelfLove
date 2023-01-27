@@ -223,7 +223,7 @@
                 IsOnSite = apptmnt.IsOnSite,
             };
 
-            // Compose email
+            // Compose email body
             var emailBody = await this.viewRender.RenderPartialViewToString("_EmailBody", model);
 
             // Send email

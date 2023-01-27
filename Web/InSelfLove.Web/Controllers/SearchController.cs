@@ -13,15 +13,16 @@
         private const string ArticleActionName = "Article";
         private const string VideoActionName = "Video";
 
-        public SearchController(
-            IArticleService articleService,
-            IVideoService videoService)
+        public SearchController(IArticleService articleService, IVideoService videoService)
             : base(articleService, videoService)
         {
         }
 
         public async Task<IActionResult> Index(string searchTerm)
         {
+            // Get view model
+            // Action names refer to the 2 methods below -
+            // for creating the href links in pagination
             var viewModel = new IndexSearchViewModel
             {
                 SearchTerm = searchTerm,
@@ -31,14 +32,16 @@
             return this.View(viewModel);
         }
 
-        [Route("api/Search/Article")]
+        // Fetch request
+        [Route($"api/Search/{ArticleActionName}")]
         public async Task<IActionResult> Article(int page, string searchTerm)
         {
             var viewModel = await this.GetArticlesPreview(page, searchTerm, ArticleActionName);
             return this.View("_ArticlesAllPartial", viewModel);
         }
 
-        [Route("api/Search/Video")]
+        // Fetch request
+        [Route($"api/Search/{VideoActionName}")]
         public async Task<IActionResult> Video(int page, string searchTerm)
         {
             var viewModel = await this.GetVideosPreview(page, searchTerm, VideoActionName);

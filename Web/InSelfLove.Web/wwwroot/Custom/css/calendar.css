@@ -317,9 +317,3 @@ footer p {
 ::-webkit-calendar-picker-indicator {
     padding-right: 10px;
 }
-
-/*fixes background shift when bootstrap modal is opened*/
-body.modal-open {
-    overflow: auto !important;
-    padding-right: 0px !important;
-} 

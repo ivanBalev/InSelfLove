@@ -52,14 +52,11 @@
             this.environment = environment;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
             // Logging
             if (!this.environment.EnvironmentName.Equals("testing"))
             {
-                // testing server.CreateClient() runs through this a second time,
-                // causing an error(log file is already in use by server)
                 services.AddLogging(loggingBuilder =>
                 {
                     var loggingSection = this.configuration.GetSection("Logging");
@@ -67,8 +64,8 @@
                 });
             }
 
+            // Localization
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var cultures = new List<CultureInfo>
@@ -87,14 +84,12 @@
                     };
             });
 
+            // MVC
             services.AddMvc()
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
-            // TODO: Make debugging easier
             // Bundling & Minification
-            //if (!this.environment.IsDevelopment())
-            //{
             services.AddWebOptimizer(pipeline =>
             {
                 pipeline.AddCssBundle(
@@ -144,35 +139,35 @@
                     "/lib/leaflet.js/dist/leaflet.js",
                     "/Custom/js/leaflet.js",
                     "/Custom/js/contacts.js");
-
             });
-            //}
 
-
+            // Database connection
             var connString = this.configuration.GetConnectionString("MySql");
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySql(connString, ServerVersion.AutoDetect(connString)));
 
+            // Identity & roles
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Cloudinary setup
-            CloudinaryDotNet.Account cloudinaryCredentials = new CloudinaryDotNet.Account(
+            var cloudinaryCredentials = new CloudinaryDotNet.Account(
                 this.configuration["Cloudinary:CloudName"],
                 this.configuration["Cloudinary:ApiKey"],
                 this.configuration["Cloudinary:ApiSecret"]);
-
             Cloudinary cloudinaryUtility = new Cloudinary(cloudinaryCredentials);
-
             services.AddSingleton(cloudinaryUtility);
 
+            // Response caching
             services.AddResponseCaching();
 
+            // Authentication
             var authBuilder = services.AddAuthentication();
 
             // External Logins
             if (!this.environment.EnvironmentName.Equals("testing"))
             {
+                // Google
                 authBuilder.AddGoogle(googleOptions =>
                 {
                     IConfigurationSection googleAuthNSection =
@@ -181,6 +176,7 @@
                     googleOptions.ClientId = googleAuthNSection["ClientId"];
                     googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
                 })
+                // Facebook
                .AddFacebook(facebookOptions =>
                {
                    facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
@@ -190,39 +186,48 @@
 
             // Cookies setup
             services.Configure<CookiePolicyOptions>(
-                options =>
-                {
-                    options.CheckConsentNeeded = context => true;
-                });
+            options =>
+            {
+                options.CheckConsentNeeded = context => true;
+            });
 
+            // Controllers & Views
             services.AddControllersWithViews(configure =>
             {
                 configure.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
 
+            // Antiforgery
             services.AddAntiforgery(options =>
             {
                 options.HeaderName = "X-CSRF-TOKEN";
             });
 
+            // Razor pages
             services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            // Singleton config
             services.AddSingleton(this.configuration);
 
             // Data repositories
             services.AddScoped(typeof(IDeletableEntityRepository<>), typeof(EfDeletableEntityRepository<>));
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
+
+            // View rendering DI
             services.AddScoped<IViewRender, ViewRender>();
 
+            // Response compression
             services.AddResponseCompression(options =>
             {
                 options.EnableForHttps = true;
-                // WebOptimizer output type is text/js which is not recognized by default 
+                // WebOptimizer output type is text/js which is not recognized by default
+                // WebOptimizer is responsible for bundling & minification
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
                     new[] { "text/javascript" });
             });
 
-            // Application services
+            // Transient app services
             services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
             services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IVideoService, VideoService>();
@@ -237,22 +242,24 @@
             services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            // Headers forwarded by nginx
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
             });
 
+            // Localization
             app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
+            // Automapper
             AutoMapperConfig.RegisterMappings(
                 typeof(ErrorViewModel).GetTypeInfo().Assembly,
                 typeof(ArticleEditInputModel).GetTypeInfo().Assembly,
                 typeof(Article).GetTypeInfo().Assembly);
 
-            // Seed data on application startup
+            // Seed data on app startup
             using (var serviceScope = app.ApplicationServices.CreateScope())
             {
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -265,21 +272,27 @@
                 new ApplicationDbContextSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
+            // Stripe
             StripeConfiguration.ApiKey = this.configuration["Stripe:ApiKey"];
 
+            // Exceptions
             if (this.environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // Apply pending migrations
                 app.UseMigrationsEndPoint();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+
+                // Enforce HTTPS
                 app.UseHsts();
             }
-
             app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
+            // Response compression, bundling, minification & caching
             app.UseResponseCompression();
             app.UseWebOptimizer();
             app.UseStaticFiles(new StaticFileOptions()
@@ -297,15 +310,18 @@
                     }
                 },
             });
-
             app.UseResponseCaching();
+
+            // Cookies
             app.UseCookiePolicy();
 
-            app.UseRouting();
 
+            // Auth & Authorization
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Routing
+            app.UseRouting();
             app.UseEndpoints(
                 endpoints =>
                     {
