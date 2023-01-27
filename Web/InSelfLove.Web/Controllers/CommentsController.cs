@@ -3,9 +3,9 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using InSelfLove.Services.Data.Helpers;
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Comments;
+    using InSelfLove.Services.Data.Helpers;
     using InSelfLove.Services.Mapping;
     using InSelfLove.Services.Messaging;
     using InSelfLove.Web.InputModels.Comment;
@@ -13,7 +13,6 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     public class CommentsController : BaseController
     {
@@ -36,24 +35,27 @@
         [Route("api/CreateComment")]
         public async Task<IActionResult> Create([FromBody] CommentInputModel inputModel)
         {
+            // Validate input
             if (!this.ModelState.IsValid)
             {
                 return this.BadRequest();
             }
 
-            // Create comment
+            // Create
             var comment = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
+            await this.commentService.Create(comment, this.userManager.GetUserId(this.User));
 
-            var commentId = await this.commentService.Create(comment, this.userManager.GetUserId(this.User));
-
+            // Inform admin
             await this.NotifyAdminViaEmail(inputModel);
 
             // Create comment view model
-            var commentViewModel = await this.commentService.GetById(commentId)
-                .To<CommentViewModel>().FirstOrDefaultAsync();
-            commentViewModel.CreatedOn = TimezoneHelper
-                .ToLocalTime(commentViewModel.CreatedOn, this.UserTimezoneIdFromCookie);
+            var commentViewModel = AutoMapperConfig.MapperInstance.Map<Comment, CommentViewModel>(comment);
 
+            // Adjust CreatedOn to user's local time
+            commentViewModel.CreatedOn = TimezoneHelper.ToLocalTime(
+                commentViewModel.CreatedOn, this.UserTimezoneIdFromCookie);
+
+            // Return single comment html to client
             return this.View("_CommentSinglePartial", commentViewModel);
         }
 
@@ -62,14 +64,17 @@
         [Route("api/EditComment")]
         public async Task<ActionResult> Edit(CommentEditInputModel inputModel)
         {
+            // Validate input
             if (!this.ModelState.IsValid)
             {
                 return this.BadRequest();
             }
 
+            // Prepare data for service
             var comment = AutoMapperConfig.MapperInstance.Map<Comment>(inputModel);
             var userId = this.userManager.GetUserId(this.User);
 
+            // Return respective result to client
             var result = await this.commentService.Edit(comment, userId);
             return result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest();
         }
@@ -79,17 +84,22 @@
         [Route("api/DeleteComment")]
         public async Task<ActionResult> Delete(int id)
         {
-            var userId = this.userManager.GetUserId(this.User);
-            var isUserAdmin = this.User.IsInRole(AppConstants.AdministratorRoleName);
-            var result = await this.commentService.Delete(id, userId, isUserAdmin);
+            // Provide service with comment id, current user id & whether current user is admin
+            var result = await this.commentService.Delete(
+                         id,
+                         this.userManager.GetUserId(this.User),
+                         this.User.IsInRole(AppConstants.AdministratorRoleName));
+
+            // Return respective result to client
             return (result > 0 ? (ActionResult)this.Ok() : (ActionResult)this.BadRequest());
         }
 
         private async Task NotifyAdminViaEmail(CommentInputModel inputModel)
         {
-            string adminEmail = (await this.userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
             string userName = this.userManager.GetUserName(this.User);
 
+            // Compose email body
+                               // ResourceUrl given by addComment.js
             string emailBody = $@"<div>Имате нов коментар</div></br><br /><br />
                                   <div>Потребител:<br /><b>{userName}</b></div><br />
                                   <div>Коментар:<br /><b>{inputModel.Content}</b></div><br />
@@ -98,6 +108,10 @@
                                   </div>";
 
             string emailSubject = "InSelfLove Нов Коментар";
+            string adminEmail = (await this.userManager.GetUsersInRoleAsync(
+                               AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
+
+            // Compose email
             await this.emailSender.SendEmailAsync(
                 from: adminEmail,
                 fromName: AppConstants.SystemName,

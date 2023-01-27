@@ -48,8 +48,7 @@
         public async Task<IActionResult> Single(string slug)
         {
             // Get info for client & create view model
-            var viewModel = AutoMapperConfig.MapperInstance
-                .Map<ArticleViewModel>(
+            var viewModel = AutoMapperConfig.MapperInstance.Map<ArticleViewModel>(
                 await this.articleService.GetBySlug(slug, this.UserTimezoneIdFromCookie));
 
             // Return 404 if article doesn't exist
@@ -122,6 +121,7 @@
             return this.Redirect("/");
         }
 
+        // Temporary function to syllabify all articles in db at the same time
         [HttpGet]
         [Route("Articles/SyllabifyAllArticles")]
         [Authorize(Roles = AppConstants.AdministratorRoleName)]

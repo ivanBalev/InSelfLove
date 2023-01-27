@@ -12,6 +12,8 @@
 
     internal class UsersSeeder : ISeeder
     {
+        private const string DefaultProfilePicture = "https://res.cloudinary.com/dzcajpx0y/image/upload/c_scale,w_64/v1610826038/User-Profile-PNG-Free-Image_d3npde.png";
+
         public async Task SeedAsync(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -27,6 +29,7 @@
                 UserName = configuration[$"{AppConstants.AdministratorRoleName}:UserName"],
                 Email = configuration[$"{AppConstants.AdministratorRoleName}:Email"],
                 WindowsTimezoneId = "FLE Standard Time",
+                ProfilePhoto = DefaultProfilePicture,
             };
 
             var guest = new ApplicationUser
@@ -34,6 +37,7 @@
                 UserName = configuration[$"{AppConstants.UserRoleName}:UserName"],
                 Email = configuration[$"{AppConstants.UserRoleName}:Email"],
                 WindowsTimezoneId = "FLE Standard Time",
+                ProfilePhoto = DefaultProfilePicture,
             };
 
             var adminResult = await userManager.CreateAsync(

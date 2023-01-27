@@ -185,13 +185,6 @@
         // Returns recommendation for other articles the user might want to check out
         public async Task<IList<Article>> GetSideArticles(int articlesCount, DateTime date)
         {
-            // TODO: would really prefer to do randomization in db rather than in memory.
-            // At present, it seems it requires doing changes to the dbContext class that
-            // would entail changes for all other methods in the current service
-            // Namely not creating a table in memory that corresponds to the one in sql db
-            // Which would enable the queries to be executed. At present, they're being
-            // mixed with the automatically-generated query by EF.
-
             // Take articles older than current one
             var articles = await this.articleRepository.All()
                .Where(a => DateTime.Compare(a.CreatedOn, date) < 0)

@@ -19,8 +19,7 @@
     {
         private readonly IVideoService videoService;
 
-        public VideosController(
-            IVideoService videoService)
+        public VideosController(IVideoService videoService)
             : base(videoService)
         {
             this.videoService = videoService;
@@ -28,28 +27,20 @@
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            var viewModel = await this.GetVideosPreview(page);
-
-            return this.View(viewModel);
+            return this.View(await this.GetVideosPreview(page));
         }
 
         [Route("Videos/{slug}")]
         public async Task<IActionResult> Single(string slug)
         {
-            slug = HttpUtility.UrlDecode(slug);
-            var viewModel = AutoMapperConfig.MapperInstance
-                .Map<VideoViewModel>(await this.videoService
-                .GetBySlug(slug));
+            // Get info for client & create view model
+            var viewModel = AutoMapperConfig.MapperInstance.Map<VideoViewModel>(
+                await this.videoService.GetBySlug(slug, this.UserTimezoneIdFromCookie));
 
+            // Return 404 if video doesn't exist
             if (viewModel == null)
             {
                 return this.NotFound();
-            }
-
-            for (int i = 0; i < viewModel?.Comments.Count; i++)
-            {
-                viewModel.Comments[i].CreatedOn = TimezoneHelper.ToLocalTime(
-                    viewModel.Comments[i].CreatedOn, this.UserTimezoneIdFromCookie);
             }
 
             return this.View(viewModel);
@@ -80,6 +71,7 @@
         [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Edit(int id)
         {
+            // Get video & map to view/input model
             var model = await this.videoService.GetById(id)
                 .To<EditVideoInputModel>().FirstOrDefaultAsync();
 
@@ -100,7 +92,6 @@
         public async Task<IActionResult> Delete(int id)
         {
             await this.videoService.Delete(id);
-
             return this.Redirect("/");
         }
     }

@@ -19,7 +19,7 @@
 
         IQueryable<Video> GetById(int id);
 
-        Task<Video> GetBySlug(string slug);
+        Task<Video> GetBySlug(string slug, string userTimezone);
 
         Task<string> Edit(Video video);
     }

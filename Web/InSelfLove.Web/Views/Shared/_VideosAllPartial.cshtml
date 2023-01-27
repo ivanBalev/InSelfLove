@@ -1,6 +1,6 @@
 ﻿@model InSelfLove.Web.ViewModels.Video.VideosPaginationViewModel
 @{
-   if (this.ViewContext.RouteData.Values["controller"].ToString() == "Search")
+    if (this.ViewContext.RouteData.Values["controller"].ToString() == "Search")
     {
         // Remove layout when called by search controller (Fetch Request)
         this.Layout = null;

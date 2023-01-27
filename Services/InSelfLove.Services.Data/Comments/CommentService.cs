@@ -18,7 +18,7 @@
             this.commentRepository = commentRepository;
         }
 
-        public async Task<int> Create(Comment comment, string userId)
+        public async Task Create(Comment comment, string userId)
         {
             // Validate input
             if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId) ||
@@ -28,31 +28,35 @@
                 throw new ArgumentException(nameof(comment));
             }
 
+            // Assign user id
             comment.UserId = userId;
 
             // Avoid deep nesting (2 levels max)
             await this.SetCommentDepth(comment);
 
-            // Save to db and return Id
+            // Save to db
             await this.commentRepository.AddAsync(comment);
             await this.commentRepository.SaveChangesAsync();
-            return comment.Id;
+
+            // Update comment info
+            comment = await this.GetById(comment.Id).Include(c => c.User).FirstOrDefaultAsync();
         }
 
         public IQueryable<Comment> GetById(int commentId)
         {
-            return this.commentRepository.All()
-                .Where(a => a.Id == commentId);
+            return this.commentRepository.All().Where(a => a.Id == commentId);
         }
 
         public async Task<int> Edit(Comment comment, string userId)
         {
+            // Validate input
             if (comment == null || string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             {
                 return 0;
             }
 
-            var dbComment = await this.commentRepository.All().Where(c => c.Id == comment.Id).SingleOrDefaultAsync();
+            var dbComment = await this.commentRepository.All()
+                            .Where(c => c.Id == comment.Id).SingleOrDefaultAsync();
 
             // Check if comment exists & creator is same as editor
             if (dbComment == null || dbComment.UserId != userId)
@@ -60,35 +64,40 @@
                 return 0;
             }
 
+            // Update content
             dbComment.Content = comment.Content;
             this.commentRepository.Update(dbComment);
 
+            // Return if update was successful
             return await this.commentRepository.SaveChangesAsync();
         }
 
         public async Task<int> Delete(int commentId, string userId, bool isUserAdmin)
         {
+            // Get from db
             var comment = await this.commentRepository.All().SingleOrDefaultAsync(c => c.Id == commentId);
 
+            // Comment doesn't exist || user not same as creator and not admin
             if (comment == null || (comment.UserId != userId && !isUserAdmin))
             {
-                // Comment doesn't exist || user not same as creator and not admin
                 return 0;
             }
 
-            var secondLevelComments = await this.commentRepository.All().Where(c => c.ParentCommentId == commentId).ToListAsync();
+            // Get children of the comment
+            var childComments = await this.commentRepository.All()
+                                      .Where(c => c.ParentCommentId == commentId).ToListAsync();
 
-            foreach (var nestedComment in secondLevelComments)
+            foreach (var childComment in childComments)
             {
-                // Delete most deeply nested comments
-                var thirdLevelComments = await this.commentRepository.All().Where(c => c.ParentCommentId == nestedComment.Id).ToListAsync();
-                foreach (var lastLevelComment in thirdLevelComments)
+                // Delete grandchild comments
+                var grandChildComments = await this.commentRepository.All().Where(c => c.ParentCommentId == childComment.Id).ToListAsync();
+                foreach (var grandChildComment in grandChildComments)
                 {
-                    this.commentRepository.Delete(lastLevelComment);
+                    this.commentRepository.Delete(grandChildComment);
                 }
 
-                // Delete second level comments
-                this.commentRepository.Delete(nestedComment);
+                // Delete child comments
+                this.commentRepository.Delete(childComment);
             }
 
             // Delete comment
@@ -138,7 +147,7 @@
             return comments;
         }
 
-        // If comment is more than 2 levels nested, set it to default max nesting of 2nd level
+        // If comment is more than 2 levels nested, set it to default max nesting of 2nd level (grandChild)
         public async Task SetCommentDepth(Comment comment)
         {
             var parentCommentId = comment.ParentCommentId;

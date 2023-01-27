@@ -27,6 +27,7 @@
 
         public async Task<string> Create(Video video)
         {
+            // Validate input
             if (video == null ||
               string.IsNullOrEmpty(video.Title) || string.IsNullOrWhiteSpace(video.Title) ||
               string.IsNullOrEmpty(video.Url) || string.IsNullOrWhiteSpace(video.Url) ||
@@ -35,12 +36,15 @@
                 throw new ArgumentException(nameof(video));
             }
 
+            // Create new video
             await this.videosRepository.AddAsync(video);
             await this.videosRepository.SaveChangesAsync();
+
+            // Return slug to controller for redirect
             return video.Slug;
         }
 
-        public async Task<Video> GetBySlug(string slug)
+        public async Task<Video> GetBySlug(string slug, string userTimezone)
         {
             if (slug == null)
             {
@@ -51,6 +55,7 @@
                .Where(a => a.Slug.Equals(slug.ToLower()))
               .Select(x => new Video
               {
+                  // Ensure query efficiency by picking only relevant data
                   Id = x.Id,
                   Url = x.Url,
                   Title = x.Title,
@@ -68,17 +73,31 @@
                       VideoId = c.VideoId,
                       ParentCommentId = c.ParentCommentId,
                       CreatedOn = c.CreatedOn,
+
+                      // Instantiate list for ArrangeCommentHierarchy
                       SubComments = new List<Comment>(),
                   })),
               })
                 .FirstOrDefaultAsync();
 
+            // No need to proceed further if video does not exist
             if (video == null)
             {
                 return null;
             }
 
+
+            // Create comments hierarchy tree and order by date
+            // We get a unidimensional list of comments from db
+            // Its nesting needs to be sorted out for the client
             video.Comments = this.commentService.ArrangeCommentHierarchy(video.Comments);
+
+            // Adjust comments CreatedOn to user's local time
+            foreach (var comment in video.Comments)
+            {
+                comment.CreatedOn = TimezoneHelper.ToLocalTime(comment.CreatedOn, userTimezone);
+            }
+
             return video;
         }
 
@@ -86,14 +105,20 @@
         {
             var query = this.videosRepository.All();
 
-            if (searchString != null)
+            // If client is searching for particular phrases (Request coming from Search controller)
+            if (!string.IsNullOrEmpty(searchString) && !string.IsNullOrWhiteSpace(searchString))
             {
+                // Leave only meaningful words
                 var searchItems = SearchHelper.GetSearchItems(searchString);
+
+                // Build query with videos which associated terms or title match the search terms
                 query = query.Search(x => x.AssociatedTerms.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
+            // Order data & skip if using search pagination
             query = query.Distinct().OrderByDescending(c => c.CreatedOn).Skip(skip);
 
+            // if take has no value, then skip will be 0 as well => no pagination used
             if (take.HasValue)
             {
                 query = query.Take(take.Value);
@@ -117,22 +142,19 @@
 
         public async Task<IList<Video>> GetSideVideos(int videosCount, DateTime date)
         {
-            // TODO: would really prefer to do randomization in db rather than in memory.
-            // At present, it seems it requires doing changes to the dbContext class that
-            // would entail changes for all other methods in the current service
-            // Namely not creating a table in memory that corresponds to the one in sql db
-            // Which would enable the queries to be executed. At present, they're being
-            // mixed with the automatically-generated query by EF.
+            // Take videos older than current one
             var videos = await this.videosRepository.All()
               .Where(v => DateTime.Compare(v.CreatedOn, date) < 0)
               .OrderByDescending(v => v.CreatedOn)
               .Take(videosCount)
               .ToListAsync();
 
+            // If they're not enough (video is one of the older ones)
             if (videos.Count < videosCount)
             {
                 var additionalVideosNeeded = videosCount - videos.Count;
 
+                // Get the number of videos needed from the newer ones
                 videos.AddRange(await this.videosRepository.All()
                .Where(a => DateTime.Compare(a.CreatedOn, date) > 0)
                .OrderBy(v => v.CreatedOn)
@@ -145,6 +167,7 @@
 
         public async Task<string> Edit(Video video)
         {
+            // Validate input
             if (video == null ||
               string.IsNullOrEmpty(video.Title) || string.IsNullOrWhiteSpace(video.Title) ||
               string.IsNullOrEmpty(video.Url) || string.IsNullOrWhiteSpace(video.Url) ||
@@ -153,25 +176,32 @@
                 throw new ArgumentException(nameof(video));
             }
 
+            // Get video, make sure it's unique & throw error if it doesn't exist
             var dbVideo = await this.videosRepository.All().SingleOrDefaultAsync(v => v.Id == video.Id);
-
             if (dbVideo == null)
             {
                 throw new ArgumentException(nameof(dbVideo));
             }
 
+            // Update video
             dbVideo.Title = video.Title;
             dbVideo.Url = video.Url;
             dbVideo.AssociatedTerms = video.AssociatedTerms;
             dbVideo.Slug = video.Slug;
-            if (video.CreatedOn.Year > 1000)
+
+            // Make sure date is valid
+            // If no value is given to DateTime from client
+            // It defaults to 01.01.0001
+            if (video.CreatedOn.Year > 1)
             {
                 dbVideo.CreatedOn = video.CreatedOn;
             }
 
+            // Update video in db
             this.videosRepository.Update(dbVideo);
             await this.videosRepository.SaveChangesAsync();
 
+            // Return slug to controller for redirect
             return dbVideo.Slug;
         }
 
