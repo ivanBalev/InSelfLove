@@ -315,17 +315,20 @@
             // Cookies
             app.UseCookiePolicy();
 
-
-            // Auth & Authorization
+            // Authentication
             app.UseAuthentication();
-            app.UseAuthorization();
 
-            // Routing
+            // Order of Routing, Authorization & Endpoints setup
+            // needs to stay like this for config to work correctly
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(
                 endpoints =>
                     {
+                        // Default setup
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+
+                        // Setup for identity pages in Areas folder
                         endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapRazorPages();
                     });

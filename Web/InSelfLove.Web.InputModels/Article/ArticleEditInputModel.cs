@@ -9,7 +9,5 @@ namespace InSelfLove.Web.InputModels.Article
     public class ArticleEditInputModel : ArticleCreateInputModel, IMapFrom<Data.Models.Article>
     {
         public int Id { get; set; }
-
-        public byte[] PreviewImageBlob { get; set; }
     }
 }

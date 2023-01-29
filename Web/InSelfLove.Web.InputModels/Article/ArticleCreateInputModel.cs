@@ -24,6 +24,6 @@ namespace InSelfLove.Web.InputModels.Article
 
         public DateTime CreatedOn { get; set; }
 
-        public string Slug => Regex.Replace(this.Title.ToLower().Replace(' ', '-'), "[^a-zа-я0-9-_~]+", string.Empty);
+        public string Slug => Regex.Replace(this.Title.ToLower().Trim().Replace(' ', '-'), "[^a-zа-я0-9-_~]+", string.Empty);
     }
 }

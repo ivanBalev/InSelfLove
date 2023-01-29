@@ -4,6 +4,8 @@
 <partial name="_SlimShowcasePartial" model="@localizer["Create Article"].Value" />
 
 <div class="container pb-5 mt-3">
+
+    @*Admin can upload images - enctype needs to be multipart/form-data for this to succeed*@
     <form id="article-create-form" method="post" asp-action="Create" enctype="multipart/form-data">
         <div class="form-group">
             <label>@localizer["Title"]</label>
@@ -23,6 +25,8 @@
             <span class='label label-info' id="upload-file-info"></span>
             <span asp-validation-for="@Model.Image" class="text-danger"></span>
         </div>
+
+        @*Preview image for article previews -> better UX*@
         <div class="form-group">
             <label class="btn white-btn mb-3">
                 @localizer["Upload preview image"]
@@ -43,6 +47,8 @@
 </div>
 
 @section Scripts {
+    @*Issue with bundling so sticking with separate requests*@
+    @*Page is accessible only to admin - no performance difference for users*@
     <script src="~/lib/tinyMce/tinymce.min.js"></script>
     <script src="~/lib/the-datepicker.js/dist/the-datepicker.min.js"></script>
     <script src="~/Custom/js/tinyMce.js"></script>

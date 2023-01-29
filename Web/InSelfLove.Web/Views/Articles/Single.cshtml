@@ -12,15 +12,20 @@
 
 
 @{
+    // Provide title to layout partial for title header
     ViewData["Title"] = Model.Title;
 
-    var endP = string.Join('/', Model.ImageUrl.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
+    // Get image folder & name from default cloudinary link
+    var imageFolderAndName = string.Join('/', Model.ImageUrl.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
 
+    // Dynamically create img tag based on current window space available
+    // Client library also required due to Width("auto") option 
+    // which requires dynamic calculations
     var articlePic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
     .Width("auto")
     .Crop("fill"))
     .Secure(true)
-    .BuildImageTag(endP, new StringDictionary("class=card-img-top"));
+    .BuildImageTag(imageFolderAndName, new StringDictionary("class=card-img-top"));
 }
 
 <div class="container">

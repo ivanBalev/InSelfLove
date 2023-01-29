@@ -11,44 +11,53 @@
 
 
 @{
+    // Provide title to layout partial for title header
     ViewData["Title"] = @localizer["Запази час"].Value;
+
     bool userIsAdmin = this.User.IsInRole(AppConstants.AdministratorRoleName);
+
+    // Additional details needed when user books their 1st appointment - Description field
     bool usersFirstAppt = !Model.Appointments.Any(x => x.UserId != null);
 
+    // Provide login page with return url for better UX
     var returnUrl = this.Context.Request.QueryString.Value;
 
+    // Workday start/end setup
     var workDayStartStr = this.Context.Request.Cookies["workDayStart"];
     var workDayEndStr = this.Context.Request.Cookies["workDayEnd"];
-
     var workDayStart = DateTime.Now;
     var workDayEnd = DateTime.Now;
 
-    if(workDayStartStr == null || workDayEndStr == null)
+    if (workDayStartStr == null || workDayEndStr == null)
     {
+        // Set default values if cookies don't exist
         workDayStart = DateTime.Now.Date.AddHours(8);
         workDayEnd = DateTime.Now.Date.AddHours(20);
 
     }
     else
     {
+        // Set values from cookies
         workDayStart = DateTime.Now.Date.AddHours(double.Parse(workDayStartStr.Split(':')[0]));
         workDayEnd = DateTime.Now.Date.AddHours(double.Parse(workDayEndStr.Split(':')[0]));
     }
-}
 
-@*Appointments from database*@
-@{
-    var apps = string.Empty;
+    // Appointments from database
+    // Stringify appointments in html to avoid unnecessary
+    // calendar request to grab the data from db
+    string apptmnts = string.Empty;
     foreach (var appointment in Model.Appointments)
     {
-        apps = apps + JsonConvert.SerializeObject(appointment) + ";";
+        apptmnts = apptmnts + JsonConvert.SerializeObject(appointment) + ";";
     }
-    apps = apps.TrimEnd(';');
+    apptmnts = apptmnts.TrimEnd(';');
+
+    // No available appointments -> show alert & direct user to Contacts page for better UX
     var availableAppointments = Model.Appointments.Where(x =>
         !x.IsUnavailable && DateTime.Compare(x.Start.ToUniversalTime(), DateTime.UtcNow) > 0).ToArray();
-
-    <div class="d-none dbEvents">@apps</div>
 }
+
+<div class="d-none dbEvents">@apptmnts</div>
 
 <div class="container">
     @*No available appointments notification*@
@@ -88,6 +97,7 @@
             <div class="modal-content">
                 <div class="modal-body pb-0">
 
+                    @*First-time clients need to provide some description - anti-psycho measures*@
                     @if (usersFirstAppt)
                     {
                         <div class="modal-header text-center p-0 pb-3">
@@ -99,6 +109,9 @@
                             <textarea id="patientIssueDescription" rows="4" class="form-control px-2" placeholder="@localizer["This will be shared only with your therapist"]"></textarea>
                         </div>
                     }
+
+                    @*Onsite slider (if admin has specified apptmnt can be onsite)*@
+                    @*Dynamically shown/removed depending on which apptmnt is clicked*@
                     <div class="mt-3 mb-3 text-center">
                         <p class="mb-0" id="onSiteBookMsg"></p>
                         <label id="onSiteBookToggle" class="toggle">
@@ -117,6 +130,7 @@
     </div>
 
     @*Daily availability modal*@
+    @*Only admin can submit daily availability*@
     @if (userIsAdmin)
     {
         <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
@@ -130,23 +144,16 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 @{
-                                    var counter = 0;
                                     for (int i = workDayStart.Hour; i < workDayEnd.Hour; i++)
                                     {
-                                        if (counter % 2 == 0)
-                                        {
-                                            <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
-                                                @(i.ToString() + ":00")
-                                            </div>
-                                            i--;
-                                        }
-                                        else
-                                        {
-                                            <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
-                                                @(i.ToString() + ":30")
-                                            </div>
-                                        }
-                                        counter++;
+                                        // Add a :00 & :30 slot for each hour
+                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                            @(i.ToString() + ":00")
+                                        </div>
+
+                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                            @(i.ToString() + ":30")
+                                        </div>
                                     }
                                 }
                             </div>
@@ -164,11 +171,16 @@
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
+
+                @*Title & close btn*@
                 <div class="modal-header text-center pb-0 border-0">
                     <h4 class="modal-title w-100">@localizer["Appointment Details"]</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body pb-0">
+
+                    @*Date & start time row*@
                     <div class="row">
                         <div class="form-group col">
                             <label class="text-center text-black-50  border-bottom">@localizer["Date:"]</label>
@@ -179,6 +191,8 @@
                             <div class="start"></div>
                         </div>
                     </div>
+
+                    @*Username & status row*@
                     <div class="row mt-3">
                         <div class="form-group col usernameGroup">
                             <label class="text-black-50 border-bottom">@localizer["Username:"]</label>
@@ -189,15 +203,22 @@
                             <span class="status font-weight-bold d-block"></span>
                         </div>
                     </div>
+
+                    @*Details div*@
                     <div class="form-group detailsGroup mb-0 mt-3">
                         <label class="text-center text-black-50  border-bottom">@localizer["Details:"] </label>
                         <p class="details mb-0" style="word-wrap: break-word;"></p>
                     </div>
+
+                    @*Location info div*@
                     <div class="form-group mt-3">
                         <label class="text-center text-black-50  border-bottom">Локация </label>
                         <p id="onSiteDetailsMsg"></p>
+
+                        @*User cannot change apptmnt location after specifying it when booking*@
                         @if (userIsAdmin)
                         {
+                            @*Admin can change apptmnt location only if apptmnt is available*@
                             <label id="onSiteDetailsToggle" class="toggle">
                                 <input class="toggle-checkbox" type="checkbox">
                                 <div class="toggle-switch"></div>
@@ -209,6 +230,7 @@
                 <div class="modal-footer justify-content-center pt-0 border-0">
                     @if (userIsAdmin)
                     {
+                        @*Only admin can occupy & approve apptmnts*@
                         <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
                         <button type="button" id="occupyAppointment" class="btn white-btn">@localizer["Occupy"]</button>
                     }
@@ -217,6 +239,7 @@
             </div>
         </div>
     </div>
+
     @*Cancel appointment confirmation modal*@
     <div id="cancelAppointmentConfirm" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -231,43 +254,44 @@
             </div>
         </div>
     </div>
+
     @*Working hours modal*@
-    @if(userIsAdmin)
+    @if (userIsAdmin)
     {
-    <div id="workingHours" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-center pb-0 border-0">
-                    <h4 class="modal-title w-100">@localizer["Standard Working Hours"]</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form class="form-horizontal">
-                        <div class="row">
-                            <div class="form-group col ml-5 mb-0">
-                                <label class="bordr-0">@localizer["Start Time"]</label>
-                                <input type="time" value="00:00" id="startHour" name="startHour" required>
+        <div id="workingHours" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header text-center pb-0 border-0">
+                        <h4 class="modal-title w-100">@localizer["Standard Working Hours"]</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="row">
+                                <div class="form-group col ml-5 mb-0">
+                                    <label class="bordr-0">@localizer["Start Time"]</label>
+                                    <input type="time" value="00:00" id="startHour" name="startHour" required>
+                                </div>
+                                <div class="form-group col ml-5 mb-0">
+                                    <label>@localizer["End Time"]</label>
+                                    <input type="time" value="00:00" id="endHour" name="endHour" required>
+                                </div>
                             </div>
-                            <div class="form-group col ml-5 mb-0">
-                                <label>@localizer["End Time"]</label>
-                                <input type="time" value="00:00" id="endHour" name="endHour" required>
+                            <div class="row">
+                                <div class="col text-center">
+                                    <button type="button" id="workingHoursSubmitBtn" class="btn green-btn">@localizer["Save"]</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col text-center">
-                                <button type="button" id="workingHoursSubmitBtn" class="btn green-btn">@localizer["Save"]</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     }
 
     @*CSFR token*@
     <form id="csfrToken" method="post"></form>
-    @*Working hours button*@
+    @*Show working hours button*@
     @if (userIsAdmin)
     {
         <div class="text-center">

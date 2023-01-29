@@ -1,11 +1,6 @@
 ﻿@model InSelfLove.Web.InputModels.Article.ArticleEditInputModel
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
-@{
-    var previewPic = (Model.PreviewImageBlob == null || Model.PreviewImageBlob.Length < 10) ?
-        null : "data:image/jpeg;base64," + System.Convert.ToBase64String(Model.PreviewImageBlob);
-}
-
 <partial name="_SlimShowcasePartial" model="@localizer["Edit Article"].Value" />
 
 <div class="container mb-5 mt-3">
@@ -34,9 +29,6 @@
                 <input type="file" id="originalPreviewPic" hidden>
             </label>
             <span class='label label-info' id="upload-previewPic-info"></span>
-        </div>
-        <div class="form-group">
-            <input value="@previewPic" type="hidden" asp-for="@Model.PreviewImage" />
         </div>
         <div class="form-group">
             <label class="d-block">@localizer["Date"]</label>

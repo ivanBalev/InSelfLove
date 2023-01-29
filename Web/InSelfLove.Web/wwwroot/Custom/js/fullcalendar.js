@@ -392,6 +392,7 @@ submitDailyAvailabilityBtn?.addEventListener('click', function () {
 
     // If cookie has expired, set default values
     if (!workDayStartCookieValue || workDayStartCookieValue == 'undefined') {
+        // setCookie function from timezone.js
         setCookie(workDayStartStr, '9:00', 400);
         setCookie(workDayEndStr, '18:00', 400);
     } else {
