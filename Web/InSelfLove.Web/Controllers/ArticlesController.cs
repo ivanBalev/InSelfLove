@@ -316,6 +316,8 @@
         private async Task<List<Task<string>>> GetAsync(IEnumerable<string> uris)
         {
             var httpClient = new HttpClient();
+            httpClient.Timeout = new TimeSpan(0, 0, 8);
+
             var taskList = new List<Task<string>>();
 
             foreach (var uri in uris)

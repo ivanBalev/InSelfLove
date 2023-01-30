@@ -4,7 +4,9 @@
 @{
     var bodyText = "";
 
-    // TODO: needs enum || class
+    // TODO: needs enum
+    // Compose email body depending on input from controller
+    // Body is taken from Resource files
     if (Model.Status.Equals("NewAppointment"))
     {
         bodyText = string.Format(localizer["NewAppointment"].Value, Model.Start.ToString("dd MMMM HH:mm"));
@@ -29,6 +31,7 @@
     <p>
         @bodyText
     </p>
+    @*Provide session location info & description if the appointment has just been booked*@
     @if (Model.Status.Equals("NewAppointment") || Model.Status.Equals("AwaitingApproval"))
     {
         <p>

@@ -2,12 +2,11 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 @{
-    var title = @localizer["Articles"].Value;
     // Provide title to layout partial for title header
-    ViewData["Title"] = title;
+    ViewData["Title"] = @localizer["Articles"].Value;
 }
 
-<partial name="_SlimShowcasePartial" model="@title" />
+<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
 
-@*_ArticlesAllPartial exists because it's used 2 controllers - Articles & Search *@
+@*_ArticlesAllPartial exists because it's used by 2 controllers - Articles & Search *@
 <partial name="_ArticlesAllPartial" model="@Model" />

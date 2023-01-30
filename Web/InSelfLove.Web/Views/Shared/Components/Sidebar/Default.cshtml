@@ -2,6 +2,8 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 @{
+    // Determine current location and what to display based on it
+    // If we're on single article page, we suggest articles in sidebar
     bool isSingleArticlePage = Model.Articles.Count != 0;
     int publcationsCount = isSingleArticlePage ? Model.Articles.Count : Model.Videos.Count;
     string elementTitle = isSingleArticlePage ? localizer["MORE ARTICLES"].Value : localizer["MORE VIDEOS"].Value;
@@ -13,7 +15,7 @@
     {
         <div class="row mb-4">
             <div class="col pr-3 sidebar-col">
-                @if (@Model.Articles.Count != 0)
+                @if (isSingleArticlePage)
                 {
                     <partial name="_ArticlePreviewPartial" model="@Model.Articles[i]" />
                 }

@@ -2,31 +2,40 @@
 @using Microsoft.AspNetCore.Localization
 
 @{
-    var rqf = this.Context.Request.HttpContext.Features.Get<IRequestCultureFeature>();
-    var culture = rqf.RequestCulture.Culture.Name;
+    var requestCultureFeature = this.Context.Request.HttpContext.Features.Get<IRequestCultureFeature>();
+    var culture = requestCultureFeature.RequestCulture.Culture.Name;
 }
 
 <!DOCTYPE html>
 <html lang=@culture>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Мими Маринова е холистичен психолог и психотерапевт. Завършила е психология в чужбина. Мария има опит в лечението на депресия, тревожност, хранителни разстройства, емоционална зависимост, травма от изоставяне, травма от отхвърляне, хипохондрия, телесна дисморфия, зависимости. Работи с клиенти, които искат да подобрят самочувствието си и междуличностните отношения. Учи хората да обичат себе си. Практикува в София и онлайн. inselflove in.self.love">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    @*favicon*@
     <link rel="shortcut icon" href="~/Custom/icons/flower-green.svg" sizes="any" type="image/svg+xml">
-    <link rel="stylesheet" href="~/css/bundle.css">  
+    
+    <link rel="stylesheet" href="~/css/bundle.css">
+
     @this.RenderSection("Links", required: false)
     @this.RenderSection("HeadScripts", required: false)
+
+    @*Separate title for each page*@
     <title>@(this.ViewData["Title"]) Психотерапия - Мария Маринова | Психолог и психотерапевт София</title>
+
+    @*Progressive web app*@
     <link rel="manifest" href="~/manifest.json" />
+
     @* ios support *@
     <link rel="apple-touch-icon" href="~/Custom/icons/pwa_icons/icon-96x96.png" />
     <meta name="apple-mobile-web-app-status-bar" content="#92ab95" />
+
     <meta name="theme-color" content="#92ab95" />
 </head>
 
 <body>
+    @*Search modal*@
     <div id="search-modal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -42,6 +51,7 @@
         </div>
     </div>
 
+    @*Navbar*@
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="main-nav">
         <div class="container">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
@@ -87,7 +97,6 @@
 
     <main>
         <div id="content">
-            @* TODO: body always in container. Remove individual containers from each view and just add one here *@
             @this.RenderBody()
         </div>
     </main>

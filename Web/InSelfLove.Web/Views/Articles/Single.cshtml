@@ -22,10 +22,8 @@
     // Client library also required due to Width("auto") option 
     // which requires dynamic calculations
     var articlePic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
-    .Width("auto")
-    .Crop("fill"))
-    .Secure(true)
-    .BuildImageTag(imageFolderAndName, new StringDictionary("class=card-img-top"));
+                                   .Width("auto").Crop("fill")).Secure(true)
+                                   .BuildImageTag(imageFolderAndName, new StringDictionary("class=card-img-top"));
 }
 
 <div class="container">

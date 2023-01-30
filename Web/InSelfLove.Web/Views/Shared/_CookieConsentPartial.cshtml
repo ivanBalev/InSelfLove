@@ -4,7 +4,11 @@
 
 @{
     var consentFeature = this.Context.Features.Get<ITrackingConsentFeature>();
+
+    // Show banner only if user hasn't consented to cookies
     var showBanner = !consentFeature?.CanTrack ?? false;
+
+    // Crete consent cookie to add with js after user has clicked on accept btn
     var cookieString = consentFeature?.CreateConsentCookie();
 }
 
@@ -13,6 +17,7 @@
     <div id="cookieConsent" class="row mb-0 mt-5 ms-0 px-0 d-flex align-items-center justify-content-center alert alert-info alert-dismissible" role="alert">
         <div class="col mt-1">
             <span class="text-black">@localizer["We use cookies to improve your experience."]</span>
+                                  @*Append cookie to btn, value then set with js*@
             <button type="button" class="btn green-btn btn-accept btn-sm mx-0" data-bs-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
                 <span aria-hidden="true">@localizer["Accept"]</span>
             </button>

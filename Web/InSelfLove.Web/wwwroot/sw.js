@@ -13,18 +13,20 @@ const assets = [
 // The first event a service worker gets, and it only happens once.
 self.addEventListener('install', evt => {
     evt.waitUntil(
+        // Cache all static assets
         caches.open(staticCacheName).then(cache => {
             cache.addAll(assets);
         })
     );
 });
 
-// This gets fired after the service worker has installed and the user closes and reopens the page
+// This function gets fired after the service worker has installed and the user closes and reopens the page
 // (does not activate on refresh.Refresh and the old worker still controls the page).Upon activation,
 // the old cache is deleted. It is not deleted while installing, because the old service worker needs the old
 // cache in order to control the page.
 self.addEventListener('activate', evt => {
-    // This causes the service worker to activate immediately after it's installed isntead of waiting for the page to close.
+
+    // The below causes the service worker to activate immediately after it's installed isntead of waiting for the page to close.
     // It might break things though, so use with caution
     //self.skipWaiting();
 
@@ -45,6 +47,7 @@ const limitCacheSize = (cacheName, maximumSize) => {
     caches.open(cacheName).then(cache => {
         cache.keys().then(keys => {
             if (keys.length > maximumSize) {
+                // Recursively calls itself until cache size is normalized
                 cache.delete(keys[0])
                     .then(limitCacheSize(cacheName, maximumSize))
             }
@@ -71,6 +74,9 @@ self.addEventListener('fetch', evt => {
             });
         }).catch(() => {
             let requestUrlEndpoint = evt.request.url.split('/').pop();
+
+            // Return error page if requested item was not a file
+            // ( .js.css etc), hence the '.'
             if (!requestUrlEndpoint.includes('.')) {
                 return caches.match('/Home/Error');
             }

@@ -1,17 +1,21 @@
 ﻿@model IList<InSelfLove.Web.ViewModels.Video.VideoPreviewViewModel>
 @{
     int index = 0;
+
+    // data for preview image
+    // We're using lite-yt-embed client library to save bandwidth on initial load of videos
     const string youtubeApiMainLink = "https://img.youtube.com/vi/";
     const string youtubeApiEndpoint = "/maxresdefault.jpg";
 }
 
 @foreach (var video in Model)
 {
+    // Construct preview image link
     string videoId = video.Url.Split('/').Last();
-    string backgroundImg = youtubeApiMainLink + videoId + youtubeApiEndpoint;
+    string previewImgLink = youtubeApiMainLink + videoId + youtubeApiEndpoint;
 
     <div id="@video.Id" class="carousel-item @(index == 0 ? "active" : "")" itemscope itemtype="http://schema.org/Movie">
-        <lite-youtube videoid="@videoId" playlabel="Play: @video.Title" style="background-image: url('@backgroundImg');">
+        <lite-youtube videoid="@videoId" playlabel="Play: @video.Title" style="background-image: url('@previewImgLink');">
             <div class="video-title">@video.Title</div>
             <button type="button" class="lty-playbtn">
                 <span class="lyt-visually-hidden">Play Video: @video.Title</span>

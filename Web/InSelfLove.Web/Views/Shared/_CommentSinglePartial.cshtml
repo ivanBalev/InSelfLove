@@ -13,7 +13,7 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 @{
-    // Remove layout when using REST API Request
+    // Remove layout when using fetch request
     if (this.ViewContext.RouteData.Values["controller"].ToString() == "Comments")
     {
         this.Layout = null;
@@ -29,7 +29,8 @@
         ViewData["width"] = "64";
         ViewData["height"] = "64";
     }
-    // Don't enter the 2 cases below if this is an api call
+
+    // If sizing info is already entered, this is a nested comment 
     else if (Model.ParentCommentId != null && ViewData["width"]?.ToString() == "64")
     {
         commentLevel = "firstSub";
@@ -43,18 +44,23 @@
         ViewData["height"] = "30";
     }
 
-    var endP = string.Join('/', Model.UserProfilePhoto.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
+    var imageFolderAndName = string.Join('/', Model.UserProfilePhoto.Split('/')
+                                   .TakeLast(2).Select(x => x.Split('.')[0]));
 
     var profilePic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
     .Width(ViewData["width"]?.ToString() ?? "64")
     .Height(ViewData["height"]?.ToString() ?? "64")
     .Crop("fill"))
     .Secure(true)
-    .BuildImageTag(endP, new StringDictionary("class=d-block rounded-circle", "alt=User profile photo"));
+    .BuildImageTag(imageFolderAndName, new StringDictionary("class=d-block rounded-circle", "alt=User profile photo"));
 
     // Variables
     bool userIsSignedIn = this.SignInManager.IsSignedIn(this.User);
-    bool commentsAvailable = Model.SubComments.Count > 0;
+
+    // For show/hide subcomments buttons
+    bool subCommentsAvailable = Model.SubComments.Count > 0;
+
+    // For edit & delete buttons
     bool userOwnsComment = this.UserManager.GetUserId(this.User) == Model.UserId;
 }
 
@@ -64,6 +70,7 @@
             <div class="card border-0">
                 <div class="card-header bg-white border-0">
                     <div class="media flex-wrap w-100 align-items-center">
+                        @*Needs to be raw. Otherwise, Razor escapes the img tag & sets it as plain string*@
                        @Html.Raw(profilePic)
                         <div class="media-body mx-3">
                             <div><span class="userName">@Model.UserUserName</span></div>
@@ -73,10 +80,11 @@
                 </div>
                 <div class="card-body">
                     <p class="comment-content">
-                        @Html.Raw(Model.ContentWithNoTags)
+                        @Model.ContentWithNoTags
                     </p>
                     <div class="row">
                         <div class="col">
+                            @*Send comment add & edit boxes only for signed-in user*@
                             @if (userIsSignedIn)
                             {
                                 <partial name="_CommentAddPartial" model="@(new CommentInputModel {
@@ -90,13 +98,17 @@
 
                     <div class="row comment-buttons justify-content-between">
                         <div class="col-10 reply-subcomments-group">
+
+                            @*Only signed in users can reply*@
                             @if (userIsSignedIn)
                             {
                                 <button type="button" class="green-btn btn-sm border-0 reply-button px-2">
                                     @localizer["Reply"]
                                 </button>
                             }
-                            @if (commentsAvailable)
+
+                            @*Show/hide subcomments btns*@
+                            @if (subCommentsAvailable)
                             {
                                 <button class="showSubcomments btn btn-sm white-btn">
                                     @localizer["Subcomments"]
@@ -107,6 +119,7 @@
                             }
                         </div>
 
+                        @*Edit/delete btns only for admin & user's own comments*@
                         @if (this.User.IsInRole(AppConstants.AdministratorRoleName) || userOwnsComment)
                         {
                             <div class="col-2 px-0">
@@ -122,8 +135,9 @@
                     </div>
                 </div>
 
-                @if (commentsAvailable)
+                @if (subCommentsAvailable)
                 {
+                    // Recursively add subcomments
                     @foreach (var item in Model.SubComments)
                     {
                         <partial name="_CommentSinglePartial" model="@item" />

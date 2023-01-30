@@ -6,9 +6,14 @@
 @inject IViewLocalizer Localizer
 @inject IOptions<RequestLocalizationOptions> LocOptions
 @{
+    // Get both cultures
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     var otherCulture = requestCulture.RequestCulture.Culture.Name == "bg" ? "en" : "bg";
+
+    // Display other culture's flag
     var imgSrc = $"~/Custom/icons/{otherCulture}-icon.png";
+
+    // Provide return url for after user clicks on flag
     var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}{Context.Request.QueryString}";
 }
 <div title="@Localizer["Request culture provider:"] @requestCulture?.Provider?.GetType().Name">
@@ -20,6 +25,7 @@
           method="post"
           class="form-horizontal nav-link text-dark px-0 pt-1">
         <input type="hidden" name="culture" value="@otherCulture" />
+                  @*converts relative to absolute path*@            @*inline js*@
         <img src="@Url.Content(imgSrc)" alt="Website language icon" onclick="this.closest('form').submit();" class="lang-flag border-top" >
     </form>
 </div>

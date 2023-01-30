@@ -4,6 +4,8 @@
 <partial name="_SlimShowcasePartial" model="@localizer["Edit Article"].Value" />
 
 <div class="container mb-5 mt-3">
+
+    @*Admin can upload images - enctype needs to be multipart/form-data for this to succeed*@
     <form id="article-create-form" method="post" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data">
         <div class="form-group">
             <label>@localizer["Title"]</label>
@@ -17,18 +19,19 @@
         </div>
         <div class="form-group">
             <label class="btn white-btn">
-                @localizer["Or upload an image"]
+                @localizer["or upload an image"]
                 <input type="file" asp-for="@Model.Image" hidden>
             </label>
             <span class='label label-info' id="upload-file-info"></span>
             <span asp-validation-for="@Model.Image" class="text-danger"></span>
         </div>
+
+        @*Preview image for article previews -> better UX*@
         <div class="form-group">
-            <label for="originalPreviewPic" class="btn white-btn mb-3">
+            <label class="btn white-btn mb-3">
                 @localizer["Upload preview image"]
-                <input type="file" id="originalPreviewPic" hidden>
+                <input type="file" asp-for="@Model.PreviewImage" hidden>
             </label>
-            <span class='label label-info' id="upload-previewPic-info"></span>
         </div>
         <div class="form-group">
             <label class="d-block">@localizer["Date"]</label>

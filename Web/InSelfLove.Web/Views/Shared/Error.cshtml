@@ -1,6 +1,7 @@
 ﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 
 @{
+    // Provide title to layout partial for title header
     this.ViewData["Title"] = localizer["Content not found"].Value; 
 }
 

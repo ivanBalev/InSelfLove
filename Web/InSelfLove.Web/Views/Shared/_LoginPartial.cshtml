@@ -1,6 +1,7 @@
 ﻿@using InSelfLove.Data.Models
 @using InSelfLove.Services.Data.Helpers;
 @using Microsoft.AspNetCore.Identity
+
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
@@ -21,32 +22,36 @@
 
                 @if (this.User.IsInRole(AppConstants.AdministratorRoleName))
                 {
-<li>
-    <a class="dropdown-item" asp-area="" asp-controller="Articles" asp-action="Create">
-        @localizer["Create Article"]
-    </a>
-</li>
+                    @*Create Article & Video for admin only*@
+                    <li>
+                        <a class="dropdown-item" asp-area="" asp-controller="Articles" asp-action="Create">
+                            @localizer["Create Article"]
+                        </a>
+                    </li>
                     <li>
                         <a class="dropdown-item" asp-area="" asp-controller="Videos" asp-action="Create">
                             @localizer["Create Video"]
                         </a>
-                    </li>                }
+                    </li>
+                }
 
-                                <li>
-                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Context.Request.Path">
-                                        @localizer["Logout"]
-                                    </a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li>
-                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">@localizer["Register"]</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">@localizer["Login"]</a>
-                                </li>
-                            }
+                <li>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Context.Request.Path">
+                        @localizer["Logout"]
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">@localizer["Register"]</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">@localizer["Login"]</a>
+                </li>
+            }
+
+            @*Flag*@
             <li class="dropdown-item py-0">
                 @await Html.PartialAsync("_CulturePartial")
             </li>

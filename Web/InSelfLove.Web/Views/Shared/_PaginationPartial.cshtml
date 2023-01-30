@@ -7,14 +7,17 @@
     <div class="mb-3 clearfix">
         <nav>
             <ul class="pagination justify-content-center">
+                @*PREVIOUS BTN*@
                 @if (this.Model.CurrentPage == 1)
                 {
+                    @*Disable Previous btn if we're on 1st page*@
                     <li class="page-item disabled">
                         <a class="page-link" href="#">@localizer["Previous"]</a>
                     </li>
                 }
                 else
                 {
+                    @*Go 1 page back from current page*@
                     <li class="page-item">
                         <a class="page-link"
                            asp-controller="@Model.ControllerName"
@@ -22,13 +25,20 @@
                            asp-route-page="@(this.Model.CurrentPage - 1)">@localizer["Previous"]</a>
                     </li>
                 }
+                @*END OF PREVIOUS BTN*@
 
+                @*NUMBERS*@
                 @{
+                    @*Display at most 2 pages before the current one (Mobile UI)*@
                     var startPage = Model.CurrentPage > 3 ? Model.CurrentPage - 2 : 1;
+
+                    @*Display at most 2 pages after current one (Mobile UI)*@
                     var endPage = Model.CurrentPage + 2 > Model.PagesCount ? Model.PagesCount : Model.CurrentPage + 2;
 
+                    @*Display all numbers*@
                     for (int i = startPage; i <= endPage; i++)
                     {
+                        @*Show only current page as active*@
                         var active = i == this.Model.CurrentPage ? "active" : string.Empty;
                         <li class="page-item @active">
                             <a class="page-link"
@@ -38,15 +48,19 @@
                         </li>
                     }
                 }
+                @*END OF NUMBERS*@
 
+                @*NEXT BUTTON*@
                 @if (this.Model.CurrentPage == this.Model.PagesCount)
                 {
+                    @*Disabled if we're on last page*@
                     <li class="page-item disabled">
                         <a class="page-link" href="#">@localizer["Next"]</a>
                     </li>
                 }
                 else
                 {
+                    @*Go to next page*@
                     <li class="page-item">
                         <a class="page-link"
                            asp-controller="@Model.ControllerName"

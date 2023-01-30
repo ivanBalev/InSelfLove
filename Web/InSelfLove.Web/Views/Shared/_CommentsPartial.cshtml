@@ -15,7 +15,7 @@
       <!-- Comment delete confirmation modal -->
     <partial name="_CommentDeleteConfirmPartial" />
 
-    <!-- Add new comment -->
+    @*Login btn if user isn't logged in*@
     @if (!this.SignInManager.IsSignedIn(this.User))
     {
         <div class="row mt-5">
@@ -24,6 +24,7 @@
             </div>
         </div>
     }
+    @*Show add comment btn for logged-in users*@
     else
     {
         <h2 class="mt-5 subtitle">@localizer["ADD NEW COMMENT"]</h2>

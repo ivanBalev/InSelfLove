@@ -9,12 +9,16 @@
 <partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
 
 <div id="search-page">
-    @* Search term stored for ajax requests *@
+    @* Search term stored for subsequent fetch requests *@
     <input type="hidden" id="search-term" name="search-term" value="@Model.SearchTerm">
+
+    @*Articles section*@
     <div class="col text-center pt-5 mt-5 pb-2 info-header">
         <h2 class="subtitle">@localizer["ARTICLES"]</h2>
     </div>
     <partial name="_ArticlesAllPartial" model="@Model.ArticlesPagination" />
+
+    @*Vieos section*@
     <div class="col text-center pb-2 mt-5 info-header">
         <h2 class="subtitle">@localizer["VIDEOS"]</h2>
     </div>

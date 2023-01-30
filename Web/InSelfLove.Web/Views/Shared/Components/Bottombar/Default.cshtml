@@ -3,9 +3,11 @@
 
 
 @{
-    bool isSingleArticlePage = Model.Articles.Count != 0;
-    int publcationsCount = isSingleArticlePage ? Model.Articles.Count : Model.Videos.Count;
-    string elementTitle = isSingleArticlePage ? localizer["MORE ARTICLES"].Value : localizer["MORE VIDEOS"].Value;
+    // Determine current location and what to display based on it
+    // If we're on single video page, we suggest articles in bottombar
+    bool isSingleVideoPage = Model.Articles.Count != 0;
+    int publcationsCount = isSingleVideoPage ? Model.Articles.Count : Model.Videos.Count;
+    string elementTitle = isSingleVideoPage ? localizer["MORE ARTICLES"].Value : localizer["MORE VIDEOS"].Value;
 }
 
 <div id="bottombar">
@@ -14,7 +16,7 @@
         @for (int i = 0; i < publcationsCount; i++)
         {
             <div class="col-lg-4 p-2 bottombar-div">
-                @if (@Model.Articles.Count != 0)
+                @if (isSingleVideoPage)
                 {
                     <partial name="_ArticlePreviewPartial" model="@Model.Articles[i]" />
                 }

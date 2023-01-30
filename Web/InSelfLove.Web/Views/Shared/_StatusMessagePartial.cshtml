@@ -4,6 +4,8 @@
 
 @if (this.Context.Request.Headers.ContainsKey("X-CSRF-TOKEN"))
 {
+    // Remove layout of this is a fetch request - 
+    // CSRF token attached only for fetch requests
     this.Layout = null;
 }
 

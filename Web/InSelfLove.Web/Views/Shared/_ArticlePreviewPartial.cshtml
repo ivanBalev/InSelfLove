@@ -4,29 +4,35 @@
 @inject CloudinaryDotNet.Cloudinary Cloudinary
 
 @{
-    var imgUrl = Model.PreviewImageUrl ?? Model.ImageUrl;
-    var endP = string.Join('/', imgUrl.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
+    bool previewImgExists = Model.PreviewImageUrl != null;
+
+    // Get main img if admin hasn't uploaded a specific preview img
+    var imgUrl = previewImgExists ? Model.PreviewImageUrl : Model.ImageUrl;
+    var imgLocationAndName = string.Join('/', imgUrl.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
 
     string previewPic;
 
-    if(Model.PreviewImageUrl != null)
+    // Different transformations for preview & main pic
+    if(previewImgExists)
     {
+        // Preview pic is already in 16:9 so it needs fixed size
         previewPic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
            .Width(500)
            .Height(281)
            .Crop("fill"))
            .Secure(true)
-           .BuildImageTag(endP, new StringDictionary("class=card-img-top img-fluid"));
+           .BuildImageTag(imgLocationAndName, new StringDictionary("class=card-img-top img-fluid"));
     }
     else
     {
+        // Main pic needs to be resized to a 16:9 ratio
         previewPic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
            .Width(500)
            .AspectRatio(16,9)
            .Gravity("auto")
            .Crop("fill"))
            .Secure(true)
-           .BuildImageTag(endP, new StringDictionary("class=card-img-top img-fluid"));
+           .BuildImageTag(imgLocationAndName, new StringDictionary("class=card-img-top img-fluid"));
     }
 }
 
@@ -34,6 +40,7 @@
     <a asp-controller="Articles" asp-action="Single" asp-route-slug="@Model.Slug">
         <div class="card article-card">
             <div class="ratio ratio-16x9">
+                @*Needs to be Raw. Otherwise, razor escapes it & we get the tag as plain text*@
                 @Html.Raw(previewPic)
             </div>
             <div class="card-body bg-light pt-1 text-left article-resize">

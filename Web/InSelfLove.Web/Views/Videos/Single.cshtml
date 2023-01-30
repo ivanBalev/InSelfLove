@@ -21,6 +21,7 @@
                 <!-- Delete button if user is admin -->
                 @if (this.User.IsInRole(AppConstants.AdministratorRoleName))
                 {
+                    @*Avoid sending unnecessary data if not needed by user*@
                     <div class="row mt-2">
                         <div class="col text-end">
                             <a asp-action="Edit" asp-route-id="@Model.Id">
