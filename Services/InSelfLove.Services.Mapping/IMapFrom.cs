@@ -1,6 +1,6 @@
 ﻿namespace InSelfLove.Services.Mapping
 {
-    // ReSharper disable once UnusedTypeParameter
+    // Used only to designate cetain types so they can be located at runtime
     public interface IMapFrom<T>
     {
     }

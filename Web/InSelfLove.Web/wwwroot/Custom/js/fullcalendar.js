@@ -5,16 +5,21 @@ const cultureIsEn = culture === 'en';
 const csfrToken = document.querySelector("#csfrToken input[name=__RequestVerificationToken]").value;
 const shortWeekdayNames = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
 const todayShortName = new Date().toString().split(' ')[0];
+const workDayStartStr = "workDayStart";
+const workDayEndStr = "workDayEnd";                                                 // Remove nulls, 0, ""
+const allAppointments = document.querySelector('.dbEvents').textContent.split(';').filter(n => n).map(x => x).map(e => JSON.parse(e));
+const availableAppointments = allAppointments?.filter(a => !a.isUnavailable && new Date(a.start) > new Date());
+
+// Style
 const themeColor = "#92ab95";
 const yellowColor = "#EEB440";
 const clockwiseArrowSymbol = '\u27F3';
 const plusSymbol = '+';
 const checkmarkSymbol = '\u2713';
-const workDayStartStr = "workDayStart";
-const workDayEndStr = "workDayEnd";
-let dayCount = 5;
 
-// Reduce weekdays per page for smaller screens
+// How many days are displayed on screen
+let dayCount = 5;
+// Reduce for smaller screens
 if (
     navigator.userAgent.match(/Android/i) ||
     navigator.userAgent.match(/iPhone/i)
@@ -57,11 +62,10 @@ const loginModal = document.getElementById('loginModal');
 // Fields 
 const patientIssueDescription = document.getElementById('patientIssueDescription');
 
+// Global variables
 let currentSelectedDate = '';
 let availableDailySlots = [];
 let currentAppointment = null;
-const allAppointments = document.querySelector('.dbEvents').textContent.split(';').filter(n => n).map(x => x).map(e => JSON.parse(e));
-const availableAppointments = allAppointments?.filter(a => !a.isUnavailable && new Date(a.start) > new Date());
 
 // MAIN FUNCTION
 document.addEventListener('DOMContentLoaded', function () {

@@ -17,6 +17,7 @@
                 throw new ArgumentNullException(nameof(source));
             }
 
+            // Map queryable objects to destination we've set in our configuration during startup
             return source.ProjectTo(AutoMapperConfig.MapperInstance.ConfigurationProvider, null, membersToExpand);
         }
 
@@ -29,6 +30,7 @@
                 throw new ArgumentNullException(nameof(source));
             }
 
+            // Map queryable objects to destination we've set in our configuration during startup
             return source.ProjectTo<TDestination>(AutoMapperConfig.MapperInstance.ConfigurationProvider, parameters);
         }
     }

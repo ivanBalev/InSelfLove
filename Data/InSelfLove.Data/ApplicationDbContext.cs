@@ -14,6 +14,7 @@
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
+        // Allows invocation of SetIsDeletedQueryFilter before the class has finished constructing
         private static readonly MethodInfo SetIsDeletedQueryFilterMethod =
             typeof(ApplicationDbContext).GetMethod(
                 nameof(SetIsDeletedQueryFilter),
@@ -40,6 +41,7 @@
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
+            // Update CreatedOn & ModifiedOn properties
             this.ApplyAuditInfoRules();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
@@ -51,6 +53,7 @@
             bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)
         {
+            // Update CreatedOn & ModifiedOn properties
             this.ApplyAuditInfoRules();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
@@ -60,18 +63,26 @@
             // Needed for Identity models configuration
             base.OnModelCreating(builder);
 
-            this.ConfigureUserIdentityRelations(builder);
+            this.ConfigureEntitiesRelations(builder);
 
+            // Create IDeletableEntity.IsDeleted index
+            // We have a global query filter which checks all
+            // entities retrieved from db by this property
+            // so having an index on it will increase performance greatly
             EntityIndexesConfiguration.Configure(builder);
 
             var entityTypes = builder.Model.GetEntityTypes().ToList();
 
-            // Set global query filter for not deleted entities only
+            // Get all entities that inherit/implement IDeletableEntity
             var deletableEntityTypes = entityTypes
                 .Where(et => et.ClrType != null && typeof(IDeletableEntity).IsAssignableFrom(et.ClrType));
+
             foreach (var deletableEntityType in deletableEntityTypes)
             {
+                // Generate global query method for current entity type
                 var method = SetIsDeletedQueryFilterMethod.MakeGenericMethod(deletableEntityType.ClrType);
+
+                // Set global query filter so we retrieve non-deleted entities only
                 method.Invoke(null, new object[] { builder });
             }
 
@@ -87,11 +98,12 @@
         private static void SetIsDeletedQueryFilter<T>(ModelBuilder builder)
             where T : class, IDeletableEntity
         {
+            // Add global query filter to current entity
             builder.Entity<T>().HasQueryFilter(e => !e.IsDeleted);
         }
 
         // Applies configurations
-        private void ConfigureUserIdentityRelations(ModelBuilder builder)
+        private void ConfigureEntitiesRelations(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
 
@@ -130,6 +142,8 @@
 
         private void ApplyAuditInfoRules()
         {
+            // Get all added or modified entities that
+            // have CreatedOn or ModifiedOn properties
             var changedEntries = this.ChangeTracker
                 .Entries()
                 .Where(e =>
@@ -139,12 +153,15 @@
             foreach (var entry in changedEntries)
             {
                 var entity = (IAuditInfo)entry.Entity;
+
+                // Enter CreatedOn data for newly-created entities
                 if (entry.State == EntityState.Added && entity.CreatedOn == default)
                 {
                     entity.CreatedOn = DateTime.UtcNow;
                 }
                 else
                 {
+                    // Change ModifiedOn data for changed entities
                     entity.ModifiedOn = DateTime.UtcNow;
                 }
             }

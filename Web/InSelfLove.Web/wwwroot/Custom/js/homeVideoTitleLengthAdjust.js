@@ -2,6 +2,7 @@
     let innerText = t.innerText;
     let windowWidth = window.innerWidth;
 
+    // Decrease text size depending on available space
     if (windowWidth < '768' && innerText.length > 24) {
         t.innerText = innerText.substr(0, 24) + '...';
     } else if (windowWidth <= '992' && innerText.length > 40) {

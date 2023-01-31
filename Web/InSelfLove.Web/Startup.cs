@@ -254,6 +254,7 @@
             app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
             // Automapper
+            // Register ViewModels, InputModels & DataModels assemblies
             AutoMapperConfig.RegisterMappings(
                 typeof(ErrorViewModel).GetTypeInfo().Assembly,
                 typeof(ArticleEditInputModel).GetTypeInfo().Assembly,

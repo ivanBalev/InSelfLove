@@ -86,7 +86,6 @@
                 return null;
             }
 
-
             // Create comments hierarchy tree and order by date
             // We get a unidimensional list of comments from db
             // Its nesting needs to be sorted out for the client

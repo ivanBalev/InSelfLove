@@ -6,7 +6,6 @@
     using System.Reflection;
 
     using AutoMapper;
-    using AutoMapper.Configuration;
 
     public static class AutoMapperConfig
     {
@@ -14,6 +13,7 @@
 
         public static IMapper MapperInstance { get; set; }
 
+        // Called once in StartUp class
         public static void RegisterMappings(params Assembly[] assemblies)
         {
             if (initialized)
@@ -23,6 +23,8 @@
 
             initialized = true;
 
+            // Get a single-dimensional(flattened) sequence of all public types in the assemblies.
+            // If we used .Select(), we'd get a Type[][] sequence. SelectMany flattens that array.
             var types = assemblies.SelectMany(a => a.GetExportedTypes()).ToList();
 
             var config = new MapperConfigurationExpression();
@@ -45,6 +47,8 @@
                     // IHaveCustomMappings
                     foreach (var map in GetCustomMappings(types))
                     {
+                        // Each type implementing IHaveCustomMappings has the .CreateMappings method
+                        // which is called here. It adds our custom mappings to the existing config.
                         map.CreateMappings(configuration);
                     }
                 });
@@ -53,6 +57,37 @@
 
         private static IEnumerable<TypesMap> GetFromMaps(IEnumerable<Type> types)
         {
+            // Same as below but using nested loops
+            //var fromMaps1 = new List<TypesMap>();
+
+            //foreach (var t in types)
+            //{
+            //    var interfaces = t.GetTypeInfo().GetInterfaces();
+
+            //    foreach (var i in interfaces)
+            //    {
+            //        if (i.GetTypeInfo().IsGenericType &&
+            //                     i.GetGenericTypeDefinition() == typeof(IMapFrom<>) &&
+            //                     !t.GetTypeInfo().IsAbstract &&
+            //                     !t.GetTypeInfo().IsInterface)
+            //        {
+            //            var typesMap = new TypesMap
+            //            {
+            //                Source = i.GetTypeInfo().GetGenericArguments()[0],
+            //                Destination = t,
+            //            };
+
+            //            fromMaps1.Add(typesMap);
+            //        }
+            //    }
+            //}
+
+            // 1. Get all our types
+            // 2. Get all interfaces implemented/inherited by them
+            //    which are of generic type,
+            //    whose type definition matches our IMapFrom<> interface type definition
+            //    where the type inheriting/implementing them isn't abstract and isn't an interface
+            // 3. Transform them into Source -> Destination objects
             var fromMaps = from t in types
                            from i in t.GetTypeInfo().GetInterfaces()
                            where i.GetTypeInfo().IsGenericType &&
@@ -87,6 +122,8 @@
 
         private static IEnumerable<IHaveCustomMappings> GetCustomMappings(IEnumerable<Type> types)
         {
+            // IsAssignableFrom - Determines whether the current type implements IHaveCustomMappings
+            // Create instances of types implementing IHaveCustomMappings
             var customMaps = from t in types
                              from i in t.GetTypeInfo().GetInterfaces()
                              where typeof(IHaveCustomMappings).GetTypeInfo().IsAssignableFrom(t) &&

@@ -19,14 +19,18 @@
 
         public async Task SendEmailAsync(string from, string fromName, string to, string subject, string htmlContent, IEnumerable<EmailAttachment> attachments = null)
         {
-                if (string.IsNullOrWhiteSpace(subject) && string.IsNullOrWhiteSpace(htmlContent))
+            // Validate
+            if (string.IsNullOrWhiteSpace(subject) && string.IsNullOrWhiteSpace(htmlContent))
             {
                 throw new ArgumentException("Subject and message should be provided.");
             }
 
+            // Get addresses & construct message
             var fromAddress = new EmailAddress(from, fromName);
             var toAddress = new EmailAddress(to);
             var message = MailHelper.CreateSingleEmail(fromAddress, toAddress, subject, null, htmlContent);
+
+            // Add attachments (For now, this feature is not used)
             if (attachments?.Any() == true)
             {
                 foreach (var attachment in attachments)
@@ -37,17 +41,11 @@
 
             try
             {
+                // Send email
                 var response = await this.client.SendEmailAsync(message);
-
-                var statusCode = response.StatusCode;
-                var responseBody = await response.Body.ReadAsStringAsync();
-
-                Console.WriteLine(response.StatusCode);
-                Console.WriteLine(await response.Body.ReadAsStringAsync());
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 throw;
             }
         }

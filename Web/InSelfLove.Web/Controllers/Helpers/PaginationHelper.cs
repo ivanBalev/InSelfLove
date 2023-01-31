@@ -1,6 +1,7 @@
 ﻿namespace InSelfLove.Web.Controllers.Helpers
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using InSelfLove.Services.Data.Articles;
