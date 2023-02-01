@@ -27,7 +27,11 @@
 
         public Task<TEntity> GetByIdWithDeletedAsync(params object[] id)
         {
+            // Get expression that compares then given entity type's primary key to a given argument set of ids
+            // Dynamically finds the primary key (no way for us to know what it is at compile time)
             var getByIdPredicate = EfExpressionHelper.BuildByIdPredicate<TEntity>(this.Context, id);
+
+            // Execute expression (x => x.id == id)
             return this.AllWithDeleted().FirstOrDefaultAsync(getByIdPredicate);
         }
 

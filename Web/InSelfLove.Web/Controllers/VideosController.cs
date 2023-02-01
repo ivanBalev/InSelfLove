@@ -63,7 +63,7 @@
             string slug = await this.videoService
                 .Create(AutoMapperConfig.MapperInstance.Map<Video>(inputModel));
 
-            return this.RedirectToAction("Single", new { slug });
+            return this.RedirectToAction(nameof(this.Single), new { slug });
         }
 
         [HttpGet]
@@ -84,14 +84,14 @@
             string slug = await this.videoService
                 .Edit(AutoMapperConfig.MapperInstance.Map<Video>(inputModel));
 
-            return this.RedirectToAction("Single", new { slug });
+            return this.RedirectToAction(nameof(this.Single), new { slug });
         }
 
         [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Delete(int id)
         {
             await this.videoService.Delete(id);
-            return this.Redirect("/");
+            return this.RedirectToAction(nameof(this.Index));
         }
     }
 }

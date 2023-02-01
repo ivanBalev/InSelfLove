@@ -82,7 +82,7 @@
             string slug = await this.articleService
                 .Create(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
 
-            return this.RedirectToAction("Single", new { slug });
+            return this.RedirectToAction(nameof(this.Single), new { slug });
         }
 
         [HttpGet]
@@ -110,7 +110,7 @@
                 .Edit(AutoMapperConfig.MapperInstance.Map<Article>(inputModel));
 
             // use new slug to open edited article
-            return this.RedirectToAction("Single", new { slug });
+            return this.RedirectToAction(nameof(this.Single), new { slug });
         }
 
         [HttpPost]
@@ -118,7 +118,7 @@
         public async Task<IActionResult> Delete(int id)
         {
             await this.articleService.Delete(id);
-            return this.Redirect("/");
+            return this.RedirectToAction(nameof(this.Index));
         }
 
         // Temporary function to syllabify all articles in db at the same time
@@ -139,7 +139,7 @@
                 System.Threading.Thread.Sleep(2000);
             }
 
-            return this.Redirect("/");
+            return this.RedirectToAction(nameof(this.Index));
         }
 
         // Helper methods

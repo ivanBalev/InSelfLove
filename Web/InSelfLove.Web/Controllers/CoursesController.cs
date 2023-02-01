@@ -79,7 +79,7 @@
             await this.SetThumbnailImage(inputModel);
             var priceId = await this.stripeService.CreateProduct(inputModel.Title, inputModel.Price);
             var id = await this.courseService.CreateCourse(inputModel.Title, inputModel.ThumbnailLink, priceId, inputModel.Price);
-            return this.RedirectToAction("Course", new { id });
+            return this.RedirectToAction(nameof(this.Course), new { id });
         }
 
         [HttpPost]
