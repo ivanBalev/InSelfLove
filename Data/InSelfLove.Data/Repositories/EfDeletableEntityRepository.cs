@@ -6,7 +6,6 @@
 
     using InSelfLove.Data.Common.Models;
     using InSelfLove.Data.Common.Repositories;
-
     using Microsoft.EntityFrameworkCore;
 
     public class EfDeletableEntityRepository<TEntity> : EfRepository<TEntity>, IDeletableEntityRepository<TEntity>
@@ -27,7 +26,8 @@
 
         public Task<TEntity> GetByIdWithDeletedAsync(params object[] id)
         {
-            // Get expression that compares then given entity type's primary key to a given argument set of ids
+            // Get expression that compares then given entity type's primary key to given id
+            // (primary key can be a non-primitive value)
             // Dynamically finds the primary key (no way for us to know what it is at compile time)
             var getByIdPredicate = EfExpressionHelper.BuildByIdPredicate<TEntity>(this.Context, id);
 

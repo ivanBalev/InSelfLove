@@ -103,7 +103,6 @@
         {
             var query = this.articleRepository.All();
 
-
             // If client is searching for particular phrases (Request coming from Search controller)
             if (!string.IsNullOrEmpty(searchString) && !string.IsNullOrWhiteSpace(searchString))
             {
