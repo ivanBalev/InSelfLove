@@ -11,15 +11,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InSelfLove.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230116160632_Initial_2023")]
-    partial class Initial2023
+    [Migration("20230203173807_2023")]
+    partial class _2023
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.1")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("ApplicationUserCourse", b =>

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InSelfLove.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial2023 : Migration
+    public partial class _2023 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

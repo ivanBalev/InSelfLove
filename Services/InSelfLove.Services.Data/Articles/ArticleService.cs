@@ -66,6 +66,8 @@
             dbArticle.Title = article.Title;
             dbArticle.Content = article.Content;
             dbArticle.ImageUrl = article.ImageUrl;
+            dbArticle.ImageHeight = article.ImageHeight;
+            dbArticle.ImageWidth = article.ImageWidth;
             dbArticle.PreviewImageUrl = article.PreviewImageUrl;
             dbArticle.Slug = article.Slug;
 
@@ -142,6 +144,8 @@
                     CreatedOn = x.CreatedOn,
                     Content = x.Content,
                     ImageUrl = x.ImageUrl,
+                    ImageHeight = x.ImageHeight,
+                    ImageWidth = x.ImageWidth,
                     Comments = new List<Comment>(x.Comments.Select(c => new Comment
                     {
                         Id = c.Id,

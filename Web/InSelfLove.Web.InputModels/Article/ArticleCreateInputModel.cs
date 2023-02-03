@@ -3,6 +3,8 @@ using InSelfLove.Services.Mapping;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using AutoMapper;
+using System.IO;
 
 namespace InSelfLove.Web.InputModels.Article
 {
@@ -19,6 +21,10 @@ namespace InSelfLove.Web.InputModels.Article
         public string PreviewImageUrl { get; set; }
 
         public IFormFile Image { get; set; }
+
+        public int ImageWidth { get; set; }
+
+        public int ImageHeight { get; set; }
 
         public IFormFile PreviewImage { get; set; }
 

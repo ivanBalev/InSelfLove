@@ -13,6 +13,7 @@
     internal static class EfExpressionHelper
     {
         // Get value buffer's indexer method. new ValueBuffer()[0,1,2...]
+        // Not sure why ValueBuffer is needed as everything works fine with just indexing the original ids array
         private static readonly MethodInfo ValueBufferGetValueMethod =
             typeof(ValueBuffer).GetRuntimeProperties().Single(p => p.GetIndexParameters().Any()).GetMethod;
 
@@ -75,8 +76,9 @@
                         entityTypeParameterExpression,
                         keyPropertyName);
 
-                // On our keyValues buffer instance, call its Indexer[0, 1, 2...], with i
+                // Call our keyValues buffer instance's Indexer[0, 1, 2...], with i
                 // i.e. get current primary key's value
+                // Not sure why ValueBuffer is needed as everything works fine with just indexing the original ids array
                 var currentKeyPropertyValue =
                     Expression.Call(keyValuesConstantExpression, ValueBufferGetValueMethod, Expression.Constant(i));
 

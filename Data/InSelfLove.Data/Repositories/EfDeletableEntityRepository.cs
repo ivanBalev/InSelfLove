@@ -24,14 +24,16 @@
 
         public IQueryable<TEntity> AllAsNoTrackingWithDeleted() => base.AllAsNoTracking().IgnoreQueryFilters();
 
+        // Not used and removed in later templage versions but still cool
         public Task<TEntity> GetByIdWithDeletedAsync(params object[] id)
         {
-            // Get expression that compares then given entity type's primary key to given id
-            // (primary key can be a non-primitive value)
+            // Get expression that compares then given entity type's primary key field(s) to given id values
+            // (primary key can be composite i.e. consisting of more than one field in the entity)
             // Dynamically finds the primary key (no way for us to know what it is at compile time)
+            // and creates an expression comparing each of its fields to the supplied id entries
             var getByIdPredicate = EfExpressionHelper.BuildByIdPredicate<TEntity>(this.Context, id);
 
-            // Execute expression (x => x.id == id)
+            // Execute expression (x => x.id == id) for each primary key field
             return this.AllWithDeleted().FirstOrDefaultAsync(getByIdPredicate);
         }
 

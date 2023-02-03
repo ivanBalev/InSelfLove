@@ -101,7 +101,12 @@
         public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
         {
             // Enter content syllables for better UX
-            inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
+            // TODO: Error handling (try catch? )
+            //inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
+            var img = SixLabors.ImageSharp.Image.Load(inputModel.Image.OpenReadStream());
+           
+            inputModel.ImageWidth = img.Width;
+            inputModel.ImageHeight = img.Height;
 
             await this.SetArticlePhoto(inputModel);
 

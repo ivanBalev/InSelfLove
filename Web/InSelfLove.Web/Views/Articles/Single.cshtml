@@ -19,7 +19,7 @@
     var imageFolderAndName = string.Join('/', Model.ImageUrl.Split('/').TakeLast(2).Select(x => x.Split('.')[0]));
 
     // Dynamically create img tag based on current window space available
-    // Client library also required due to Width("auto") option 
+    // Client library also required due to Width("auto") option
     // which requires dynamic calculations
     var articlePic = Cloudinary.Api.UrlImgUp.Transform(new Transformation()
                                    .Width("auto").Crop("fill")).Secure(true)
@@ -38,7 +38,7 @@
                         <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
                     </div>
                     <div class="img-wrapper text-center">
-                        @Html.Raw(articlePic)
+                            @Html.Raw(articlePic)
                     </div>
                     <!-- Edit and Delete buttons if user is admin -->
                     @if (this.User.IsInRole(AppConstants.AdministratorRoleName))

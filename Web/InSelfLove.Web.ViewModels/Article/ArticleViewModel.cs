@@ -22,6 +22,9 @@
 
         public string ImageUrl { get; set; }
 
+        public int ImageWidth { get; set; }
+        public int ImageHeight { get; set; }
+
         public IList<CommentViewModel> Comments { get; set; }
     }
 }

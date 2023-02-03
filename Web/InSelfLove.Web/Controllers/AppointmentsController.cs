@@ -14,13 +14,11 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Localization;
 
     [ApiController]
     [Route("api/[controller]")]
     public class AppointmentsController : BaseController
     {
-        private readonly IStringLocalizer<AppointmentsController> localizer;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IAppointmentService appointmentService;
         private readonly IEmailSender emailSender;
@@ -30,13 +28,11 @@
             IViewRender viewRender,
             IEmailSender emailSender,
             IAppointmentService appointmentService,
-            UserManager<ApplicationUser> userManager,
-            IStringLocalizer<AppointmentsController> localizer)
+            UserManager<ApplicationUser> userManager)
         {
             this.appointmentService = appointmentService;
             this.userManager = userManager;
             this.emailSender = emailSender;
-            this.localizer = localizer;
             this.viewRender = viewRender;
         }
 

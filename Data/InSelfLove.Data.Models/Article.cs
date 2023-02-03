@@ -24,6 +24,10 @@
         [Required]
         public string ImageUrl { get; set; }
 
+        public int ImageWidth { get; set; }
+
+        public int ImageHeight { get; set; }
+
         public string PreviewImageUrl { get; set; }
 
         public string UserId { get; set; }
