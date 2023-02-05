@@ -226,6 +226,21 @@
                             </label>
                         }
                     </div>
+
+                    @if (!userIsAdmin)
+                    {
+                        <div class="form-group mt-3">
+                            <form id="pay" method="post" asp-action="Pay">
+                                <input id="appointmentId" type="hidden" name="AppointmentId" />
+                                <input class="btn green-btn" type="submit" value="Buy" />
+
+                                <div class="mt-3">
+                                    <output form="uploadForm" name="result"></output>
+                                </div>
+                            </form>
+                        </div>
+                    }
+
                 </div>
                 <div class="modal-footer justify-content-center pt-0 border-0">
                     @if (userIsAdmin)

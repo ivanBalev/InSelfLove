@@ -7,21 +7,34 @@
     using global::Stripe;
     using global::Stripe.Checkout;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Linq;
 
     public class StripeService : IStripeService
     {
         private readonly IDeletableEntityRepository<ApplicationUser> userRepository;
         private readonly IDeletableEntityRepository<Course> courseRepository;
         private readonly IDeletableEntityRepository<Payment> paymentRepository;
+        private readonly IConfiguration configuration;
+        private readonly ILogger<StripeService> logger;
+        private readonly IDeletableEntityRepository<Appointment> appointmentRepository;
 
         public StripeService(
             IDeletableEntityRepository<ApplicationUser> userRepository,
             IDeletableEntityRepository<Course> courseRepository,
-            IDeletableEntityRepository<Payment> paymentRepository)
+            IDeletableEntityRepository<Payment> paymentRepository,
+            IDeletableEntityRepository<Appointment> appointmentRepository,
+            IConfiguration configuration,
+            ILogger<StripeService> logger)
         {
             this.userRepository = userRepository;
             this.courseRepository = courseRepository;
             this.paymentRepository = paymentRepository;
+            this.configuration = configuration;
+            this.logger = logger;
+            this.appointmentRepository = appointmentRepository;
         }
 
         public async Task<string> CreateProduct(string productName, long priceAmount)
@@ -61,22 +74,75 @@
             return session;
         }
 
+        public async Task<int> HandlePayment(string json, string stripeSignature)
+        {
+            try
+            {
+                // Validation
+                var stripeEvent = EventUtility.ConstructEvent(
+                  json,
+                  stripeSignature,
+                  this.configuration["Stripe:TestSecret"]);
+
+                // Rudimentary error handling
+                if (stripeEvent.Type.Contains("fail"))
+                {
+                    this.logger.LogError("STRIPE PAYMENT FAILED" + json);
+                    return 0;
+                }
+
+                // Handle the checkout.session.completed event
+                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+                {
+                    var session = stripeEvent.Data.Object as Session;
+                    await this.FulfillOrder(session);
+                }
+            }
+            catch (StripeException e)
+            {
+                this.logger.LogError("STRIPE PAYMENT EXCEPTION" + e.Message + Environment.NewLine + "JSON: " + json);
+                return 0;
+            }
+
+            return 1;
+        }
+
         public async Task<int> StorePayment(Payment payment)
         {
             payment.AmountTotal = payment.AmountTotal / 100; // Just a quirk of the stripe api
 
-            var course = await this.courseRepository.All().Include(c => c.ApplicationUsers).FirstOrDefaultAsync(c => c.Id.Equals(payment.CourseId));
             var user = await this.userRepository.All().Include(u => u.Courses).FirstOrDefaultAsync(u => u.Id.Equals(payment.ApplicationUserId));
+            var appointment = await this.appointmentRepository.All().Where(a => a.Id == payment.AppointmentId).FirstOrDefaultAsync();
 
-            user.Courses.Add(course);
-
-            await this.userRepository.SaveChangesAsync();
-            await this.courseRepository.SaveChangesAsync();
+            if (user == null || appointment == null)
+            {
+                throw new ArgumentNullException(nameof(user) + " " + nameof(appointment));
+            }
 
             await this.paymentRepository.AddAsync(payment);
+            appointment.IsPaid = true;
+            this.appointmentRepository.Update(appointment);
+
+            await this.appointmentRepository.SaveChangesAsync();
             await this.paymentRepository.SaveChangesAsync();
 
             return 1;
+        }
+
+        private async Task FulfillOrder(Session session)
+        {
+            // Get user reference info set in BuyCourse Action
+            var userCourseInfo = session.ClientReferenceId.Split(", ");
+
+            var payment = new Payment
+            {
+                ApplicationUserId = userCourseInfo[0].Split(": ")[1],
+                AppointmentId = int.Parse(userCourseInfo[1].Split(": ")[1]),
+                StripeCustomerId = session.CustomerId,
+                AmountTotal = (long)session.AmountTotal,
+            };
+
+            await this.StorePayment(payment);
         }
     }
 }

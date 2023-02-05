@@ -96,17 +96,13 @@
             return this.View(model);
         }
 
+        
         [HttpPost]
         [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)
         {
             // Enter content syllables for better UX
-            // TODO: Error handling (try catch? )
-            //inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
-            var img = SixLabors.ImageSharp.Image.Load(inputModel.Image.OpenReadStream());
-           
-            inputModel.ImageWidth = img.Width;
-            inputModel.ImageHeight = img.Height;
+            inputModel.Content = await this.EnterContentSyllables(inputModel.Content);
 
             await this.SetArticlePhoto(inputModel);
 
@@ -124,6 +120,51 @@
         {
             await this.articleService.Delete(id);
             return this.RedirectToAction(nameof(this.Index));
+        }
+
+        // Temporary function to enter all article images' dimensions at the same time
+        [HttpGet]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
+        [Route("Articles/EnterImagesDimensions")]
+        public async Task<IActionResult> EnterImagesDimensions()
+        {
+            var articles = await this.articleRepository.All().ToListAsync();
+            var imageUrls = articles.Select(x => x.ImageUrl);
+
+            var httpClient = new HttpClient();
+
+            var taskList = new List<Task<HttpResponseMessage>>();
+
+            foreach (var uri in imageUrls)
+            {
+                taskList.Add(httpClient.GetAsync(uri));
+            }
+
+            try
+            {
+                await Task.WhenAll(taskList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                ;
+            }
+
+            for (int i = 0; i < taskList.Count(); i++)
+            {
+                var msg = taskList[i];
+
+                if (msg.Result.StatusCode.ToString() == "OK")
+                {
+                    var img = SixLabors.ImageSharp.Image.Load(await msg.Result.Content.ReadAsStreamAsync());
+                    articles[i].ImageHeight = img.Height;
+                    articles[i].ImageWidth = img.Width;
+                    this.articleRepository.Update(articles[i]);
+                }
+            }
+
+            await this.articleRepository.SaveChangesAsync();
+
+            return this.RedirectToAction(nameof(HomeController.Index));
         }
 
         // Temporary function to syllabify all articles in db at the same time
@@ -169,7 +210,8 @@
 
             // Get full html results and leave only successful
             var htmlResults = (await this.GetAsync(longWords.Select(x => uri + x)))
-                .Where(x => x.Status.ToString() != "Faulted")
+                .Where(x => x.Status.ToString() != "Faulted" &&
+                            x.Status.ToString() != "Canceled")
                 .Select(x => x.Result).ToList();
 
             // Replace redirect html with infinitive html & return successful words
@@ -338,6 +380,7 @@
             }
             catch (Exception ex)
             {
+                ;
             }
 
             return taskList;
@@ -350,6 +393,11 @@
                 // Upload to cloud & store link reference
                 inputModel.ImageUrl = await this.cloudinaryService
                 .UploadPicture(inputModel.Image, inputModel.Image.FileName.Split('.')[0]);
+
+                // Set image dimensions
+                var img = SixLabors.ImageSharp.Image.Load(inputModel.Image.OpenReadStream());
+                inputModel.ImageWidth = img.Width;
+                inputModel.ImageHeight = img.Height;
             }
 
             if (inputModel.PreviewImage != null)

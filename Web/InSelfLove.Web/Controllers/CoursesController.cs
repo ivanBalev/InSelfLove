@@ -59,7 +59,6 @@
         }
 
         [HttpGet]
-        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Index()
         {
             var viewModel = new CoursesIndexViewModel()
@@ -83,9 +82,9 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> BuyCourse(string courseId, string priceId)
         {
+            // TODO: priceid mai nei dobre da poluchavame ot clienta
             var userId = this.userManager.GetUserId(this.User);
 
             // Set user reference info for post-payment redirect. Action Payment
@@ -99,45 +98,18 @@
 
         [HttpPost]
         [IgnoreAntiforgeryToken]
-        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Payment()
         {
             var json = await new StreamReader(this.HttpContext.Request.Body).ReadToEndAsync();
+            var stripeSignature = this.Request.Headers["Stripe-Signature"];
 
-            try
-            {
-                // Validation
-                var stripeEvent = EventUtility.ConstructEvent(
-                  json,
-                  this.Request.Headers["Stripe-Signature"],
-                  this.configuration["Stripe:TestSecret"]);
+            var paymentResult = await this.stripeService.HandlePayment(json, stripeSignature);
 
-                // Rudimentary error handling
-                if (stripeEvent.Type.Contains("fail"))
-                {
-                    this.logger.LogError("STRIPE PAYMENT FAILED" + json);
-                    return this.BadRequest();
-                }
-
-                // Handle the checkout.session.completed event
-                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
-                {
-                    var session = stripeEvent.Data.Object as Stripe.Checkout.Session;
-                    await this.FulfillOrder(session);
-                }
-
-                return this.Ok();
-            }
-            catch (StripeException e)
-            {
-                // Rudimentary exception handling
-                this.logger.LogError("STRIPE PAYMENT EXCEPTION" + e.Message + Environment.NewLine + "JSON: " + json);
-                return this.BadRequest();
-            }
+            // TODO: Send the customer a receipt email
+            return paymentResult == 0 ? this.Ok() : this.BadRequest();
         }
 
         [HttpGet]
-        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Course(string id)
         {
             var courseVideos = await this.courseService.GetById(id)
@@ -148,7 +120,6 @@
         }
 
         [HttpGet]
-        [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> CourseVideo(string id, string courseId)
         {
             var user = await this.userManager.Users
@@ -233,25 +204,6 @@
             var result = await this.courseService.CreateCourseVideo(courseVideoGuid, fileName.Split('.')[0], courseGuid);
             return this.Created(nameof(CoursesController), null);
         }
-
-        private async Task FulfillOrder(Stripe.Checkout.Session session)
-        {
-            // Get user reference info set in BuyCourse Action
-            var userCourseInfo = session.ClientReferenceId.Split(", ");
-
-            var payment = new Payment
-            {
-                ApplicationUserId = userCourseInfo[0].Split(": ")[1],
-                CourseId = userCourseInfo[1].Split(": ")[1],
-                StripeCustomerId = session.CustomerId,
-                AmountTotal = (long)session.AmountTotal,
-            };
-
-            await this.stripeService.StorePayment(payment);
-
-            // TODO: Send the customer a receipt email
-        }
-
 
         // This should probably not be inside the controller class
         private async Task<string> UploadFile(Stream stream, string fileName)

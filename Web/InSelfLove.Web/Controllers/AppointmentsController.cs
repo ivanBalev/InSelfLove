@@ -1,11 +1,13 @@
 ﻿namespace InSelfLove.Web.Controllers
 {
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
 
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Appointments;
     using InSelfLove.Services.Data.Helpers;
+    using InSelfLove.Services.Data.Stripe;
     using InSelfLove.Services.Mapping;
     using InSelfLove.Services.Messaging;
     using InSelfLove.Web.Controllers.Helpers;
@@ -21,6 +23,7 @@
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IAppointmentService appointmentService;
+        private readonly IStripeService stripeService;
         private readonly IEmailSender emailSender;
         private readonly IViewRender viewRender;
 
@@ -28,9 +31,11 @@
             IViewRender viewRender,
             IEmailSender emailSender,
             IAppointmentService appointmentService,
+            IStripeService stripeService,
             UserManager<ApplicationUser> userManager)
         {
             this.appointmentService = appointmentService;
+            this.stripeService = stripeService;
             this.userManager = userManager;
             this.emailSender = emailSender;
             this.viewRender = viewRender;
@@ -55,7 +60,7 @@
 
             var viewModel = new AppointmentIndexViewModel
             {
-                 Appointments = appointmentsViewModel,
+                Appointments = appointmentsViewModel,
             };
 
             return this.View(viewModel);
@@ -80,6 +85,39 @@
             await this.SendEmail(appointment, fromAdmin: true, "AwaitingApproval");
 
             return this.Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("Pay")]
+        public async Task<IActionResult> Pay([FromForm]string appointmentId)
+        {
+            // TODO: priceid mai nei dobre da poluchavame ot clienta
+            var userId = this.userManager.GetUserId(this.User);
+            var priceId = "price_1MY63vJ7U5sVQK1wcCkDLAcn";
+
+            // Set user reference info for post-payment redirect. Action Payment
+            var clientReferenceInfo = $"userId: {userId}, appointmentId: {appointmentId}";
+            var domain = this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host;
+            var session = await this.stripeService.CreateSession(domain, priceId, "/stripe/success", "/stripe/cancel", clientReferenceInfo);
+
+            this.Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
+        }
+
+        // CSRF check is done in service
+        // Standard practice with the Stripe API
+        [IgnoreAntiforgeryToken]
+        [HttpPost]
+        [Route("ConfirmPay")]
+        public async Task<IActionResult> ConfirmPay()
+        {
+            var json = await new StreamReader(this.HttpContext.Request.Body).ReadToEndAsync();
+            var stripeSignature = this.Request.Headers["Stripe-Signature"];
+            var paymentResult = await this.stripeService.HandlePayment(json, stripeSignature);
+
+            // TODO: Send the customer a receipt email
+            return paymentResult == 0 ? this.Ok() : this.BadRequest();
         }
 
         [HttpPost]

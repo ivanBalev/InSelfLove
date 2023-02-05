@@ -37,7 +37,7 @@
                     <div class="text-center mb-2">
                         <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
                     </div>
-                    <div class="img-wrapper text-center">
+                    <div class="img-wrapper text-center" style="aspect-ratio:@(Model.ImageWidth) / @(Model.ImageHeight)">
                             @Html.Raw(articlePic)
                     </div>
                     <!-- Edit and Delete buttons if user is admin -->

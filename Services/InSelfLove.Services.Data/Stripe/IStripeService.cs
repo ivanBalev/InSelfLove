@@ -13,5 +13,7 @@
             string cancelEndpoint, string clientReferenceInfo, int quantity = 1);
 
         Task<int> StorePayment(Payment payment);
+
+        Task<int> HandlePayment(string json, string stripeSignature);
     }
 }

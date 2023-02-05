@@ -250,6 +250,7 @@ function setUpDetailsForUser() {
     // Populate username, details and status message
     detailsModal.querySelector('.username').textContent = currentAppointment.userName;
     detailsModal.querySelector('.details').textContent = currentAppointment.description;
+    detailsModal.querySelector('#appointmentId').value = currentAppointment.id;
     setUpStatusInAppointmentDetailsModal(currentAppointment.isApproved);
 }
 

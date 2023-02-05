@@ -25,6 +25,8 @@
 
         public bool IsOnSite { get; set; }
 
+        public bool IsPaid { get; set; }
+
         [NotMapped]
         public bool IsUnavailable { get; set; }
     }
