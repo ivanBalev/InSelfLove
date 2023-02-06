@@ -16,6 +16,8 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
+    using Stripe;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -85,6 +87,32 @@
             await this.SendEmail(appointment, fromAdmin: true, "AwaitingApproval");
 
             return this.Ok();
+        }
+
+        [HttpGet]
+        [Route("Checkout")]
+        public async Task<IActionResult> Checkout()
+        {
+            return this.View("Views/Stripe/Checkout.cshtml");
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        [Route("CreatePaymentIntent")]
+        public ActionResult CreatePaymentIntent()
+        {
+            var paymentIntentService = new PaymentIntentService();
+            var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
+            {
+                Amount = 5000,
+                Currency = "bgn",
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                {
+                    Enabled = true,
+                },
+            });
+
+            return this.Json(new { clientSecret = paymentIntent.ClientSecret });
         }
 
         [HttpPost]

@@ -22,6 +22,7 @@
     // Provide login page with return url for better UX
     var returnUrl = this.Context.Request.QueryString.Value;
 
+    // TODO: Refactor workday logic... too bulky
     // Workday start/end setup
     var workDayStartStr = this.Context.Request.Cookies["workDayStart"];
     var workDayEndStr = this.Context.Request.Cookies["workDayEnd"];
@@ -55,6 +56,10 @@
     // No available appointments -> show alert & direct user to Contacts page for better UX
     var availableAppointments = Model.Appointments.Where(x =>
         !x.IsUnavailable && DateTime.Compare(x.Start.ToUniversalTime(), DateTime.UtcNow) > 0).ToArray();
+
+    // Include online payment logic if user has approved but unpaid upcoming appointments
+    var includePayment = Model.Appointments.Any(a =>
+        a.IsApproved && !a.IsPaid && DateTime.Compare(a.Start.ToUniversalTime(), DateTime.UtcNow) > 0);
 }
 
 <div class="d-none dbEvents">@apptmnts</div>
@@ -227,17 +232,11 @@
                         }
                     </div>
 
+                    @*Payment div*@
                     @if (!userIsAdmin)
                     {
                         <div class="form-group mt-3">
-                            <form id="pay" method="post" asp-action="Pay">
-                                <input id="appointmentId" type="hidden" name="AppointmentId" />
-                                <input class="btn green-btn" type="submit" value="Buy" />
-
-                                <div class="mt-3">
-                                    <output form="uploadForm" name="result"></output>
-                                </div>
-                            </form>
+                            <button type="button" id="payBtn" class="btn green-btn">Плащане</button>
                         </div>
                     }
 
@@ -304,8 +303,32 @@
         </div>
     }
 
-    @*CSFR token*@
-    <form id="csfrToken" method="post"></form>
+    @*@if (includePayment)
+    {*@
+    <!-- Display a payment form -->
+    <div id="payment-form-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="payment-form">
+                    <div class="spinner hidden" id="spinner"></div>
+                    <div id="link-authentication-element">
+                        <!--Stripe.js injects the Link Authentication Element-->
+                    </div>
+                    <div id="payment-element">
+                        <!--Stripe.js injects the Payment Element-->
+                    </div>
+                    <button id="submit" class="btn w-100 green-btn hidden">
+                        <span id="button-text">Плати</span>
+                    </button>
+                    <div id="payment-message" class="hidden"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @*}*@
+
+    @*CSRF token*@
+    <form id="csrfToken" method="post"></form>
     @*Show working hours button*@
     @if (userIsAdmin)
     {
@@ -316,9 +339,18 @@
 </div>
 
 @section Scripts {
+    @*@if (includePayment)
+    {*@
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="~/Custom/js/stripeCheckout.js" defer></script>
+    @*}*@
     <script src="~/js/calendar.js"></script>
 }
 
 @section Links {
+    @*@if (includePayment)
+    {*@
+    <link rel="stylesheet" href="~/Custom/css/stripe-checkout.css" />
+    @*}*@
     <link rel="stylesheet" href="~/Custom/css/calendar.css">
 }

@@ -91,6 +91,7 @@
                     return 0;
                 }
 
+                // Payment intent.succeeded event instead of checkoutcompleted?
                 // Handle the checkout.session.completed event
                 if (stripeEvent.Type == Events.CheckoutSessionCompleted)
                 {

@@ -2,7 +2,7 @@
 const culture = document.cookie.match('Culture')?.input.substr(-2) || 'bg';
 const userIsLoggedIn = document.querySelector('a[href*="Logout"]') !== null;
 const cultureIsEn = culture === 'en';
-const csfrToken = document.querySelector("#csfrToken input[name=__RequestVerificationToken]").value;
+const csrfToken = document.querySelector("#csrfToken input[name=__RequestVerificationToken]").value;
 const shortWeekdayNames = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
 const todayShortName = new Date().toString().split(' ')[0];
 const workDayStartStr = "workDayStart";
@@ -250,7 +250,6 @@ function setUpDetailsForUser() {
     // Populate username, details and status message
     detailsModal.querySelector('.username').textContent = currentAppointment.userName;
     detailsModal.querySelector('.details').textContent = currentAppointment.description;
-    detailsModal.querySelector('#appointmentId').value = currentAppointment.id;
     setUpStatusInAppointmentDetailsModal(currentAppointment.isApproved);
 }
 
@@ -378,12 +377,12 @@ function select(selectInfo) {
     }
 })();
 
-async function postData(url = '', data = {}, csfrToken) {
+async function postData(url = '', data = {}, csrfToken) {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csfrToken,
+            'X-CSRF-TOKEN': csrfToken,
         },
         body: JSON.stringify(data)
     });
@@ -412,7 +411,7 @@ submitDailyAvailabilityBtn?.addEventListener('click', function () {
             dateString: currentSelectedDate,
             timeSlotsString: availableDailySlots,
         },
-        csfrToken)
+        csrfToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(dailyAvailabilityModal).hide();
             window.location.reload();
@@ -439,7 +438,7 @@ sendAppointmentBtn.addEventListener('click', function () {
     postData(
         '/api/appointments/Book',
         data,
-        csfrToken)
+        csrfToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(bookModal).hide();
             window.location.reload();
@@ -455,7 +454,7 @@ approveBtn?.addEventListener('click', function () {
     postData(
         '/api/appointments/Approve',
         { id: currentAppointment.id },
-        csfrToken)
+        csrfToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
             window.location.reload();
@@ -479,7 +478,7 @@ confirmCancelBtn.addEventListener('click', function () {
     postData(
         '/api/appointments/Cancel',
         { id: currentAppointment.id },
-        csfrToken)
+        csrfToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(cancelConfirmModal).hide();
             window.location.reload();
@@ -506,7 +505,7 @@ occupyBtn?.addEventListener('click', function () {
     postData(
         '/api/appointments/Occupy',
         { id: currentAppointment.id },
-        csfrToken)
+        csrfToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
             window.location.reload();
@@ -521,7 +520,7 @@ onsiteDetailsCheckbox?.addEventListener('change', function () {
     postData(
         '/api/appointments/SetOnSite',
         { id: currentAppointment.id, canBeOnSite: onsiteDetailsCheckbox.checked },
-        csfrToken)
+        csrfToken)
         .then(() => {
             bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
             window.location.reload();
@@ -529,4 +528,11 @@ onsiteDetailsCheckbox?.addEventListener('change', function () {
         .catch(() => {
             alert(genericError);
         });
+})
+
+document.getElementById('payBtn').addEventListener('click', function () {
+    let paymentFormModal = document.querySelector('#payment-form-modal');
+    bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
+    bootstrap.Modal.getOrCreateInstance(paymentFormModal).show();
+    initialize();
 })

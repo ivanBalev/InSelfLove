@@ -309,6 +309,11 @@ footer p {
     white-space: nowrap;
 }
 
+/*Payment form*/
+#payment-form {
+    min-height: 300px;
+}
+
 /*Calendar set working hours*/
 ::-webkit-datetime-edit {
     display: none;

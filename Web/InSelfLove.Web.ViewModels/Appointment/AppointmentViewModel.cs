@@ -21,6 +21,9 @@
         [JsonProperty("isApproved")]
         public bool IsApproved { get; set; }
 
+        [JsonProperty("isPaid")]
+        public bool IsPaid { get; set; }
+
         [JsonProperty("isUnavailable")]
         public bool IsUnavailable { get; set; }
 

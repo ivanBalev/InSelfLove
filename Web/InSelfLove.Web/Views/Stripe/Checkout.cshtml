@@ -1,32 +1,15 @@
-﻿@model string
-
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>@Model</title>
+    <meta charset="utf-8" />
+    <title>Accept a payment</title>
+    <meta name="description" content="A demo of a payment on Stripe" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/Custom/css/stripe-checkout.css" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="~/Custom/js/stripeCheckout.js" defer></script>
 </head>
 <body>
-    <section>
-        <div class="product">
-            <img src="https://i.imgur.com/EHyR2nP.png" alt="The cover of Stubborn Attachments" />
-            <div class="description">
-                <h3>Stubborn Attachments</h3>
-                <h5>$20.00</h5>
-            </div>
-        </div>
-        <form asp-action="Create" method="POST">
-            <button type="submit" id="checkout-button">Checkout</button>
-        </form>
-    </section>
+    
 </body>
 </html>
-
-
-@section Links {
-    <link rel="stylesheet" href="~/Custom/css/stripe-style.css">
-}
-
-@section Scripts {
-    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-}
