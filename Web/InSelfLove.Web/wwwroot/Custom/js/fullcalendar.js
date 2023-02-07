@@ -58,6 +58,7 @@ const cancelConfirmModal = document.getElementById('cancelAppointmentConfirm');
 const dailyAvailabilityModal = document.getElementById('dailyAvailabilityModal');
 const workingHoursModal = document.getElementById('workingHours');
 const loginModal = document.getElementById('loginModal');
+const paymentFormModal = document.querySelector('#payment-form-modal');
 
 // Fields 
 const patientIssueDescription = document.getElementById('patientIssueDescription');
@@ -531,7 +532,6 @@ onsiteDetailsCheckbox?.addEventListener('change', function () {
 })
 
 document.getElementById('payBtn').addEventListener('click', function () {
-    let paymentFormModal = document.querySelector('#payment-form-modal');
     bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
     bootstrap.Modal.getOrCreateInstance(paymentFormModal).show();
     initialize();

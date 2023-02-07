@@ -1,12 +1,17 @@
 ﻿// This is your test publishable API key.
+// TODO: locale per user
 const stripe = Stripe("pk_test_51Kv04DJ7U5sVQK1wFN7NWaALcSfBmrEymkcZHxnwxTssePIOB3rieSajOh9wiH6jGWswoWJWPe2yj05RWJaZDMqZ002GPAzcw4", {locale: 'bg'});
 
 let elements;
+
+checkStatus();
 
 document
     .querySelector("#payment-form")
     .addEventListener("submit", handleSubmit);
 
+// TODO: introduce email validation for user on registration - enter email address automatically.
+// Only users who've confirmed their email should be able to make an online payment
 let emailAddress = '';
 // Fetches a payment intent and captures the client secret
 async function initialize() {
@@ -35,8 +40,10 @@ async function initialize() {
     };
 
     const paymentElement = elements.create("payment", paymentElementOptions);
+
     paymentElement.mount("#payment-element");
-    paymentElement.on('ready', function () {
+
+    paymentElement.on('loaderstart', function () {
         setLoading(false);
         document.querySelector('#payment-form #submit').classList.remove('hidden');
     })
@@ -50,7 +57,7 @@ async function handleSubmit(e) {
         elements,
         confirmParams: {
             // Make sure to change this to your payment completion page
-            return_url: "https://localhost:44319/api/appointments/checkout",
+            return_url: "https://localhost:44319/api/appointments",
             receipt_email: emailAddress,
         },
     });
@@ -61,9 +68,9 @@ async function handleSubmit(e) {
     // be redirected to an intermediate site first to authorize the payment, then
     // redirected to the `return_url`.
     if (error.type === "card_error" || error.type === "validation_error") {
-        showMessage(error.message);
+        showMessage(error.message, true);
     } else {
-        showMessage("An unexpected error occurred.");
+        showMessage("Възникна неочаквана грешка.", true);
     }
 
     setLoading(false);
@@ -83,44 +90,44 @@ async function checkStatus() {
 
     switch (paymentIntent.status) {
         case "succeeded":
-            showMessage("Payment succeeded!");
+            showMessage("Успешно плащане!");
             break;
         case "processing":
-            showMessage("Your payment is processing.");
+            showMessage("Плащането ви се обработва.");
             break;
         case "requires_payment_method":
-            showMessage("Your payment was not successful, please try again.");
+            showMessage("Неуспешно плащане. Моля, опитайте отново.", true);
             break;
         default:
-            showMessage("Something went wrong.");
+            showMessage("Възникна неочаквана грешка.", true);
             break;
     }
 }
 
 // ------- UI helpers -------
 
-function showMessage(messageText) {
-    const messageContainer = document.querySelector("#payment-message");
+function showMessage(messageText, error) {
 
-    messageContainer.classList.remove("hidden");
-    messageContainer.textContent = messageText;
-
-    setTimeout(function () {
-        messageContainer.classList.add("hidden");
-        messageText.textContent = "";
-    }, 4000);
+    if (error) {
+        let failModal = document.getElementById("fail-modal");
+        failModal.querySelector('p').textContent = messageText;
+        bootstrap.Modal.getOrCreateInstance(failModal).show();
+    } else {
+        let successModal = document.getElementById("success-modal");
+        successModal.querySelector('p').textContent = messageText;
+        bootstrap.Modal.getOrCreateInstance(successModal).show();
+    }
 }
 
 // Show a spinner on payment submission
 function setLoading(isLoading) {
     if (isLoading) {
         // Disable the button and show a spinner
-        document.querySelector("#submit").disabled = true;
-        document.querySelector("#spinner").classList.remove("hidden");
-        document.querySelector("#button-text").classList.add("hidden");
+        document.querySelector(".bouncer").classList.remove("d-none");
+        document.querySelector("#submit").classList.add("d-none");
     } else {
         document.querySelector("#submit").disabled = false;
-        document.querySelector("#spinner").classList.add("hidden");
-        document.querySelector("#button-text").classList.remove("hidden");
+        document.querySelector(".bouncer").classList.add("d-none");
+        document.querySelector("#submit").classList.remove("d-none");
     }
 }

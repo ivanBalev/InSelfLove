@@ -60,6 +60,10 @@
     // Include online payment logic if user has approved but unpaid upcoming appointments
     var includePayment = Model.Appointments.Any(a =>
         a.IsApproved && !a.IsPaid && DateTime.Compare(a.Start.ToUniversalTime(), DateTime.UtcNow) > 0);
+
+    // Post-payment redirect status message handling
+
+    var test = this.Context.Request.Query["payment_intent_client_secret"].ToString();
 }
 
 <div class="d-none dbEvents">@apptmnts</div>
@@ -310,22 +314,67 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="payment-form">
-                    <div class="spinner hidden" id="spinner"></div>
+
                     <div id="link-authentication-element">
                         <!--Stripe.js injects the Link Authentication Element-->
                     </div>
                     <div id="payment-element">
                         <!--Stripe.js injects the Payment Element-->
                     </div>
-                    <button id="submit" class="btn w-100 green-btn hidden">
+                    <div class="bouncer mx-auto d-none">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <button id="submit" class="btn w-100 green-btn d-none">
                         <span id="button-text">Плати</span>
                     </button>
-                    <div id="payment-message" class="hidden"></div>
+                    <div id="payment-message" class="d-none"></div>
                 </form>
             </div>
         </div>
     </div>
     @*}*@
+
+    @*Success modal*@
+
+    <div id="success-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="card modal-content">
+                <div class="modal-header text-center border-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="checkmark-div">
+                    <i class="checkmark">✓</i>
+                </div>
+                <h1>Успех</h1>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    @*Success modal*@
+
+    @*Fail modal*@
+
+    <div id="fail-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="card modal-content">
+                <div class="modal-header text-center border-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="checkmark-div">
+                    <i class="checkmark">✗</i>
+                </div>
+                <h1>Грешка</h1>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    @*Fail modal*@
+
 
     @*CSRF token*@
     <form id="csrfToken" method="post"></form>
