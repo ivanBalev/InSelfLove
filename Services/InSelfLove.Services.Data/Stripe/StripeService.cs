@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Logging;
     using System;
     using System.Linq;
+    using InSelfLove.Services.Data.Helpers;
 
     public class StripeService : IStripeService
     {
@@ -74,8 +75,33 @@
             return session;
         }
 
-        public async Task<int> HandlePayment(string json, string stripeSignature)
+        public string CreatePaymentIntent(int objectId, string userId)
         {
+            var paymentIntentService = new PaymentIntentService();
+
+            var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
+            {
+                Amount = 5000,
+                Currency = "bgn",
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                {
+                    Enabled = true,
+                },
+                Metadata = new Dictionary<string, string>()
+                {
+                    { nameof(PaymentResult.ObjectId), objectId.ToString() },
+                    { nameof(userId), userId },
+                },
+            });
+
+            return paymentIntent.ClientSecret;
+        }
+
+        public async Task<PaymentResult> HandlePayment(string json, string stripeSignature)
+        {
+            string status = "";
+            int objectId = 0;
+
             try
             {
                 // Validation
@@ -84,38 +110,40 @@
                   stripeSignature,
                   this.configuration["Stripe:TestSecret"]);
 
-                // Rudimentary error handling
-                if (stripeEvent.Type.Contains("fail"))
-                {
-                    this.logger.LogError("STRIPE PAYMENT FAILED" + json);
-                    return 0;
-                }
+                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                int.TryParse(paymentIntent?.Metadata[nameof(PaymentResult.ObjectId)], out objectId);
 
-                // Payment intent.succeeded event instead of checkoutcompleted?
-                // Handle the checkout.session.completed event
-                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+                if (stripeEvent.Type == Events.PaymentIntentSucceeded)
                 {
-                    var session = stripeEvent.Data.Object as Session;
-                    await this.FulfillOrder(session);
+                    await this.FulfillOrder(paymentIntent.Metadata["userId"], objectId, paymentIntent.Amount);
+                    this.logger.LogInformation($"A successful payment for {paymentIntent.Amount} was made.");
+                    status = "Successful";
+                }
+                else if (stripeEvent.Type == Events.PaymentIntentProcessing)
+                {
+                    status = "Processing";
+                }
+                else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
+                {
+                    this.logger.LogError($"Unhandled event type: {stripeEvent.Type}");
+                    status = "Failed";
                 }
             }
             catch (StripeException e)
             {
+                // Issue validating the webhook's signature
                 this.logger.LogError("STRIPE PAYMENT EXCEPTION" + e.Message + Environment.NewLine + "JSON: " + json);
-                return 0;
             }
 
-            return 1;
+            return new PaymentResult() { ObjectId = objectId, Status = status};
         }
 
         public async Task<int> StorePayment(Payment payment)
         {
-            payment.AmountTotal = payment.AmountTotal / 100; // Just a quirk of the stripe api
-
             var user = await this.userRepository.All().Include(u => u.Courses).FirstOrDefaultAsync(u => u.Id.Equals(payment.ApplicationUserId));
             var appointment = await this.appointmentRepository.All().Where(a => a.Id == payment.AppointmentId).FirstOrDefaultAsync();
 
-            if (user == null || appointment == null)
+            if (user == null || appointment == null || user.Id != appointment.UserId)
             {
                 throw new ArgumentNullException(nameof(user) + " " + nameof(appointment));
             }
@@ -130,17 +158,14 @@
             return 1;
         }
 
-        private async Task FulfillOrder(Session session)
+        private async Task FulfillOrder(string userId, int objectId, long amountTotal)
         {
-            // Get user reference info set in BuyCourse Action
-            var userCourseInfo = session.ClientReferenceId.Split(", ");
-
             var payment = new Payment
             {
-                ApplicationUserId = userCourseInfo[0].Split(": ")[1],
-                AppointmentId = int.Parse(userCourseInfo[1].Split(": ")[1]),
-                StripeCustomerId = session.CustomerId,
-                AmountTotal = (long)session.AmountTotal,
+                ApplicationUserId = userId,
+                AppointmentId = objectId,
+                AmountTotal = amountTotal / 100,
+                //StripeCustomerId = session.CustomerId,
             };
 
             await this.StorePayment(payment);

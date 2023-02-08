@@ -531,8 +531,8 @@ onsiteDetailsCheckbox?.addEventListener('change', function () {
         });
 })
 
-document.getElementById('payBtn').addEventListener('click', function () {
+document.getElementById('payBtn')?.addEventListener('click', function () {
     bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
     bootstrap.Modal.getOrCreateInstance(paymentFormModal).show();
-    initialize();
+    initialize(currentAppointment.id);
 })

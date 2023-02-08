@@ -1,5 +1,6 @@
 ﻿namespace InSelfLove.Web.Controllers
 {
+    using System;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -89,48 +90,14 @@
             return this.Ok();
         }
 
-        [HttpGet]
-        [Route("Checkout")]
-        public async Task<IActionResult> Checkout()
-        {
-            return this.View("Views/Stripe/Checkout.cshtml");
-        }
-
         [HttpPost]
         [IgnoreAntiforgeryToken]
         [Route("CreatePaymentIntent")]
-        public ActionResult CreatePaymentIntent()
+        public JsonResult CreatePaymentIntent([FromBody] int appointmentId)
         {
-            var paymentIntentService = new PaymentIntentService();
-            var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
-            {
-                Amount = 5000,
-                Currency = "bgn",
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                {
-                    Enabled = true,
-                },
-            });
-
-            return this.Json(new { clientSecret = paymentIntent.ClientSecret });
-        }
-
-        [HttpPost]
-        [Authorize]
-        [Route("Pay")]
-        public async Task<IActionResult> Pay([FromForm]string appointmentId)
-        {
-            // TODO: priceid mai nei dobre da poluchavame ot clienta
+            // TODO: allow online payment only for confirmed emails;
             var userId = this.userManager.GetUserId(this.User);
-            var priceId = "price_1MY63vJ7U5sVQK1wcCkDLAcn";
-
-            // Set user reference info for post-payment redirect. Action Payment
-            var clientReferenceInfo = $"userId: {userId}, appointmentId: {appointmentId}";
-            var domain = this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host;
-            var session = await this.stripeService.CreateSession(domain, priceId, "/stripe/success", "/stripe/cancel", clientReferenceInfo);
-
-            this.Response.Headers.Add("Location", session.Url);
-            return new StatusCodeResult(303);
+            return this.Json(new { clientSecret = this.stripeService.CreatePaymentIntent(appointmentId, userId) });
         }
 
         // CSRF check is done in service
@@ -144,8 +111,13 @@
             var stripeSignature = this.Request.Headers["Stripe-Signature"];
             var paymentResult = await this.stripeService.HandlePayment(json, stripeSignature);
 
-            // TODO: Send the customer a receipt email
-            return paymentResult == 0 ? this.Ok() : this.BadRequest();
+            if (!string.IsNullOrEmpty(paymentResult.Status) && paymentResult.ObjectId != 0)
+            {
+                var appointment = await this.appointmentService.GetById(paymentResult.ObjectId);
+                await this.SendEmail(appointment, true, paymentResult.Status);
+            }
+
+            return this.Ok();
         }
 
         [HttpPost]
@@ -253,12 +225,12 @@
             return userCurrentTimezone;
         }
 
-        private async Task<string> GetUserTimezoneId(string timezoneFromQuery = null)
+        private async Task<string> GetUserTimezoneId(string timezoneFromQuery = null, ApplicationUser user = null)
         {
             if (this.UserTimezoneIdFromCookie == null)
             {
                 // Get timezone from db or query if user hasn't given cookie consent
-                var user = await this.userManager.GetUserAsync(this.User);
+                user = user ?? await this.userManager.GetUserAsync(this.User);
                 return user?.WindowsTimezoneId ?? timezoneFromQuery;
             }
 
@@ -274,7 +246,7 @@
             var user = apptmnt.User ?? await this.GetUser();
 
             // Get current user timezone
-            var recipientTimezoneId = fromAdmin ? await this.GetUserTimezoneId() : admin.WindowsTimezoneId;
+            var recipientTimezoneId = fromAdmin ? await this.GetUserTimezoneId(string.Empty, user) : admin.WindowsTimezoneId;
 
             // Define data for email
             var model = new AppointmentEmail()

@@ -106,7 +106,7 @@
             var paymentResult = await this.stripeService.HandlePayment(json, stripeSignature);
 
             // TODO: Send the customer a receipt email
-            return paymentResult == 0 ? this.Ok() : this.BadRequest();
+            return this.Ok();
         }
 
         [HttpGet]

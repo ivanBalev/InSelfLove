@@ -1,6 +1,6 @@
 ﻿// This is your test publishable API key.
 // TODO: locale per user
-const stripe = Stripe("pk_test_51Kv04DJ7U5sVQK1wFN7NWaALcSfBmrEymkcZHxnwxTssePIOB3rieSajOh9wiH6jGWswoWJWPe2yj05RWJaZDMqZ002GPAzcw4", {locale: 'bg'});
+const stripe = Stripe("pk_test_51Kv04DJ7U5sVQK1wFN7NWaALcSfBmrEymkcZHxnwxTssePIOB3rieSajOh9wiH6jGWswoWJWPe2yj05RWJaZDMqZ002GPAzcw4", { locale: 'bg' });
 
 let elements;
 
@@ -14,12 +14,13 @@ document
 // Only users who've confirmed their email should be able to make an online payment
 let emailAddress = '';
 // Fetches a payment intent and captures the client secret
-async function initialize() {
+async function initialize(appointmentId) {
     setLoading(true);
 
     const response = await fetch("/api/appointments/CreatePaymentIntent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: appointmentId,
     });
     const { clientSecret } = await response.json();
 

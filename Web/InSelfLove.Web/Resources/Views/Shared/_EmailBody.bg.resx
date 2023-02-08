@@ -126,7 +126,16 @@
   <data name="Confirmation" xml:space="preserve">
     <value>Вашата сесия на {0} е потвърдена. До скоро!</value>
   </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Възникна проблем при плащането ви за терапевтична сесия на {0}. Моля, опитайте отново.</value>
+  </data>
   <data name="NewAppointment" xml:space="preserve">
     <value>Имате нова сесия на {0}</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Плащането ви за терапевтична сесия на {0} се обработва.</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>Плащането ви за терапевтична сесия на {0} е успешно!</value>
   </data>
 </root>
