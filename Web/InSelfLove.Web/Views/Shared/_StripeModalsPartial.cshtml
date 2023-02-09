@@ -1,0 +1,65 @@
+﻿@*Payment form*@
+<div id="payment-form-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="payment-form">
+
+                <div id="link-authentication-element">
+                    @*Stripe.js injects the Link Authentication Element*@
+                </div>
+                <div id="payment-element">
+                    @*Stripe.js injects the Payment Element*@
+                </div>
+                <div class="bouncer mx-auto d-none">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <button id="submit" class="btn w-100 green-btn d-none">
+                    <span id="button-text">Плати</span>
+                </button>
+                <div id="payment-message" class="d-none"></div>
+            </form>
+        </div>
+    </div>
+</div>
+@*End of payment form*@
+
+@*Success modal*@
+
+<div id="success-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="card modal-content">
+            <div class="modal-header text-center border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="checkmark-div">
+                <i class="checkmark">✓</i>
+            </div>
+            <h1>Изпълнено</h1>
+            <p></p>
+        </div>
+    </div>
+</div>
+@*End of Success modal*@
+
+@*Fail modal*@
+
+<div id="fail-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="card modal-content">
+            <div class="modal-header text-center border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="checkmark-div">
+                <i class="checkmark">✗</i>
+            </div>
+            <h1>Грешка</h1>
+            <p></p>
+        </div>
+    </div>
+</div>
+@*End of Fail modal*@

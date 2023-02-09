@@ -60,10 +60,6 @@
     // Include online payment logic if user has approved but unpaid upcoming appointments
     var includePayment = Model.Appointments.Any(a =>
         a.IsApproved && !a.IsPaid && DateTime.Compare(a.Start.ToUniversalTime(), DateTime.UtcNow) > 0);
-
-    // Post-payment redirect status message handling
-
-    var test = this.Context.Request.Query["payment_intent_client_secret"].ToString();
 }
 
 <div class="d-none dbEvents">@apptmnts</div>
@@ -138,44 +134,6 @@
         </div>
     </div>
 
-    @*Daily availability modal*@
-    @*Only admin can submit daily availability*@
-    @if (userIsAdmin)
-    {
-        <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header pt-3 pb-2 text-center border-0">
-                        <h4 class="modal-title w-100">@localizer["Set Daily Availability"]</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body pt-1">
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                @{
-                                    for (int i = workDayStart.Hour; i < workDayEnd.Hour; i++)
-                                    {
-                                        // Add a :00 & :30 slot for each hour
-                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
-                                            @(i.ToString() + ":00")
-                                        </div>
-
-                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
-                                            @(i.ToString() + ":30")
-                                        </div>
-                                    }
-                                }
-                            </div>
-                        </div>
-                        <div class="row mx-5">
-                            <button type="button" id="submitDailyAvailability" class="btn green-btn mt-2">@localizer["Save"]</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
     @*Appointment details modal*@
     <div id="appointmentDetailsModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -236,8 +194,8 @@
                         }
                     </div>
 
-                    @*Payment div*@
-                    @if (!userIsAdmin)
+                    @*Payment div for user*@
+                    @if (!userIsAdmin && includePayment)
                     {
                         <div class="form-group mt-3">
                             <button type="button" id="payBtn" class="btn green-btn">Плащане</button>
@@ -305,76 +263,48 @@
                 </div>
             </div>
         </div>
+
+        @*Daily availability modal*@
+        @*Only admin can submit daily availability*@
+        <div id="dailyAvailabilityModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header pt-3 pb-2 text-center border-0">
+                        <h4 class="modal-title w-100">@localizer["Set Daily Availability"]</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pt-1">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                @{
+                                    for (int i = workDayStart.Hour; i < workDayEnd.Hour; i++)
+                                    {
+                                        // Add a :00 & :30 slot for each hour
+                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                            @(i.ToString() + ":00")
+                                        </div>
+
+                                        <div class="dailyTimeSlot col-md-5 border rounded-pill text-center m-1 p-1">
+                                            @(i.ToString() + ":30")
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="row mx-5">
+                            <button type="button" id="submitDailyAvailability" class="btn green-btn mt-2">@localizer["Save"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 
-    @*@if (includePayment)
-    {*@
-    <!-- Display a payment form -->
-    <div id="payment-form-modal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="payment-form">
-
-                    <div id="link-authentication-element">
-                        <!--Stripe.js injects the Link Authentication Element-->
-                    </div>
-                    <div id="payment-element">
-                        <!--Stripe.js injects the Payment Element-->
-                    </div>
-                    <div class="bouncer mx-auto d-none">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                    <button id="submit" class="btn w-100 green-btn d-none">
-                        <span id="button-text">Плати</span>
-                    </button>
-                    <div id="payment-message" class="d-none"></div>
-                </form>
-            </div>
-        </div>
-    </div>
-    @*}*@
-
-    @*Success modal*@
-
-    <div id="success-modal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="card modal-content">
-                <div class="modal-header text-center border-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="checkmark-div">
-                    <i class="checkmark">✓</i>
-                </div>
-                <h1>Изпълнено</h1>
-                <p></p>
-            </div>
-        </div>
-    </div>
-    @*Success modal*@
-
-    @*Fail modal*@
-
-    <div id="fail-modal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="card modal-content">
-                <div class="modal-header text-center border-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="checkmark-div">
-                    <i class="checkmark">✗</i>
-                </div>
-                <h1>Грешка</h1>
-                <p></p>
-            </div>
-        </div>
-    </div>
-    @*Fail modal*@
-
+    @*Stripe modals only if we have an unpaid, upcoming, approved appointment*@
+    @if (includePayment)
+    {
+        <partial name="_StripeModalsPartial" />
+    }
 
     @*CSRF token*@
     <form id="csrfToken" method="post"></form>
@@ -388,18 +318,18 @@
 </div>
 
 @section Scripts {
-    @*@if (includePayment)
-    {*@
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="~/Custom/js/stripeCheckout.js" defer></script>
-    @*}*@
+    @if (includePayment)
+    {
+        <script src="https://js.stripe.com/v3/"></script>
+        <script src="~/Custom/js/stripeCheckout.js" defer></script>
+    }
     <script src="~/js/calendar.js"></script>
 }
 
 @section Links {
-    @*@if (includePayment)
-    {*@
-    <link rel="stylesheet" href="~/Custom/css/stripe-checkout.css" />
-    @*}*@
+    @if (includePayment)
+    {
+        <link rel="stylesheet" href="~/Custom/css/stripe-checkout.css" />
+    }
     <link rel="stylesheet" href="~/Custom/css/calendar.css">
 }

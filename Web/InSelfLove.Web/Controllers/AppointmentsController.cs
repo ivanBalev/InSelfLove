@@ -93,11 +93,13 @@
         [HttpPost]
         [IgnoreAntiforgeryToken]
         [Route("CreatePaymentIntent")]
-        public JsonResult CreatePaymentIntent([FromBody] int appointmentId)
+        public async Task<JsonResult> CreatePaymentIntent([FromBody] int appointmentId)
         {
             // TODO: allow online payment only for confirmed emails;
             var userId = this.userManager.GetUserId(this.User);
-            return this.Json(new { clientSecret = this.stripeService.CreatePaymentIntent(appointmentId, userId) });
+
+            // Return client secret to be attached to our payment form 
+            return this.Json(new { clientSecret = await this.stripeService.CreatePaymentIntent(appointmentId, userId) });
         }
 
         // CSRF check is done in service
@@ -109,8 +111,11 @@
         {
             var json = await new StreamReader(this.HttpContext.Request.Body).ReadToEndAsync();
             var stripeSignature = this.Request.Headers["Stripe-Signature"];
+
+            // Provide necessary info to service for validation & confirmation/cancellation of payment
             var paymentResult = await this.stripeService.HandlePayment(json, stripeSignature);
 
+            // Send email only if payment is successful
             if (!string.IsNullOrEmpty(paymentResult.Status) && paymentResult.ObjectId != 0)
             {
                 var appointment = await this.appointmentService.GetById(paymentResult.ObjectId);

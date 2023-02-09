@@ -26,5 +26,7 @@
         Task<Appointment> SetOnSite(int apptId, bool canBeOnSite);
 
         Task<int> Cancel(Appointment appointment, string userId, string adminId);
+
+        Task Pay(int apptId);
     }
 }

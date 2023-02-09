@@ -76,9 +76,10 @@
         public async Task<IActionResult> CreateCourse(CourseCreateInputModel inputModel)
         {
             await this.SetThumbnailImage(inputModel);
-            var priceId = await this.stripeService.CreateProduct(inputModel.Title, inputModel.Price);
-            var id = await this.courseService.CreateCourse(inputModel.Title, inputModel.ThumbnailLink, priceId, inputModel.Price);
-            return this.RedirectToAction(nameof(this.Course), new { id });
+            //var priceId = await this.stripeService.CreateProduct(inputModel.Title, inputModel.Price);
+            //var id = await this.courseService.CreateCourse(inputModel.Title, inputModel.ThumbnailLink, priceId, inputModel.Price);
+            //return this.RedirectToAction(nameof(this.Course), new { id });
+            return null;
         }
 
         [HttpPost]
@@ -90,9 +91,9 @@
             // Set user reference info for post-payment redirect. Action Payment
             var clientReferenceInfo = $"userId: {userId}, courseId: {courseId}";
             var domain = this.HttpContext.Request.Scheme + "://" + this.HttpContext.Request.Host;
-            var session = await this.stripeService.CreateSession(domain, priceId, "/stripe/success", "/stripe/cancel", clientReferenceInfo);
+            //var session = await this.stripeService.CreateSession(domain, priceId, "/stripe/success", "/stripe/cancel", clientReferenceInfo);
 
-            this.Response.Headers.Add("Location", session.Url);
+            //this.Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
         }
 
