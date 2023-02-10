@@ -1,24 +1,18 @@
 ﻿namespace InSelfLove.Web.Controllers
 {
-    using System;
-    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
 
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Appointments;
     using InSelfLove.Services.Data.Helpers;
-    using InSelfLove.Services.Data.Stripe;
     using InSelfLove.Services.Mapping;
-    using InSelfLove.Services.Messaging;
     using InSelfLove.Web.Controllers.Helpers;
     using InSelfLove.Web.InputModels.Appointment;
     using InSelfLove.Web.ViewModels.Appointment;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Newtonsoft.Json;
-    using Stripe;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -26,22 +20,16 @@
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IAppointmentService appointmentService;
-        private readonly IStripeService stripeService;
-        private readonly IEmailSender emailSender;
-        private readonly IViewRender viewRender;
+        private readonly IAppointmentEmailHelper emailSender;
 
         public AppointmentsController(
-            IViewRender viewRender,
-            IEmailSender emailSender,
             IAppointmentService appointmentService,
-            IStripeService stripeService,
+            IAppointmentEmailHelper appointmentEmailHelper,
             UserManager<ApplicationUser> userManager)
         {
             this.appointmentService = appointmentService;
-            this.stripeService = stripeService;
+            this.emailSender = appointmentEmailHelper;
             this.userManager = userManager;
-            this.emailSender = emailSender;
-            this.viewRender = viewRender;
         }
 
         [HttpGet]
@@ -83,44 +71,14 @@
             var appointment = await this.appointmentService.Book(
                 inputModel.Id, inputModel.Description, inputModel.IsOnSite, this.userManager.GetUserId(this.User));
 
+            var admin = await this.GetUser(true);
+            var user = await this.GetUser();
+
             // Notify user & admin
-            await this.SendEmail(appointment, fromAdmin: false, "NewAppointment");
-            await this.SendEmail(appointment, fromAdmin: true, "AwaitingApproval");
-
-            return this.Ok();
-        }
-
-        [HttpPost]
-        [IgnoreAntiforgeryToken]
-        [Route("CreatePaymentIntent")]
-        public async Task<JsonResult> CreatePaymentIntent([FromBody] int appointmentId)
-        {
-            // TODO: allow online payment only for confirmed emails;
-            var userId = this.userManager.GetUserId(this.User);
-
-            // Return client secret to be attached to our payment form 
-            return this.Json(new { clientSecret = await this.stripeService.CreatePaymentIntent(appointmentId, userId) });
-        }
-
-        // CSRF check is done in service
-        // Standard practice with the Stripe API
-        [IgnoreAntiforgeryToken]
-        [HttpPost]
-        [Route("ConfirmPay")]
-        public async Task<IActionResult> ConfirmPay()
-        {
-            var json = await new StreamReader(this.HttpContext.Request.Body).ReadToEndAsync();
-            var stripeSignature = this.Request.Headers["Stripe-Signature"];
-
-            // Provide necessary info to service for validation & confirmation/cancellation of payment
-            var paymentResult = await this.stripeService.HandlePayment(json, stripeSignature);
-
-            // Send email only if payment is successful
-            if (!string.IsNullOrEmpty(paymentResult.Status) && paymentResult.ObjectId != 0)
-            {
-                var appointment = await this.appointmentService.GetById(paymentResult.ObjectId);
-                await this.SendEmail(appointment, true, paymentResult.Status);
-            }
+            await this.emailSender.SendEmail(
+                appointment, fromAdmin: false, "NewAppointment", admin, user);
+            await this.emailSender.SendEmail(
+                appointment, fromAdmin: true, "AwaitingApproval", admin, user);
 
             return this.Ok();
         }
@@ -139,7 +97,8 @@
             // not if admin has occupied the slot themselves after a client has booked via fb/insta/phone
             if (appointment.UserId != null && appointment.UserId != adminId)
             {
-                await this.SendEmail(appointment, userId == adminId, "Cancellation");
+                await this.emailSender.SendEmail(
+                    appointment, userId == adminId, "Cancellation", await this.GetUser(true), await this.GetUser());
             }
 
             await this.appointmentService.Cancel(appointment, userId, adminId);
@@ -158,7 +117,7 @@
                 return this.BadRequest();
             }
 
-            var adminTimezone = await this.GetUserTimezoneId();
+            var adminTimezone = (await this.GetUser(true)).WindowsTimezoneId;
 
             // Send slots and date to service
             await this.appointmentService.Create(availabilityInput.TimeSlots, availabilityInput.Date, adminTimezone);
@@ -174,7 +133,8 @@
             var appointment = await this.appointmentService.Approve(input.Id);
 
             // Notify user
-            await this.SendEmail(appointment, fromAdmin: true, "Confirmation");
+            await this.emailSender.SendEmail(
+                appointment, fromAdmin: true, "Confirmation", await this.GetUser(true), await this.GetUser());
 
             return this.Ok();
         }
@@ -202,16 +162,19 @@
         }
 
         // Helper methods
+
+        // Updates user's timezone and returns it
         private async Task<string> UpdateUserTimezone(string timezoneFromQuery)
         {
-            var user = await this.GetUser();
+            // If user hasn't consented to cookies, we get their timezone from query string
             string userCurrentTimezone = this.UserTimezoneIdFromCookie ?? timezoneFromQuery;
+
+            var user = await this.GetUser();
 
             // If no data is sent by client, there's nothing to update with
             if (userCurrentTimezone == null)
             {
-                // Try and return what's stored in db or return nothing
-                return user?.WindowsTimezoneId ?? null;
+                return user?.WindowsTimezoneId;
             }
 
             // Convert user's current timezone to windows timezone
@@ -228,50 +191,6 @@
 
             // Return current timezone
             return userCurrentTimezone;
-        }
-
-        private async Task<string> GetUserTimezoneId(string timezoneFromQuery = null, ApplicationUser user = null)
-        {
-            if (this.UserTimezoneIdFromCookie == null)
-            {
-                // Get timezone from db or query if user hasn't given cookie consent
-                user = user ?? await this.userManager.GetUserAsync(this.User);
-                return user?.WindowsTimezoneId ?? timezoneFromQuery;
-            }
-
-            return this.UserTimezoneIdFromCookie;
-        }
-
-        private async Task SendEmail(Appointment apptmnt, bool fromAdmin, string status)
-        {
-            // Get admin
-            var admin = await this.GetUser(true);
-
-            // Get user
-            var user = apptmnt.User ?? await this.GetUser();
-
-            // Get current user timezone
-            var recipientTimezoneId = fromAdmin ? await this.GetUserTimezoneId(string.Empty, user) : admin.WindowsTimezoneId;
-
-            // Define data for email
-            var model = new AppointmentEmail()
-            {
-                Start = TimezoneHelper.ToLocalTime(apptmnt.UtcStart, recipientTimezoneId),
-                Status = status,
-                Description = apptmnt.Description,
-                IsOnSite = apptmnt.IsOnSite,
-            };
-
-            // Compose email body
-            var emailBody = await this.viewRender.RenderPartialViewToString("_EmailBody", model);
-
-            // Send email
-            await this.emailSender.SendEmailAsync(
-                from: fromAdmin ? admin.Email : user.Email,
-                fromName: fromAdmin ? AppConstants.SystemName : user.UserName,
-                to: fromAdmin ? user.Email : admin.Email,
-                subject: "Терапевтична сесия",
-                htmlContent: emailBody);
         }
 
         private async Task<ApplicationUser> GetUser(bool admin = false)
