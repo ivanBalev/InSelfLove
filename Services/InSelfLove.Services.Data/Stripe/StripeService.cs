@@ -9,7 +9,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System;
-    using System.Linq;
     using InSelfLove.Services.Data.Helpers;
     using InSelfLove.Services.Data.Appointments;
 

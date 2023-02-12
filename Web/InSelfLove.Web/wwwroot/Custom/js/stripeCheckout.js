@@ -1,40 +1,30 @@
-﻿// This is your test publishable API key.
-// TODO: locale per user
-const stripe = Stripe("pk_test_51Kv04DJ7U5sVQK1wFN7NWaALcSfBmrEymkcZHxnwxTssePIOB3rieSajOh9wiH6jGWswoWJWPe2yj05RWJaZDMqZ002GPAzcw4", { locale: 'bg' });
+﻿let elements;
+let stripe;
 
-let elements;
+document.addEventListener('DOMContentLoaded', async () => {
+    const { publishableKey } = await fetch('/stripe/config').then(r => r.json());
 
-checkStatus();
+    // TODO: locale per user
+    stripe = Stripe(publishableKey, { locale: 'bg' });
 
-document
-    .querySelector("#payment-form")
-    .addEventListener("submit", handleSubmit);
+    checkStatus();
 
-// TODO: introduce email validation for user on registration - enter email address automatically.
-// Only users who've confirmed their email should be able to make an online payment
-let emailAddress = '';
+    document
+        .querySelector("#payment-form")
+        .addEventListener("submit", handleSubmit);
+})
+
 // Fetches a payment intent and captures the client secret
 async function initialize(appointmentId) {
     setLoading(true);
 
-    const response = await fetch("/api/appointments/CreatePaymentIntent", {
+    const { clientSecret } = await fetch('/stripe/createpaymentintent', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: appointmentId,
-    });
-    const { clientSecret } = await response.json();
+    }).then(r => r.json());
 
-    const appearance = {
-        theme: 'stripe',
-    };
-    elements = stripe.elements({ appearance, clientSecret });
-
-    const linkAuthenticationElement = elements.create("linkAuthentication");
-    linkAuthenticationElement.mount("#link-authentication-element");
-
-    linkAuthenticationElement.on('change', (event) => {
-        emailAddress = event.value.email;
-    });
+    elements = stripe.elements({ clientSecret });
 
     const paymentElementOptions = {
         layout: "tabs",
@@ -57,8 +47,7 @@ async function handleSubmit(e) {
     const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-            return_url: "https://localhost:44319/api/appointments",
-            receipt_email: emailAddress,
+            return_url: window.location.href.split('?')[0],
         },
     });
 

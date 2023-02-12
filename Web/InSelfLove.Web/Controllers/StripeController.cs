@@ -3,14 +3,15 @@
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Appointments;
     using InSelfLove.Services.Data.Helpers;
     using InSelfLove.Services.Data.Stripe;
     using InSelfLove.Web.Controllers.Helpers;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
 
     public class StripeController : BaseController
     {
@@ -18,22 +19,31 @@
         private readonly IStripeService stripeService;
         private readonly IAppointmentService appointmentService;
         private readonly IAppointmentEmailHelper emailSender;
+        private readonly IConfiguration config;
 
         public StripeController(
             UserManager<ApplicationUser> userManager,
             IStripeService stripeService,
             IAppointmentService appointmentService,
-            IAppointmentEmailHelper emailSender)
+            IAppointmentEmailHelper emailSender,
+            IConfiguration config)
         {
             this.userManager = userManager;
             this.stripeService = stripeService;
             this.appointmentService = appointmentService;
             this.emailSender = emailSender;
+            this.config = config;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Config()
+        {
+            return this.Ok(new { publishableKey = this.config["Stripe:PublishableKey"] });
         }
 
         [HttpPost]
         [IgnoreAntiforgeryToken]
-        [Route("CreatePaymentIntent")]
         public async Task<JsonResult> CreatePaymentIntent([FromBody] int appointmentId)
         {
             // TODO: allow online payment only for confirmed emails;
@@ -47,7 +57,6 @@
         // Standard practice with the Stripe API
         [IgnoreAntiforgeryToken]
         [HttpPost]
-        [Route("ConfirmPay")]
         public async Task<IActionResult> ConfirmPay()
         {
             var json = await new StreamReader(this.HttpContext.Request.Body).ReadToEndAsync();

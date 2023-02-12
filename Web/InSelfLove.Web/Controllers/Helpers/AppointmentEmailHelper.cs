@@ -1,11 +1,12 @@
-﻿using InSelfLove.Data.Models;
-using InSelfLove.Services.Data.Helpers;
-using InSelfLove.Services.Messaging;
-using InSelfLove.Web.ViewModels.Appointment;
-using System.Threading.Tasks;
-
-namespace InSelfLove.Web.Controllers.Helpers
+﻿namespace InSelfLove.Web.Controllers.Helpers
 {
+    using System.Threading.Tasks;
+
+    using InSelfLove.Data.Models;
+    using InSelfLove.Services.Data.Helpers;
+    using InSelfLove.Services.Messaging;
+    using InSelfLove.Web.ViewModels.Appointment;
+
     public class AppointmentEmailHelper : IAppointmentEmailHelper
     {
         private readonly IViewRender viewRender;
@@ -22,8 +23,7 @@ namespace InSelfLove.Web.Controllers.Helpers
             bool fromAdmin,
             string status,
             ApplicationUser admin,
-            ApplicationUser user,
-            string userTimezoneFromCookie)
+            ApplicationUser user)
         {
             // Get current user timezone
             var recipientTimezone = fromAdmin ? user.WindowsTimezoneId : admin.WindowsTimezoneId;

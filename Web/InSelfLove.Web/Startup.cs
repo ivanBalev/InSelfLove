@@ -214,8 +214,11 @@
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
 
-            // View rendering DI
+            // View rendering
             services.AddScoped<IViewRender, ViewRender>();
+
+            // Appointment emails
+            services.AddScoped<IAppointmentEmailHelper, AppointmentEmailHelper>();
 
             // Response compression
             services.AddResponseCompression(options =>
