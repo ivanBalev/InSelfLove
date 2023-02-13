@@ -97,9 +97,7 @@
                     return Page();
                 }
 
-                string windowsTimezoneId = TimezoneHelper.GetTimezone(this.Input.TimezoneIANA)?.Id ?? null;
-
-                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email, WindowsTimezoneId = windowsTimezoneId };
+                var user = new ApplicationUser { UserName = this.Input.Username, Email = this.Input.Email, Timezone = this.Input.TimezoneIANA };
 
                 if (this.Input.ProfilePicture != null)
                 {

@@ -128,8 +128,7 @@ namespace InSelfLove.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                string windowsTimezoneId = TimezoneHelper.GetTimezone(this.Input.TimezoneIANA).Id;
-                var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, WindowsTimezoneId = windowsTimezoneId, ProfilePhoto = DefaultProfilePicture };
+                var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, Timezone = this.Input.TimezoneIANA, ProfilePhoto = DefaultProfilePicture };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

@@ -28,6 +28,11 @@ async function initialize(appointmentId) {
 
     const paymentElementOptions = {
         layout: "tabs",
+        defaultCollapsed: true,
+        wallets: {
+            applePay: 'never',
+            googlePay: 'never'
+            }
     };
 
     const paymentElement = elements.create("payment", paymentElementOptions);

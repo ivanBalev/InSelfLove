@@ -28,7 +28,7 @@
             {
                 UserName = configuration[$"{AppConstants.AdministratorRoleName}:UserName"],
                 Email = configuration[$"{AppConstants.AdministratorRoleName}:Email"],
-                WindowsTimezoneId = "FLE Standard Time",
+                Timezone = "Europe/Sofia",
                 ProfilePhoto = DefaultProfilePicture,
             };
 
@@ -36,7 +36,7 @@
             {
                 UserName = configuration[$"{AppConstants.UserRoleName}:UserName"],
                 Email = configuration[$"{AppConstants.UserRoleName}:Email"],
-                WindowsTimezoneId = "FLE Standard Time",
+                Timezone = "Europe/Sofia",
                 ProfilePhoto = DefaultProfilePicture,
             };
 

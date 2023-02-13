@@ -29,6 +29,7 @@ if (
 
 // Alert messages
 const approved = cultureIsEn ? 'Approved' : 'Одобрен';
+const paid = cultureIsEn ? 'Paid' : 'Платен';
 const awaitingApproval = cultureIsEn ? 'Awaiting approval' : 'Очаква потвърждение';
 const genericError = cultureIsEn ? 'Error' : 'Грешка';
 const appointmentDescriptionError = cultureIsEn ? 'Please enter more than 30 characters' :
@@ -42,6 +43,7 @@ const cancelBtn = document.getElementById('btnDelete');
 const confirmCancelBtn = document.getElementsByClassName('confirmCancelAppointment')[0];
 const workingHoursSubmitBtn = document.getElementById('workingHoursSubmitBtn');
 const occupyBtn = document.querySelector('#occupyAppointment');
+const payBtn = document.querySelector('#payBtn');
 
 // Onsite-related btn/msg
 const onSiteDetailsMsg = document.querySelector('#onSiteDetailsMsg');
@@ -250,8 +252,23 @@ function setUpDetailsForAdmin() {
 function setUpDetailsForUser() {
     // Populate username, details and status message
     detailsModal.querySelector('.username').textContent = currentAppointment.userName;
-    detailsModal.querySelector('.details').textContent = currentAppointment.description;
-    setUpStatusInAppointmentDetailsModal(currentAppointment.isApproved);
+
+    // Show/hide details field if we have/don't have details for appointment
+    if (currentAppointment.description == false) {
+        document.querySelector('.detailsGroup').style.display = 'none';
+    } else {
+        detailsModal.querySelector('.details').textContent = currentAppointment.description;
+        document.querySelector('.detailsGroup').style.display = 'block';
+    }
+
+    // Show/hide payment btn
+
+    if (payBtn) {
+        payBtn.style.display = currentAppointment.isPaid ? 'none' : 'block';
+    }
+
+
+    setUpStatusInAppointmentDetailsModal();
 }
 
 function setUpDateAndTime() {
@@ -292,9 +309,9 @@ function setUpOnsiteSlider() {
         // This is user's own appointment 
         // Its isonsite property value can no longer be changed
         if (currentAppointment.isOnSite) {
-            onSiteDetailsMsg.textContent = 'Сесия на живо';
+            onSiteDetailsMsg.textContent = 'На живо';
         } else {
-            onSiteDetailsMsg.textContent = 'Онлайн сесия';
+            onSiteDetailsMsg.textContent = 'Онлайн';
         }
     }
 }
@@ -310,6 +327,7 @@ function showDetailsInAppointmentDetailsModal() {
     detailsModal.querySelector('.usernameGroup').style.display = 'block';
     detailsModal.querySelector('.detailsGroup').style.display = 'block';
     detailsModal.querySelector('.statusGroup').style.display = 'block';
+
     // Hide approve button if appointment is already approved
     if (currentAppointment.isApproved) {
         detailsModal.querySelector('#approveAppointment').style.display = 'none';
@@ -318,10 +336,13 @@ function showDetailsInAppointmentDetailsModal() {
     }
 }
 
-function setUpStatusInAppointmentDetailsModal(isApproved) {
-    if (isApproved) {
+function setUpStatusInAppointmentDetailsModal() {
+    if (currentAppointment.isApproved) {
         detailsModal.querySelector('.status').textContent = approved;
         detailsModal.querySelector('.status').style.color = themeColor;
+
+        detailsModal.querySelector('.paid').textContent = currentAppointment.isPaid ? paid : '';
+        detailsModal.querySelector('.paid').style.color = themeColor;
     } else {
         detailsModal.querySelector('.status').textContent = awaitingApproval;
         detailsModal.querySelector('.status').style.color = yellowColor;
@@ -405,7 +426,7 @@ submitDailyAvailabilityBtn?.addEventListener('click', function () {
         setCookie(workDayStartStr, workDayStartCookieValue, 400);
         setCookie(workDayEndStr, workDayEndCookieValue, 400);
     }
-    
+
     postData(
         '/api/appointments/Create',
         {
@@ -531,7 +552,7 @@ onsiteDetailsCheckbox?.addEventListener('change', function () {
         });
 })
 
-document.getElementById('payBtn')?.addEventListener('click', async () => {
+payBtn?.addEventListener('click', async () => {
     bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
     bootstrap.Modal.getOrCreateInstance(paymentFormModal).show();
     await initialize(currentAppointment.id);

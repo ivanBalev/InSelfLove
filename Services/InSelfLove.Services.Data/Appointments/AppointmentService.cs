@@ -42,6 +42,9 @@
             // so we need to dynamically set availability instead of storing it in db
             this.SetAvailability(appointments, userIsAdmin, userId);
 
+            // Remove other users' data
+            this.Sanitize(appointments, userIsAdmin, userId);
+
             foreach (var appt in appointments)
             {
                 // Adjust appointments' start times for user
@@ -252,7 +255,10 @@
                     }
                 }
             }
+        }
 
+        private void Sanitize(Appointment[] appointments, bool userIsAdmin, string userId)
+        {
             foreach (var appt in appointments)
             {
                 // If user is admin or appt is user's own

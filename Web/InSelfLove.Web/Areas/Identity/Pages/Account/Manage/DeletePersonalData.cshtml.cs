@@ -76,7 +76,7 @@ namespace InSelfLove.Web.Areas.Identity.Pages.Account.Manage
             }
 
             var userAppointmentIds = await this.appointmentService
-                .GetAll(user.Id, admin.Id, user.WindowsTimezoneId);
+                .GetAll(user.Id, admin.Id, user.Timezone);
 
             foreach (var appointment in userAppointmentIds)
             {

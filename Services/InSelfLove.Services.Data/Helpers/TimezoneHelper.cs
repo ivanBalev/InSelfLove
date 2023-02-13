@@ -6,11 +6,11 @@
 
     public static class TimezoneHelper
     {
-        public static TimeZoneInfo GetTimezone(string timezoneId)
+        public static TimeZoneInfo GetTimezoneInfo(string timezone)
         {
             try
             {
-                return TZConvert.GetTimeZoneInfo(timezoneId);
+                return TZConvert.GetTimeZoneInfo(timezone);
             }
             catch (Exception)
             {
@@ -26,12 +26,13 @@
                 return localTime;
             }
 
-            return TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(localTime, DateTimeKind.Unspecified), GetTimezone(timezone));
+            // Datetime is UTC by default which doesn't fit our purpose -> set to unspecified and convert to utc using the client local timezone
+            return TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(localTime, DateTimeKind.Unspecified), GetTimezoneInfo(timezone));
         }
 
         public static DateTime ToLocalTime(DateTime utcTime, string timezone)
         {
-            return TimeZoneInfo.ConvertTimeFromUtc(utcTime, GetTimezone(timezone));
+            return TimeZoneInfo.ConvertTimeFromUtc(utcTime, GetTimezoneInfo(timezone));
         }
     }
 }

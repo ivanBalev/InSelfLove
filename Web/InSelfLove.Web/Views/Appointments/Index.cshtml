@@ -15,6 +15,7 @@
     ViewData["Title"] = @localizer["Запази час"].Value;
 
     bool userIsAdmin = this.User.IsInRole(AppConstants.AdministratorRoleName);
+    var user = await this.UserManager.GetUserAsync(this.User);
 
     // Additional details needed when user books their 1st appointment - Description field
     bool usersFirstAppt = !Model.Appointments.Any(x => x.UserId != null);
@@ -58,7 +59,11 @@
         !x.IsUnavailable && DateTime.Compare(x.Start.ToUniversalTime(), DateTime.UtcNow) > 0).ToArray();
 
     // Include online payment logic if user has approved but unpaid upcoming appointments
-    var includePayment = true;
+    bool includePayment = user != null &&
+                          Model.Appointments.Any(a =>
+                                                 a.UserId == user.Id &&
+                                                 a.IsApproved && !a.IsPaid &&
+                                                 DateTime.Compare(a.Start.ToUniversalTime(), DateTime.UtcNow) > 0);
 }
 
 <div class="d-none dbEvents">@apptmnts</div>
@@ -74,6 +79,12 @@
         </div>
     }
     <div id="calendar" class="mt-3"></div>
+    @if (userIsAdmin)
+    {
+        <div class="text-center">
+            <button id="btnWorkingHours" class="green-btn border-0 btn mb-3" data-bs-toggle="modal" data-bs-target="#workingHours">@localizer["Standard Working Hours"]</button>
+        </div>
+    }
 </div>
 
 <div>
@@ -167,6 +178,7 @@
                         <div class="form-group col statusGroup">
                             <label class="text-center text-black-50  border-bottom statusLabel">@localizer["Status:"] </label>
                             <span class="status font-weight-bold d-block"></span>
+                            <span class="paid font-weight-bold d-block"></span>
                         </div>
                     </div>
 
@@ -175,6 +187,7 @@
                         <label class="text-center text-black-50  border-bottom">@localizer["Details:"] </label>
                         <p class="details mb-0" style="word-wrap: break-word;"></p>
                     </div>
+
 
                     @*Location info div*@
                     <div class="form-group mt-3">
@@ -193,23 +206,22 @@
                         }
                     </div>
 
-                    @*Payment div for user*@
-                    @if (!userIsAdmin && includePayment)
-                    {
-                        <div class="form-group mt-3">
-                            <button type="button" id="payBtn" class="btn green-btn">Плащане</button>
-                        </div>
-                    }
+                    <div class="modal-footer justify-content-center pt-0 border-0">
+                        @if (userIsAdmin)
+                        {
+                            @*Only admin can occupy & approve apptmnts*@
+                            <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
+                            <button type="button" id="occupyAppointment" class="btn white-btn">@localizer["Occupy"]</button>
+                        }
 
-                </div>
-                <div class="modal-footer justify-content-center pt-0 border-0">
-                    @if (userIsAdmin)
-                    {
-                        @*Only admin can occupy & approve apptmnts*@
-                        <button type="button" id="approveAppointment" class="btn green-btn">@localizer["Approve"]</button>
-                        <button type="button" id="occupyAppointment" class="btn white-btn">@localizer["Occupy"]</button>
-                    }
-                    <button id="btnDelete" class="btn white-btn">@localizer["Cancel"]</button>
+                        @*Payment div for user*@
+                        @if (!userIsAdmin && includePayment)
+                        {
+                            <button type="button" id="payBtn" class="btn green-btn">Плащане</button>
+                        }
+
+                        <button id="btnDelete" class="btn white-btn">@localizer["Cancel"]</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -250,6 +262,14 @@
                                 <div class="form-group col ml-5 mb-0">
                                     <label>@localizer["End Time"]</label>
                                     <input type="time" value="00:00" id="endHour" name="endHour" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col ml-5 mb-0">
+                                   <div id="endHourDisplay"></div>
+                                </div>
+                                <div class="form-group col ml-5 mb-0">
+                                   <div id="startHourDisplay"></div>
                                 </div>
                             </div>
                             <div class="row">
@@ -308,12 +328,7 @@
     @*CSRF token*@
     <form id="csrfToken" method="post"></form>
     @*Show working hours button*@
-    @if (userIsAdmin)
-    {
-        <div class="text-center">
-            <button id="btnWorkingHours" class="green-btn border-0 btn mb-3" data-bs-toggle="modal" data-bs-target="#workingHours">@localizer["Standard Working Hours"]</button>
-        </div>
-    }
+
 </div>
 
 @section Scripts {
@@ -323,7 +338,7 @@
         <script src="~/Custom/js/stripeCheckout.js" defer></script>
     }
     <script src="~/js/calendar.js"></script>
-}
+    }
 
 @section Links {
     @if (includePayment)
@@ -331,4 +346,4 @@
         <link rel="stylesheet" href="~/Custom/css/stripe-checkout.css" />
     }
     <link rel="stylesheet" href="~/Custom/css/calendar.css">
-}
+    }

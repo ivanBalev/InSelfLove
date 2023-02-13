@@ -34,7 +34,7 @@ namespace InSelfLove.Data.Models
 
         public bool IsBanned { get; set; }
 
-        public string WindowsTimezoneId { get; set; }
+        public string Timezone { get; set; }
 
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
 

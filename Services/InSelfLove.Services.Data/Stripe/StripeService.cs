@@ -51,10 +51,14 @@
                 // 50,00. Stripe requires the format below
                 Amount = 5000,
                 Currency = "bgn",
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                PaymentMethodTypes = new List<string>
                 {
-                    Enabled = true,
+                    "card",
                 },
+                //AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                //{
+                //    Enabled = true,
+                //},
 
                 // Attach appointment & user ids. Allows us to identify the user & appointment
                 // in the POST request the Stripe server sends to our webhook to confirm/decline payment

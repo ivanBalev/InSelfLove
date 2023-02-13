@@ -26,7 +26,7 @@
             ApplicationUser user)
         {
             // Get current user timezone
-            var recipientTimezone = fromAdmin ? user.WindowsTimezoneId : admin.WindowsTimezoneId;
+            var recipientTimezone = fromAdmin ? user.Timezone : admin.Timezone;
 
             // Define data for email
             var model = new AppointmentEmail()

@@ -117,7 +117,7 @@
                 return this.BadRequest();
             }
 
-            var adminTimezone = (await this.GetUser(true)).WindowsTimezoneId;
+            var adminTimezone = (await this.GetUser(true)).Timezone;
 
             // Send slots and date to service
             await this.appointmentService.Create(availabilityInput.TimeSlots, availabilityInput.Date, adminTimezone);
@@ -174,18 +174,15 @@
             // If no data is sent by client, there's nothing to update with
             if (userCurrentTimezone == null)
             {
-                return user?.WindowsTimezoneId;
+                return user?.Timezone;
             }
-
-            // Convert user's current timezone to windows timezone
-            string userCurrentWindowsTimezoneId = TimezoneHelper.GetTimezone(userCurrentTimezone).Id;
 
             // Compare current timezone from cookie/query param with stored timezone in db
             if (user != null &&
-                user.WindowsTimezoneId.ToLower().CompareTo(userCurrentWindowsTimezoneId.ToLower()) != 0)
+                user.Timezone.ToLower().CompareTo(userCurrentTimezone.ToLower()) != 0)
             {
                 // Update if current & stored timezones don't match
-                user.WindowsTimezoneId = userCurrentWindowsTimezoneId;
+                user.Timezone = userCurrentTimezone;
                 await this.userManager.UpdateAsync(user);
             }
 
