@@ -279,6 +279,18 @@ footer p {
     min-height: 400px;
 }
 
+input[type=time] {
+    cursor: pointer;
+}
+
+input[type=time]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+}
+
+#hoursDisplayRow {
+    min-height: 50px;
+}
+
 #bookAppointmentModal label {
     font-size: 16px;
     font-weight: 900;

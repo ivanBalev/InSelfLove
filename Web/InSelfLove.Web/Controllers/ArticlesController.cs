@@ -96,7 +96,6 @@
             return this.View(model);
         }
 
-        
         [HttpPost]
         [Authorize(Roles = AppConstants.AdministratorRoleName)]
         public async Task<IActionResult> Edit(ArticleEditInputModel inputModel)

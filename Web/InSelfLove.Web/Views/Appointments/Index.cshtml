@@ -255,21 +255,22 @@
                     <div class="modal-body">
                         <form class="form-horizontal">
                             <div class="row">
-                                <div class="form-group col ml-5 mb-0">
-                                    <label class="bordr-0">@localizer["Start Time"]</label>
-                                    <input type="time" value="00:00" id="startHour" name="startHour" required>
+                                <div class="col">
+                                    <label class="d-block text-center mb-2 fw-bold">@localizer["Start Time"]</label>
+                                    <input class="d-block mx-auto" type="time" id="startHour" name="startHour" required>
                                 </div>
-                                <div class="form-group col ml-5 mb-0">
-                                    <label>@localizer["End Time"]</label>
-                                    <input type="time" value="00:00" id="endHour" name="endHour" required>
+                                <div class="col">
+                                    <label class="d-block text-center mb-2 fw-bold">@localizer["End Time"]</label>
+                                    <input class="d-block mx-auto" type="time" id="endHour" name="endHour" required>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="form-group col ml-5 mb-0">
-                                   <div id="endHourDisplay"></div>
+                            <div class="row mt-3" id="hoursDisplayRow">
+                                 <div class="form-group col ml-5 mb-0">
+                                   <div id="startHourDisplay" class="text-center fs-2"></div>
                                 </div>
+
                                 <div class="form-group col ml-5 mb-0">
-                                   <div id="startHourDisplay"></div>
+                                   <div id="endHourDisplay" class="text-center fs-2"></div>
                                 </div>
                             </div>
                             <div class="row">

@@ -510,6 +510,17 @@ confirmCancelBtn.addEventListener('click', function () {
         });
 });
 
+// Display working hours on modal
+document.getElementById('startHour').addEventListener('change', e => {
+    let value = parseInt(e.target.value.split(':')[0]);
+    document.getElementById('startHourDisplay').innerHTML = value + ':00';
+})
+
+document.getElementById('endHour').addEventListener('change', e => {
+    let value = parseInt(e.target.value.split(':')[0]);
+    document.getElementById('endHourDisplay').innerHTML = value + ':00';
+})
+
 workingHoursSubmitBtn?.addEventListener('click', function () {
     let startHour = document.getElementById('startHour').value;
     let endHour = document.getElementById('endHour').value;

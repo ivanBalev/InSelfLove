@@ -8,7 +8,7 @@
 
     public interface ICommentService
     {
-        Task Create(Comment commentServiceModel, string userId);
+        Task<Comment> Create(Comment commentServiceModel, string userId);
 
         IQueryable<Comment> GetById(int commentId);
 

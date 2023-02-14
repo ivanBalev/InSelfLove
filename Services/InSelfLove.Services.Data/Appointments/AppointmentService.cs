@@ -83,15 +83,19 @@
                 this.appointmentRepository.Delete(slot);
             }
 
-            // Create new vacant slots and add to db
-            foreach (var dateTime in timeSlots)
+            if(timeSlots != null)
             {
-                // Convert appointment slots to utc time for db
-                var appointmentForDB = new Appointment
+                // Create new vacant slots and add to db
+                foreach (var dateTime in timeSlots)
                 {
-                    UtcStart = TimezoneHelper.ToUTCTime(dateTime, adminTimezone),
-                };
-                await this.appointmentRepository.AddAsync(appointmentForDB);
+                    // Convert appointment slots to utc time for db
+                    var appointmentForDB = new Appointment
+                    {
+                        UtcStart = TimezoneHelper.ToUTCTime(dateTime, adminTimezone),
+                    };
+                    await this.appointmentRepository.AddAsync(appointmentForDB);
+                }
+
             }
 
             return await this.appointmentRepository.SaveChangesAsync();
@@ -144,6 +148,12 @@
             var dbAppointment = await this.appointmentRepository.All()
                  .SingleOrDefaultAsync(a => a.Id == appointmentId);
 
+            // Appointment has to exist
+            if (dbAppointment == null)
+            {
+                throw new ArgumentException(nameof(appointmentId));
+            }
+
             // Get all user's appointments for the day
             var userAppointmentsForDay = await this.appointmentRepository.All()
                                                .Where(x => x.UserId == userId && DateTime.Compare(
@@ -155,11 +165,6 @@
                 throw new ArgumentException(nameof(dbAppointment.UtcStart));
             }
 
-            // Appointment has to exist
-            if (dbAppointment == null)
-            {
-                throw new ArgumentException(nameof(appointmentId));
-            }
 
             // Cannot book an already occupied appointment or choose it to be on site when admin hasn't allowed it
             if (dbAppointment.UserId != null || (dbAppointment.CanBeOnSite == false && isOnSite == true))

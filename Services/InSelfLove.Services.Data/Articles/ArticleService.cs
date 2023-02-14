@@ -134,6 +134,12 @@
 
         public async Task<Article> GetBySlug(string slug, string userTimezone)
         {
+            // Validation
+            if (slug == null)
+            {
+                return null;
+            }
+
             var article = await this.articleRepository.All()
                 .Where(a => a.Slug.Equals(slug.ToLower()))
                 .Select(x => new Article

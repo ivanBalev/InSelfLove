@@ -18,7 +18,7 @@
             this.commentRepository = commentRepository;
         }
 
-        public async Task Create(Comment comment, string userId)
+        public async Task<Comment> Create(Comment comment, string userId)
         {
             // Validate input
             if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId) ||
@@ -40,6 +40,7 @@
 
             // Update comment info
             comment = await this.GetById(comment.Id).Include(c => c.User).FirstOrDefaultAsync();
+            return comment;
         }
 
         public IQueryable<Comment> GetById(int commentId)
