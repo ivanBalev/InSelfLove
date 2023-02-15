@@ -286,6 +286,7 @@
 
                 // Apply pending migrations
                 app.UseMigrationsEndPoint();
+
             }
             else
             {
@@ -294,6 +295,7 @@
                 // Enforce HTTPS
                 app.UseHsts();
             }
+
             app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
             // Response compression, bundling, minification & caching

@@ -31,7 +31,7 @@
 
             this.browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
             this.browser.Manage().Window.Maximize();
-            this.browser.Navigate().GoToUrl(this.server.RootUri);
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Home/Contacts");
         }
 
         private ReadOnlyCollection<IWebElement> PageArticles => this.browser.FindElements(By.CssSelector(".article-preview"));

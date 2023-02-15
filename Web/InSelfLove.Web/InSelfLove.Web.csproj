@@ -275,6 +275,9 @@
 		<Content Update="wwwroot\lib\lite-youtube-embed\src\lite-yt-embed.min.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\maika\bootstrap.min.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\manifest.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
