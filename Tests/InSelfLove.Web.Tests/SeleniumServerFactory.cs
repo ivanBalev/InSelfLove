@@ -59,7 +59,8 @@
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.UseContentRoot(".")
+            builder
+            .UseContentRoot(".")
             .UseConfiguration(this.configuration)
             .UseEnvironment("testing")
             .UseStartup<TStartup>();

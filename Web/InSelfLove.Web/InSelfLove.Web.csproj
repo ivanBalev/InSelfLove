@@ -83,6 +83,12 @@
 		<Content Update="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\Custom\css\calendar.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\Custom\css\stripe-checkout.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\Custom\css\style.css">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -185,8 +191,17 @@
 		<Content Update="wwwroot\Custom\img\wonder.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\Custom\img\ytPlay.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\Custom\img\ytPlay1.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\Custom\js\addComment.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\Custom\js\cloudinary.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\Custom\js\collapseNavbar.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -194,11 +209,17 @@
 		<Content Update="wwwroot\Custom\js\commentsHideDisplayItems.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\Custom\js\contacts.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\Custom\js\cookieConsent.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\Custom\js\copyrightjs.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\Custom\js\datePicker.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\Custom\js\deleteComment.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -233,11 +254,26 @@
 		<Content Update="wwwroot\Custom\js\setTimezoneOnRegister.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\Custom\js\stripeCheckout.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\Custom\js\timezone.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\Custom\js\tinyMce.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\cloudinary\cloudinary-core-shrinkwrap.min.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -250,6 +286,12 @@
 		</Content>
 		<Content Update="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\leaflet.js\dist\leaflet.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\leaflet.js\dist\leaflet.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\lib\lite-youtube-embed\LICENSE">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -275,7 +317,13 @@
 		<Content Update="wwwroot\lib\lite-youtube-embed\src\lite-yt-embed.min.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="wwwroot\maika\bootstrap.min.css">
+		<Content Update="wwwroot\lib\popper.js\umd\popper.min.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\the-datepicker.js\dist\the-datepicker.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\lib\the-datepicker.js\dist\the-datepicker.min.css">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\manifest.json">

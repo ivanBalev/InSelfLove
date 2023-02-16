@@ -31,7 +31,7 @@
 
             this.browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
             this.browser.Manage().Window.Maximize();
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Home/Contacts");
+            this.browser.Navigate().GoToUrl(this.server.RootUri);
         }
 
         private ReadOnlyCollection<IWebElement> PageArticles => this.browser.FindElements(By.CssSelector(".article-preview"));
@@ -85,6 +85,7 @@
         [Fact]
         public void ArticleCardsHaveEqualHeights()
         {
+            // TODO: check contacts preview has same height as article previews
             for (int i = 1; i < this.PageArticles.Count; i++)
             {
                 Assert.Equal(this.PageArticles[i].Size.Height, this.PageArticles[i - 1].Size.Height);

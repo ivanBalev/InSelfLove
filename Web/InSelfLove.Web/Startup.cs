@@ -280,7 +280,7 @@
             StripeConfiguration.ApiKey = this.configuration["Stripe:ApiKey"];
 
             // Exceptions
-            if (this.environment.IsDevelopment())
+            if (this.environment.IsDevelopment() || this.environment.EnvironmentName.Equals("testing"))
             {
                 app.UseDeveloperExceptionPage();
 

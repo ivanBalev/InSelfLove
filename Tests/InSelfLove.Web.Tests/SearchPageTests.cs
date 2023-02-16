@@ -1,6 +1,8 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -86,34 +88,56 @@ namespace InSelfLove.Web.Tests
         [Fact]
         public void ArticlesPaginationWorksCorrectly()
         {
-            this.browser.Navigate().GoToUrl("https://inselflove.com");
-
             this.browser.Navigate().GoToUrl(this.testStringUri);
-            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            var jsExecutor = this.browser as IJavaScriptExecutor;
 
-            this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
-                .FirstOrDefault(pl => pl.Text.Equals("2"))
-                .Click();
+            // Get 2nd page btn
+            var secondPageBtn = this.ArticlesPagination
+                .FindElements(By.CssSelector(".page-link"))
+                .FirstOrDefault(pl => pl.Text.Equals("2"));
+
+            // Click on it
+            jsExecutor.ExecuteScript("arguments[0].click()", secondPageBtn);
+
+            // Wait for content to update
+            wait.Until(b => this.PageArticles.Count() == 1);
+
+            // Assert result is as expected
+            Assert.Single(this.PageArticles);
+
+            // Do the same sequence with 1st page btn
+            var firstPageBtn = this.ArticlesPagination
+              .FindElements(By.CssSelector(".page-link"))
+              .FirstOrDefault(pl => pl.Text.Equals("1"));
+
+            jsExecutor.ExecuteScript("arguments[0].click()", firstPageBtn);
+
+            wait.Until(b => this.PageArticles.Count() == DisplayedItemsCount);
+
+            Assert.Equal(DisplayedItemsCount, this.PageArticles.Count);
+
+            // Same with nextPageBtn
+            var nextPageBtn = this.ArticlesPagination
+               .FindElements(By.CssSelector(".page-link"))
+              .LastOrDefault();
+
+            jsExecutor.ExecuteScript("arguments[0].click()", nextPageBtn);
+
+            wait.Until(b => this.PageArticles.Count() == 1);
 
             Assert.Single(this.PageArticles);
 
-            this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
-                .FirstOrDefault(pl => pl.Text.Equals("1"))
-                .Click();
+            // And with prevPageBtn
+            var prevPageBtn = this.ArticlesPagination
+               .FindElements(By.CssSelector(".page-link"))
+               .FirstOrDefault();
 
-            Assert.Equal(this.PageArticles.Count, DisplayedItemsCount);
+            jsExecutor.ExecuteScript("arguments[0].click()", prevPageBtn);
 
-            this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
-                .LastOrDefault()
-                .Click();
+            wait.Until(b => this.PageArticles.Count() == DisplayedItemsCount);
 
-            Assert.Single(this.PageArticles);
-
-            this.ArticlesPagination.FindElements(By.CssSelector(".page-link"))
-                .FirstOrDefault()
-                .Click();
-
-            Assert.Equal(this.PageArticles.Count, DisplayedItemsCount);
+            Assert.Equal(DisplayedItemsCount, this.PageVideos.Count);
         }
 
         [Fact]
@@ -121,32 +145,54 @@ namespace InSelfLove.Web.Tests
         {
             this.browser.Navigate().GoToUrl(this.testStringUri);
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-            wait.Until(b => b.FindElements(By.CssSelector("#cookieConsent .btn-accept")).Count > 0);
-            this.browser.FindElement(By.CssSelector("#cookieConsent .btn-accept")).Click();
+            var jsExecutor = this.browser as IJavaScriptExecutor;
 
-            this.VideosPagination.FindElements(By.CssSelector(".page-link"))
-                .FirstOrDefault(pl => pl.Text.Equals("2"))
-                .Click();
+            // Get 2nd page btn
+            var secondPageBtn = this.VideosPagination
+                .FindElements(By.CssSelector(".page-link"))
+                .FirstOrDefault(pl => pl.Text.Equals("2"));
+
+            // Click on it
+            jsExecutor.ExecuteScript("arguments[0].click()", secondPageBtn);
+
+            // Wait for content to update
+            wait.Until(b => this.PageVideos.Count() == 1);
+
+            // Assert result is as expected
+            Assert.Single(this.PageVideos);
+
+            // Do the same sequence with 1st page btn
+            var firstPageBtn = this.VideosPagination
+              .FindElements(By.CssSelector(".page-link"))
+              .FirstOrDefault(pl => pl.Text.Equals("1"));
+
+            jsExecutor.ExecuteScript("arguments[0].click()", firstPageBtn);
+
+            wait.Until(b => this.PageVideos.Count() == DisplayedItemsCount);
+
+            Assert.Equal(DisplayedItemsCount, this.PageVideos.Count);
+
+            // Same with nextPageBtn
+            var nextPageBtn = this.VideosPagination
+               .FindElements(By.CssSelector(".page-link"))
+              .LastOrDefault();
+
+            jsExecutor.ExecuteScript("arguments[0].click()", nextPageBtn);
+
+            wait.Until(b => this.PageVideos.Count() == 1);
 
             Assert.Single(this.PageVideos);
 
-            this.VideosPagination.FindElements(By.CssSelector(".page-link"))
-                .FirstOrDefault(pl => pl.Text.Equals("1"))
-                .Click();
+            // And with prevPageBtn
+            var prevPageBtn = this.VideosPagination
+               .FindElements(By.CssSelector(".page-link"))
+               .FirstOrDefault();
 
-            Assert.Equal(this.PageVideos.Count, DisplayedItemsCount);
+            jsExecutor.ExecuteScript("arguments[0].click()", prevPageBtn);
 
-            this.VideosPagination.FindElements(By.CssSelector(".page-link"))
-                .LastOrDefault()
-                .Click();
+            wait.Until(b => this.PageVideos.Count() == DisplayedItemsCount);
 
-            Assert.Single(this.PageVideos);
-
-            this.VideosPagination.FindElements(By.CssSelector(".page-link"))
-                .FirstOrDefault()
-                .Click();
-
-            Assert.Equal(this.PageVideos.Count, DisplayedItemsCount);
+            Assert.Equal(DisplayedItemsCount, this.PageVideos.Count);
         }
 
         public void Dispose()
