@@ -1,7 +1,6 @@
 ﻿namespace InSelfLove.Web.Controllers.Helpers
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using InSelfLove.Services.Data.Articles;
@@ -15,14 +14,11 @@
 
     public class PaginationHelper : BaseController
     {
-        private const int ArticlesPerPage = 6;
-        private const int VideosPerPage = 6;
-
         private IArticleService articleService;
         private IVideoService videoService;
 
         // Constructor for Search controller
-        protected PaginationHelper(IArticleService articleService, IVideoService videoService)
+        public PaginationHelper(IArticleService articleService, IVideoService videoService)
         {
             this.articleService = articleService;
             this.videoService = videoService;
@@ -40,6 +36,8 @@
             this.videoService = videoService;
         }
 
+        public static int ItemsPerPage => 6;
+
         protected async Task<ArticlesPaginationViewModel> GetArticlesPreview(
             int page, string searchTerm = null, string actionName = null)
         {
@@ -47,11 +45,11 @@
             // (method is used in both Articles & Search controllers)
             var pagesCount = (int)Math.Ceiling(await this.articleService
                                              .GetAll(null, 0, searchTerm)
-                                             .CountAsync() / (decimal)ArticlesPerPage);
+                                             .CountAsync() / (decimal)ItemsPerPage);
 
             // Get all articles for current page
             var articles = await this.articleService
-                    .GetAll(ArticlesPerPage, (page - 1) * ArticlesPerPage, searchTerm)
+                    .GetAll(ItemsPerPage, (page - 1) * ItemsPerPage, searchTerm)
                     .To<ArticlePreviewViewModel>().ToArrayAsync();
 
             // Return view model
@@ -69,11 +67,11 @@
             // (method is used in both Videos & Search controllers)
             var pagesCount = (int)Math.Ceiling(await this.videoService
                                       .GetAll(null, 0, searchTerm)
-                                      .CountAsync() / (decimal)VideosPerPage);
+                                      .CountAsync() / (decimal)ItemsPerPage);
 
             // Get all videos for current page
             var videos = await this.videoService
-                    .GetAll(VideosPerPage, (page - 1) * VideosPerPage, searchTerm)
+                    .GetAll(ItemsPerPage, (page - 1) * ItemsPerPage, searchTerm)
                     .To<VideoPreviewViewModel>().ToArrayAsync();
 
             // Return view model

@@ -30,6 +30,7 @@
                               new ArticleSeeder(),
                               new VideoSeeder(),
                               new CommentsSeeder(),
+                              new AppoinmentSeeder(),
                           };
 
             foreach (var seeder in seeders)

@@ -13,9 +13,6 @@ const availableAppointments = allAppointments?.filter(a => !a.isUnavailable && n
 // Style
 const themeColor = "#92ab95";
 const yellowColor = "#EEB440";
-const clockwiseArrowSymbol = '\u27F3';
-const plusSymbol = '+';
-const checkmarkSymbol = '\u2713';
 
 // How many days are displayed on screen
 let dayCount = 5;
@@ -511,12 +508,12 @@ confirmCancelBtn.addEventListener('click', function () {
 });
 
 // Display working hours on modal
-document.getElementById('startHour').addEventListener('change', e => {
+document.getElementById('startHour')?.addEventListener('change', e => {
     let value = parseInt(e.target.value.split(':')[0]);
     document.getElementById('startHourDisplay').innerHTML = value + ':00';
 })
 
-document.getElementById('endHour').addEventListener('change', e => {
+document.getElementById('endHour')?.addEventListener('change', e => {
     let value = parseInt(e.target.value.split(':')[0]);
     document.getElementById('endHourDisplay').innerHTML = value + ':00';
 })

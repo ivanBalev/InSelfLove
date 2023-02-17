@@ -9,6 +9,7 @@
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
 
     public sealed class SeleniumServerFactory<TStartup> : WebApplicationFactory<TStartup>
         where TStartup : class
@@ -24,7 +25,7 @@
             this.ClientOptions.BaseAddress = new Uri("https://localhost");
             var host = WebHost.CreateDefaultBuilder(Array.Empty<string>())
                 .UseConfiguration(this.configuration)
-                .UseEnvironment("testing")
+                .UseEnvironment("Test")
                 .UseStartup<TStartup>()
                 .Build();
 
@@ -40,17 +41,6 @@
 
         public string RootUri { get; set; }
 
-        public class FakeStartup
-        {
-            public void ConfigureServices(IServiceCollection services)
-            {
-            }
-
-            public void Configure()
-            {
-            }
-        }
-
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
             return WebHost.CreateDefaultBuilder(null)
@@ -62,9 +52,20 @@
             builder
             .UseContentRoot(".")
             .UseConfiguration(this.configuration)
-            .UseEnvironment("testing")
+            .UseEnvironment("Test")
             .UseStartup<TStartup>();
             base.ConfigureWebHost(builder);
+        }
+
+        public class FakeStartup
+        {
+            public void ConfigureServices(IServiceCollection services)
+            {
+            }
+
+            public void Configure()
+            {
+            }
         }
     }
 }

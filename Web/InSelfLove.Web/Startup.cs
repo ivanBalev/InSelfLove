@@ -55,7 +55,7 @@
         public virtual void ConfigureServices(IServiceCollection services)
         {
             // Logging
-            if (!this.environment.EnvironmentName.Equals("testing"))
+            if (!this.environment.EnvironmentName.Equals("Test"))
             {
                 services.AddLogging(loggingBuilder =>
                 {
@@ -165,7 +165,8 @@
             var authBuilder = services.AddAuthentication();
 
             // External Logins
-            if (!this.environment.EnvironmentName.Equals("testing"))
+            // TODO: this needs to work in test environment as well?
+            if (!this.environment.EnvironmentName.Equals("Test"))
             {
                 // Google
                 authBuilder.AddGoogle(googleOptions =>
@@ -176,7 +177,8 @@
                     googleOptions.ClientId = googleAuthNSection["ClientId"];
                     googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
                 })
-                // Facebook
+
+               // Facebook
                .AddFacebook(facebookOptions =>
                {
                    facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
@@ -280,13 +282,12 @@
             StripeConfiguration.ApiKey = this.configuration["Stripe:ApiKey"];
 
             // Exceptions
-            if (this.environment.IsDevelopment() || this.environment.EnvironmentName.Equals("testing"))
+            if (this.environment.IsDevelopment() || this.environment.EnvironmentName.Equals("Test"))
             {
                 app.UseDeveloperExceptionPage();
 
                 // Apply pending migrations
                 app.UseMigrationsEndPoint();
-
             }
             else
             {

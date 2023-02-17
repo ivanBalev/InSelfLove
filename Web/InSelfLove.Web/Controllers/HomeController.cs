@@ -21,8 +21,6 @@
 
     public class HomeController : Controller
     {
-        private const int IndexVideosCount = 3;
-        private const int IndexArticlesCount = 5;
         private const string SuccessMessage = "Success";
         private const string UserEmailBody = "UserEmailBody";
         private const string AdminEmailBodyTemplate = "AdminEmailBodyTemplate";
@@ -53,6 +51,10 @@
             this.localizer = localizer;
             this.logger = logger;
         }
+
+        public static int IndexVideosCount => 3;
+
+        public static int IndexArticlesCount => 5;
 
         public async Task<IActionResult> Index()
         {

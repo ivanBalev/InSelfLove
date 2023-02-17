@@ -275,6 +275,9 @@
 		<Content Update="wwwroot\lib\cloudinary\cloudinary-core-shrinkwrap.min.js">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="wwwroot\lib\fullcalendar\index.global.min.js">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

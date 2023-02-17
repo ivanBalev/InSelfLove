@@ -1,5 +1,6 @@
 ﻿@model InSelfLove.Web.ViewModels.Appointment.AppointmentIndexViewModel
 @using InSelfLove.Data.Models
+@using InSelfLove.Services.Data.Appointments;
 @using Microsoft.AspNetCore.Identity
 @using InSelfLove.Services.Data.Helpers;
 @using System.Text.Json;
@@ -33,8 +34,8 @@
     if (workDayStartStr == null || workDayEndStr == null)
     {
         // Set default values if cookies don't exist
-        workDayStart = DateTime.Now.Date.AddHours(8);
-        workDayEnd = DateTime.Now.Date.AddHours(20);
+        workDayStart = DateTime.Now.Date.AddHours(AppointmentService.DefaultWorkdayStart);
+        workDayEnd = DateTime.Now.Date.AddHours(AppointmentService.DefaultWorkdayEnd);
 
     }
     else

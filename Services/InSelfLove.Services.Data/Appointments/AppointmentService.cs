@@ -20,6 +20,10 @@
             this.appointmentRepository = appointmentRepository;
         }
 
+        public static int DefaultWorkdayStart => 8;
+
+        public static int DefaultWorkdayEnd => 20;
+
         public async Task<IEnumerable<Appointment>> GetAll(string userId, string adminId, string userTimezone)
         {
             var userIsAdmin = userId == adminId;
