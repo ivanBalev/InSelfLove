@@ -2,8 +2,18 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
+    using CloudinaryDotNet.Actions;
+    using InSelfLove.Data;
+    using InSelfLove.Data.Common.Repositories;
+    using InSelfLove.Data.Models;
+    using InSelfLove.Services.Data.Appointments;
+    using InSelfLove.Services.Data.Articles;
     using InSelfLove.Services.Data.Helpers;
+    using InSelfLove.Services.Data.Videos;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
     using OpenQA.Selenium.Interactions;
@@ -55,148 +65,172 @@
         [Fact]
         public void AppointmentCreationWorksCorrectly()
         {
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+            // Log in
             this.Login(AppConstants.AdministratorRoleName);
+
+            // Go to appointments page
             this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
 
-            Actions actions = new Actions(this.browser);
+            // Wait for calendar to load
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-
             wait.Until(b => b.FindElement(this.CalendarDaySelector).Displayed);
 
             // Open daily availability modal
-            var lastDayOnCalendarDisplay = this.browser.FindElements(this.CalendarDaySelector).LastOrDefault();
-            actions.MoveToElement(lastDayOnCalendarDisplay, 30, 30).Click().Perform();
+            // Click on last element with no children
+            // First element may display appointment status(available/not)
+            // differently depending on the time of day the test is run
+            // If the day is in the future, we don't have that risk
+            // So just get the last displayed day to be safe
+            var emptyDay = this.browser
+                .FindElements(this.CalendarDaySelector)
+                .Where(e => e.FindElements(this.AppointmentSelector).Count == 0)
+                .LastOrDefault();
+
+            // Click our day in the calendar
+            Actions actions = new Actions(this.browser);
+            actions.MoveToElement(emptyDay, 5, 5).Click().Perform();
             wait.Until(b => b.FindElement(this.DailyAvailabilityModalSelector).Displayed);
             var dailyModal = this.browser.FindElement(this.DailyAvailabilityModalSelector);
 
-            // Select a slot and submit
+            // Get first appointment slot
             var firstSlot = dailyModal.FindElement(this.DailyTimeSlotSelector);
+
+            // Save its time
             var firstSlotTime = firstSlot.Text.Trim(' ', '0').Split(':')[0];
+
+            // Select it and submit
             this.Click(firstSlot);
             var submitDailyAvailabilityBtn = dailyModal.FindElement(this.SubmitDailyAvailabilityBtnSelector);
             this.Click(submitDailyAvailabilityBtn);
 
+            // Wait until browser refreshes
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
-            // Confirm appointment has been created (other same-day appointments have been deleted by design)
-            var lastAppointment = this.browser.FindElements(this.AppointmentSelector).LastOrDefault();
-            this.Click(lastAppointment);
+
+            // Click on our new appointment
+            var appointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
+            this.Click(appointment);
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            // Confirm its start time matches what we selected from the daily availability modal
             var lastAppointmentStartTime = this.browser.FindElement(
                 this.AppointmentDetailsModalSelector).FindElement(By.CssSelector(".start")).Text;
             Assert.Equal(firstSlotTime, lastAppointmentStartTime.Trim(' ', '0').Split(':')[0]);
+
+            // Return db to empty state
+            this.ResetDb();
         }
 
         [Fact]
-        public void AvailableAppointmentCancellationWorksCorrectly()
+        public void AvailableAppointmentCancellationvoidsCorrectly()
         {
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+            // Create 1 available appt
+            this.CreateAppointments();
+
+            // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
             this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
 
-            // Open first appointment details
-            var firstAppointment = this.browser.FindElement(this.AppointmentSelector);
-            this.Click(firstAppointment);
+            // Wait until calendar loads
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
+
+            // Open appointment details
+            var appointment = this.browser.FindElement(this.AppointmentSelector);
+            this.Click(appointment);
 
             // Extract date and start time
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
             var appointmentDetailsModal = this.browser.FindElement(this.AppointmentDetailsModalSelector);
 
-            var appointmentDateString = appointmentDetailsModal.FindElement(By.CssSelector(".date")).Text;
-            var appointmentStartTime = appointmentDetailsModal.FindElement(By.CssSelector(".start")).Text;
-
-            // Delete appointment
+            // Cancel appointment
             var btnDelete = this.browser.FindElement(this.CancelAppointmentBtnSelector);
             this.Click(btnDelete);
 
-            // Confirm deletion
+            // Wait for cancellation confirm modal to display
             wait.Until(b => b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
 
+            // Get confirm cancellation btn & click
             var cancelConfirmBtn = this.browser
                 .FindElement(this.CancelAppointmentConfirmModalSelector)
                 .FindElement(By.CssSelector(".confirmCancelAppointment"));
-
             Actions actions = new Actions(this.browser);
             actions.MoveToElement(cancelConfirmBtn).Click().Perform();
 
+            // Wait for calendar to reset
             wait.Until(b => !b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
-            // Open new first appointment details
-            wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
-            var newFirstAppointment = this.browser.FindElement(this.AppointmentSelector);
-            this.Click(newFirstAppointment);
-            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+            wait.Until(b => b.FindElement(this.CalendarDaySelector).Displayed);
 
-            var newAppointmentDetailsModal = this.browser.FindElement(this.AppointmentDetailsModalSelector);
+            // Assert we have no appointments in calendar
+            var appts = this.browser.FindElements(this.AppointmentSelector);
+            Assert.Empty(appts);
 
-            // Extract date and start time
-            var newFirstAppointmentDateString = newAppointmentDetailsModal.FindElement(By.CssSelector(".date")).Text;
-            var newFirstppointmentStartTime = newAppointmentDetailsModal.FindElement(By.CssSelector(".start")).Text;
-
-            // Assert old appointment has been deleted
-            Assert.True(!appointmentDateString.Equals(newFirstAppointmentDateString) ||
-                !appointmentStartTime.Equals(newFirstppointmentStartTime));
+            // Reset db to default state
+            this.ResetDb();
         }
 
+        // TODO: Check if async tests will work now
         [Fact]
-        public void OtherSameDayAvailableAppointmentsAreDeletedWhenCreatingNewAppointment()
+        public void OtherSameDayAvailableAppointmentsDeletedWhenCreatingNewAppointment()
         {
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+            // Create 3 appts for 1 day ahead
+            this.CreateAppointments(3, 1);
+
+            // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
             this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
+
+            // Open day with appointments
+            var dayWithAppointments = this.browser.FindElements(this.CalendarDaySelector)
+                .Where(x => x.FindElements(this.AppointmentSelector).Count > 0).FirstOrDefault();
 
             Actions actions = new Actions(this.browser);
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
-            // Open following day availability modal
-            var nextDayOnCalendarDisplay = this.browser.FindElement(this.CalendarDaySelector);
-            actions.MoveToElement(nextDayOnCalendarDisplay, 5, 5).Click().Perform();
+            // Open daily availability modal
+            actions.MoveToElement(dayWithAppointments, 40, 40).Click().Perform();
             wait.Until(b => b.FindElement(this.DailyAvailabilityModalSelector).Displayed);
 
             // Update daily availability and keep note of slot time
             var dailyModal = this.browser.FindElement(this.DailyAvailabilityModalSelector);
-            var lastSlot = dailyModal.FindElements(this.DailyTimeSlotSelector).LastOrDefault();
-            var lastSlotTime = lastSlot.Text.Trim(' ', '0').Split(':')[0];
-            lastSlot.Click();
+            var slot = dailyModal.FindElements(this.DailyTimeSlotSelector).LastOrDefault();
+            var slotTime = slot.Text.Trim(' ', '0').Split(':')[0];
+            slot.Click();
 
             // Submit availability
             var submitDailyAvailabilityBtn = dailyModal.FindElement(this.SubmitDailyAvailabilityBtnSelector);
             submitDailyAvailabilityBtn.Click();
-            //this.WaitForAjax();
 
-            wait.Until(b => !b.FindElement(this.SubmitDailyAvailabilityBtnSelector).Displayed);
+            wait.Until(b => !b.FindElement(this.DailyAvailabilityModalSelector).Displayed);
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
-            // Open next day first appointment
-            var firstAvailableAppointment = this.browser.FindElement(this.AppointmentSelector);
-            firstAvailableAppointment.Click();
-            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
-
-            // Assert only new appointment exists for current day
-            var firstAppointmentStartTime = this.browser.FindElement(
-                this.AppointmentDetailsModalSelector)
-                .FindElement(By.CssSelector(".start")).Text.Trim(' ', '0').Split(':')[0];
-            Assert.Equal(lastSlotTime, firstAppointmentStartTime);
+            // Assert we have just the one slot we entered
+            var appts = this.browser.FindElements(this.AppointmentSelector);
             Assert.Single(this.browser.FindElements(this.AppointmentSelector));
+            Assert.Equal(appts.First().Text.Trim(' ', '0').Split(':')[0], slotTime);
+
+            // Reset db to default
+            this.ResetDb();
         }
 
         [Fact]
-        public void AppointmentApprovalWorksCorrectly()
+        public void AppointmentApprovalWorksCorrectlvoid()
         {
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+            // Create 1 appt, 1 day ahead, awaiting approval
+            this.CreateAppointments(1, 1, true);
+
+            // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
             this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-            Actions actions = new Actions(this.browser);
-
             // Get pending appointment and save its location
             var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
-
             var pendingApprovalElementLocation = appointmentPendingApproval.Location;
 
             // Open appointment details modal
             appointmentPendingApproval.Click();
+
+            // Wait for appt details modal to display
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Approve appointment
@@ -205,13 +239,16 @@
                 By.Id("approveAppointment"));
             approveAppointmentBtn.Click();
 
+            // Wait for calendar to reset
             wait.Until(b => !b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
             // Click on same element
-            actions.MoveByOffset(
-                pendingApprovalElementLocation.X + 10, pendingApprovalElementLocation.Y + 10)
-                .Click().Perform();
+            Actions actions = new Actions(this.browser);
+            actions.MoveByOffset(pendingApprovalElementLocation.X + 10, pendingApprovalElementLocation.Y + 10)
+                                 .Click().Perform();
+
+            // Wait for appt details modal to display
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Assert appointment is approved
@@ -219,58 +256,116 @@
             var statusSpanColor = this.browser.FindElement(
                 By.CssSelector("#appointmentDetailsModal span.status"))
                 .GetAttribute("style");
-
             Assert.Equal(approvedColor, statusSpanColor);
+
+            // Return db to default state
+            this.ResetDb();
         }
 
         [Fact]
         public void PendingAppointmentCancellationWorksCorrectly()
         {
-            var opts = new ChromeOptions();
-            opts.AcceptInsecureCertificates = true;
-            var chrome = new ChromeDriver(opts);
+            // Create 1 appt 1 day ahead, awaiting approval
+            this.CreateAppointments(1, 1, true);
 
-            chrome.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+            // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
-            chrome.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
 
-            WebDriverWait wait = new WebDriverWait(chrome, TimeSpan.FromSeconds(10));
-            Actions actions = new Actions(chrome);
 
             // Get pending appointment and save its location
-            var appointmentPendingApproval = chrome.FindElements(this.AppointmentSelector).FirstOrDefault();
+            var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
             var pendingApprovalElementLocation = appointmentPendingApproval.Location;
 
             // Open appointment details modal
             appointmentPendingApproval.Click();
+
+            // Wait for appt details modal to display
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Cancel appointment
-            var cancelAppointmentBtn = chrome.FindElement(
+            var cancelAppointmentBtn = this.browser.FindElement(
                 this.AppointmentDetailsModalSelector).FindElement(
                 this.CancelAppointmentBtnSelector);
             cancelAppointmentBtn.Click();
 
             // Confirm cancellation
             wait.Until(b => b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
-
-            var cancelConfirmBtn = chrome
+            var cancelConfirmBtn = this.browser
                 .FindElement(this.CancelAppointmentConfirmModalSelector)
                 .FindElement(By.CssSelector(".confirmCancelAppointment"));
-
             cancelConfirmBtn.Click();
 
+            // Wait for browser to reset
             wait.Until(b => !b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
-            // Click on same element
-            this.Click(chrome.FindElement(this.AppointmentSelector));
-            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+            // Click on appt
+            this.Click(this.browser.FindElement(this.AppointmentSelector));
 
             // Assert appointment is now available (detals about user are not displayed => available appointment)
-            Assert.False(chrome.FindElement(this.AppointmentDetailsModalSelector)
+            Assert.False(this.browser.FindElement(this.AppointmentDetailsModalSelector)
                 .FindElement(By.CssSelector(".usernameGroup")).Displayed);
+
+            // Return db to default state
+            this.ResetDb();
         }
+
+        private void CreateAppointments(int count = 1, int daysAhead = 1, bool awaiting = false, bool approved = false)
+        {
+            // Create scope
+            using (var scope = this.server.Server.Services.CreateScope())
+            {
+                // Get repo
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+
+                // Create appts
+                for (int i = 0; i < count; i++)
+                {
+                    var appt = new Appointment
+                    {
+                        // Create appts for selected days ahead and subsequent hours
+                        UtcStart = DateTime.UtcNow.Date
+                                           .AddDays(daysAhead)
+                                           .AddHours(AppointmentService.DefaultWorkdayStart + i),
+                    };
+
+                    if (awaiting || approved)
+                    {
+                        // Get user & add to appt
+                        var userRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
+                        var userName = this.configuration.GetSection($"{AppConstants.UserRoleName}:Username").Value;
+                        appt.User = userRepo.All().FirstOrDefault(x => x.UserName == userName);
+                        appt.IsApproved = approved ? true : false;
+                    }
+
+                    repo.AddAsync(appt).GetAwaiter().GetResult();
+                }
+
+                // Save changes
+                repo.SaveChangesAsync().GetAwaiter().GetResult();
+            }
+        }
+
+
+        private void ResetDb()
+        {
+            // Empty appointments collection in server
+            using (var scope = this.server.Server.Services.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+                var appts = repo.All().Where(x => !x.IsDeleted).ToList();
+
+                foreach (var appt in appts)
+                {
+                    repo.Delete(appt);
+                }
+
+                repo.SaveChangesAsync().GetAwaiter().GetResult();
+            }
+        }
+
 
         private void Click(IWebElement element)
         {
@@ -279,9 +374,14 @@
 
         private void Login(string role)
         {
+            // Go to login page
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+
+            // Get username & pass from config
             var username = this.configuration.GetSection($"{role}:Username").Value;
             var password = this.configuration.GetSection($"{role}:Password").Value;
 
+            // Enter username & pass in respective fields & submit
             this.UsernameInputField.SendKeys(username);
             this.PasswordInputField.SendKeys(password);
             this.SubmitBtn.Click();
@@ -297,7 +397,9 @@
         {
             if (disposing)
             {
-                this.server?.Dispose();
+                // Disposing of server after each test doesn't allow us to use the server to create scope
+                // For retrieving services - disposed object error
+                //this.server?.Dispose();
                 this.browser?.Dispose();
             }
         }
