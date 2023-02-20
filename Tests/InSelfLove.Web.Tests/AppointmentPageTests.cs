@@ -68,9 +68,6 @@
             // Log in
             this.Login(AppConstants.AdministratorRoleName);
 
-            // Go to appointments page
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
-
             // Wait for calendar to load
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.CalendarDaySelector).Displayed);
@@ -128,7 +125,6 @@
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
 
             // Wait until calendar loads
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
@@ -177,7 +173,6 @@
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
 
             // Open day with appointments
             var dayWithAppointments = this.browser.FindElements(this.CalendarDaySelector)
@@ -220,8 +215,7 @@
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
-
+            
             // Get pending appointment and save its location
             var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
             var pendingApprovalElementLocation = appointmentPendingApproval.Location;
@@ -270,8 +264,6 @@
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
-
 
             // Get pending appointment and save its location
             var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
@@ -385,6 +377,9 @@
             this.UsernameInputField.SendKeys(username);
             this.PasswordInputField.SendKeys(password);
             this.SubmitBtn.Click();
+
+            // Go to appointments page
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
         }
 
         public void Dispose()
