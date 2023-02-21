@@ -27,9 +27,10 @@
                           {
                               new RolesSeeder(),
                               new UsersSeeder(),
-                              new ArticleSeeder(),
-                              new VideoSeeder(),
-                              new CommentsSeeder(),
+                              new AppointmentSeeder(),
+                              //new ArticleSeeder(),
+                              //new VideoSeeder(),
+                              //new CommentsSeeder(),
                           };
 
             foreach (var seeder in seeders)

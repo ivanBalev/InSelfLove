@@ -45,6 +45,7 @@
     {
         private readonly IConfiguration configuration;
         private readonly IWebHostEnvironment environment;
+        public static int counter = 0;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -55,14 +56,19 @@
         public virtual void ConfigureServices(IServiceCollection services)
         {
             // Logging
-            if (!this.environment.EnvironmentName.Equals("Test"))
+            //if (!this.environment.EnvironmentName.Equals("Test"))
+            //{
+                if(counter == 0)
             {
                 services.AddLogging(loggingBuilder =>
                 {
                     var loggingSection = this.configuration.GetSection("Logging");
                     loggingBuilder.AddFile(loggingSection);
                 });
+                counter++;
             }
+                
+            //}
 
             // Localization
             services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -270,7 +276,7 @@
             {
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                if (this.environment.IsDevelopment())
+                if (this.environment.IsDevelopment() || this.environment.EnvironmentName.Equals("Test"))
                 {
                     dbContext.Database.Migrate();
                 }

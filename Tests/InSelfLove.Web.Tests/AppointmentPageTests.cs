@@ -1,6 +1,7 @@
 ﻿namespace InSelfLove.Web.Tests
 {
     using System;
+    using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
     using CloudinaryDotNet.Actions;
@@ -65,11 +66,22 @@
         [Fact]
         public void AppointmentCreationWorksCorrectly()
         {
+            using (var scope = this.server.Server.Services.CreateScope())
+            {
+                // Get repo
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
+                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+
+                var users = repo.All().ToListAsync().GetAwaiter().GetResult();
+                var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
+                ;
+            }
+
             // Log in
             this.Login(AppConstants.AdministratorRoleName);
 
             // Wait for calendar to load
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(60));
             wait.Until(b => b.FindElement(this.CalendarDaySelector).Displayed);
 
             // Open daily availability modal
@@ -101,6 +113,21 @@
             this.Click(submitDailyAvailabilityBtn);
 
             // Wait until browser refreshes
+            wait.Until(b => !b.FindElement(this.DailyAvailabilityModalSelector).Displayed);
+
+            using (var scope = this.server.Server.Services.CreateScope())
+            {
+                // Get repo
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
+                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+
+                var users = repo.All().ToListAsync().GetAwaiter().GetResult();
+                var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
+                var dbConnectionDescriptor = scope.ServiceProvider.GetRequiredService<DbConnection>();
+
+                ;
+            }
+
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
             // Click on our new appointment
@@ -340,7 +367,6 @@
             }
         }
 
-
         private void ResetDb()
         {
             // Empty appointments collection in server
@@ -367,7 +393,7 @@
         private void Login(string role)
         {
             // Go to login page
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login?ReturnUrl=/api/Appointments");
 
             // Get username & pass from config
             var username = this.configuration.GetSection($"{role}:Username").Value;
@@ -377,9 +403,6 @@
             this.UsernameInputField.SendKeys(username);
             this.PasswordInputField.SendKeys(password);
             this.SubmitBtn.Click();
-
-            // Go to appointments page
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
         }
 
         public void Dispose()

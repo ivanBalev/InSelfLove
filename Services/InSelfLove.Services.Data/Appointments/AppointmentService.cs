@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Common;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -10,6 +11,7 @@
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Helpers;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class AppointmentService : IAppointmentService
     {

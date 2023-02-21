@@ -120,7 +120,8 @@
             var adminTimezone = (await this.GetUser(true)).Timezone;
 
             // Send slots and date to service
-            await this.appointmentService.Create(availabilityInput.TimeSlots, availabilityInput.Date, adminTimezone);
+            var result = await this.appointmentService.Create(availabilityInput.TimeSlots, availabilityInput.Date, adminTimezone);
+            ;
             return this.Ok();
         }
 
