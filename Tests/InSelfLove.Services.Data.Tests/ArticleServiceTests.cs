@@ -18,11 +18,11 @@
     {
         private ArticleService articleService;
 
-        public ArticleServiceTests()
+        public ArticleServiceTests(Microsoft.Extensions.Configuration.IConfiguration config)
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            var options = new DbContextOptionsBuilder<MySqlDbContext>()
                   .UseInMemoryDatabase(Guid.NewGuid().ToString());
-            var dbContext = new ApplicationDbContext(options.Options);
+            var dbContext = new MySqlDbContext(config);
             var articleRepository = new EfDeletableEntityRepository<Article>(dbContext);
             var commentRepository = new EfDeletableEntityRepository<Comment>(dbContext);
             var commentService = new CommentService(commentRepository);

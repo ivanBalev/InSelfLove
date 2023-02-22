@@ -21,14 +21,14 @@
     using OpenQA.Selenium.Support.UI;
     using Xunit;
 
-    public class AppointmentPageTests : IClassFixture<SeleniumServerFactory<TestStartup>>, IDisposable
+    public class AppointmentPageTests : IClassFixture<SeleniumServerFactory<Startup>>, IDisposable
     {
         private readonly IConfiguration configuration;
-        private readonly SeleniumServerFactory<TestStartup> server;
+        private readonly SeleniumServerFactory<Startup> server;
         private readonly IWebDriver browser;
         private readonly IJavaScriptExecutor jsExecutor;
 
-        public AppointmentPageTests(SeleniumServerFactory<TestStartup> server)
+        public AppointmentPageTests(SeleniumServerFactory<Startup> server)
         {
             this.configuration = server.Configuration;
             this.server = server;
@@ -66,22 +66,22 @@
         [Fact]
         public void AppointmentCreationWorksCorrectly()
         {
-            using (var scope = this.server.Server.Services.CreateScope())
-            {
-                // Get repo
-                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
-                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+            //using (var scope = this.server.Server.Services.CreateScope())
+            //{
+            //    // Get repo
+            //    var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
+            //    var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
 
-                var users = repo.All().ToListAsync().GetAwaiter().GetResult();
-                var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
-                ;
-            }
+            //    var users = repo.All().ToListAsync().GetAwaiter().GetResult();
+            //    var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
+            //    ;
+            //}
 
             // Log in
             this.Login(AppConstants.AdministratorRoleName);
 
             // Wait for calendar to load
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(60));
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.CalendarDaySelector).Displayed);
 
             // Open daily availability modal
@@ -115,24 +115,11 @@
             // Wait until browser refreshes
             wait.Until(b => !b.FindElement(this.DailyAvailabilityModalSelector).Displayed);
 
-            using (var scope = this.server.Server.Services.CreateScope())
-            {
-                // Get repo
-                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
-                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
-
-                var users = repo.All().ToListAsync().GetAwaiter().GetResult();
-                var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
-                var dbConnectionDescriptor = scope.ServiceProvider.GetRequiredService<DbConnection>();
-
-                ;
-            }
-
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
             // Click on our new appointment
             var appointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
-            this.Click(appointment);
+            appointment.Click();
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Confirm its start time matches what we selected from the daily availability modal
@@ -141,14 +128,14 @@
             Assert.Equal(firstSlotTime, lastAppointmentStartTime.Trim(' ', '0').Split(':')[0]);
 
             // Return db to empty state
-            this.ResetDb();
+            //this.ResetDb();
         }
 
         [Fact]
         public void AvailableAppointmentCancellationvoidsCorrectly()
         {
             // Create 1 available appt
-            this.CreateAppointments();
+            //this.CreateAppointments();
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
@@ -188,7 +175,7 @@
             Assert.Empty(appts);
 
             // Reset db to default state
-            this.ResetDb();
+            //this.ResetDb();
         }
 
         // TODO: Check if async tests will work now

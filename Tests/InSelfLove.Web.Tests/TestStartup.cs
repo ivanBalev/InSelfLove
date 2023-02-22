@@ -23,7 +23,7 @@
 
             var descriptor = services.SingleOrDefault(
                    d => d.ServiceType ==
-                       typeof(DbContextOptions<ApplicationDbContext>));
+                       typeof(DbContextOptions<MySqlDbContext>));
 
             services.Remove(descriptor);
 
@@ -32,22 +32,22 @@
             //    options.UseInMemoryDatabase("InMemoryDbForTesting");
             //});
 
-            var dbConnectionDescriptor = services.SingleOrDefault(
-                d => d.ServiceType ==
-                    typeof(DbConnection));
+            //var dbConnectionDescriptor = services.SingleOrDefault(
+            //    d => d.ServiceType ==
+            //        typeof(DbConnection));
 
-            services.Remove(dbConnectionDescriptor);
+            //services.Remove(dbConnectionDescriptor);
 
             // Create open SqliteConnection so EF won't automatically close it.
-            services.AddSingleton<DbConnection>(container =>
-            {
-                var connection = new SqliteConnection("DataSource=:memory:");
-                connection.Open();
+            //services.AddSingleton<DbConnection>(container =>
+            //{
+            //    var connection = new SqliteConnection("DataSource=:memory:");
+            //    connection.Open();
 
-                return connection;
-            });
+            //    return connection;
+            //});
 
-            services.AddDbContext<ApplicationDbContext>((container, options) =>
+            services.AddDbContext<MySqlDbContext>((container, options) =>
             {
                 var connection = container.GetRequiredService<DbConnection>();
                 options.UseSqlite(connection);

@@ -1,6 +1,7 @@
 ﻿namespace InSelfLove.Data
 {
     using System;
+    using System.Data.Common;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
@@ -11,18 +12,21 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public class MySqlDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         // Allows invocation of SetIsDeletedQueryFilter before the class has finished constructing
         private static readonly MethodInfo SetIsDeletedQueryFilterMethod =
-            typeof(ApplicationDbContext).GetMethod(
+            typeof(MySqlDbContext).GetMethod(
                 nameof(SetIsDeletedQueryFilter),
                 BindingFlags.NonPublic | BindingFlags.Static);
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        private readonly IConfiguration configuration;
+
+        public MySqlDbContext(IConfiguration configuration)
         {
+            this.configuration = configuration;
         }
 
         public DbSet<Article> Articles { get; set; }
@@ -56,6 +60,12 @@
             // Update CreatedOn & ModifiedOn properties
             this.ApplyAuditInfoRules();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            var connString = this.configuration.GetConnectionString("MySql");
+            options.UseMySql(connString, ServerVersion.AutoDetect(connString));
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

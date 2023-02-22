@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Common;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
@@ -33,6 +34,7 @@
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
+    using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -56,19 +58,14 @@
         public virtual void ConfigureServices(IServiceCollection services)
         {
             // Logging
-            //if (!this.environment.EnvironmentName.Equals("Test"))
-            //{
-                if(counter == 0)
+            if (!this.environment.EnvironmentName.Equals("Test"))
             {
                 services.AddLogging(loggingBuilder =>
                 {
                     var loggingSection = this.configuration.GetSection("Logging");
                     loggingBuilder.AddFile(loggingSection);
                 });
-                counter++;
             }
-                
-            //}
 
             // Localization
             services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -148,13 +145,36 @@
             });
 
             // Database connection
-            var connString = this.configuration.GetConnectionString("MySql");
-            services.AddDbContext<ApplicationDbContext>(
-                options => options.UseMySql(connString, ServerVersion.AutoDetect(connString)));
+            if (!this.environment.EnvironmentName.Equals("Test"))
+            {
+                services.AddDbContext<MySqlDbContext>();
+            }
+            else
+            {
+                services.AddSingleton<DbConnection>(container =>
+                {
+                    var connection = new SqliteConnection("DataSource=:memory:");
+                    connection.Open();
+
+                    return connection;
+                });
+
+                services.AddDbContext<MySqlDbContext, SqliteDbContext>();
+            }
 
             // Identity & roles
-            services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+            var res = services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
+                .AddRoles<ApplicationRole>();
+
+            // TODO: not sure if this is needed
+            if (!this.environment.EnvironmentName.Equals("Test"))
+            {
+                res.AddEntityFrameworkStores<MySqlDbContext>();
+            }
+            else
+            {
+                res.AddEntityFrameworkStores<SqliteDbContext>();
+            }
 
             // Cloudinary setup
             var cloudinaryCredentials = new CloudinaryDotNet.Account(
@@ -274,7 +294,9 @@
             // Seed data on app startup
             using (var serviceScope = app.ApplicationServices.CreateScope())
             {
-                var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var dbContext = this.environment.EnvironmentName.Equals("Test") ?
+                    serviceScope.ServiceProvider.GetRequiredService<SqliteDbContext>() :
+                    serviceScope.ServiceProvider.GetRequiredService<MySqlDbContext>();
 
                 if (this.environment.IsDevelopment() || this.environment.EnvironmentName.Equals("Test"))
                 {

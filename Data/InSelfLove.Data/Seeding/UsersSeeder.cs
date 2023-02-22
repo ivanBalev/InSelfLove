@@ -14,7 +14,7 @@
     {
         private const string DefaultProfilePicture = "https://res.cloudinary.com/dzcajpx0y/image/upload/c_scale,w_64/v1610826038/User-Profile-PNG-Free-Image_d3npde.png";
 
-        public async Task SeedAsync(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
+        public async Task SeedAsync(MySqlDbContext dbContext, IServiceProvider serviceProvider)
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();

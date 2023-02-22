@@ -10,7 +10,7 @@
 
     internal class CommentsSeeder : ISeeder
     {
-        public async Task SeedAsync(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
+        public async Task SeedAsync(MySqlDbContext dbContext, IServiceProvider serviceProvider)
         {
             if (dbContext.Comments.Count() > 0)
             {

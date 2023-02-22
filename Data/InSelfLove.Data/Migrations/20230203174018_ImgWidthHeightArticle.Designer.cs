@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InSelfLove.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(MySqlDbContext))]
     [Migration("20230203174018_ImgWidthHeightArticle")]
     partial class ImgWidthHeightArticle
     {

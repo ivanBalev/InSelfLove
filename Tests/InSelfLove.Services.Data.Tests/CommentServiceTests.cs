@@ -17,11 +17,11 @@
         private EfDeletableEntityRepository<Comment> commentRepository;
         private CommentService commentService;
 
-        public CommentServiceTests()
+        public CommentServiceTests(Microsoft.Extensions.Configuration.IConfiguration config)
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            var options = new DbContextOptionsBuilder<MySqlDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString());
-            var dbContext = new ApplicationDbContext(options.Options);
+            var dbContext = new MySqlDbContext(config);
             var commentRepository = new EfDeletableEntityRepository<Comment>(dbContext);
             var commentService = new CommentService(commentRepository);
             this.commentRepository = commentRepository;

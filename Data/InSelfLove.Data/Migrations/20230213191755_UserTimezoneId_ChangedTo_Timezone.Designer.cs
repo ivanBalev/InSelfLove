@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InSelfLove.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(MySqlDbContext))]
     [Migration("20230213191755_UserTimezoneId_ChangedTo_Timezone")]
     partial class UserTimezoneIdChangedToTimezone
     {
