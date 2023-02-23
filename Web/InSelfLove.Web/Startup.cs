@@ -31,6 +31,7 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
@@ -47,7 +48,6 @@
     {
         private readonly IConfiguration configuration;
         private readonly IWebHostEnvironment environment;
-        public static int counter = 0;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -163,17 +163,24 @@
             }
 
             // Identity & roles
-            var res = services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>();
 
             // TODO: not sure if this is needed
             if (!this.environment.EnvironmentName.Equals("Test"))
             {
-                res.AddEntityFrameworkStores<MySqlDbContext>();
+                services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
+                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<MySqlDbContext>();
             }
             else
             {
-                res.AddEntityFrameworkStores<SqliteDbContext>();
+                // WebApplicationFactory runs through Starup twice when creating scope in tests.
+                // This prevents an error where on second initialization of this class, we add
+                // the Identity services again while they're already added on 1st passing
+                var identityRegistered = services.Any(s => s.ServiceType.ToString().Contains("Identity"));
+                if (!identityRegistered)
+                {
+                    services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
+                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<SqliteDbContext>();
+                }
             }
 
             // Cloudinary setup

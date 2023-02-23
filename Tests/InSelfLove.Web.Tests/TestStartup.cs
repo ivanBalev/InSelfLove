@@ -19,13 +19,13 @@
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            base.ConfigureServices(services);
+            //base.ConfigureServices(services);
 
-            var descriptor = services.SingleOrDefault(
-                   d => d.ServiceType ==
-                       typeof(DbContextOptions<MySqlDbContext>));
+            //var descriptor = services.SingleOrDefault(
+            //       d => d.ServiceType ==
+            //           typeof(DbContextOptions<MySqlDbContext>));
 
-            services.Remove(descriptor);
+            //services.Remove(descriptor);
 
             //services.AddDbContext<ApplicationDbContext>(options =>
             //{
@@ -47,11 +47,11 @@
             //    return connection;
             //});
 
-            services.AddDbContext<MySqlDbContext>((container, options) =>
-            {
-                var connection = container.GetRequiredService<DbConnection>();
-                options.UseSqlite(connection);
-            });
+            //services.AddDbContext<MySqlDbContext>((container, options) =>
+            //{
+            //    var connection = container.GetRequiredService<DbConnection>();
+            //    options.UseSqlite(connection);
+            //});
         }
     }
 }

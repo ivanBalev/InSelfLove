@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using CloudinaryDotNet.Actions;
+    using Google;
     using InSelfLove.Data;
     using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
@@ -62,20 +63,35 @@
 
         private By CancelAppointmentConfirmModalSelector => By.Id("cancelAppointmentConfirm");
 
+        private SqliteDbContext GetContext()
+        {
+            var options = new DbContextOptionsBuilder().
+                UseSqlite("Data Source = nameOfYourDatabase.db")
+            .Options;
+
+            //var db = new SqliteDbContext(options);
+
+            //db.Database.EnsureDeleted();
+            //db.Database.EnsureCreated();
+
+            //return db;
+            return (SqliteDbContext)null;
+        }
+
         // Admin tests
         [Fact]
         public void AppointmentCreationWorksCorrectly()
         {
-            //using (var scope = this.server.Server.Services.CreateScope())
-            //{
-            //    // Get repo
-            //    var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
-            //    var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+            using (var scope = this.server.Services.CreateScope())
+            {
+                // Get repo
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
+                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
 
-            //    var users = repo.All().ToListAsync().GetAwaiter().GetResult();
-            //    var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
-            //    ;
-            //}
+                var users = repo.All().ToListAsync().GetAwaiter().GetResult();
+                var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
+                ;
+            }
 
             // Log in
             this.Login(AppConstants.AdministratorRoleName);
