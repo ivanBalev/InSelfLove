@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Common;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -16,10 +15,12 @@
     public class AppointmentService : IAppointmentService
     {
         private readonly IDeletableEntityRepository<Appointment> appointmentRepository;
+        private readonly IServiceProvider sp;
 
-        public AppointmentService(IDeletableEntityRepository<Appointment> appointmentRepository)
+        public AppointmentService(IDeletableEntityRepository<Appointment> appointmentRepository, IServiceProvider sp)
         {
             this.appointmentRepository = appointmentRepository;
+            this.sp = sp;
         }
 
         public static int DefaultWorkdayStart => 8;
@@ -30,6 +31,16 @@
         {
             var userIsAdmin = userId == adminId;
             var dbQuery = this.appointmentRepository.All();
+
+            var appts = await dbQuery.ToListAsync();
+
+            using (var scope = sp.CreateScope())
+            {
+                // Get repo
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+                var appts11 = repo.All().ToList();
+                ;
+            }
 
             if (!userIsAdmin)
             {
@@ -89,7 +100,7 @@
                 this.appointmentRepository.Delete(slot);
             }
 
-            if(timeSlots != null)
+            if (timeSlots != null)
             {
                 // Create new vacant slots and add to db
                 foreach (var dateTime in timeSlots)

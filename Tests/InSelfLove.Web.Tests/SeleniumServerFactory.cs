@@ -33,8 +33,8 @@
 
             this.RootUri = host.ServerFeatures.Get<IServerAddressesFeature>().Addresses.LastOrDefault();
 
-            //var testServer = new TestServer(new WebHostBuilder()
-            //    .UseStartup<FakeStartup>());
+            var testServer = new TestServer(new WebHostBuilder()
+                .UseStartup<FakeStartup>());
         }
 
         public IConfiguration Configuration => this.configuration;

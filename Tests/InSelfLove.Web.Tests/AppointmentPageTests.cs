@@ -63,36 +63,10 @@
 
         private By CancelAppointmentConfirmModalSelector => By.Id("cancelAppointmentConfirm");
 
-        private SqliteDbContext GetContext()
-        {
-            var options = new DbContextOptionsBuilder().
-                UseSqlite("Data Source = nameOfYourDatabase.db")
-            .Options;
-
-            //var db = new SqliteDbContext(options);
-
-            //db.Database.EnsureDeleted();
-            //db.Database.EnsureCreated();
-
-            //return db;
-            return (SqliteDbContext)null;
-        }
-
         // Admin tests
         [Fact]
         public void AppointmentCreationWorksCorrectly()
         {
-            using (var scope = this.server.Services.CreateScope())
-            {
-                // Get repo
-                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
-                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
-
-                var users = repo.All().ToListAsync().GetAwaiter().GetResult();
-                var appts = repo1.All().ToListAsync().GetAwaiter().GetResult();
-                ;
-            }
-
             // Log in
             this.Login(AppConstants.AdministratorRoleName);
 
@@ -143,21 +117,47 @@
                 this.AppointmentDetailsModalSelector).FindElement(By.CssSelector(".start")).Text;
             Assert.Equal(firstSlotTime, lastAppointmentStartTime.Trim(' ', '0').Split(':')[0]);
 
-            // Return db to empty state
-            //this.ResetDb();
+            //Return db to empty state
+            this.ResetDb();
         }
 
         [Fact]
         public void AvailableAppointmentCancellationvoidsCorrectly()
         {
             // Create 1 available appt
-            //this.CreateAppointments();
+            this.CreateAppointments();
+
+            using (var scope = this.server.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<SqliteDbContext>();
+                // Get repo
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+
+                var appt1s = repo.All().ToListAsync().GetAwaiter().GetResult();
+
+                var ctxId = context.ContextId;
+                     ;
+            }
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
 
             // Wait until calendar loads
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            using (var scope = this.server.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<SqliteDbContext>();
+                // Get repo
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+
+                var appt1s = repo.All().ToListAsync().GetAwaiter().GetResult();
+
+                var ctxId = context.ContextId;
+
+                ;
+            }
+
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
             // Open appointment details
@@ -191,7 +191,7 @@
             Assert.Empty(appts);
 
             // Reset db to default state
-            //this.ResetDb();
+            this.ResetDb();
         }
 
         // TODO: Check if async tests will work now
@@ -245,7 +245,7 @@
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
-            
+
             // Get pending appointment and save its location
             var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
             var pendingApprovalElementLocation = appointmentPendingApproval.Location;
@@ -337,7 +337,7 @@
         private void CreateAppointments(int count = 1, int daysAhead = 1, bool awaiting = false, bool approved = false)
         {
             // Create scope
-            using (var scope = this.server.Server.Services.CreateScope())
+            using (var scope = this.server.Services.CreateScope())
             {
                 // Get repo
                 var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();

@@ -27,7 +27,7 @@
                           {
                               new RolesSeeder(),
                               new UsersSeeder(),
-                              new AppointmentSeeder(),
+                              //new AppointmentSeeder(),
                               //new ArticleSeeder(),
                               //new VideoSeeder(),
                               //new CommentsSeeder(),
