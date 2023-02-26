@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InSelfLove.Data.Migrations
 {
-    [DbContext(typeof(MySqlDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20230203173807_2023")]
     partial class _2023
     {

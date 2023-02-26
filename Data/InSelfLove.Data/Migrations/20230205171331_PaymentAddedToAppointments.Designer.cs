@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InSelfLove.Data.Migrations
 {
-    [DbContext(typeof(MySqlDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20230205171331_PaymentAddedToAppointments")]
     partial class PaymentAddedToAppointments
     {

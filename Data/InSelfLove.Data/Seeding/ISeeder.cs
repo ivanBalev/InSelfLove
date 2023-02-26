@@ -5,6 +5,6 @@
 
     public interface ISeeder
     {
-        Task SeedAsync(MySqlDbContext dbContext, IServiceProvider serviceProvider);
+        Task SeedAsync(ApplicationDbContext dbContext, IServiceProvider serviceProvider);
     }
 }

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+
     using InSelfLove.Data;
     using InSelfLove.Data.Models;
     using InSelfLove.Data.Repositories;
@@ -19,12 +20,11 @@
         private AppointmentService appointmentService;
 
         // DI?
-        public AppointmentServiceTests(Microsoft.Extensions.Configuration.IConfiguration config)
+        public AppointmentServiceTests()
         {
-            var options = new DbContextOptionsBuilder<MySqlDbContext>()
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                            .UseInMemoryDatabase(Guid.NewGuid().ToString());
-            // lesh
-            var dbContext = new MySqlDbContext(config);
+            var dbContext = new ApplicationDbContext(options.Options);
             var appointmentRepository = new EfDeletableEntityRepository<Appointment>(dbContext);
             var appointmentService = new AppointmentService(appointmentRepository);
             this.appointmentRepository = appointmentRepository;

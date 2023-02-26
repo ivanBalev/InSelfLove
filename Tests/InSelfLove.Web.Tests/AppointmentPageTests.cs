@@ -1,11 +1,9 @@
 ﻿namespace InSelfLove.Web.Tests
 {
     using System;
-    using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
     using CloudinaryDotNet.Actions;
-    using Google;
     using InSelfLove.Data;
     using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
@@ -22,14 +20,14 @@
     using OpenQA.Selenium.Support.UI;
     using Xunit;
 
-    public class AppointmentPageTests : IClassFixture<SeleniumServerFactory<Startup>>, IDisposable
+    public class AppointmentPageTests : IClassFixture<SeleniumServerFactory<TestStartup>>, IDisposable
     {
         private readonly IConfiguration configuration;
-        private readonly SeleniumServerFactory<Startup> server;
+        private readonly SeleniumServerFactory<TestStartup> server;
         private readonly IWebDriver browser;
         private readonly IJavaScriptExecutor jsExecutor;
 
-        public AppointmentPageTests(SeleniumServerFactory<Startup> server)
+        public AppointmentPageTests(SeleniumServerFactory<TestStartup> server)
         {
             this.configuration = server.Configuration;
             this.server = server;
@@ -103,13 +101,11 @@
             this.Click(submitDailyAvailabilityBtn);
 
             // Wait until browser refreshes
-            wait.Until(b => !b.FindElement(this.DailyAvailabilityModalSelector).Displayed);
-
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
             // Click on our new appointment
             var appointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
-            appointment.Click();
+            this.Click(appointment);
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Confirm its start time matches what we selected from the daily availability modal
@@ -117,7 +113,7 @@
                 this.AppointmentDetailsModalSelector).FindElement(By.CssSelector(".start")).Text;
             Assert.Equal(firstSlotTime, lastAppointmentStartTime.Trim(' ', '0').Split(':')[0]);
 
-            //Return db to empty state
+            // Return db to empty state
             this.ResetDb();
         }
 
@@ -127,37 +123,11 @@
             // Create 1 available appt
             this.CreateAppointments();
 
-            using (var scope = this.server.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<SqliteDbContext>();
-                // Get repo
-                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
-
-                var appt1s = repo.All().ToListAsync().GetAwaiter().GetResult();
-
-                var ctxId = context.ContextId;
-                     ;
-            }
-
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
 
             // Wait until calendar loads
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-
-            using (var scope = this.server.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<SqliteDbContext>();
-                // Get repo
-                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
-
-                var appt1s = repo.All().ToListAsync().GetAwaiter().GetResult();
-
-                var ctxId = context.ContextId;
-
-                ;
-            }
-
             wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
 
             // Open appointment details
@@ -245,7 +215,7 @@
 
             // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
-
+            
             // Get pending appointment and save its location
             var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
             var pendingApprovalElementLocation = appointmentPendingApproval.Location;
@@ -337,7 +307,7 @@
         private void CreateAppointments(int count = 1, int daysAhead = 1, bool awaiting = false, bool approved = false)
         {
             // Create scope
-            using (var scope = this.server.Services.CreateScope())
+            using (var scope = this.server.Server.Services.CreateScope())
             {
                 // Get repo
                 var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
@@ -370,6 +340,7 @@
             }
         }
 
+
         private void ResetDb()
         {
             // Empty appointments collection in server
@@ -396,7 +367,7 @@
         private void Login(string role)
         {
             // Go to login page
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login?ReturnUrl=/api/Appointments");
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
 
             // Get username & pass from config
             var username = this.configuration.GetSection($"{role}:Username").Value;
@@ -406,6 +377,9 @@
             this.UsernameInputField.SendKeys(username);
             this.PasswordInputField.SendKeys(password);
             this.SubmitBtn.Click();
+
+            // Go to appointments page
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
         }
 
         public void Dispose()

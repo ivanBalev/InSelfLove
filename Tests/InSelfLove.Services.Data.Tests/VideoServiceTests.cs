@@ -18,11 +18,11 @@
     {
         private VideoService videoService;
 
-        public VideoServiceTests(Microsoft.Extensions.Configuration.IConfiguration config)
+        public VideoServiceTests()
         {
-            var options = new DbContextOptionsBuilder<MySqlDbContext>()
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                   .UseInMemoryDatabase(Guid.NewGuid().ToString());
-            var dbContext = new MySqlDbContext(config);
+            var dbContext = new ApplicationDbContext(options.Options);
             var videoRepository = new EfDeletableEntityRepository<Video>(dbContext);
             var commentRepository = new EfDeletableEntityRepository<Comment>(dbContext);
             var commentService = new CommentService(commentRepository);

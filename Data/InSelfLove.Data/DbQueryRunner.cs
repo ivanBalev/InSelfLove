@@ -9,12 +9,12 @@
 
     public class DbQueryRunner : IDbQueryRunner
     {
-        public DbQueryRunner(MySqlDbContext context)
+        public DbQueryRunner(ApplicationDbContext context)
         {
             this.Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public MySqlDbContext Context { get; set; }
+        public ApplicationDbContext Context { get; set; }
 
         public Task RunQueryAsync(string query, params object[] parameters)
         {

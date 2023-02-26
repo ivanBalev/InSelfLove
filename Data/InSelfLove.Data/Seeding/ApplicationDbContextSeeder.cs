@@ -9,7 +9,7 @@
 
     public class ApplicationDbContextSeeder : ISeeder
     {
-        public async Task SeedAsync(MySqlDbContext dbContext, IServiceProvider serviceProvider)
+        public async Task SeedAsync(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
         {
             if (dbContext == null)
             {
@@ -27,10 +27,9 @@
                           {
                               new RolesSeeder(),
                               new UsersSeeder(),
-                              //new AppointmentSeeder(),
-                              //new ArticleSeeder(),
-                              //new VideoSeeder(),
-                              //new CommentsSeeder(),
+                              new ArticleSeeder(),
+                              new VideoSeeder(),
+                              new CommentsSeeder(),
                           };
 
             foreach (var seeder in seeders)

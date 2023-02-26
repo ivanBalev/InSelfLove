@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Common;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
@@ -31,11 +30,9 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
-    using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -145,43 +142,13 @@
             });
 
             // Database connection
-            if (!this.environment.EnvironmentName.Equals("Test"))
-            {
-                services.AddDbContext<MySqlDbContext>();
-            }
-            else
-            {
-                services.AddSingleton<DbConnection>(container =>
-                {
-                    var connection = new SqliteConnection("DataSource=:memory:");
-                    connection.Open();
-
-                    return connection;
-                });
-
-                services.AddDbContext<MySqlDbContext, SqliteDbContext>();
-            }
+            var connString = this.configuration.GetConnectionString("MySql");
+            services.AddDbContext<ApplicationDbContext>(
+                options => options.UseMySql(connString, ServerVersion.AutoDetect(connString)));
 
             // Identity & roles
-
-            // TODO: not sure if this is needed
-            if (!this.environment.EnvironmentName.Equals("Test"))
-            {
-                services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<MySqlDbContext>();
-            }
-            else
-            {
-                // WebApplicationFactory runs through Starup twice when creating scope in tests.
-                // This prevents an error where on second initialization of this class, we add
-                // the Identity services again while they're already added on 1st passing
-                var identityRegistered = services.Any(s => s.ServiceType.ToString().Contains("Identity"));
-                if (!identityRegistered)
-                {
-                    services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<SqliteDbContext>();
-                }
-            }
+            services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
+                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Cloudinary setup
             var cloudinaryCredentials = new CloudinaryDotNet.Account(
@@ -301,11 +268,9 @@
             // Seed data on app startup
             using (var serviceScope = app.ApplicationServices.CreateScope())
             {
-                var dbContext = this.environment.EnvironmentName.Equals("Test") ?
-                    serviceScope.ServiceProvider.GetRequiredService<SqliteDbContext>() :
-                    serviceScope.ServiceProvider.GetRequiredService<MySqlDbContext>();
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                if (this.environment.IsDevelopment() || this.environment.EnvironmentName.Equals("Test"))
+                if (this.environment.IsDevelopment())
                 {
                     dbContext.Database.Migrate();
                 }

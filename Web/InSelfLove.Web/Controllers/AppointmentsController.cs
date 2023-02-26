@@ -2,7 +2,7 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using InSelfLove.Data;
+
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Appointments;
     using InSelfLove.Services.Data.Helpers;
@@ -13,27 +13,23 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     [Route("api/[controller]")]
     public class AppointmentsController : BaseController
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly SqliteDbContext ctx;
         private readonly IAppointmentService appointmentService;
         private readonly IAppointmentEmailHelper emailSender;
 
         public AppointmentsController(
             IAppointmentService appointmentService,
             IAppointmentEmailHelper appointmentEmailHelper,
-            UserManager<ApplicationUser> userManager,
-            SqliteDbContext ctx)
+            UserManager<ApplicationUser> userManager)
         {
             this.appointmentService = appointmentService;
             this.emailSender = appointmentEmailHelper;
             this.userManager = userManager;
-            this.ctx = ctx;
         }
 
         [HttpGet]
@@ -48,8 +44,6 @@
 
             // Get appointments
             var appointments = await this.appointmentService.GetAll(userId, adminId, userTimezone);
-            var appts1 = this.ctx.Database.GetConnectionString();
-            var maika = this.ctx.ContextId;
 
             // Map db appointments to view model
             var appointmentsViewModel = appointments.Select(a =>
@@ -126,8 +120,7 @@
             var adminTimezone = (await this.GetUser(true)).Timezone;
 
             // Send slots and date to service
-            var result = await this.appointmentService.Create(availabilityInput.TimeSlots, availabilityInput.Date, adminTimezone);
-            ;
+            await this.appointmentService.Create(availabilityInput.TimeSlots, availabilityInput.Date, adminTimezone);
             return this.Ok();
         }
 

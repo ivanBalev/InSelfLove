@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InSelfLove.Data.Migrations
 {
-    [DbContext(typeof(MySqlDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -31,7 +31,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("CoursesId");
 
-                    b.ToTable("ApplicationUserCourse", (string)null);
+                    b.ToTable("ApplicationUserCourse");
                 });
 
             modelBuilder.Entity("InSelfLove.Data.Models.ApplicationRole", b =>
@@ -208,7 +208,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("InSelfLove.Data.Models.Article", b =>
@@ -262,7 +262,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Articles", (string)null);
+                    b.ToTable("Articles");
                 });
 
             modelBuilder.Entity("InSelfLove.Data.Models.Comment", b =>
@@ -310,7 +310,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("InSelfLove.Data.Models.Course", b =>
@@ -347,7 +347,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("InSelfLove.Data.Models.CourseVideo", b =>
@@ -385,7 +385,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("CourseVideos", (string)null);
+                    b.ToTable("CourseVideos");
                 });
 
             modelBuilder.Entity("InSelfLove.Data.Models.Payment", b =>
@@ -426,7 +426,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Payment", (string)null);
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("InSelfLove.Data.Models.Video", b =>
@@ -469,7 +469,7 @@ namespace InSelfLove.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Videos", (string)null);
+                    b.ToTable("Videos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
