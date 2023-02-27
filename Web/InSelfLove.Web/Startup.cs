@@ -165,7 +165,6 @@
             var authBuilder = services.AddAuthentication();
 
             // External Logins
-            // TODO: this needs to work in test environment as well?
             if (!this.environment.EnvironmentName.Equals("Test"))
             {
                 // Google

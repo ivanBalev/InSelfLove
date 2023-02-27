@@ -1,9 +1,7 @@
 ﻿namespace InSelfLove.Web.Tests
 {
     using System;
-    using System.Drawing;
     using System.Linq;
-    using System.Threading;
     using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Appointments;
@@ -12,7 +10,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
-    using OpenQA.Selenium.Interactions;
     using OpenQA.Selenium.Support.UI;
     using Xunit;
 
@@ -52,31 +49,70 @@
         private By BookAppointmentModalSelector => By.Id("bookAppointmentModal");
 
         [Fact]
+        public void GuestCannotBookAppointments()
+        {
+            this.CreateAppointments();
+
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/Appointments");
+
+            var availableAppointment = this.browser.FindElement(this.AppointmentSelector);
+            availableAppointment.Click();
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(b => b.FindElement(By.Id("loginModal")).Displayed);
+            Assert.True(this.browser.FindElement(By.Id("loginModal")).Displayed);
+
+            this.ResetDb();
+        }
+
+        [Fact]
+        public void UserSeesOthersAppointmentsCorrectly()
+        {
+            this.CreateAppointments(unavailable: true);
+
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/Appointments");
+
+            var appointment = this.browser.FindElement(this.AppointmentSelector);
+            Assert.Contains("gray", appointment.GetAttribute("class"));
+
+            appointment.Click();
+            Assert.False(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
+
+            this.ResetDb();
+        }
+
+        [Fact]
+        public void OtherSameDayAppointmentsBecomeUnavailableWhenUserBooks()
+        {
+            this.CreateAppointments(3);
+            this.Login(AppConstants.UserRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            this.BookFirstAvailableAppointment(wait);
+
+            var otherAppointments = this.browser.FindElements(this.AppointmentSelector).Skip(1).ToList();
+
+            foreach (var appt in otherAppointments)
+            {
+                Assert.Contains("gray", appt.GetAttribute("class"));
+
+                appt.Click();
+                Assert.False(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
+            }
+
+            this.ResetDb();
+        }
+
+        [Fact]
         public void AppointmentBookingWorksCorrectly()
         {
             this.CreateAppointments();
             var username = this.Login(AppConstants.UserRoleName);
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            this.BookFirstAvailableAppointment(wait);
 
-            var availableAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
-            availableAppointment.Click();
-
-            wait.Until(b => b.FindElement(this.BookAppointmentModalSelector).Displayed);
-            var bookAppointmentModal = this.browser.FindElement(this.BookAppointmentModalSelector);
-
-            // Populate issue description
-            var issueDescriptionTextbox = bookAppointmentModal.FindElement(By.Id("patientIssueDescription"));
-            issueDescriptionTextbox.SendKeys(new string('a', 31));
-
-            // Click book appointment btn
-            var sendAppointmentBtn = bookAppointmentModal.FindElement(By.Id("sendAppointment"));
-            sendAppointmentBtn.Click();
-
-            wait.Until(b => !b.FindElement(this.BookAppointmentModalSelector).Displayed);
-            wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
-
-            var myAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
+            var myAppointment = this.browser.FindElement(this.AppointmentSelector);
             myAppointment.Click();
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
@@ -86,6 +122,27 @@
                 By.CssSelector(".usernameGroup .username")).Text;
 
             Assert.Equal(username, usernameOnDetailsModal);
+
+            this.ResetDb();
+        }
+
+        [Fact]
+        public void AppointmentOnsiteBookingWorksCorrectly()
+        {
+            this.CreateAppointments(onSite: true);
+            this.Login(AppConstants.UserRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            this.BookFirstAvailableAppointment(wait, true);
+
+            var myAppointment = this.browser.FindElement(this.AppointmentSelector);
+            myAppointment.Click();
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            var appointmentDetailsModal = this.browser.FindElement(this.AppointmentDetailsModalSelector);
+            var onSiteMsg = appointmentDetailsModal.FindElement(By.Id("onSiteDetailsMsg"));
+
+            Assert.True(onSiteMsg.Displayed);
 
             this.ResetDb();
         }
@@ -119,9 +176,7 @@
                 .FindElement(By.CssSelector(".confirmCancelAppointment"));
 
             cancelConfirmBtn.Click();
-
-            wait.Until(b => !b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
-            wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
+            this.WaitForBrowserToRefresh(wait, this.CancelAppointmentConfirmModalSelector, this.AppointmentSelector);
 
             // Click on same element
             var availableAppt = this.browser.FindElement(this.AppointmentSelector);
@@ -163,9 +218,7 @@
                 .FindElement(By.CssSelector(".confirmCancelAppointment"));
 
             cancelConfirmBtn.Click();
-
-            wait.Until(b => !b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
-            wait.Until(b => b.FindElement(this.AppointmentSelector).Displayed);
+            this.WaitForBrowserToRefresh(wait, this.CancelAppointmentConfirmModalSelector, this.AppointmentSelector);
 
             // Click on same element
             var availableAppt = this.browser.FindElement(this.AppointmentSelector);
@@ -179,10 +232,16 @@
             this.ResetDb();
         }
 
-        private void CreateAppointments(int count = 1, int daysAhead = 1, bool awaiting = false, bool approved = false)
+        private void CreateAppointments(
+            int count = 1,
+            int daysAhead = 1,
+            bool awaiting = false,
+            bool approved = false,
+            bool unavailable = false,
+            bool onSite = false)
         {
             // Create scope
-            using (var scope = this.server.Server.Services.CreateScope())
+            using (var scope = this.server.Services.CreateScope())
             {
                 // Get repo
                 var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
@@ -196,15 +255,25 @@
                         UtcStart = DateTime.UtcNow.Date
                                            .AddDays(daysAhead)
                                            .AddHours(AppointmentService.DefaultWorkdayStart + i),
+                        CanBeOnSite = onSite,
                     };
 
-                    if (awaiting || approved)
+                    if (awaiting || approved || unavailable)
                     {
-                        // Get user & add to appt
                         var userRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
-                        var userName = this.configuration.GetSection($"{AppConstants.UserRoleName}:Username").Value;
-                        appt.User = userRepo.All().FirstOrDefault(x => x.UserName == userName);
-                        appt.IsApproved = approved ? true : false;
+
+                        if (unavailable)
+                        {
+                            var userName = this.configuration.GetSection($"{AppConstants.AdministratorRoleName}:Username").Value;
+                            appt.User = userRepo.All().FirstOrDefault(x => x.UserName == userName);
+                        }
+                        else
+                        {
+                            // Get user & add to appt
+                            var userName = this.configuration.GetSection($"{AppConstants.UserRoleName}:Username").Value;
+                            appt.User = userRepo.All().FirstOrDefault(x => x.UserName == userName);
+                            appt.IsApproved = approved ? true : false;
+                        }
                     }
 
                     repo.AddAsync(appt).GetAwaiter().GetResult();
@@ -214,6 +283,34 @@
                 repo.SaveChangesAsync().GetAwaiter().GetResult();
             }
         }
+
+        private void BookFirstAvailableAppointment(WebDriverWait wait, bool onSite = false)
+        {
+            var availableAppointment = this.browser.FindElement(this.AppointmentSelector);
+            availableAppointment.Click();
+
+            wait.Until(b => b.FindElement(this.BookAppointmentModalSelector).Displayed);
+            var bookAppointmentModal = this.browser.FindElement(this.BookAppointmentModalSelector);
+
+            // Populate issue description
+            var issueDescriptionTextbox = bookAppointmentModal.FindElement(By.Id("patientIssueDescription"));
+            issueDescriptionTextbox.SendKeys(new string('a', 31));
+
+            if (onSite)
+            {
+                var onsiteCheckbox = this.browser.FindElement(
+               this.BookAppointmentModalSelector).FindElement(
+               By.CssSelector("#onSiteBookToggle .toggle-checkbox"));
+                this.Click(onsiteCheckbox);
+            }
+
+            // Click book appointment btn
+            var sendAppointmentBtn = bookAppointmentModal.FindElement(By.Id("sendAppointment"));
+            sendAppointmentBtn.Click();
+
+            this.WaitForBrowserToRefresh(wait, this.BookAppointmentModalSelector, this.AppointmentSelector);
+        }
+
 
         private void ResetDb()
         {
@@ -232,6 +329,22 @@
             }
         }
 
+        private void WaitForBrowserToRefresh(WebDriverWait wait, By elementToBeHiddenSelector, By elementToBeDisplayedSelector)
+        {
+            // Stale element error if we don't use the strategy below
+            try
+            {
+                // Wait for calendar to reset
+                wait.Until(b => !b.FindElement(elementToBeHiddenSelector).Displayed);
+                wait.Until(b => b.FindElement(elementToBeDisplayedSelector).Displayed);
+            }
+            catch (StaleElementReferenceException ex)
+            {
+                wait.Until(b => !b.FindElement(elementToBeHiddenSelector).Displayed);
+                wait.Until(b => b.FindElement(elementToBeDisplayedSelector).Displayed);
+            }
+        }
+
         private void Click(IWebElement element)
         {
             this.jsExecutor.ExecuteScript("arguments[0].click()", element);
@@ -240,7 +353,7 @@
         private string Login(string role)
         {
             // Go to login page
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login");
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login?ReturnUrl=/api/Appointments");
 
             // Get username & pass from config
             var username = this.configuration.GetSection($"{role}:Username").Value;
@@ -250,9 +363,6 @@
             this.UsernameInputField.SendKeys(username);
             this.PasswordInputField.SendKeys(password);
             this.SubmitBtn.Click();
-
-            // Go to appointments page
-            this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/appointments");
 
             return username;
         }

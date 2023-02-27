@@ -259,9 +259,14 @@ function setUpDetailsForUser() {
     }
 
     // Show/hide payment btn
-
     if (payBtn) {
-        payBtn.style.display = currentAppointment.isPaid ? 'none' : 'block';
+        if (currentAppointment.isPaid) {
+            payBtn.style.display = 'none';
+        } else if (currentAppointment.isApproved) {
+            payBtn.style.display = 'block';
+        } else {
+            payBtn.style.display = 'none';
+        }
     }
 
 
