@@ -462,6 +462,29 @@
         }
 
         [Fact]
+        public void PaidAppointmentDisplayedInDetailsModal()
+        {
+            this.CreateAppointments(1, 1, approved: true, paid: true);
+            this.Login(AppConstants.AdministratorRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            // Get pending appointment
+            var appointment = this.browser.FindElement(this.AppointmentSelector);
+
+            // Open appointment details modal
+            appointment.Click();
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            var paidSpan = this.browser.FindElement(this.AppointmentDetailsModalSelector)
+                .FindElement(By.ClassName("paid"));
+
+            Assert.True(paidSpan.Text != string.Empty);
+
+            this.ResetDb();
+        }
+
+        [Fact]
         public void CannotChangeOnsiteForApprovedOrPendingAppointments()
         {
             // Create an approved and a pending appointment
@@ -556,7 +579,7 @@
             }
         }
 
-        private void CreateAppointments(int count = 1, int daysAhead = 1, bool awaiting = false, bool approved = false)
+        private void CreateAppointments(int count = 1, int daysAhead = 1, bool awaiting = false, bool approved = false, bool paid = false)
         {
             // Create scope
             using (var scope = this.server.Services.CreateScope())
@@ -573,6 +596,7 @@
                         UtcStart = DateTime.UtcNow.Date
                                            .AddDays(daysAhead)
                                            .AddHours(AppointmentService.DefaultWorkdayStart + i),
+                        IsPaid = true,
                     };
 
                     if (awaiting || approved)

@@ -240,6 +240,7 @@
             this.appointmentRepository.Update(appt);
             await this.appointmentRepository.SaveChangesAsync();
         }
+
         private void SetAvailability(Appointment[] appointments, bool userIsAdmin, string userId)
         {
             if (!userIsAdmin)

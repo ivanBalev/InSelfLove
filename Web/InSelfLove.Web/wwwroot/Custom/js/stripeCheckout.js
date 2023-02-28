@@ -58,6 +58,7 @@ async function handleSubmit(e) {
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment.
+    bootstrap.Modal.getOrCreateInstance(paymentFormModal).hide();
     if (error.type === "card_error" || error.type === "validation_error") {
         showMessage(error.message, true);
     } else {

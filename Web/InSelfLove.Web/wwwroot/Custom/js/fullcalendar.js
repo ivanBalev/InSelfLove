@@ -269,7 +269,6 @@ function setUpDetailsForUser() {
         }
     }
 
-
     setUpStatusInAppointmentDetailsModal();
 }
 

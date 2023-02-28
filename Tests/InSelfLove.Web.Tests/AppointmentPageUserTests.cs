@@ -1,6 +1,7 @@
 ﻿namespace InSelfLove.Web.Tests
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
@@ -11,6 +12,7 @@
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
     using OpenQA.Selenium.Support.UI;
+    using SeleniumExtras.WaitHelpers;
     using Xunit;
 
     public class AppointmentPageUserTests : IClassFixture<SeleniumServerFactory<TestStartup>>, IDisposable
@@ -156,7 +158,7 @@
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             // Get pending appointment and save its location
-            var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
+            var appointmentPendingApproval = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointmentPendingApproval.Click();
@@ -197,8 +199,8 @@
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
-            // Get pending appointment and save its location
-            var approvedAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
+            // Get pending appointment
+            var approvedAppointment = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             approvedAppointment.Click();
@@ -232,13 +234,219 @@
             this.ResetDb();
         }
 
+        [Fact]
+        public void PendingAppointmentCannotBePaid()
+        {
+            this.CreateAppointments(1, 1, true);
+            this.Login(AppConstants.UserRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            // Get pending appointment
+            var appointmentPendingApproval = this.browser.FindElement(this.AppointmentSelector);
+
+            // Open appointment details modal
+            appointmentPendingApproval.Click();
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            // With only a single pending appointment, SSR doesn't provide the payment btn at all
+            // so this should be null
+            Assert.Throws<NoSuchElementException>(() => this.browser.FindElement(By.Id("payBtn")));
+
+            this.ResetDb();
+        }
+
+        [Fact]
+        public void PendingAndApprovedAppointmentsPayBtnStateIsCorrect()
+        {
+            this.CreateAppointments(1, 1, awaiting: true);
+            this.CreateAppointments(1, 2, approved: true);
+            this.Login(AppConstants.UserRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            // Get pending appointment
+            var appointmentPendingApproval = this.browser.FindElement(this.AppointmentSelector);
+
+            // Open appointment details modal
+            appointmentPendingApproval.Click();
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            // Btn should be there since we have another appt on the page which is approved
+            // but it shouldn't be visible
+            Assert.False(this.browser.FindElement(By.Id("payBtn")).Displayed);
+
+            var approvedAppointment = this.browser.FindElements(this.AppointmentSelector).LastOrDefault();
+
+            // Open appointment details modal
+            this.Click(approvedAppointment);
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            // Btn should be there since we have another appt on the page which is approved
+            // but it shouldn't be visible
+            Assert.True(this.browser.FindElement(By.Id("payBtn")).Displayed);
+
+            this.ResetDb();
+        }
+
+        [Fact]
+        public void PaidAppointmentDisplayedInDetailsModal()
+        {
+            this.CreateAppointments(1, 1, approved: true, paid: true);
+            this.Login(AppConstants.UserRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            // Get pending appointment
+            var appointment = this.browser.FindElement(this.AppointmentSelector);
+
+            // Open appointment details modal
+            appointment.Click();
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            var paidSpan = this.browser.FindElement(this.AppointmentDetailsModalSelector)
+                .FindElement(By.ClassName("paid"));
+
+            Assert.True(paidSpan.Text != string.Empty);
+
+            this.ResetDb();
+        }
+
+        [Fact]
+        public void PaymentWorksWithValidCardNumber()
+        {
+            // Provide stripe CLI with endpoint for submitting events
+            var command = $"stripe listen --forward-to {this.server.RootUri}/stripe/confirmpay";
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = "cmd.exe";
+            psi.WindowStyle = ProcessWindowStyle.Normal;
+            psi.Arguments = "/k " + command;
+            Process.Start(psi);
+
+            this.CreateAppointments(approved: true);
+            this.Login(AppConstants.UserRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            // Get pending appointment
+            var appointment = this.browser.FindElement(this.AppointmentSelector);
+
+            // Open appointment details modal
+            appointment.Click();
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            // Open payment modal
+            this.browser.FindElement(By.Id("payBtn")).Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("#payment-element iframe")));
+
+            // Switch browser context to Stripe iFrame. Otherwise we're not able to select its nested elements
+            var stripeIFrame = this.browser.FindElement(By.CssSelector("#payment-element iframe"));
+            this.browser.SwitchTo().Frame(stripeIFrame);
+
+            // Populate fields
+            var cardNumberField = this.browser.FindElement(By.CssSelector("[name=number]"));
+            cardNumberField.SendKeys("4242 4242 4242 4242");
+
+            var expiryField = this.browser.FindElement(By.CssSelector("[name=expiry]"));
+            expiryField.SendKeys("04/24");
+
+            var cvcField = this.browser.FindElement(By.CssSelector("[name=cvc]"));
+            cvcField.SendKeys("424");
+
+            // Submit data
+            this.browser.SwitchTo().DefaultContent();
+            this.browser.FindElement(By.CssSelector("#payment-form #submit")).Click();
+
+            this.WaitForBrowserToRefresh(wait, By.Id("payment-form-modal"), By.Id("success-modal"));
+            Assert.True(this.browser.FindElement(By.Id("success-modal")).Displayed);
+
+            using (var scope = this.server.Services.CreateScope())
+            {
+                // Get repo
+                var paymentRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Payment>>();
+                var appointmentRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+                var userRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
+
+                var userName = this.configuration.GetSection($"{AppConstants.UserRoleName}:Username").Value;
+
+                var user = userRepo.All().FirstOrDefault(x => x.UserName == userName);
+                var apptmnt = appointmentRepo.All().FirstOrDefault();
+                var payment = paymentRepo.All().FirstOrDefault();
+
+                Assert.Equal(payment.ApplicationUserId, user.Id);
+                Assert.Equal(payment.AppointmentId, apptmnt.Id);
+            }
+
+            this.ResetDb();
+        }
+
+        [Fact]
+        public void PaymentDoesntWorkWithInvalidCardNumber()
+        {
+            // Provide stripe CLI with endpoint for submitting events
+            var command = $"stripe listen --forward-to {this.server.RootUri}/stripe/confirmpay";
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = "cmd.exe";
+            psi.WindowStyle = ProcessWindowStyle.Normal;
+            psi.Arguments = "/k " + command;
+            Process.Start(psi);
+
+            this.CreateAppointments(approved: true);
+            this.Login(AppConstants.UserRoleName);
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            // Get pending appointment
+            var appointment = this.browser.FindElement(this.AppointmentSelector);
+
+            // Open appointment details modal
+            appointment.Click();
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+
+            // Open payment modal
+            this.browser.FindElement(By.Id("payBtn")).Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("#payment-element iframe")));
+
+            // Switch browser context to Stripe iFrame. Otherwise we're not able to select its nested elements
+            var stripeIFrame = this.browser.FindElement(By.CssSelector("#payment-element iframe"));
+            this.browser.SwitchTo().Frame(stripeIFrame);
+
+            // Populate fields
+            var cardNumberField = this.browser.FindElement(By.CssSelector("[name=number]"));
+            cardNumberField.SendKeys("4100 0000 0000 0019");
+
+            var expiryField = this.browser.FindElement(By.CssSelector("[name=expiry]"));
+            expiryField.SendKeys("04/24");
+
+            var cvcField = this.browser.FindElement(By.CssSelector("[name=cvc]"));
+            cvcField.SendKeys("424");
+
+            // Submit data
+            this.browser.SwitchTo().DefaultContent();
+            this.browser.FindElement(By.CssSelector("#payment-form #submit")).Click();
+
+            this.WaitForBrowserToRefresh(wait, By.Id("payment-form-modal"), By.Id("fail-modal"));
+            Assert.True(this.browser.FindElement(By.Id("fail-modal")).Displayed);
+
+            using (var scope = this.server.Services.CreateScope())
+            {
+                // Get repo
+                var paymentRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Payment>>();
+                var payment = paymentRepo.All().ToList();
+                Assert.Empty(payment);
+            }
+
+            this.ResetDb();
+        }
+
         private void CreateAppointments(
             int count = 1,
             int daysAhead = 1,
             bool awaiting = false,
             bool approved = false,
             bool unavailable = false,
-            bool onSite = false)
+            bool onSite = false,
+            bool paid = false)
         {
             // Create scope
             using (var scope = this.server.Services.CreateScope())
@@ -256,6 +464,7 @@
                                            .AddDays(daysAhead)
                                            .AddHours(AppointmentService.DefaultWorkdayStart + i),
                         CanBeOnSite = onSite,
+                        IsPaid = paid,
                     };
 
                     if (awaiting || approved || unavailable)

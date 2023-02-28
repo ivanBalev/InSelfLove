@@ -63,8 +63,7 @@
     bool includePayment = user != null &&
                           Model.Appointments.Any(a =>
                                                  a.UserId == user.Id &&
-                                                 a.IsApproved && !a.IsPaid &&
-                                                 DateTime.Compare(a.Start.ToUniversalTime(), DateTime.UtcNow) > 0);
+                                                 a.IsApproved && !a.IsPaid);
 }
 
 <div class="d-none dbEvents">@apptmnts</div>
