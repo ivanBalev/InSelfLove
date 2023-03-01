@@ -2,16 +2,13 @@
 {
     using System;
     using System.Linq;
-    using AngleSharp.Dom;
     using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Appointments;
     using InSelfLove.Services.Data.Helpers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.IdentityModel.Tokens;
     using OpenQA.Selenium;
-    using OpenQA.Selenium.Chrome;
     using OpenQA.Selenium.Interactions;
     using OpenQA.Selenium.Support.UI;
     using Xunit;
@@ -27,9 +24,8 @@
         {
             this.configuration = server.Configuration;
             this.server = server;
-            var opts = new ChromeOptions();
-            opts.AcceptInsecureCertificates = true;
-            this.browser = new ChromeDriver(opts);
+            this.browser = server.browser;
+
             this.jsExecutor = this.browser as IJavaScriptExecutor;
 
             this.browser.Manage().Window.Maximize();
@@ -108,9 +104,6 @@
             var lastAppointmentStartTime = this.browser.FindElement(
                 this.AppointmentDetailsModalSelector).FindElement(By.CssSelector(".start")).Text;
             Assert.Equal(firstSlotTime, lastAppointmentStartTime.Trim(' ', '0').Split(':')[0]);
-
-            // Return db to empty state
-            this.ResetDb();
         }
 
         [Fact]
@@ -153,9 +146,6 @@
             // Assert we have no appointments in calendar
             var appts = this.browser.FindElements(this.AppointmentSelector);
             Assert.Empty(appts);
-
-            // Reset db to default state
-            this.ResetDb();
         }
 
         [Fact]
@@ -199,9 +189,6 @@
             // Assert appointment is now available (detals about user are not displayed => available appointment)
             Assert.False(this.browser.FindElement(this.AppointmentDetailsModalSelector)
                 .FindElement(By.CssSelector(".usernameGroup")).Displayed);
-
-            // Return db to default state
-            this.ResetDb();
         }
 
         [Fact]
@@ -245,9 +232,6 @@
             // Assert appointment is now available (detals about user are not displayed => available appointment)
             Assert.False(this.browser.FindElement(this.AppointmentDetailsModalSelector)
                 .FindElement(By.CssSelector(".usernameGroup")).Displayed);
-
-            // Return db to default state
-            this.ResetDb();
         }
 
         // TODO: Check if async tests will work now
@@ -287,9 +271,6 @@
             var appts = this.browser.FindElements(this.AppointmentSelector);
             Assert.Single(this.browser.FindElements(this.AppointmentSelector));
             Assert.Equal(appts.First().Text.Trim(' ', '0').Split(':')[0], slotTime);
-
-            // Reset db to default
-            this.ResetDb();
         }
 
         [Fact]
@@ -303,7 +284,6 @@
 
             // Get pending appointment and save its location
             var appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
-            var pendingApprovalElementLocation = appointmentPendingApproval.Location;
 
             // Open appointment details modal
             appointmentPendingApproval.Click();
@@ -321,9 +301,8 @@
             this.WaitForBrowserToRefresh(wait, this.AppointmentDetailsModalSelector, this.AppointmentSelector);
 
             // Click on same element
-            Actions actions = new Actions(this.browser);
-            actions.MoveByOffset(pendingApprovalElementLocation.X + 10, pendingApprovalElementLocation.Y + 10)
-                                 .Click().Perform();
+            appointmentPendingApproval = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
+            appointmentPendingApproval.Click();
 
             // Wait for appt details modal to display
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
@@ -334,9 +313,6 @@
                 By.CssSelector("#appointmentDetailsModal span.status"))
                 .GetAttribute("style");
             Assert.Equal(approvedColor, statusSpanColor);
-
-            // Return db to default state
-            this.ResetDb();
         }
 
         [Fact]
@@ -349,7 +325,6 @@
 
             // Get available appointment and save its location
             var availableAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
-            var availableElementLocation = availableAppointment.Location;
 
             // Open appointment details modal
             availableAppointment.Click();
@@ -367,14 +342,15 @@
             this.WaitForBrowserToRefresh(wait, this.AppointmentDetailsModalSelector, this.AppointmentSelector);
 
             // Click on same element
-            Actions actions = new Actions(this.browser);
-            actions.MoveByOffset(availableElementLocation.X + 10, availableElementLocation.Y + 10)
-                                 .Click().Perform();
+            availableAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
+            availableAppointment.Click();
 
-            Assert.False(this.browser.FindElement(this.AppointmentDetailsModalSelector).Displayed);
+            wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
-            // Return db to default state
-            this.ResetDb();
+            var usernameInDetails = this.browser.FindElement(this.AppointmentDetailsModalSelector)
+                        .FindElement(By.CssSelector(".username"))
+                        .Text;
+            Assert.Equal(usernameInDetails, this.configuration.GetSection($"{AppConstants.AdministratorRoleName}:Username").Value);
         }
 
         [Fact]
@@ -404,9 +380,6 @@
 
                 Assert.False(btn.Displayed);
             }
-
-            // Return db to default state
-            this.ResetDb();
         }
 
         [Fact]
@@ -419,7 +392,6 @@
 
             // Get available appointment and save its location
             var availableAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
-            var availableElementLocation = availableAppointment.Location;
 
             // Open appointment details modal
             availableAppointment.Click();
@@ -437,9 +409,8 @@
             this.WaitForBrowserToRefresh(wait, this.AppointmentDetailsModalSelector, this.AppointmentSelector);
 
             // Click on same element
-            Actions actions = new Actions(this.browser);
-            actions.MoveByOffset(availableElementLocation.X + 10, availableElementLocation.Y + 10)
-                                 .Click().Perform();
+            availableAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
+            availableAppointment.Click();
 
             var onsiteCheckboxPostRefresh = this.browser.FindElement(
                 this.AppointmentDetailsModalSelector).FindElement(
@@ -456,9 +427,6 @@
                 this.AppointmentDetailsModalSelector).FindElement(
                 By.CssSelector("#onSiteDetailsToggle .toggle-checkbox"));
             Assert.False(onsiteCheckboxPostSecondRefresh.Selected);
-
-            // Return db to default state
-            this.ResetDb();
         }
 
         [Fact]
@@ -480,8 +448,6 @@
                 .FindElement(By.ClassName("paid"));
 
             Assert.True(paidSpan.Text != string.Empty);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -511,9 +477,6 @@
 
                 Assert.False(toggle.Displayed);
             }
-
-            // Return db to default state
-            this.ResetDb();
         }
 
         [Fact]
@@ -666,7 +629,9 @@
                 // Disposing of server after each test doesn't allow us to use the server to create scope
                 // For retrieving services - disposed object error
                 //this.server?.Dispose();
-                this.browser?.Dispose();
+                this.ResetDb();
+                this.browser.Manage().Cookies.DeleteAllCookies();
+                //this.browser?.Dispose();
             }
         }
     }

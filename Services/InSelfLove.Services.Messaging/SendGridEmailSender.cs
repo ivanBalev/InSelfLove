@@ -11,10 +11,12 @@
     public class SendGridEmailSender : IEmailSender
     {
         private readonly SendGridClient client;
+        private readonly string environment;
 
-        public SendGridEmailSender(string apiKey)
+        public SendGridEmailSender(string apiKey, string environment)
         {
             this.client = new SendGridClient(apiKey);
+            this.environment = environment;
         }
 
         public async Task SendEmailAsync(string from, string fromName, string to, string subject, string htmlContent, IEnumerable<EmailAttachment> attachments = null)
@@ -23,6 +25,11 @@
             if (string.IsNullOrWhiteSpace(subject) && string.IsNullOrWhiteSpace(htmlContent))
             {
                 throw new ArgumentException("Subject and message should be provided.");
+            }
+
+            if (environment.Equals("Test"))
+            {
+                return;
             }
 
             // Get addresses & construct message

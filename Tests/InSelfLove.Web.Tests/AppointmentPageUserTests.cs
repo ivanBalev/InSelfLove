@@ -10,7 +10,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using OpenQA.Selenium;
-    using OpenQA.Selenium.Chrome;
     using OpenQA.Selenium.Support.UI;
     using SeleniumExtras.WaitHelpers;
     using Xunit;
@@ -19,16 +18,15 @@
     {
         private readonly IConfiguration configuration;
         private readonly SeleniumServerFactory<TestStartup> server;
-        private readonly IWebDriver browser;
         private readonly IJavaScriptExecutor jsExecutor;
+        private readonly IWebDriver browser;
 
         public AppointmentPageUserTests(SeleniumServerFactory<TestStartup> server)
         {
             this.configuration = server.Configuration;
             this.server = server;
-            var opts = new ChromeOptions();
-            opts.AcceptInsecureCertificates = true;
-            this.browser = new ChromeDriver(opts);
+            this.browser = server.browser;
+
             this.jsExecutor = this.browser as IJavaScriptExecutor;
 
             this.browser.Manage().Window.Maximize();
@@ -54,7 +52,6 @@
         public void GuestCannotBookAppointments()
         {
             this.CreateAppointments();
-
             this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/Appointments");
 
             var availableAppointment = this.browser.FindElement(this.AppointmentSelector);
@@ -63,8 +60,6 @@
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(By.Id("loginModal")).Displayed);
             Assert.True(this.browser.FindElement(By.Id("loginModal")).Displayed);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -79,8 +74,6 @@
 
             appointment.Click();
             Assert.False(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -101,8 +94,6 @@
                 appt.Click();
                 Assert.False(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
             }
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -124,8 +115,6 @@
                 By.CssSelector(".usernameGroup .username")).Text;
 
             Assert.Equal(username, usernameOnDetailsModal);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -145,8 +134,6 @@
             var onSiteMsg = appointmentDetailsModal.FindElement(By.Id("onSiteDetailsMsg"));
 
             Assert.True(onSiteMsg.Displayed);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -187,8 +174,6 @@
 
             // Assert book appointment modal is now displayed
             Assert.True(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -230,8 +215,6 @@
 
             // Assert book appointment modal is now displayed
             Assert.True(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -252,8 +235,6 @@
             // With only a single pending appointment, SSR doesn't provide the payment btn at all
             // so this should be null
             Assert.Throws<NoSuchElementException>(() => this.browser.FindElement(By.Id("payBtn")));
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -285,8 +266,6 @@
             // Btn should be there since we have another appt on the page which is approved
             // but it shouldn't be visible
             Assert.True(this.browser.FindElement(By.Id("payBtn")).Displayed);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -308,8 +287,6 @@
                 .FindElement(By.ClassName("paid"));
 
             Assert.True(paidSpan.Text != string.Empty);
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -376,8 +353,6 @@
                 Assert.Equal(payment.ApplicationUserId, user.Id);
                 Assert.Equal(payment.AppointmentId, apptmnt.Id);
             }
-
-            this.ResetDb();
         }
 
         [Fact]
@@ -435,8 +410,6 @@
                 var payment = paymentRepo.All().ToList();
                 Assert.Empty(payment);
             }
-
-            this.ResetDb();
         }
 
         private void CreateAppointments(
@@ -587,7 +560,9 @@
             if (disposing)
             {
                 //this.server?.Dispose();
-                this.browser?.Dispose();
+                this.ResetDb();
+                this.browser.Manage().Cookies.DeleteAllCookies();
+                //this.browser?.Dispose();
             }
         }
     }

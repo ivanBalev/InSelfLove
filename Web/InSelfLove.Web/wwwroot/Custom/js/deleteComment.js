@@ -11,14 +11,14 @@ function addCommentIdToConfirmationModalClasslist(e) {
 
 function confirmCommentDelete(e) {
     let commentId = e.target.classList[e.target.classList.length - 1];
-    let csfrToken = document.querySelector('input[name=__RequestVerificationToken]').value;
+    let csrfToken = document.querySelector('input[name=__RequestVerificationToken]').value;
     // Return btn classlist to default state
     e.target.classList.remove(commentId);
 
     fetch('/api/DeleteComment?id=' + commentId, {
         method: 'delete',
         headers: {
-            'X-CSRF-TOKEN': csfrToken,
+            'X-CSRF-TOKEN': csrfToken,
         },
     })
     .then(response => {

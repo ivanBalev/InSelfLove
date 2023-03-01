@@ -9,7 +9,7 @@ function addAddCommentButtonFunctionality(e) {
     e.preventDefault();
     // Get data
     let form = e.target.closest('form');
-    let csfrToken = form.querySelector('[name=__RequestVerificationToken]').value;
+    let csrfToken = form.querySelector('[name=__RequestVerificationToken]').value;
     let Content = form.querySelector('[name=Content]').value;
     // if any of the below's value is "", set value to null to allow backend to bind model correctly
     let ParentCommentId = form.querySelector('[name=ParentCommentId]').value || null;
@@ -22,7 +22,7 @@ function addAddCommentButtonFunctionality(e) {
         return;
     }
 
-    postData('/api/CreateComment', { Content, ParentCommentId, ArticleId, VideoId, ResourceUrl }, csfrToken)
+    postData('/api/CreateComment', { Content, ParentCommentId, ArticleId, VideoId, ResourceUrl }, csrfToken)
         .then(data => {
             var element = htmlToElement(data);
 
@@ -75,12 +75,12 @@ function addAddCommentButtonFunctionality(e) {
         });
 }
 
-async function postData(url = '', data = {}, csfrToken) {
+async function postData(url = '', data = {}, csrfToken) {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csfrToken,
+            'X-CSRF-TOKEN': csrfToken,
         },
         body: JSON.stringify(data)
     });

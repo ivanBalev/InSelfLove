@@ -10,6 +10,10 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using OpenQA.Selenium;
+    using OpenQA.Selenium.Chrome;
+    using OpenQA.Selenium.Firefox;
+    using OpenQA.Selenium.Safari;
 
     public sealed class SeleniumServerFactory<TStartup> : WebApplicationFactory<TStartup>
         where TStartup : class
@@ -19,6 +23,8 @@
              .AddJsonFile(@"appsettings.test.json", false, false)
              .AddEnvironmentVariables()
              .Build();
+
+        public readonly IWebDriver browser;
 
         public SeleniumServerFactory()
         {
@@ -33,8 +39,25 @@
 
             this.RootUri = host.ServerFeatures.Get<IServerAddressesFeature>().Addresses.LastOrDefault();
 
-            var testServer = new TestServer(new WebHostBuilder()
-                .UseStartup<FakeStartup>());
+            var browserName = this.configuration.GetSection("Browser:Name").Value;
+            switch (browserName)
+            {
+                case "chrome":
+                    var opts = new ChromeOptions();
+                    opts.AcceptInsecureCertificates = true;
+                    this.browser = new ChromeDriver(opts);
+                    break;
+                case "firefox":
+                    var firefoxOpts = new FirefoxOptions();
+                    firefoxOpts.AcceptInsecureCertificates = true;
+                    this.browser = new FirefoxDriver(firefoxOpts);
+                    break;
+                case "safari":
+                    var safariOpts = new SafariOptions();
+                    safariOpts.AcceptInsecureCertificates = true;
+                    this.browser = new SafariDriver(safariOpts);
+                    break;
+            }
         }
 
         public IConfiguration Configuration => this.configuration;
@@ -55,17 +78,6 @@
             .UseEnvironment("Test")
             .UseStartup<TStartup>();
             base.ConfigureWebHost(builder);
-        }
-
-        public class FakeStartup
-        {
-            public void ConfigureServices(IServiceCollection services)
-            {
-            }
-
-            public void Configure()
-            {
-            }
         }
     }
 }

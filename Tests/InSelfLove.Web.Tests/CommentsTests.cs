@@ -2,19 +2,17 @@
 {
     using System;
     using System.Linq;
-
+    using InSelfLove.Data.Common.Repositories;
+    using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Helpers;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using OpenQA.Selenium;
-    using OpenQA.Selenium.Chrome;
     using OpenQA.Selenium.Support.UI;
     using Xunit;
 
     public class CommentsTests : IClassFixture<SeleniumServerFactory<TestStartup>>, IDisposable
     {
-        // TODO: Remove tight coupling
-        private const string ArticleWithCommentsId = "6";
-
         private readonly IConfiguration configuration;
         private readonly SeleniumServerFactory<TestStartup> server;
         private readonly IWebDriver browser;
@@ -24,13 +22,11 @@
         {
             this.configuration = server.Configuration;
             this.server = server;
-            var opts = new ChromeOptions();
-            opts.AcceptInsecureCertificates = true;
-            this.browser = new ChromeDriver(opts);
+            this.browser = server.browser;
+
             this.jsExecutor = this.browser as IJavaScriptExecutor;
 
             this.browser.Manage().Window.Maximize();
-            this.browser.Navigate().GoToUrl(this.server.RootUri);
         }
 
         private IWebElement UsernameInputField => this.browser.FindElement(By.Id("Input_Username"));
@@ -42,22 +38,26 @@
         [Fact]
         public void AddArticleCommentShouldWorkCorrectly()
         {
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-
-            // Click latest article
-            this.Click(this.browser.FindElements(By.CssSelector(".article-preview a")).FirstOrDefault());
-
-            // Click login btn on single article page
-            this.Click(this.browser.FindElement(By.CssSelector("#postLogin a")));
-
             // Enter login data & submit
             var username = this.Login(AppConstants.UserRoleName);
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(20));
 
             string commentText = new string('a', 33);
-            this.AddNewMainComment(commentText);
+            this.AddNewMainComment(commentText, wait);
+
+            try
+            {
+                wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
+
+            }
+            catch (Exception)
+            {
+                ;
+            }
+
+            wait.Until(b => b.FindElement(By.CssSelector(".main-comment")).Displayed);
 
             // Wait until new main comment is mounted to DOM
-            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
 
             var latestMainComment = this.browser.FindElements(By.CssSelector(".main-comment")).FirstOrDefault();
 
@@ -193,11 +193,11 @@
                 this.browser.FindElement(By.CssSelector("#postLogin a")));
 
             var username = this.Login(AppConstants.UserRoleName);
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             string commentText = new string('a', 33);
-            this.AddNewMainComment(commentText);
+            this.AddNewMainComment(commentText, wait);
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
 
             var firstMainComment = this.browser.FindElements(By.CssSelector(".main-comment")).FirstOrDefault();
@@ -220,10 +220,11 @@
 
             var username = this.Login(AppConstants.UserRoleName);
 
-            string commentText = new string('a', 33);
-            this.AddNewMainComment(commentText);
-
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+
+            string commentText = new string('a', 33);
+            this.AddNewMainComment(commentText, wait);
+
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
 
             this.browser.Navigate().GoToUrl(this.browser.Url);
@@ -247,11 +248,11 @@
                 this.browser.FindElement(By.CssSelector("#postLogin a")));
 
             var username = this.Login(AppConstants.UserRoleName);
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             string commentText = new string('a', 33);
-            this.AddNewMainComment(commentText);
+            this.AddNewMainComment(commentText, wait);
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
 
             // Add subcomment
@@ -290,11 +291,11 @@
                 this.browser.FindElement(By.CssSelector("#postLogin a")));
 
             var username = this.Login(AppConstants.UserRoleName);
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             string commentText = new string('a', 33);
-            this.AddNewMainComment(commentText);
+            this.AddNewMainComment(commentText, wait);
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
 
             this.browser.Navigate().GoToUrl(this.browser.Url);
@@ -335,11 +336,11 @@
                 this.browser.FindElement(By.CssSelector("#postLogin a")));
 
             var username = this.Login(AppConstants.UserRoleName);
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             string commentText = new string('a', 33);
-            this.AddNewMainComment(commentText);
+            this.AddNewMainComment(commentText, wait);
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".main-comment")));
 
             // Add subcomment
@@ -407,8 +408,9 @@
             this.jsExecutor.ExecuteScript("arguments[0].click()", element);
         }
 
-        private void AddNewMainComment(string commentText)
+        private void AddNewMainComment(string commentText, WebDriverWait wait)
         {
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector(".comment-box")));
             var addCommentBox = this.browser.FindElement(By.CssSelector(".comment-box"));
             var addCommentTextbox = addCommentBox.FindElement(By.CssSelector("[name = Content]"));
             addCommentTextbox.SendKeys(commentText);
@@ -417,8 +419,10 @@
             this.Click(submitCommentBtn);
         }
 
-        private string Login(string role)
+        private string Login(string role, string returnUrl = "test7-test7")
         {
+            this.browser.Navigate().GoToUrl(this.server.RootUri + "/Identity/Account/Login?ReturnUrl=/Articles/test7-test7");
+
             var username = this.configuration.GetSection($"{role}:Username").Value;
             var password = this.configuration.GetSection($"{role}:Password").Value;
 
@@ -428,6 +432,39 @@
             this.Click(this.SubmitBtn);
 
             return username;
+        }
+
+        private void WaitForBrowserToRefresh(WebDriverWait wait, By elementToBeHiddenSelector, By elementToBeDisplayedSelector)
+        {
+            // Stale element error if we don't use the strategy below
+            try
+            {
+                // Wait for calendar to reset
+                wait.Until(b => !b.FindElement(elementToBeHiddenSelector).Displayed);
+                wait.Until(b => b.FindElement(elementToBeDisplayedSelector).Displayed);
+            }
+            catch (StaleElementReferenceException ex)
+            {
+                wait.Until(b => !b.FindElement(elementToBeHiddenSelector).Displayed);
+                wait.Until(b => b.FindElement(elementToBeDisplayedSelector).Displayed);
+            }
+        }
+
+        private void ResetDb()
+        {
+            // Empty appointments collection in server
+            using (var scope = this.server.Server.Services.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Comment>>();
+                var comments = repo.All().Where(x => !x.IsDeleted).ToList();
+
+                foreach (var appt in comments)
+                {
+                    repo.Delete(appt);
+                }
+
+                repo.SaveChangesAsync().GetAwaiter().GetResult();
+            }
         }
 
         public void Dispose()
@@ -440,8 +477,10 @@
         {
             if (disposing)
             {
-                this.server?.Dispose();
-                this.browser?.Dispose();
+                //this.server?.Dispose();
+                //this.browser?.Dispose();
+                this.ResetDb();
+                this.browser.Manage().Cookies.DeleteAllCookies();
             }
         }
     }

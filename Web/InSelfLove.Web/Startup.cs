@@ -232,7 +232,9 @@
             });
 
             // Transient app services
-            services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
+
+            services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"], this.environment.EnvironmentName));
+
             services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IVideoService, VideoService>();
             services.AddTransient<ICloudinaryService, CloudinaryService>();

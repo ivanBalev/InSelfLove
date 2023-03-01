@@ -16,7 +16,7 @@ function editCommentDisplay(btn) {
 function saveCommentEdit(e) {
     e.preventDefault();
     // Gather data
-    let csfrToken = e.target.parentElement.parentElement.parentElement.parentElement
+    let csrfToken = e.target.parentElement.parentElement.parentElement.parentElement
         .querySelector('input[name=__RequestVerificationToken]').value;
     let Id = e.target.parentElement.parentElement.querySelector('#Id').value;
     let Content = e.target.parentElement.parentElement.querySelector('[name=Content]').value;
@@ -27,7 +27,7 @@ function saveCommentEdit(e) {
         '/api/EditComment',
         'put',
         `Id=${Id}&Content=${Content}&ArticleId=${ArticleId}&VideoId=${VideoId}`,
-        csfrToken)
+        csrfToken)
         .then(response => {
             if (!response.ok) {
                 console.log(response.text);
@@ -45,12 +45,12 @@ function saveCommentEdit(e) {
         });
 
 
-    async function putData(url = '', method, data, csfrToken) {
+    async function putData(url = '', method, data, csrfToken) {
         const response = await fetch(url, {
             method,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-CSRF-TOKEN': csfrToken,
+                'X-CSRF-TOKEN': csrfToken,
             },
             body: data,
         });
