@@ -52,10 +52,10 @@
                 await this.articleService.GetBySlug(slug, this.UserTimezoneIdFromCookie));
 
             // Return 404 if article doesn't exist
-            if (viewModel == null)
-            {
-                return this.NotFound();
-            }
+            //if (viewModel == null)
+            //{
+            //    return this.NotFound();
+            //}
 
             return this.View(viewModel);
         }

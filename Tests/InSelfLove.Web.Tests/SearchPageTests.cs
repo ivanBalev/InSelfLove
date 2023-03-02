@@ -3,8 +3,10 @@
     using System;
     using System.Collections.ObjectModel;
     using System.Linq;
-
+    using InSelfLove.Data.Common.Repositories;
+    using InSelfLove.Data.Models;
     using InSelfLove.Web.Controllers.Helpers;
+    using Microsoft.Extensions.DependencyInjection;
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
     using OpenQA.Selenium.Support.UI;
@@ -25,9 +27,7 @@
         public SearchPageTests(SeleniumServerFactory<TestStartup> server)
         {
             this.server = server;
-            var opts = new ChromeOptions();
-            opts.AcceptInsecureCertificates = true;
-            this.browser = new ChromeDriver(opts);
+            this.browser = server.browser;
             this.jsExecutor = this.browser as IJavaScriptExecutor;
 
             this.testStringUri = server.RootUri + "/Search?searchTerm=test nonExistentText";
@@ -203,6 +203,33 @@
             Assert.Equal(this.displayedItemsCount, this.PageVideos.Count);
         }
 
+        private void ResetDb()
+        {
+            // Empty appointments collection in server
+            using (var scope = this.server.Server.Services.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
+                var appts = repo.All().Where(x => !x.IsDeleted).ToList();
+
+                foreach (var appt in appts)
+                {
+                    repo.Delete(appt);
+                }
+
+                repo.SaveChangesAsync().GetAwaiter().GetResult();
+
+                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Video>>();
+                var appts1 = repo.All().Where(x => !x.IsDeleted).ToList();
+
+                foreach (var appt in appts1)
+                {
+                    repo.Delete(appt);
+                }
+
+                repo1.SaveChangesAsync().GetAwaiter().GetResult();
+            }
+        }
+
         public void Dispose()
         {
             this.Dispose(true);
@@ -213,8 +240,8 @@
         {
             if (disposing)
             {
-                this.server?.Dispose();
-                this.browser?.Dispose();
+                //this.ResetDb();
+                //this.browser.Manage().Cookies.DeleteAllCookies();
             }
         }
     }

@@ -3,7 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Threading.Tasks;
+    using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Articles;
     using InSelfLove.Services.Data.Videos;
@@ -26,9 +28,7 @@
         public HomePageTests(SeleniumServerFactory<TestStartup> server)
         {
             this.server = server;
-            var opts = new ChromeOptions();
-            opts.AcceptInsecureCertificates = true;
-            this.browser = new ChromeDriver(opts);
+            this.browser = server.browser;
 
             this.browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
             this.browser.Manage().Window.Maximize();
@@ -110,8 +110,7 @@
         {
             if (disposing)
             {
-                this.server?.Dispose();
-                this.browser?.Dispose();
+                ;
             }
         }
     }
