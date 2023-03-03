@@ -3,11 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using CloudinaryDotNet.Actions;
     using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Helpers;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using OpenQA.Selenium;
@@ -154,6 +152,64 @@
 
             Assert.Equal(commentText, secondSubommentPostRefreshContent);
             Assert.Equal(username, secondSubcommentPostRefreshAuthorUsername);
+        }
+
+        [Fact]
+        public void EditShouldWorkCorrectly()
+        {
+            this.SeedArticleComments();
+
+            var username = this.Login(AppConstants.UserRoleName, "Articles/test6-test6");
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(b => b.FindElement(By.CssSelector(".main-comment")).Displayed);
+
+            var commentEditBtn = this.browser.FindElement(By.CssSelector(".main-comment .edit-btn"));
+
+            this.Click(commentEditBtn);
+            wait.Until(b => b.FindElement(By.CssSelector(".edit-comment")).Displayed);
+
+            var editCommentBox = this.browser.FindElement(By.CssSelector(".edit-comment"));
+            var textarea = editCommentBox.FindElement(By.CssSelector("textarea"));
+
+            textarea.Clear();
+            var editedText = "edited comment";
+            textarea.SendKeys(editedText);
+            this.Click(editCommentBox.FindElement(By.CssSelector(".save-edit-btn")));
+            wait.Until(b => !b.FindElement(By.CssSelector(".edit-comment")).Displayed);
+
+            var commentContent = this.browser.FindElement(By.CssSelector(".main-comment .comment-content")).Text;
+            Assert.Equal(editedText, commentContent);
+
+            this.browser.Navigate().Refresh();
+            wait.Until(b => b.FindElement(By.CssSelector(".main-comment")).Displayed);
+
+            commentContent = this.browser.FindElement(By.CssSelector(".main-comment .comment-content")).Text;
+            Assert.Equal(editedText, commentContent);
+        }
+
+        [Fact]
+        public void DeleteShouldWorkCorrectly()
+        {
+            this.SeedArticleComments();
+
+            var username = this.Login(AppConstants.UserRoleName, "Articles/test6-test6");
+
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
+            wait.Until(b => b.FindElement(By.CssSelector(".main-comment")).Displayed);
+
+            var commentDeleteBtn = this.browser.FindElement(By.CssSelector(".main-comment .delete-btn"));
+
+            this.Click(commentDeleteBtn);
+            wait.Until(b => b.FindElement(By.Id("confirm-comment-delete")).Displayed);
+
+            this.Click(this.browser.FindElement(By.CssSelector("#confirm-comment-delete .delete-comment-confirm-btn")));
+            wait.Until(b => !b.FindElement(By.CssSelector("#confirm-comment-delete")).Displayed);
+
+            Assert.Throws<NoSuchElementException>(() => this.browser.FindElement(By.CssSelector(".main-comment")));
+
+            this.browser.Navigate().Refresh();
+            Assert.Throws<NoSuchElementException>(() => this.browser.FindElement(By.CssSelector(".main-comment")));
         }
 
         [Fact]
@@ -355,22 +411,6 @@
             return username;
         }
 
-        private void WaitForBrowserToRefresh(WebDriverWait wait, By elementToBeHiddenSelector, By elementToBeDisplayedSelector)
-        {
-            // Stale element error if we don't use the strategy below
-            try
-            {
-                // Wait for calendar to reset
-                wait.Until(b => !b.FindElement(elementToBeHiddenSelector).Displayed);
-                wait.Until(b => b.FindElement(elementToBeDisplayedSelector).Displayed);
-            }
-            catch (StaleElementReferenceException ex)
-            {
-                wait.Until(b => !b.FindElement(elementToBeHiddenSelector).Displayed);
-                wait.Until(b => b.FindElement(elementToBeDisplayedSelector).Displayed);
-            }
-        }
-
         private void ResetDb()
         {
             // Empty appointments collection in server
@@ -406,20 +446,12 @@
                     Content = "comment 1",
                 };
 
-                //commentsRepo.AddAsync(comment).GetAwaiter().GetResult();
-                //commentsRepo.SaveChangesAsync().GetAwaiter().GetResult();
-
                 var subcomment = new Comment
                 {
                     ArticleId = articleId,
                     UserId = userId,
                     Content = "comment 2",
-                    //ParentCommentId = 1,
                 };
-
-
-                //commentsRepo.AddAsync(subcomment).GetAwaiter().GetResult();
-                //commentsRepo.SaveChangesAsync().GetAwaiter().GetResult();
 
                 var subcommentLevel2 = new Comment
                 {
@@ -429,9 +461,6 @@
                     ParentCommentId = 2,
                 };
 
-                //commentsRepo.AddAsync(subcommentLevel2).GetAwaiter().GetResult();
-                //commentsRepo.SaveChangesAsync().GetAwaiter().GetResult();
-
                 var subcommentLevel3 = new Comment
                 {
                     ArticleId = articleId,
@@ -440,11 +469,15 @@
                     ParentCommentId = 2,
                 };
 
-                subcomment.SubComments = new List<Comment>();
-                subcomment.SubComments.Add(subcommentLevel2);
-                subcomment.SubComments.Add(subcommentLevel3);
-                comment.SubComments = new List<Comment>();
-                comment.SubComments.Add(subcomment);
+                subcomment.SubComments = new List<Comment>
+                {
+                    subcommentLevel2,
+                    subcommentLevel3,
+                };
+                comment.SubComments = new List<Comment>
+                {
+                    subcomment,
+                };
 
                 commentsRepo.AddAsync(comment).GetAwaiter().GetResult();
                 commentsRepo.SaveChangesAsync().GetAwaiter().GetResult();
@@ -461,8 +494,6 @@
         {
             if (disposing)
             {
-                //this.server?.Dispose();
-                //this.browser?.Dispose();
                 this.ResetDb();
                 this.browser.Manage().Cookies.DeleteAllCookies();
             }

@@ -559,7 +559,7 @@
                         UtcStart = DateTime.UtcNow.Date
                                            .AddDays(daysAhead)
                                            .AddHours(AppointmentService.DefaultWorkdayStart + i),
-                        IsPaid = true,
+                        IsPaid = paid,
                     };
 
                     if (awaiting || approved)
