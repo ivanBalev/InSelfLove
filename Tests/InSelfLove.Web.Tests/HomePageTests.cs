@@ -91,8 +91,6 @@
         [Fact]
         public void ArticleCardsHaveEqualHeights()
         {
-            // TODO: check contacts preview has same height as article previews
-
             // Assert js script for equalizing article preview cards' heights works
             for (int i = 1; i < this.PageArticles.Count; i++)
             {

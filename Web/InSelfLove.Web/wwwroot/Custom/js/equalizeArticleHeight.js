@@ -5,7 +5,7 @@
     if (articlesArray.length === 0) {
         return;
     }
-
+        
     // Get one of their heights
     let randomArticleHeight = articlesArray[0].offsetHeight;
 
@@ -15,11 +15,13 @@
         // Get the tallest preview item
         articlesArray.forEach(e => e.offsetHeight > maxHeight ? maxHeight = e.offsetHeight : null);
 
-        // Set all items' heights to equal that
+         //Set all items' heights to equal that
         for (let i = 0; i < articlesArray.length; i++) {
             DOMarticlesAndAboutPreview[i].style.height = maxHeight + 'px';
         }
     }
 }
 
-equalizeArticleHeight();
+// Fix for home page bug where just calling the function gives inaccurate
+// values for .offsetHeight of .article-resize elements. 2+ hours spent debugging - not worth it
+setTimeout(equalizeArticleHeight, 300);

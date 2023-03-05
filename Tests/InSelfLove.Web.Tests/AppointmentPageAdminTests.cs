@@ -234,7 +234,6 @@
                 .FindElement(By.CssSelector(".usernameGroup")).Displayed);
         }
 
-        // TODO: Check if async tests will work now
         [Fact]
         public void AvailableSameDayAppointmentsCancelledWhenSubmittingNewDailySchedule()
         {
@@ -345,11 +344,12 @@
             availableAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
             availableAppointment.Click();
 
+            // Get username from details modal
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
-
             var usernameInDetails = this.browser.FindElement(this.AppointmentDetailsModalSelector)
-                        .FindElement(By.CssSelector(".username"))
-                        .Text;
+                        .FindElement(By.CssSelector(".username")).Text;
+
+            // Assert username in details is admin
             Assert.Equal(usernameInDetails, this.configuration.GetSection($"{AppConstants.AdministratorRoleName}:Username").Value);
         }
 
@@ -375,9 +375,9 @@
                 // Wait for appt details modal to display
                 wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
+                // Assert occupy btn is not visible
                 var btn = this.browser.FindElement(this.AppointmentDetailsModalSelector)
                     .FindElement(By.Id("occupyAppointment"));
-
                 Assert.False(btn.Displayed);
             }
         }
@@ -412,17 +412,19 @@
             availableAppointment = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
             availableAppointment.Click();
 
+            // Make sure onsite checkbox is now selected
             var onsiteCheckboxPostRefresh = this.browser.FindElement(
                 this.AppointmentDetailsModalSelector).FindElement(
                 By.CssSelector("#onSiteDetailsToggle .toggle-checkbox"));
             Assert.True(onsiteCheckboxPostRefresh.Selected);
-            this.Click(onsiteCheckboxPostRefresh);
 
+            // Make appt available only online
+            this.Click(onsiteCheckboxPostRefresh);
             this.WaitForBrowserToRefresh(wait, this.AppointmentDetailsModalSelector, this.AppointmentSelector);
 
+            // Ensure changes have taken effect
             var appt = this.browser.FindElements(this.AppointmentSelector).FirstOrDefault();
             appt.Click();
-
             var onsiteCheckboxPostSecondRefresh = this.browser.FindElement(
                 this.AppointmentDetailsModalSelector).FindElement(
                 By.CssSelector("#onSiteDetailsToggle .toggle-checkbox"));
@@ -435,18 +437,17 @@
             this.CreateAppointments(1, 1, approved: true, paid: true);
             this.Login(AppConstants.AdministratorRoleName);
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-
             // Get pending appointment
             var appointment = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointment.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
+            // Assert we have text in the payment span => admin is notified of payment status
             var paidSpan = this.browser.FindElement(this.AppointmentDetailsModalSelector)
                 .FindElement(By.ClassName("paid"));
-
             Assert.True(paidSpan.Text != string.Empty);
         }
 
@@ -472,9 +473,9 @@
                 // Wait for appt details modal to display
                 wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
+                // Assert pending/approved appt's location cannot be changed by admin
                 var toggle = this.browser.FindElement(this.AppointmentDetailsModalSelector)
                     .FindElement(By.Id("onSiteDetailsToggle"));
-
                 Assert.False(toggle.Displayed);
             }
         }
@@ -482,46 +483,48 @@
         [Fact]
         public void CanSubmitWorkingHours()
         {
-            // Log in & go to appts page
             this.Login(AppConstants.AdministratorRoleName);
 
+            // Open working hours modal
             var workingHoursBtn = this.browser.FindElement(By.Id("btnWorkingHours"));
             workingHoursBtn.Click();
-
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(By.Id("workingHours")).Displayed);
 
+            // Enter data in start hour input field
             var startHourElement = this.browser.FindElement(By.Id("startHour"));
             var startHour = "03:00";
             this.jsExecutor.ExecuteScript("arguments[0].value=arguments[1]", startHourElement, startHour);
             this.jsExecutor.ExecuteScript("arguments[0].dispatchEvent(new Event('change'))", startHourElement);
+
+            // Assert entered data is displayed for admin
             Assert.Equal(this.browser.FindElement(By.Id("startHourDisplay")).GetAttribute("innerHTML"), startHour.TrimStart('0'));
 
+            // Enter data in end hour input field
             var endHourElement = this.browser.FindElement(By.Id("endHour"));
             var endHour = "13:00";
             this.jsExecutor.ExecuteScript("arguments[0].value=arguments[1]", endHourElement, endHour);
             this.jsExecutor.ExecuteScript("arguments[0].dispatchEvent(new Event('change'))", endHourElement);
+
+            // Assert entered data is displayed for admin
             Assert.Equal(this.browser.FindElement(By.Id("endHourDisplay")).GetAttribute("innerHTML"), endHour.TrimStart('0'));
 
+            // Sumit updated data to server
             this.browser.FindElement(By.Id("workingHoursSubmitBtn")).Click();
-
             this.WaitForBrowserToRefresh(wait, By.Id("workingHours"), this.CalendarDaySelector);
 
-            var emptyDay = this.browser
-               .FindElements(this.CalendarDaySelector)
-               .LastOrDefault();
-
             // Click our day in the calendar
+            var emptyDay = this.browser.FindElement(this.CalendarDaySelector);
             Actions actions = new Actions(this.browser);
             actions.MoveToElement(emptyDay, 5, 5).Click().Perform();
             wait.Until(b => b.FindElement(this.DailyAvailabilityModalSelector).Displayed);
+
+            // Get first & last appointment slot
             var dailyModal = this.browser.FindElement(this.DailyAvailabilityModalSelector);
-
-            // Get first appointment slot
             var firstSlotTime = dailyModal.FindElement(this.DailyTimeSlotSelector).GetAttribute("innerHTML").Trim();
-            var lastSlottime = dailyModal.FindElements(this.DailyTimeSlotSelector).LastOrDefault()
-                .GetAttribute("innerHTML").Trim();
+            var lastSlottime = dailyModal.FindElements(this.DailyTimeSlotSelector).LastOrDefault().GetAttribute("innerHTML").Trim();
 
+            // Ensure working hours change has applied
             Assert.Equal(startHour.TrimStart('0'), firstSlotTime);
             Assert.Equal("12:30", lastSlottime);
         }
@@ -626,12 +629,8 @@
         {
             if (disposing)
             {
-                // Disposing of server after each test doesn't allow us to use the server to create scope
-                // For retrieving services - disposed object error
-                //this.server?.Dispose();
                 this.ResetDb();
                 this.browser.Manage().Cookies.DeleteAllCookies();
-                //this.browser?.Dispose();
             }
         }
     }

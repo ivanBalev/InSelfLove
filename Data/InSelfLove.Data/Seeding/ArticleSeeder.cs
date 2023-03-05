@@ -20,6 +20,14 @@
 
             var articles = new List<Article>
             {
+                // TODO: Seed with some valid titles and content. this does not
+                // provide very useful data for testing.
+                // Also, data for testing needs to be inserted via service
+                // instead of directly into the dbContext
+
+                // That would have avoided a bug where search was not working
+                // due to syllabification - content entered in db is syllabified
+                // which prevented terms from matching
                 new Article
                 {
                     Title = "Test1 Test1",

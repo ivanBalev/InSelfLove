@@ -203,33 +203,6 @@
             Assert.Equal(this.displayedItemsCount, this.PageVideos.Count);
         }
 
-        private void ResetDb()
-        {
-            // Empty appointments collection in server
-            using (var scope = this.server.Server.Services.CreateScope())
-            {
-                var repo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
-                var appts = repo.All().Where(x => !x.IsDeleted).ToList();
-
-                foreach (var appt in appts)
-                {
-                    repo.Delete(appt);
-                }
-
-                repo.SaveChangesAsync().GetAwaiter().GetResult();
-
-                var repo1 = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Video>>();
-                var appts1 = repo.All().Where(x => !x.IsDeleted).ToList();
-
-                foreach (var appt in appts1)
-                {
-                    repo.Delete(appt);
-                }
-
-                repo1.SaveChangesAsync().GetAwaiter().GetResult();
-            }
-        }
-
         public void Dispose()
         {
             this.Dispose(true);

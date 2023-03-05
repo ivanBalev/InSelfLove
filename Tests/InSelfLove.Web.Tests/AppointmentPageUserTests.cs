@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.Linq;
+
     using InSelfLove.Data.Common.Repositories;
     using InSelfLove.Data.Models;
     using InSelfLove.Services.Data.Appointments;
@@ -51,27 +52,33 @@
         [Fact]
         public void GuestCannotBookAppointments()
         {
+            // Create an appt and go to appts page
             this.CreateAppointments();
             this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/Appointments");
 
+            // Click on available appt
             var availableAppointment = this.browser.FindElement(this.AppointmentSelector);
             availableAppointment.Click();
 
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(By.Id("loginModal")).Displayed);
+
+            // Assert user is prompted to log in
             Assert.True(this.browser.FindElement(By.Id("loginModal")).Displayed);
         }
 
         [Fact]
         public void UserSeesOthersAppointmentsCorrectly()
         {
+            // Create an appt and go to appts page
             this.CreateAppointments(unavailable: true);
-
             this.browser.Navigate().GoToUrl(this.server.RootUri + "/api/Appointments");
 
+            // Ensure appt is styled as unavailable
             var appointment = this.browser.FindElement(this.AppointmentSelector);
             Assert.Contains("gray", appointment.GetAttribute("class"));
 
+            // Ensure no action takes place when unavailable appt is clicked
             appointment.Click();
             Assert.False(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
         }
@@ -82,15 +89,20 @@
             this.CreateAppointments(3);
             this.Login(AppConstants.UserRoleName);
 
+            // Book first appt
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             this.BookFirstAvailableAppointment(wait);
 
+            // Get the rest of the appts
             var otherAppointments = this.browser.FindElements(this.AppointmentSelector).Skip(1).ToList();
 
+            // Assert they're all listed as unavailable (user can only book 1 appt per day by design)
             foreach (var appt in otherAppointments)
             {
+                // Ensure styling is correct
                 Assert.Contains("gray", appt.GetAttribute("class"));
 
+                // Ensure nothing happens when user clicks on appt
                 appt.Click();
                 Assert.False(this.browser.FindElement(this.BookAppointmentModalSelector).Displayed);
             }
@@ -102,53 +114,56 @@
             this.CreateAppointments();
             var username = this.Login(AppConstants.UserRoleName);
 
+            // Book first appt
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             this.BookFirstAvailableAppointment(wait);
 
+            // Click on first appt
             var myAppointment = this.browser.FindElement(this.AppointmentSelector);
             myAppointment.Click();
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
-            // Check if it's now awaiting approval for current user
+            // Assert it's now awaiting approval for current user
             var appointmentDetailsModal = this.browser.FindElement(this.AppointmentDetailsModalSelector);
             var usernameOnDetailsModal = appointmentDetailsModal.FindElement(
                 By.CssSelector(".usernameGroup .username")).Text;
-
             Assert.Equal(username, usernameOnDetailsModal);
         }
 
         [Fact]
         public void AppointmentOnsiteBookingWorksCorrectly()
         {
+            // Create appt that's available for onsite booking
             this.CreateAppointments(onSite: true);
             this.Login(AppConstants.UserRoleName);
 
+            // Book appt
             WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             this.BookFirstAvailableAppointment(wait, true);
 
+            // Open details modal for appt
             var myAppointment = this.browser.FindElement(this.AppointmentSelector);
             myAppointment.Click();
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
+            // Ensure user is informed the appt will be onsite
             var appointmentDetailsModal = this.browser.FindElement(this.AppointmentDetailsModalSelector);
             var onSiteMsg = appointmentDetailsModal.FindElement(By.Id("onSiteDetailsMsg"));
-
             Assert.True(onSiteMsg.Displayed);
         }
 
         [Fact]
-        public void PendingAppointmentCancellation()
+        public void PendingAppointmentCancellationWorksCorrectly()
         {
             this.CreateAppointments(1, 1, true);
             this.Login(AppConstants.UserRoleName);
-
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             // Get pending appointment and save its location
             var appointmentPendingApproval = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointmentPendingApproval.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Cancel appointment
@@ -159,11 +174,9 @@
 
             // Confirm cancellation
             wait.Until(b => b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
-
             var cancelConfirmBtn = this.browser
                 .FindElement(this.CancelAppointmentConfirmModalSelector)
                 .FindElement(By.CssSelector(".confirmCancelAppointment"));
-
             cancelConfirmBtn.Click();
             this.WaitForBrowserToRefresh(wait, this.CancelAppointmentConfirmModalSelector, this.AppointmentSelector);
 
@@ -177,18 +190,17 @@
         }
 
         [Fact]
-        public void ApprovedAppointmentCancellation()
+        public void ApprovedAppointmentCancellationWorksCorrectly()
         {
             this.CreateAppointments(1, 1, false, true);
             this.Login(AppConstants.UserRoleName);
-
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             // Get pending appointment
             var approvedAppointment = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             approvedAppointment.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Cancel appointment
@@ -199,18 +211,15 @@
 
             // Confirm cancellation
             wait.Until(b => b.FindElement(this.CancelAppointmentConfirmModalSelector).Displayed);
-
             var cancelConfirmBtn = this.browser
                 .FindElement(this.CancelAppointmentConfirmModalSelector)
                 .FindElement(By.CssSelector(".confirmCancelAppointment"));
-
             cancelConfirmBtn.Click();
             this.WaitForBrowserToRefresh(wait, this.CancelAppointmentConfirmModalSelector, this.AppointmentSelector);
 
             // Click on same element
             var availableAppt = this.browser.FindElement(this.AppointmentSelector);
             availableAppt.Click();
-
             wait.Until(b => b.FindElement(this.BookAppointmentModalSelector).Displayed);
 
             // Assert book appointment modal is now displayed
@@ -223,48 +232,46 @@
             this.CreateAppointments(1, 1, true);
             this.Login(AppConstants.UserRoleName);
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-
             // Get pending appointment
             var appointmentPendingApproval = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointmentPendingApproval.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // With only a single pending appointment, SSR doesn't provide the payment btn at all
-            // so this should be null
             Assert.Throws<NoSuchElementException>(() => this.browser.FindElement(By.Id("payBtn")));
         }
 
         [Fact]
         public void PendingAndApprovedAppointmentsPayBtnStateIsCorrect()
         {
+            // Create approved & pending appts
             this.CreateAppointments(1, 1, awaiting: true);
             this.CreateAppointments(1, 2, approved: true);
             this.Login(AppConstants.UserRoleName);
-
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             // Get pending appointment
             var appointmentPendingApproval = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointmentPendingApproval.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
-            // Btn should be there since we have another appt on the page which is approved
+            // Payment btn should be there since we have another appt on the page which is approved
             // but it shouldn't be visible
             Assert.False(this.browser.FindElement(By.Id("payBtn")).Displayed);
 
+            // Get approved appt
             var approvedAppointment = this.browser.FindElements(this.AppointmentSelector).LastOrDefault();
 
             // Open appointment details modal
             this.Click(approvedAppointment);
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
-            // Btn should be there since we have another appt on the page which is approved
-            // but it shouldn't be visible
+            // Payment btn should be visible
             Assert.True(this.browser.FindElement(By.Id("payBtn")).Displayed);
         }
 
@@ -274,42 +281,40 @@
             this.CreateAppointments(1, 1, approved: true, paid: true);
             this.Login(AppConstants.UserRoleName);
 
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
-
             // Get pending appointment
             var appointment = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointment.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
+            // Asser payment status is displayed
             var paidSpan = this.browser.FindElement(this.AppointmentDetailsModalSelector)
                 .FindElement(By.ClassName("paid"));
-
             Assert.True(paidSpan.Text != string.Empty);
         }
 
         [Fact]
         public void PaymentWorksWithValidCardNumber()
         {
-            // Provide stripe CLI with endpoint for submitting events
+            // Provide Stripe CLI with endpoint for submitting events
             var command = $"stripe listen --forward-to {this.server.RootUri}/stripe/confirmpay";
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = "cmd.exe";
-            psi.WindowStyle = ProcessWindowStyle.Normal;
-            psi.Arguments = "/k " + command;
-            Process.Start(psi);
+            ProcessStartInfo stripeEvent = new ProcessStartInfo();
+            stripeEvent.FileName = "cmd.exe";
+            stripeEvent.WindowStyle = ProcessWindowStyle.Normal;
+            stripeEvent.Arguments = "/k " + command;
+            Process.Start(stripeEvent);
 
             this.CreateAppointments(approved: true);
             this.Login(AppConstants.UserRoleName);
-
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             // Get pending appointment
             var appointment = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointment.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Open payment modal
@@ -334,22 +339,25 @@
             this.browser.SwitchTo().DefaultContent();
             this.browser.FindElement(By.CssSelector("#payment-form #submit")).Click();
 
+            // Assert payment is confirmed on the front end
             this.WaitForBrowserToRefresh(wait, By.Id("payment-form-modal"), By.Id("success-modal"));
             Assert.True(this.browser.FindElement(By.Id("success-modal")).Displayed);
 
             using (var scope = this.server.Services.CreateScope())
             {
-                // Get repo
+                // Get repos
                 var paymentRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Payment>>();
                 var appointmentRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Appointment>>();
                 var userRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<ApplicationUser>>();
 
                 var userName = this.configuration.GetSection($"{AppConstants.UserRoleName}:Username").Value;
 
+                // Get user, appt & payment
                 var user = userRepo.All().FirstOrDefault(x => x.UserName == userName);
                 var apptmnt = appointmentRepo.All().FirstOrDefault();
                 var payment = paymentRepo.All().FirstOrDefault();
 
+                // Assert payment is registered in db
                 Assert.Equal(payment.ApplicationUserId, user.Id);
                 Assert.Equal(payment.AppointmentId, apptmnt.Id);
             }
@@ -360,22 +368,21 @@
         {
             // Provide stripe CLI with endpoint for submitting events
             var command = $"stripe listen --forward-to {this.server.RootUri}/stripe/confirmpay";
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = "cmd.exe";
-            psi.WindowStyle = ProcessWindowStyle.Normal;
-            psi.Arguments = "/k " + command;
-            Process.Start(psi);
+            ProcessStartInfo stripeEvent = new ProcessStartInfo();
+            stripeEvent.FileName = "cmd.exe";
+            stripeEvent.WindowStyle = ProcessWindowStyle.Normal;
+            stripeEvent.Arguments = "/k " + command;
+            Process.Start(stripeEvent);
 
             this.CreateAppointments(approved: true);
             this.Login(AppConstants.UserRoleName);
-
-            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
 
             // Get pending appointment
             var appointment = this.browser.FindElement(this.AppointmentSelector);
 
             // Open appointment details modal
             appointment.Click();
+            WebDriverWait wait = new WebDriverWait(this.browser, TimeSpan.FromSeconds(10));
             wait.Until(b => b.FindElement(this.AppointmentDetailsModalSelector).Displayed);
 
             // Open payment modal
@@ -399,8 +406,9 @@
             // Submit data
             this.browser.SwitchTo().DefaultContent();
             this.browser.FindElement(By.CssSelector("#payment-form #submit")).Click();
-
             this.WaitForBrowserToRefresh(wait, By.Id("payment-form-modal"), By.Id("fail-modal"));
+
+            // Assert payment failure is registered on front end
             Assert.True(this.browser.FindElement(By.Id("fail-modal")).Displayed);
 
             using (var scope = this.server.Services.CreateScope())
@@ -408,6 +416,8 @@
                 // Get repo
                 var paymentRepo = scope.ServiceProvider.GetRequiredService<IDeletableEntityRepository<Payment>>();
                 var payment = paymentRepo.All().ToList();
+
+                // Assert payment is not registered in db as well
                 Assert.Empty(payment);
             }
         }
@@ -446,6 +456,7 @@
 
                         if (unavailable)
                         {
+                            // Attribute the appt with a user
                             var userName = this.configuration.GetSection($"{AppConstants.AdministratorRoleName}:Username").Value;
                             appt.User = userRepo.All().FirstOrDefault(x => x.UserName == userName);
                         }
@@ -468,9 +479,9 @@
 
         private void BookFirstAvailableAppointment(WebDriverWait wait, bool onSite = false)
         {
+            // Click on 1st available appt
             var availableAppointment = this.browser.FindElement(this.AppointmentSelector);
             availableAppointment.Click();
-
             wait.Until(b => b.FindElement(this.BookAppointmentModalSelector).Displayed);
             var bookAppointmentModal = this.browser.FindElement(this.BookAppointmentModalSelector);
 
@@ -480,19 +491,19 @@
 
             if (onSite)
             {
+                // Click on onsite checkbox
                 var onsiteCheckbox = this.browser.FindElement(
                this.BookAppointmentModalSelector).FindElement(
                By.CssSelector("#onSiteBookToggle .toggle-checkbox"));
                 this.Click(onsiteCheckbox);
             }
 
-            // Click book appointment btn
+            // Click the submit btn
             var sendAppointmentBtn = bookAppointmentModal.FindElement(By.Id("sendAppointment"));
             sendAppointmentBtn.Click();
 
             this.WaitForBrowserToRefresh(wait, this.BookAppointmentModalSelector, this.AppointmentSelector);
         }
-
 
         private void ResetDb()
         {
@@ -559,10 +570,8 @@
         {
             if (disposing)
             {
-                //this.server?.Dispose();
                 this.ResetDb();
                 this.browser.Manage().Cookies.DeleteAllCookies();
-                //this.browser?.Dispose();
             }
         }
     }

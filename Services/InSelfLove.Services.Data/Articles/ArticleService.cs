@@ -112,7 +112,8 @@
                 var searchItems = SearchHelper.GetSearchItems(searchString);
 
                 // Build query with articles which content or title matches the search terms
-                query = query.Search(x => x.Content.ToLower(), x => x.Title.ToLower()).Containing(searchItems);
+                // Invisible dashes area inserted when creating articles, so those need escaping
+                query = query.Search(x => x.Content.Replace("&shy;", string.Empty).ToLower(), x => x.Title.ToLower()).Containing(searchItems);
             }
 
             // Order data & skip if using search pagination
