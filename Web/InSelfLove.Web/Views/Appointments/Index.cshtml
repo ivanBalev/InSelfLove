@@ -60,10 +60,12 @@
         !x.IsUnavailable && DateTime.Compare(x.Start.ToUniversalTime(), DateTime.UtcNow) > 0).ToArray();
 
     // Include online payment logic if user has approved but unpaid upcoming appointments
-    bool includePayment = user != null &&
-                          Model.Appointments.Any(a =>
-                                                 a.UserId == user.Id &&
-                                                 a.IsApproved && !a.IsPaid);
+    //bool includePayment = user != null &&
+    //                      Model.Appointments.Any(a =>
+    //                                             a.UserId == user.Id &&
+    //                                             a.IsApproved && !a.IsPaid);
+
+    bool includePayment = false;
 }
 
 <div class="d-none dbEvents">@apptmnts</div>

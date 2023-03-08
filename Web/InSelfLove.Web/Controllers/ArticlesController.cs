@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net.Http;
     using System.Text.RegularExpressions;
@@ -17,6 +18,7 @@
     using InSelfLove.Web.InputModels.Article;
     using InSelfLove.Web.ViewModels.Article;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
@@ -25,16 +27,19 @@
         private readonly ICloudinaryService cloudinaryService;
         private readonly IArticleService articleService;
         private readonly IDeletableEntityRepository<Article> articleRepository;
+        private readonly IDeletableEntityRepository<ApplicationUser> userRepository;
 
         public ArticlesController(
             ICloudinaryService cloudinaryService,
             IArticleService articleService,
-            IDeletableEntityRepository<Article> articleRepository)
+            IDeletableEntityRepository<Article> articleRepository,
+            IDeletableEntityRepository<ApplicationUser> userRepository)
             : base(articleService)
         {
             this.cloudinaryService = cloudinaryService;
             this.articleService = articleService;
             this.articleRepository = articleRepository;
+            this.userRepository = userRepository;
         }
 
         [HttpGet]
@@ -178,12 +183,63 @@
             {
                 article.Content = await this.EnterContentSyllables(article.Content);
                 this.articleRepository.Update(article);
-                await this.articleRepository.SaveChangesAsync();
 
                 // Avoid overloading the server
                 System.Threading.Thread.Sleep(2000);
             }
 
+            await this.articleRepository.SaveChangesAsync();
+
+            return this.RedirectToAction(nameof(this.Index));
+        }
+
+        // Temporary function to enter all images' dimensions in db at the same time
+        [HttpGet]
+        [Route("Articles/InsertImgDimensions")]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
+        public async Task<IActionResult> InsertImgDimensions()
+        {
+            var allArticles = await this.articleRepository.All().ToListAsync();
+
+            using (HttpClient client = new HttpClient())
+            {
+                foreach (var article in allArticles)
+                {
+                    var img1 = await client.GetStreamAsync(article.ImageUrl);
+                    var img = SixLabors.ImageSharp.Image.Load(img1);
+                    article.ImageWidth = img.Width;
+                    article.ImageHeight = img.Height;
+                    this.articleRepository.Update(article);
+                }
+            }
+
+            await this.articleRepository.SaveChangesAsync();
+            return this.RedirectToAction(nameof(this.Index));
+        }
+
+        // Temporary function to fix issue with profile pics
+        [HttpGet]
+        [Route("Articles/FixProfilePics")]
+        [Authorize(Roles = AppConstants.AdministratorRoleName)]
+        public async Task<IActionResult> FixProfilePics()
+        {
+            var users = await this.userRepository.All().ToListAsync();
+
+            foreach (var user in users)
+            {
+                if (!user.ProfilePhoto.Contains("http"))
+                {
+                    var fifi = Convert.FromBase64String(user.ProfilePhoto.Split("data:image/jpeg;base64,")[1]);
+                    var stream = new MemoryStream(fifi);
+
+                    IFormFile file = new FormFile(stream, 0, fifi.Length, user.UserName, user.UserName);
+                    user.ProfilePhoto = await this.cloudinaryService
+                                                  .UploadPicture(file, user.UserName);
+                    this.userRepository.Update(user);
+                }
+            }
+
+            await this.userRepository.SaveChangesAsync();
             return this.RedirectToAction(nameof(this.Index));
         }
 
