@@ -27,7 +27,7 @@
                 throw new ArgumentException("Subject and message should be provided.");
             }
 
-            if (environment.Equals("Test"))
+            if (!this.environment.ToLower().Equals("production"))
             {
                 return;
             }

@@ -43,10 +43,13 @@
             <partial name="_VideoDeleteConfirmPartial" model="@Model.Id" />
         </div>
         <!-- Suggested videos -->
-        <vc:sidebar is-article="false" date="@Model.CreatedOn"></vc:sidebar>
+        @*<vc:sidebar is-article="false" date="@Model.CreatedOn"></vc:sidebar>*@
+        @await Component.InvokeAsync("Sidebar", new {isArticle=false, date=Model.CreatedOn})
+
     </div>
     <!-- Suggested articles -->
-    <vc:bottombar is-article="false" date="@Model.CreatedOn"></vc:bottombar>
+    @*<vc:bottombar is-article="false" date="@Model.CreatedOn"></vc:bottombar>*@
+    @await Component.InvokeAsync("Bottombar", new {isArticle=false, date=Model.CreatedOn})
 </div>
 
 @section Scripts

@@ -35,6 +35,16 @@
         [HttpGet]
         public async Task<IActionResult> Index(string timezone)
         {
+            // If request is redirect from Stripe, wait for StripeService
+            // to finish updating the appointment's status to IsPaid = true
+            // before returning data to client
+            if (this.Request.Query.Keys.Any(k => k.ToLower().Equals("payment_intent")))
+            {
+                // Otherwise, we get the appointment before it's been updated
+                // and return inaccurate data to client
+                await Task.Delay(500);
+            }
+
             // Update user timezone
             var userTimezone = await this.UpdateUserTimezone(timezone);
 

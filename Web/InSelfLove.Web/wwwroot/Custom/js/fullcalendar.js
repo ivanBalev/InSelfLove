@@ -7,7 +7,7 @@ const shortWeekdayNames = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'F
 const todayShortName = new Date().toString().split(' ')[0];
 const workDayStartStr = "workDayStart";
 const workDayEndStr = "workDayEnd";                                                 // Remove nulls, 0, ""
-const allAppointments = document.querySelector('.dbEvents').textContent.split(';').filter(n => n).map(x => x).map(e => JSON.parse(e));
+let allAppointments = document.querySelector('.dbEvents').textContent.split(';').filter(n => n).map(x => x).map(e => JSON.parse(e));
 const availableAppointments = allAppointments?.filter(a => !a.isUnavailable && new Date(a.start) > new Date());
 
 // Style
@@ -66,11 +66,12 @@ const patientIssueDescription = document.getElementById('patientIssueDescription
 let currentSelectedDate = '';
 let availableDailySlots = [];
 let currentAppointment = null;
+let calendar;
 
 // MAIN FUNCTION
 document.addEventListener('DOMContentLoaded', function () {
 
-    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         selectable: true,
         initialView: 'custom',
         firstDay: 1, //Monday
@@ -564,6 +565,7 @@ onsiteDetailsCheckbox?.addEventListener('change', function () {
         });
 })
 
+// Show payment form on clicking of payment btn
 payBtn?.addEventListener('click', async () => {
     bootstrap.Modal.getOrCreateInstance(detailsModal).hide();
     bootstrap.Modal.getOrCreateInstance(paymentFormModal).show();

@@ -60,12 +60,14 @@
         !x.IsUnavailable && DateTime.Compare(x.Start.ToUniversalTime(), DateTime.UtcNow) > 0).ToArray();
 
     // Include online payment logic if user has approved but unpaid upcoming appointments
-    //bool includePayment = user != null &&
-    //                      Model.Appointments.Any(a =>
-    //                                             a.UserId == user.Id &&
-    //                                             a.IsApproved && !a.IsPaid);
+    bool includePayment = user != null &&
+                          Model.Appointments.Any(a =>
+                                                 a.UserId == user.Id &&
+                                                 a.IsApproved && !a.IsPaid);
 
-    bool includePayment = false;
+    bool isRedirectFromStripe = this.Context.Request.Query.Keys.Any(k => k.ToLower().Equals("payment_intent"));
+
+    //bool includePayment = false;
 }
 
 <div class="d-none dbEvents">@apptmnts</div>
@@ -323,7 +325,9 @@
     }
 
     @*Stripe modals only if we have an unpaid, upcoming, approved appointment*@
-    @if (includePayment)
+    @*Or if user has just paid their appointment -> we still need the success/fail*@
+    @*modals even if there are no unpaid appointments*@
+    @if (includePayment || isRedirectFromStripe)
     {
         <partial name="_StripeModalsPartial" />
     }
@@ -335,7 +339,7 @@
 </div>
 
 @section Scripts {
-    @if (includePayment)
+    @if (includePayment || isRedirectFromStripe)
     {
         <script src="https://js.stripe.com/v3/"></script>
         <script src="~/Custom/js/stripeCheckout.js" defer></script>
@@ -344,7 +348,7 @@
     }
 
 @section Links {
-    @if (includePayment)
+    @if (includePayment || isRedirectFromStripe)
     {
         <link rel="stylesheet" href="~/Custom/css/stripe-checkout.css" />
     }

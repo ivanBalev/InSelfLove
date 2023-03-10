@@ -38,7 +38,7 @@
                         <span class="text-muted text-center article-date">@Model.CreatedOn.ToString("dd MMMM, yyyy")</span>
                     </div>
                     <div class="img-wrapper text-center" style="aspect-ratio:@(Model.ImageWidth) / @(Model.ImageHeight)">
-                            @Html.Raw(articlePic)
+                        @Html.Raw(articlePic)
                     </div>
                     <!-- Edit and Delete buttons if user is admin -->
                     @if (this.User.IsInRole(AppConstants.AdministratorRoleName))
@@ -73,10 +73,12 @@
             <partial name="_ArticleDeleteConfirmPartial" model="@Model.Id" />
         </div>
         <!-- Suggested articles -->
-        <vc:sidebar is-article="true" date="@Model.CreatedOn"></vc:sidebar>
+        @await Component.InvokeAsync("Sidebar", new {isArticle=true, date=Model.CreatedOn})
+        @*<vc:sidebar is-article="true" date="@Model.CreatedOn"></vc:sidebar>*@
     </div>
     <!-- Suggested videos -->
-    <vc:bottombar is-article="true" date="@Model.CreatedOn"></vc:bottombar>
+    @await Component.InvokeAsync("Bottombar", new {isArticle=true, date=Model.CreatedOn})
+    @*<vc:bottombar is-article="true" date="@Model.CreatedOn"></vc:bottombar>*@
 </div>
 
 @section Scripts
