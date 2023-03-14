@@ -7,7 +7,7 @@
     var bodyText = string.Format(localizer[Model.Status].Value, Model.Start.ToString("dd MMMM HH:mm"));
 }
 
-<div>Здравейте, </div>
+<div>@localizer["Hello"], </div>
 <div></div>
 <div>
     <p>
@@ -17,7 +17,7 @@
     @if (Model.Status.Equals("NewAppointment") || Model.Status.Equals("AwaitingApproval"))
     {
         <p>
-            <b>@(Model.IsOnSite ? "Сесия на живо" : "Онлайн сесия")</b>
+            <b>@(Model.IsOnSite ? localizer["Session in person"] : "Online session")</b>
         </p>
         <p>
             Описание: @Model.Description
@@ -25,4 +25,4 @@
     }
 </div>
 <div></div>
-<div>Поздрави!</div>
+<div>@localizer["Thanks"]!</div>

@@ -1,5 +1,5 @@
 ﻿const userIsAdmin = document.getElementById('btnWorkingHours') !== null;
-const culture = document.cookie.match('Culture')?.input.substr(-2) || 'bg';
+const culture = getCookie('.AspNetCore.Culture')?.substr(-2) || 'bg';
 const userIsLoggedIn = document.querySelector('a[href*="Logout"]') !== null;
 const cultureIsEn = culture === 'en';
 const csrfToken = document.querySelector("#csrfToken input[name=__RequestVerificationToken]").value;
@@ -24,13 +24,17 @@ if (
     dayCount = 3;
 }
 
-// Alert messages
+// Messages
 const approved = cultureIsEn ? 'Approved' : 'Одобрен';
 const paid = cultureIsEn ? 'Paid' : 'Платен';
 const awaitingApproval = cultureIsEn ? 'Awaiting approval' : 'Очаква потвърждение';
 const genericError = cultureIsEn ? 'Error' : 'Грешка';
 const appointmentDescriptionError = cultureIsEn ? 'Please enter more than 30 characters' :
     'Моля, въведи повече от 30 символа';
+const onlineSessionMsg = cultureIsEn ? 'Online session' : 'Онлайн сесия';
+const onsiteSessionMsg = cultureIsEn ? 'Session in person' : 'Сесия на живо';
+const issueDescriptionMsg = cultureIsEn ? 'Please, describe briefly or enter a phone number' : 'Моля, опишете накратко или въведете телефонен номер';
+
 
 // Buttons
 const submitDailyAvailabilityBtn = document.getElementById('submitDailyAvailability');
@@ -210,7 +214,7 @@ function showBookingModal(appt) {
         // Show message
         onSiteBookMsg.style.display = 'block';
         // Set message content
-        onSiteBookMsg.textContent = 'Онлайн сесия';
+        onSiteBookMsg.textContent = onlineSessionMsg;
     }
 
     bootstrap.Modal.getOrCreateInstance(bookModal).show();
@@ -294,7 +298,7 @@ function setUpOnsiteSlider() {
             // Admin only sees whether apptmnt is onsite or online
             onSiteDetailsMsg.style.display = 'block';
             // Set the appropriate message depending on isonsite property
-            onSiteDetailsMsg.textContent = currentAppointment.isOnSite ? 'Сесия на живо' : 'Онлайн сесия';
+            onSiteDetailsMsg.textContent = currentAppointment.isOnSite ? onsiteSessionMsg : onlineSessionMsg;
         }
 
         // Appointment is available
@@ -311,9 +315,9 @@ function setUpOnsiteSlider() {
         // This is user's own appointment 
         // Its isonsite property value can no longer be changed
         if (currentAppointment.isOnSite) {
-            onSiteDetailsMsg.textContent = 'На живо';
+            onSiteDetailsMsg.textContent = onsiteSessionMsg;
         } else {
-            onSiteDetailsMsg.textContent = 'Онлайн';
+            onSiteDetailsMsg.textContent = onlineSessionMsg;
         }
     }
 }
@@ -448,7 +452,7 @@ sendAppointmentBtn.addEventListener('click', function () {
 
     // Validate description
     if (patientIssueDescription?.length < 10) {
-        alert('Моля, опишете накратко или въведете телефонен номер');
+        alert(issueDescriptionMsg);
         return;
     }
 

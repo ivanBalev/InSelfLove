@@ -168,14 +168,23 @@
   <data name="If you find it necessary, please let me know what happened." xml:space="preserve">
     <value>If you find it necessary, please let me know what happened.</value>
   </data>
+  <data name="In person" xml:space="preserve">
+    <value>In person</value>
+  </data>
   <data name="Issue description:" xml:space="preserve">
     <value>Issue description:</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
   </data>
   <data name="Log in" xml:space="preserve">
     <value>Log in</value>
   </data>
   <data name="NoAvailableApppointments" xml:space="preserve">
     <value>No available appointments in calendar. Go to </value>
+  </data>
+  <data name="Payment" xml:space="preserve">
+    <value>Payment</value>
   </data>
   <data name="Phone number:" xml:space="preserve">
     <value>Phone number:</value>

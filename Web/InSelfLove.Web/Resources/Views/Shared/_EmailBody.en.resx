@@ -118,39 +118,39 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AwaitingApproval" xml:space="preserve">
-    <value>Заявката ви за терапевтична сесия на {0} е получена. Моля, изчакайте потвърждение.</value>
+    <value>Your request for a therapy session on {0} has been received. Please wait for confirmation.</value>
   </data>
   <data name="Cancellation" xml:space="preserve">
-    <value>Много съжалявам, но ми се налага да откажа сесията.</value>
+    <value>My apologies, something has come up and I'll have to cancel.</value>
   </data>
   <data name="Confirmation" xml:space="preserve">
-    <value>Вашата сесия на {0} е потвърдена. До скоро!</value>
+    <value>Your therapy session on {0} has been confirmed. See you soon!</value>
   </data>
   <data name="Failed" xml:space="preserve">
-    <value>Възникна проблем при плащането ви за терапевтична сесия на {0}. Моля, опитайте отново.</value>
+    <value>There was an issue with your payment for a therapy session on {0}. Please try again</value>
   </data>
   <data name="Hello" xml:space="preserve">
-    <value>Здравейте</value>
+    <value>Hello</value>
   </data>
   <data name="In person" xml:space="preserve">
-    <value>На живо</value>
+    <value>In person</value>
   </data>
   <data name="NewAppointment" xml:space="preserve">
-    <value>Имате нова сесия на {0}</value>
+    <value>You have a new therapy session on {0}</value>
   </data>
   <data name="Online session" xml:space="preserve">
-    <value>Онлайн сесия</value>
+    <value>Online session</value>
   </data>
   <data name="Processing" xml:space="preserve">
-    <value>Плащането ви за терапевтична сесия на {0} се обработва.</value>
+    <value>Your payment for a therapy session on {0} is being processed.</value>
   </data>
   <data name="Session in person" xml:space="preserve">
-    <value>Сесия на живо</value>
+    <value>Session in person</value>
   </data>
   <data name="Successful" xml:space="preserve">
-    <value>Плащането ви за терапевтична сесия на {0} е успешно!</value>
+    <value> Your payment for a therapy session on {0} is successful!</value>
   </data>
   <data name="Thanks" xml:space="preserve">
-    <value>Поздрави</value>
+    <value>Thanks</value>
   </data>
 </root>

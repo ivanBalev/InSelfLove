@@ -1,11 +1,19 @@
 ﻿let elements;
 let stripe;
 
+const locale = getCookie('.AspNetCore.Culture')?.substr(-2);
+const localeIsEn = locale == 'en';
+
+const unexpectedErrorStr = localeIsEn ? 'An unexpected error has occurred' : 'Възникна неочаквана грешка.';
+const paymentFailedStr = localeIsEn ? 'Payment has failed. Please try again' : 'Неуспешно плащане. Моля, опитайте отново.';
+const processingPaymentStr = localeIsEn ? 'Your payment is being processed' : 'Плащането ви се обработва.';
+const successfulPaymentStr = localeIsEn ? 'Successful Payment!' : 'Успешно плащане!';
+
 document.addEventListener('DOMContentLoaded', async () => {
     const { publishableKey } = await fetch('/stripe/config').then(r => r.json());
 
     // TODO: locale per user
-    stripe = Stripe(publishableKey, { locale: 'bg' });
+    stripe = Stripe(publishableKey, { locale });
 
     checkStatus();
 
@@ -62,7 +70,7 @@ async function handleSubmit(e) {
     if (error.type === "card_error" || error.type === "validation_error") {
         showMessage(error.message, true);
     } else {
-        showMessage("Възникна неочаквана грешка.", true);
+        showMessage(unexpectedErrorStr, true);
     }
 
     setLoading(false);
@@ -82,16 +90,16 @@ async function checkStatus() {
 
     switch (paymentIntent.status) {
         case "succeeded":
-            showMessage("Успешно плащане!");
+            showMessage(successfulPaymentStr);
             break;
         case "processing":
-            showMessage("Плащането ви се обработва.");
+            showMessage(processingPaymentStr);
             break;
         case "requires_payment_method":
-            showMessage("Неуспешно плащане. Моля, опитайте отново.", true);
+            showMessage(paymentFailedStr, true);
             break;
         default:
-            showMessage("Възникна неочаквана грешка.", true);
+            showMessage(unexpectedErrorStr, true);
             break;
     }
 }

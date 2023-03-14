@@ -1,7 +1,9 @@
 ﻿@page
 @model ConfirmEmailChangeModel
 @{
-    ViewData["Title"] = "Confirm email change";
+    ViewData["Title"] = "Смяна на парола";
 }
 
-<h1>@ViewData["Title"]</h1>
+<partial name="_SlimShowcasePartial" model="@ViewData["Title"]" />
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />

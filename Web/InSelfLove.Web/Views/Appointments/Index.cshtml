@@ -13,7 +13,7 @@
 
 @{
     // Provide title to layout partial for title header
-    ViewData["Title"] = @localizer["Запази час"].Value;
+    ViewData["Title"] = @localizer["Book Appointment"].Value;
 
     bool userIsAdmin = this.User.IsInRole(AppConstants.AdministratorRoleName);
     var user = await this.UserManager.GetUserAsync(this.User);
@@ -59,7 +59,7 @@
     var availableAppointments = Model.Appointments.Where(x =>
         !x.IsUnavailable && DateTime.Compare(x.Start.ToUniversalTime(), DateTime.UtcNow) > 0).ToArray();
 
-    // Include online payment logic if user has approved but unpaid upcoming appointments
+     //Include online payment logic if user has approved but unpaid upcoming appointments
     bool includePayment = user != null &&
                           Model.Appointments.Any(a =>
                                                  a.UserId == user.Id &&
@@ -136,7 +136,7 @@
                         <label id="onSiteBookToggle" class="toggle">
                             <input class="toggle-checkbox" type="checkbox">
                             <div class="toggle-switch"></div>
-                            <span class="toggle-label">На живо?</span>
+                            <span class="toggle-label">@localizer["In Person"]?</span>
                         </label>
                     </div>
                 </div>
@@ -195,7 +195,7 @@
 
                     @*Location info div*@
                     <div class="form-group mt-3">
-                        <label class="text-center text-black-50  border-bottom">Локация </label>
+                        <label class="text-center text-black-50  border-bottom">@localizer["Location"]</label>
                         <p id="onSiteDetailsMsg"></p>
 
                         @*User cannot change apptmnt location after specifying it when booking*@
@@ -205,7 +205,7 @@
                             <label id="onSiteDetailsToggle" class="toggle mt-2">
                                 <input class="toggle-checkbox" type="checkbox">
                                 <div class="toggle-switch"></div>
-                                <span class="toggle-label">На живо?</span>
+                                <span class="toggle-label">@localizer["In person"]?</span>
                             </label>
                         }
                     </div>
@@ -221,7 +221,7 @@
                         @*Payment div for user*@
                         @if (!userIsAdmin && includePayment)
                         {
-                            <button type="button" id="payBtn" class="btn green-btn">Плащане</button>
+                            <button type="button" id="payBtn" class="btn green-btn">@localizer["Payment"]</button>
                         }
 
                         <button id="btnDelete" class="btn white-btn">@localizer["Cancel"]</button>
