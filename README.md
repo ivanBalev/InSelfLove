@@ -52,6 +52,9 @@
   - Then, as user, reqeust to book the slot
   - As admin, approve the request
   - Once approved, the user will be given the option to pay
+  - 4242 4242 4242 4242 - valid card
+  - 4100 0000 0000 0019 - invalid card
+  - any future date under 'Expiration' and any CVC works
 <p>
    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678906628/aididie_fvo2r9.gif" title="StripePayment" alt="StripePayment" width="740"/>&nbsp;
 </p>
