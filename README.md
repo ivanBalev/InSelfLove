@@ -10,7 +10,7 @@
   <img src="https://github.com/devicons/devicon/blob/master/icons/bootstrap/bootstrap-original-wordmark.svg" title="Bootstrap" alt="Bootstrap" width="40" height="40"/>&nbsp;
 </div>
 
-<h4 align="center"> Content management system for Mimi Marinova’s psychotherapy practice</h4>
+<h4 align="center"> Content management system for <a href="https://www.instagram.com/in.self.love">Mimi Marinova</a>’s psychotherapy practice</h4>
 
 <h4 align="center">You can find a dummy version of the app at <a href="https://test.inselflove.com">test.inselflove.com</a></h4>
 
@@ -48,6 +48,10 @@
 * reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
 
 * Stripe payment integrated into project UI
+  - Test it out by logging in as admin and creating an appointment slot by clicking on any day in the calendar
+  - Then, as user, reqeust to book the slot
+  - As admin, approve the request
+  - Once approved, the user will be given the option to pay
 <p>
    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678906628/aididie_fvo2r9.gif" title="StripePayment" alt="StripePayment" width="740"/>&nbsp;
 </p>
