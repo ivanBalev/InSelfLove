@@ -37,25 +37,31 @@
   - <b>Cloudinary</b> provides optimized image size and format
   - <b>lite-youtube-embed</b> renders embedded youtube videos significantly faster
   - <b>Bundling and minification</b> of JS and CSS reduce requests' number and size
-  
   <p>
   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678834424/Lighthouse_gaiiug.png" alt="LighthouseScore" width="500">
   </p>
+  
+* Mixed server-side and client-side rendering
+  - Proivdes a rich site interaction with good SEO
+  - Comments and search pagination make use this approach
+   
+* reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
+
+* Stripe payment integrated into project UI
+<p>
+   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678906628/aididie_fvo2r9.gif" title="StripePayment" alt="StripePayment" width="740"/>&nbsp;
+</p>
   
 * Attention to detail for improved UX
   - The <b>EnterContentSyllables</b> method in <b>ArticlesController</b> provides an alternative to 'text-align: justify'
   - This approach produces a more natural reading experience and makes text more compact
   - Below you can see default | text-align: justify | syllabified content
-
  <p>
  <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678839130/preview_1_npkj1c.png" width="32%">
  <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678838888/preview_3_buqh3l.png" width="32%">
  <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678836876/preview_2_ix97bf.png" width="32%" align="top">
  </p>
  
- * Mixed server-side and client-side rendering
-   - Proivdes a rich site interaction with good SEO
-   - Comments and search pagination make use this approach
 
 * Extensive unit testing of services and integration testing
 <div>
@@ -64,11 +70,4 @@
 </div>
 <p>
    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678876435/TestsCoverage_jyz7as.png" title="TestCoverage" alt="TestCoverage" width="900"/>&nbsp;
-</p>
-
-* reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
-* Stripe payment integration
-
-<p>
-   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678906628/aididie_fvo2r9.gif" title="StripePayment" alt="StripePayment" width="740"/>&nbsp;
 </p>
