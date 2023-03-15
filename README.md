@@ -41,7 +41,7 @@
   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678834424/Lighthouse_gaiiug.png" alt="LighthouseScore" width="500">
   </p>
   
-* Mixed server-side and client-side rendering
+* Server-side and client-side rendering
   - Proivdes rich site interaction with good SEO
   - Comments and search pagination make use this approach
    
