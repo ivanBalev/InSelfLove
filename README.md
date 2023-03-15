@@ -42,7 +42,7 @@
   </p>
   
 * Mixed server-side and client-side rendering
-  - Proivdes a rich site interaction with good SEO
+  - Proivdes rich site interaction with good SEO
   - Comments and search pagination make use this approach
    
 * reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
