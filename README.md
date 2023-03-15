@@ -3,6 +3,12 @@
   <br>
     InSelfLove
 </h1>
+<div align="center">
+  <img src="https://github.com/devicons/devicon/blob/master/icons/mysql/mysql-original-wordmark.svg" title="MySQL" alt="MySQL" width="40" height="40"/>&nbsp;
+  <img src="https://github.com/devicons/devicon/blob/master/icons/dotnetcore/dotnetcore-original.svg" title=".NET" alt=".NET" width="40" height="40"/>&nbsp;
+  <img src="https://github.com/devicons/devicon/blob/master/icons/javascript/javascript-original.svg" title="JavaScript" alt="JavaScript" width="40" height="40"/>&nbsp;
+  <img src="https://github.com/devicons/devicon/blob/master/icons/bootstrap/bootstrap-original-wordmark.svg" title="Bootstrap" alt="Bootstrap" width="40" height="40"/>&nbsp;
+</div>
 
 <h4 align="center"> Content management system for Mimi Marinova’s psychotherapy practice</h4>
 
@@ -31,3 +37,17 @@
  <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678836876/preview_2_ix97bf.png" width="32%" align="top">
  </p>
  
+ * Mixed server-side and client-side rendering
+   - Proivdes a rich site interaction with good SEO
+   - Comments and search pagination make use this approach
+
+* Extensive unit testing of services and integration testing
+<div>
+   <img src="https://github.com/devicons/devicon/blob/master/icons/selenium/selenium-original.svg" title="Selenium" alt="Selenium" height="40"/>&nbsp;
+   <img src="https://blog.qa-services.dev/wp-content/uploads/2020/03/xUnitLogo-e1584384960711.png" title="xUnit" alt="xUnit" height="40"/>&nbsp;
+</div>
+<p>
+   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678876435/TestsCoverage_jyz7as.png" title="TestCoverage" alt="TestCoverage" width="900"/>&nbsp;
+</p>
+
+* reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
