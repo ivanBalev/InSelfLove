@@ -21,8 +21,8 @@
   </p>
   
 * Attention to detail for improved UX
-  - The <b>EnterContentSyllables</b> method in <b>ArticlesController</b> provides an alternative to the text-align: justify CSS property
-  - This approach provides a more natural reading experience with the added bonus of making text more compact
+  - The <b>EnterContentSyllables</b> method in <b>ArticlesController</b> provides an alternative to 'text-align: justify'
+  - This approach produces a more natural reading experience and makes text more compact
   - Below you can see default | text-align: justify | syllabified content
 
  <p>
