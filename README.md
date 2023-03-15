@@ -40,11 +40,7 @@
   <p>
   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678834424/Lighthouse_gaiiug.png" alt="LighthouseScore" width="500">
   </p>
-  
-* Server-side and client-side rendering
-  - Provides rich site interaction with good SEO
-  - Comments and search pagination make use this approach
-   
+
 * reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
 
 * Stripe payment integrated into project UI
@@ -58,6 +54,11 @@
 <p>
    <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678906628/aididie_fvo2r9.gif" title="StripePayment" alt="StripePayment" width="740"/>&nbsp;
 </p>
+
+* Server-side and client-side rendering
+  - Provides rich site interaction with good SEO
+  - Comments and search pagination make use this approach
+   
   
 * Attention to detail for improved UX
   - The <b>EnterContentSyllables</b> method in <b>ArticlesController</b> provides an alternative to 'text-align: justify'
