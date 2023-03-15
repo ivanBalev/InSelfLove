@@ -12,8 +12,24 @@
 
 <h4 align="center"> Content management system for Mimi Marinova’s psychotherapy practice</h4>
 
+<h4 align="center">You can find a dummy version of the app at <a href="https://test.inselflove.com">test.inselflove.com</a></h4>
 
-<h4 align="center">You can find a dummy version of the app at <a href="https://test.inselflove.com">test.inselflove.com</a><br> admin -> pass: adminadmin <br> user -> pass: useruser</h4>
+<div align="center">
+ <table>
+  <tr align="center">
+    <td>Username</td>
+     <td>Password</td>
+  </tr>
+  <tr align="center">
+    <td valign="top">admin</td>
+    <td valign="top">adminadmin</td>
+  </tr>
+    <tr align="center">
+    <td valign="top">user</td>
+    <td valign="top">useruser</td>
+  </tr>
+ </table>
+</div>
 
 ## Key Features
 
