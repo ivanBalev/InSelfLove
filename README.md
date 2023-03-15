@@ -41,9 +41,9 @@
   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678834424/Lighthouse_gaiiug.png" alt="LighthouseScore" width="500">
   </p>
 
-* reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
+* <b>reCAPTCHA</b> Enterprise implemented to prevent abusive traffic without user friction
 
-* Stripe payment integrated into project UI
+* <b>Stripe</b> payment integrated into project UI
   - Test it out by logging in as admin and creating an appointment slot by clicking on any day in the calendar
   - Then, as user, reqeust to book the slot
   - As admin, approve the request
@@ -71,7 +71,7 @@
  </p>
  
 
-* Extensive unit testing of services and integration testing
+* Extensive <b>unit testing</b> of services and <b>integration testing</b>
 <div>
    <img src="https://github.com/devicons/devicon/blob/master/icons/selenium/selenium-original.svg" title="Selenium" alt="Selenium" height="40"/>&nbsp;
    <img src="https://blog.qa-services.dev/wp-content/uploads/2020/03/xUnitLogo-e1584384960711.png" title="xUnit" alt="xUnit" height="40"/>&nbsp;
