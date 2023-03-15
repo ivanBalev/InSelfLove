@@ -28,6 +28,6 @@
  <p>
  <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678839130/preview_1_npkj1c.png" width="32%">
  <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678838888/preview_3_buqh3l.png" width="32%">
- <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678836876/preview_2_ix97bf.png" width="32%">
+ <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678836876/preview_2_ix97bf.png" width="32%" align="top">
  </p>
  
