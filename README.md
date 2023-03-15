@@ -17,8 +17,8 @@
 <div align="center">
  <table>
   <tr align="center">
-    <td>Username</td>
-     <td>Password</td>
+    <td><i>Username</i></td>
+     <td><i>Password</i></td>
   </tr>
   <tr align="center">
     <td valign="top">admin</td>
