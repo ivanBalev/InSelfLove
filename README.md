@@ -67,3 +67,8 @@
 </p>
 
 * reCAPTCHA Enterprise implemented to prevent abusive traffic without user friction
+* Stripe payment integration
+
+<p>
+   <img src="https://res.cloudinary.com/dzcajpx0y/image/upload/v1678906628/aididie_fvo2r9.gif" title="StripePayment" alt="StripePayment" width="740"/>&nbsp;
+</p>
