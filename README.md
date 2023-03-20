@@ -58,7 +58,12 @@
 * Server-side and client-side rendering
   - Provides rich site interaction with good SEO
   - Comments and search pagination make use this approach
-   
+
+* Hosted using <b>Nginx</b> as a reverse proxy server on <b>Ubuntu</b>
+<div>
+   <img src="https://github.com/devicons/devicon/blob/master/icons/ubuntu/ubuntu-plain-wordmark.svg" title="Ubuntu" alt="Ubuntu" height="40"/>&nbsp;
+   <img src="https://github.com/devicons/devicon/blob/master/icons/nginx/nginx-original.svg" title="Nginx" alt="Nginx" height="40"/>&nbsp;
+</div>
   
 * Attention to detail for improved UX
   - The <b>EnterContentSyllables</b> method in <b>ArticlesController</b> provides an alternative to 'text-align: justify'
