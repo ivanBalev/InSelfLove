@@ -76,7 +76,7 @@
  </p>
  
 
-* Extensive <b>unit testing</b> of services and <b>integration testing</b>
+* Extensive <b>unit testing</b> of services and <b>integration testing with Selenium</b>
 <div>
    <img src="https://github.com/devicons/devicon/blob/master/icons/selenium/selenium-original.svg" title="Selenium" alt="Selenium" height="40"/>&nbsp;
    <img src="https://blog.qa-services.dev/wp-content/uploads/2020/03/xUnitLogo-e1584384960711.png" title="xUnit" alt="xUnit" height="40"/>&nbsp;
