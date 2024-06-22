@@ -57,7 +57,7 @@
 
 * Server-side and client-side rendering
   - Provides rich site interaction with good SEO
-  - Comments and search pagination make use this approach
+  - Comments and search pagination make use of this approach
 
 * Hosted using <b>Nginx</b> as a reverse proxy server on <b>Ubuntu</b>
 <div>
