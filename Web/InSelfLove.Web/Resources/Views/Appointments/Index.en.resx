@@ -196,7 +196,7 @@
     <value>Save</value>
   </data>
   <data name="Send" xml:space="preserve">
-    <value>Send</value>
+    <value>Book</value>
   </data>
   <data name="Set Daily Availability" xml:space="preserve">
     <value>Set Daily Availability</value>
@@ -214,7 +214,7 @@
     <value>Status:</value>
   </data>
   <data name="This will be shared only with your therapist" xml:space="preserve">
-    <value>not required</value>
+    <value>What would you like to discuss in the session? Or leave a phone number I can call you on.</value>
   </data>
   <data name="Username:" xml:space="preserve">
     <value>Username:</value>
