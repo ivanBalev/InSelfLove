@@ -24,23 +24,23 @@
 
         public static int DefaultWorkdayEnd => 20;
 
-        public async Task<IEnumerable<Appointment>> GetAll(string userId, string adminId, string userTimezone)
+        public async Task<IEnumerable<Appointment>> GetAll(string? userId, string adminId, string? userTimezone)
         {
-            var userIsAdmin = userId == adminId;
-            var dbQuery = this.appointmentRepository.All();
+            bool userIsAdmin = userId == adminId;
+            IQueryable<Appointment> dbQuery = this.appointmentRepository.All();
 
             if (!userIsAdmin)
             {
-                // Include only upcoming available and user's own apptmnts
+                // Include only upcoming available and user's own appointments
                 dbQuery = dbQuery.Where(x => DateTime.Compare(x.UtcStart, DateTime.UtcNow) > 0 || (x.UserId != null && x.UserId == userId));
             }
             else
             {
-                // Include only upcoming available and all occupied apptmnts
+                // Include only upcoming available and all occupied appointments
                 dbQuery = dbQuery.Where(x => DateTime.Compare(x.UtcStart, DateTime.UtcNow) > 0 || x.UserId != null);
             }
 
-            var appointments = await dbQuery.Include(x => x.User).ToArrayAsync();
+            Appointment[] appointments = await dbQuery.Include(x => x.User).ToArrayAsync();
 
             // An appointment available to one user is not necessarily available to another
             // so we need to dynamically set availability instead of storing it in db
@@ -49,10 +49,10 @@
             // Remove other users' data
             this.Sanitize(appointments, userIsAdmin, userId);
 
-            foreach (var appt in appointments)
+            foreach (var appointment in appointments)
             {
                 // Adjust appointments' start times for user
-                appt.UtcStart = TimezoneHelper.ToLocalTime(appt.UtcStart, userTimezone);
+                appointment.UtcStart = TimezoneHelper.ToLocalTime(appointment.UtcStart, userTimezone);
             }
 
             return appointments;
@@ -242,52 +242,52 @@
             await this.appointmentRepository.SaveChangesAsync();
         }
 
-        private void SetAvailability(Appointment[] appointments, bool userIsAdmin, string userId)
+        private void SetAvailability(Appointment[] appointments, bool userIsAdmin, string? userId)
         {
-            if (!userIsAdmin)
+            // Skip availability restrictions for admin users or when user isn't registered
+            if (userIsAdmin || userId == null)
             {
-                // Each regular user gets only 1 appointment per day
-                // Get appointments grouped by day
-                var grouped = appointments.GroupBy(x => x.UtcStart.Date).ToList();
+                return;
+            }
 
-                foreach (var group in grouped)
+            // Group appointments by day to enforce one-per-day limit for regular users
+            foreach (IGrouping<DateTime, Appointment> dayGroup in appointments.GroupBy(x => x.UtcStart.Date))
+            {
+                // Find if current user already has an appointment on this date
+                Appointment? userAppointment = dayGroup.FirstOrDefault(x => x.UserId == userId);
+                if (userAppointment == null)
                 {
-                    var occupiedByUser = group.FirstOrDefault(x => userId != null && x.UserId == userId);
+                    continue; // User has no appointment this day, skip restrictions
+                }
 
-                    // if user already has an appointment booked for the day
-                    // && group has more than 1 slot
-                    if (occupiedByUser != null && group.Count() > 1)
-                    {
-                        // Mark the rest for the day as unavailable
-                        foreach (var item in group.Where(x => x.Id != occupiedByUser.Id))
-                        {
-                            item.IsUnavailable = true;
-                        }
-                    }
+                // Mark all other appointments on the same day as unavailable to enforce daily limit
+                foreach (Appointment appointment in dayGroup.Where(x => x.Id != userAppointment.Id))
+                {
+                    appointment.IsUnavailable = true;
                 }
             }
         }
 
-        private void Sanitize(Appointment[] appointments, bool userIsAdmin, string userId)
+        private void Sanitize(Appointment[] appointments, bool userIsAdmin, string? userId)
         {
-            foreach (var appt in appointments)
+            foreach (Appointment? appointment in appointments)
             {
-                // If user is admin or appt is user's own
-                if (userIsAdmin || (userId != null && userId == appt.UserId))
+                // If user is admin or appointment is user's own
+                if (userIsAdmin || (userId != null && userId == appointment.UserId))
                 {
                     // return full data
                     continue;
                 }
 
                 // Appointment is another user's
-                if (appt.UserId != null)
+                if (appointment.UserId != null)
                 {
-                    // Mark appt as unavailable
-                    appt.IsUnavailable = true;
+                    // Mark appointment as unavailable
+                    appointment.IsUnavailable = true;
 
                     // Clear other user's data
-                    appt.User = null;
-                    appt.UserId = null;
+                    appointment.User = null;
+                    appointment.UserId = null;
                 }
             }
         }

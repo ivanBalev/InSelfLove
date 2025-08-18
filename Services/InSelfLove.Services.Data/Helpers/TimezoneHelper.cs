@@ -6,8 +6,15 @@
 
     public static class TimezoneHelper
     {
-        public static TimeZoneInfo GetTimezoneInfo(string timezone)
+        private const string DEFAULT_TIMEZONE = "Europe/Sofia";
+
+        public static TimeZoneInfo GetTimezoneInfo(string? timezone)
         {
+            if (timezone == null)
+            {
+                return TZConvert.GetTimeZoneInfo(DEFAULT_TIMEZONE);
+            }
+
             try
             {
                 return TZConvert.GetTimeZoneInfo(timezone);
@@ -15,7 +22,7 @@
             catch (Exception)
             {
                 // Set timezone to default value if non-existent timezone is provided
-                return TZConvert.GetTimeZoneInfo("Europe/Sofia");
+                return TZConvert.GetTimeZoneInfo(DEFAULT_TIMEZONE);
             }
         }
 
@@ -30,7 +37,7 @@
             return TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(localTime, DateTimeKind.Unspecified), GetTimezoneInfo(timezone));
         }
 
-        public static DateTime ToLocalTime(DateTime utcTime, string timezone)
+        public static DateTime ToLocalTime(DateTime utcTime, string? timezone)
         {
             return TimeZoneInfo.ConvertTimeFromUtc(utcTime, GetTimezoneInfo(timezone));
         }

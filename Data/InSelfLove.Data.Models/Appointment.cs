@@ -2,6 +2,7 @@
 {
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
+
     using InSelfLove.Data.Common.Models;
 
     public class Appointment : BaseDeletableModel<int>
@@ -11,13 +12,13 @@
             this.CreatedOn = DateTime.UtcNow;
         }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public DateTime UtcStart { get; set; }
 
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         public bool IsApproved { get; set; }
 

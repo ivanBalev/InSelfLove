@@ -1,5 +1,6 @@
 ﻿namespace InSelfLove.Web.Controllers
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -33,7 +34,7 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string timezone)
+        public async Task<IActionResult> Index(string? timezone)
         {
             // If request is redirect from Stripe, wait for StripeService
             // to finish updating the appointment's status to IsPaid = true
@@ -46,20 +47,20 @@
             }
 
             // Update user timezone
-            var userTimezone = await this.UpdateUserTimezone(timezone);
+            string? userTimezone = await this.UpdateUserTimezone(timezone);
 
             // Gather data required by service
-            string userId = this.userManager.GetUserId(this.User);
+            string? userId = this.userManager.GetUserId(this.User);
             string adminId = (await this.GetUser(admin: true)).Id;
 
             // Get appointments
-            var appointments = await this.appointmentService.GetAll(userId, adminId, userTimezone);
+            IEnumerable<Appointment> appointments = await this.appointmentService.GetAll(userId, adminId, userTimezone);
 
             // Map db appointments to view model
-            var appointmentsViewModel = appointments.Select(a =>
+            IEnumerable<AppointmentViewModel> appointmentsViewModel = appointments.Select(a =>
                     AutoMapperConfig.MapperInstance.Map<Appointment, AppointmentViewModel>(a));
 
-            var viewModel = new AppointmentIndexViewModel
+            AppointmentIndexViewModel viewModel = new AppointmentIndexViewModel
             {
                 Appointments = appointmentsViewModel,
             };
@@ -174,12 +175,12 @@
         // Helper methods
 
         // Updates user's timezone and returns it
-        private async Task<string> UpdateUserTimezone(string timezoneFromQuery)
+        private async Task<string?> UpdateUserTimezone(string? timezoneFromQuery)
         {
             // If user hasn't consented to cookies, we get their timezone from query string
-            string userCurrentTimezone = this.UserTimezoneIdFromCookie ?? timezoneFromQuery;
+            string? userCurrentTimezone = this.UserTimezoneIdFromCookie ?? timezoneFromQuery;
 
-            var user = await this.GetUser();
+            ApplicationUser user = await this.GetUser();
 
             // If no data is sent by client, there's nothing to update with
             if (userCurrentTimezone == null)
@@ -189,7 +190,8 @@
 
             // Compare current timezone from cookie/query param with stored timezone in db
             if (user != null &&
-                user.Timezone.ToLower().CompareTo(userCurrentTimezone.ToLower()) != 0)
+                (user.Timezone == null
+                || user.Timezone.ToLower().CompareTo(userCurrentTimezone.ToLower()) != 0))
             {
                 // Update if current & stored timezones don't match
                 user.Timezone = userCurrentTimezone;
