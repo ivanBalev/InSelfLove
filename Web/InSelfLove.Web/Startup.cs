@@ -175,14 +175,14 @@
 
                     googleOptions.ClientId = googleAuthNSection["ClientId"];
                     googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-                })
+                });
 
                // Facebook
-               .AddFacebook(facebookOptions =>
-               {
-                   facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
-                   facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
-               });
+               //.AddFacebook(facebookOptions =>
+               //{
+               //    facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
+               //    facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
+               //});
             }
 
             // Cookies setup

@@ -75,14 +75,6 @@ namespace InSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var userAppointmentIds = await this.appointmentService
-                .GetAll(user.Id, admin.Id, user.Timezone);
-
-            foreach (var appointment in userAppointmentIds)
-            {
-                await this.appointmentService.Delete(appointment);
-            }
-
             user.IsDeleted = true;
             user.DeletedOn = DateTime.UtcNow;
             var result = await this._userManager.UpdateAsync(user);

@@ -2,7 +2,7 @@
 
 if (consentCookie !== undefined) {
     let timezoneCookieName = "timezoneIANA";
-    let timezoneCookieValue = decodeURIComponent(getCookie(timezoneCookieName));
+    let timezoneCookieValue = rawTimezoneCookie ? decodeURIComponent(rawTimezoneCookie) : undefined;
     let currentTimezoneValue = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // If timezone cookie doesn't exist || it doesn't match the current timezone
     if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneValue) !== 0) {
