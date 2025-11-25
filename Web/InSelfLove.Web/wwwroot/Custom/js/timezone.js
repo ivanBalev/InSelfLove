@@ -1,20 +1,19 @@
-﻿let consentCookie = getCookie(".AspNet.Consent");
+﻿const consentCookie = getCookie(".AspNet.Consent");
 
-if (consentCookie !== undefined) {
-    let timezoneCookieName = "timezoneIANA";
-    let timezoneCookieValue = rawTimezoneCookie ? decodeURIComponent(rawTimezoneCookie) : undefined;
-    let currentTimezoneValue = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // If timezone cookie doesn't exist || it doesn't match the current timezone
-    if (!timezoneCookieValue || timezoneCookieValue.localeCompare(currentTimezoneValue) !== 0) {
-        setCookie(timezoneCookieName, currentTimezoneValue);
+if (consentCookie) {
+    const timezoneCookieName = "timezoneIANA";
+    const rawTimezoneCookie = getCookie(timezoneCookieName);
+    const timezoneCookie = rawTimezoneCookie ? decodeURIComponent(rawTimezoneCookie) : undefined;
+    const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    if (!timezoneCookie || timezoneCookie.localeCompare(currentTimezone) !== 0) {
+        setCookie(timezoneCookieName, currentTimezone);
     }
 } else {
-    // Set query parameter with the current timezone
-    let appointmentsAnchor = document.querySelector('a[href$="api/Appointments"]');
-    appointmentsAnchor.href = appointmentsAnchor.href + '?timezone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const appointmentsAnchor = document.querySelector('a[href$="api/Appointments"]');
+    appointmentsAnchor.href = appointmentsAnchor.href + '?timezone=' + currentTimezoneValue;
 }
 
-// Helper functions
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);

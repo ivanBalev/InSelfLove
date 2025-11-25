@@ -103,7 +103,6 @@ namespace InSelfLove.Web.Areas.Identity.Pages.Account.Manage
                 var adminEmail = (await this._userManager.GetUsersInRoleAsync(AppConstants.AdministratorRoleName)).FirstOrDefault().Email;
                 await _emailSender.SendEmailAsync(
                     adminEmail,
-                    AppConstants.SystemName,
                     Input.NewEmail,
                     "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -143,7 +142,6 @@ namespace InSelfLove.Web.Areas.Identity.Pages.Account.Manage
 
             await _emailSender.SendEmailAsync(
                 adminEmail,
-                AppConstants.SystemName,
                 email,
                 "Потвърждение на имейл",
                 $"Моля, потвърдете регистрацията си като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>кликнете тук</a>.");

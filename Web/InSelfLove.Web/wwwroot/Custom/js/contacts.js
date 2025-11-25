@@ -26,8 +26,14 @@ document.getElementById('contacts-form').addEventListener('submit', function (e)
                 data.RecaptchaExpectedAction = expectedAction;
                 data.RecaptchaToken = token;
 
+                const inputElements = document.getElementById("contacts-form").querySelectorAll("input, button, select, textarea");
+
+                inputElements.forEach(el => el.disabled = true);
+
                 postData('/Home/Contacts', data, csfrToken)
                     .then(res => {
+                        inputElements.forEach(el => el.disabled = false);
+
                         // Insert response html (status message)
                         document.getElementsByTagName('nav')[0].after(htmlToElement(res));
 

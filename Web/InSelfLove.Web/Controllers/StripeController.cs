@@ -53,7 +53,7 @@
         {
             if (this.HttpContext.Request.GetDisplayUrl().Contains("test"))
             {
-                await this.emailSender.SendEmailAsync("ivan_sbalev@mail.bg", "Recruiter action", "isbalev@gmail.com", "Recruiter action", "Action in test.inselflove");
+                await this.emailSender.SendEmailAsync("ivan_sbalev@mail.bg", "isbalev@gmail.com", "Recruiter action", "Action in test.inselflove");
             }
 
             // TODO: allow online payment only for confirmed emails;

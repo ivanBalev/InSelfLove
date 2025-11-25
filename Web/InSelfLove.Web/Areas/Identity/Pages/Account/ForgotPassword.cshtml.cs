@@ -61,7 +61,6 @@ namespace InSelfLove.Web.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     admin.Email,
-                    "InSelfLove",
                     Input.Email,
                     "Смяна на парола",
                     $"Моля, сменете паролата си като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>кликнете тук</a>.");

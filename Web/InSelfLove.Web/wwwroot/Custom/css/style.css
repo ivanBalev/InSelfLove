@@ -49,7 +49,7 @@
     }
 
     #about .office-pic-col {
-        margin-top: 7vmin;
+        margin-top: 4vmin;
     }
 
     #about .first-paragraph-col {
@@ -597,8 +597,20 @@ lite-youtube {
     text-align: left;
 }
 
+
+#about .first-paragraph-col {
+    display: flex;
+    align-items: center;
+}
+
 #about .content-col .first-paragraph {
     margin-left: 10vmin;
+}
+
+#about .second-paragraph-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #about .content-col .second-paragraph {
@@ -612,6 +624,9 @@ lite-youtube {
 #about .office-pic {
     width: 100%;
     border-radius: 0.25rem !important;
+    border: 5px solid;
+    border-color: #92ab95;
+    padding: 10px;
 }
 
 #about .row {
@@ -789,7 +804,7 @@ p {
     text-decoration: none;
 }
 
-.green-btn:hover {
+.green-btn:not(:disabled):hover {
     color: white;
 }
 
@@ -797,6 +812,14 @@ p {
     display: inline-block;
     margin-bottom: 3px;
     margin-top: 3px;
+}
+
+#contact input:disabled,
+#contact button:disabled,
+#contact select:disabled,
+#contact textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .video-title {

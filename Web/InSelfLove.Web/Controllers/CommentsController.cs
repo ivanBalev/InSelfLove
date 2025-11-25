@@ -114,7 +114,6 @@
             // Compose email
             await this.emailSender.SendEmailAsync(
                 from: adminEmail,
-                fromName: AppConstants.SystemName,
                 to: adminEmail,
                 subject: emailSubject,
                 htmlContent: emailBody);

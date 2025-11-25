@@ -150,14 +150,6 @@
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
-            // Cloudinary setup
-            var cloudinaryCredentials = new CloudinaryDotNet.Account(
-                this.configuration["Cloudinary:CloudName"],
-                this.configuration["Cloudinary:ApiKey"],
-                this.configuration["Cloudinary:ApiSecret"]);
-            Cloudinary cloudinaryUtility = new Cloudinary(cloudinaryCredentials);
-            services.AddSingleton(cloudinaryUtility);
-
             // Response caching
             services.AddResponseCaching();
 
@@ -210,6 +202,18 @@
             // Singleton config
             services.AddSingleton(this.configuration);
 
+            // SMTP2GO setup
+            services.AddSingleton<IEmailSender>(x => new SMTP2GOEmailSender(
+                this.configuration["SMTP2GO:ApiKey"],
+                this.configuration["Administrator:Email"]));
+
+            // Cloudinary setup
+            var cloudinaryCredentials = new CloudinaryDotNet.Account(
+                this.configuration["Cloudinary:CloudName"],
+                this.configuration["Cloudinary:ApiKey"],
+                this.configuration["Cloudinary:ApiSecret"]);
+            services.AddSingleton(new Cloudinary(cloudinaryCredentials));
+
             // Data repositories
             services.AddScoped(typeof(IDeletableEntityRepository<>), typeof(EfDeletableEntityRepository<>));
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
@@ -232,8 +236,6 @@
             });
 
             // Transient app services
-
-            services.AddTransient<IEmailSender>(x => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"], this.environment.EnvironmentName));
 
             services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IVideoService, VideoService>();

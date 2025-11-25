@@ -43,7 +43,6 @@
             // Send email
             await this.emailSender.SendEmailAsync(
                 from: fromAdmin ? admin.Email : user.Email,
-                fromName: fromAdmin ? AppConstants.SystemName : user.UserName,
                 to: fromAdmin ? user.Email : admin.Email,
                 subject: "Терапевтична сесия",
                 htmlContent: emailBody);

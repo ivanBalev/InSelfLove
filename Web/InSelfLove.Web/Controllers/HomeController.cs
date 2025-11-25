@@ -132,7 +132,6 @@
             // Send email to admin
             await this.emailSender.SendEmailAsync(
                                    from: userInfo.Email,
-                                   fromName: $"{userInfo.FirstName} {userInfo.LastName}",
                                    to: adminEmail,
                                    subject: AppConstants.SystemName,
                                    htmlContent: string.Format(
@@ -145,7 +144,6 @@
             // Send email to user
             await this.emailSender.SendEmailAsync(
                 from: adminEmail,
-                fromName: AppConstants.SystemName,
                 to: userInfo.Email,
                 subject: AppConstants.SystemName,
                 htmlContent: this.localizer[UserEmailBody]);
