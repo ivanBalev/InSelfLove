@@ -82,6 +82,15 @@
             <a asp-area="" asp-controller="Home" asp-action="Contacts" class="green-btn p-2">@localizer["Contact"]</a>
         </div>
     }
+
+    @if (!userIsAdmin && availableAppointments.Length > 0)
+    {
+        <div class="alert alert-dismissible bg-white mb-0" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <span><b>@localizer["TimezoneAdjustment"]</b></span>
+        </div>
+    }
+
     <div id="calendar" class="mt-3"></div>
     @if (userIsAdmin)
     {
@@ -136,7 +145,7 @@
                         <label id="onSiteBookToggle" class="toggle">
                             <input class="toggle-checkbox" type="checkbox">
                             <div class="toggle-switch"></div>
-                            <span class="toggle-label">@localizer["In Person"]?</span>
+                            <span class="toggle-label">@localizer["In person"]?</span>
                         </label>
                     </div>
                 </div>
@@ -219,10 +228,10 @@
                         }
 
                         @*Payment div for user*@
-                        @if (!userIsAdmin && includePayment)
+                        @* @if (!userIsAdmin && includePayment)
                         {
                             <button type="button" id="payBtn" class="btn green-btn">@localizer["Payment"]</button>
-                        }
+                        } *@
 
                         <button id="btnDelete" class="btn white-btn">@localizer["Cancel"]</button>
                     </div>

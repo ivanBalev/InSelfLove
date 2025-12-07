@@ -1,17 +1,20 @@
 ﻿const consentCookie = getCookie(".AspNet.Consent");
+const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 if (consentCookie) {
     const timezoneCookieName = "timezoneIANA";
     const rawTimezoneCookie = getCookie(timezoneCookieName);
     const timezoneCookie = rawTimezoneCookie ? decodeURIComponent(rawTimezoneCookie) : undefined;
-    const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     if (!timezoneCookie || timezoneCookie.localeCompare(currentTimezone) !== 0) {
         setCookie(timezoneCookieName, currentTimezone);
     }
 } else {
     const appointmentsAnchor = document.querySelector('a[href$="api/Appointments"]');
-    appointmentsAnchor.href = appointmentsAnchor.href + '?timezone=' + currentTimezoneValue;
+
+    if (appointmentsAnchor) {
+        appointmentsAnchor.href = appointmentsAnchor.href + '?timezone=' + currentTimezone;
+    }
 }
 
 function getCookie(name) {

@@ -109,7 +109,7 @@
             if (appointment.UserId != null && appointment.UserId != adminId)
             {
                 await this.emailSender.SendEmail(
-                    appointment, userId == adminId, "Cancellation", await this.GetUser(true), await this.GetUser());
+                    appointment, userId == adminId, "Cancellation", await this.GetUser(true), appointment.User);
             }
 
             await this.appointmentService.Cancel(appointment, userId, adminId);
@@ -145,7 +145,7 @@
 
             // Notify user
             await this.emailSender.SendEmail(
-                appointment, fromAdmin: true, "Confirmation", await this.GetUser(true), await this.GetUser());
+                appointment, fromAdmin: true, "Confirmation", await this.GetUser(true), appointment.User);
 
             return this.Ok();
         }

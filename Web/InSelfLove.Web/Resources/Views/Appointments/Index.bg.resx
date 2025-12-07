@@ -180,6 +180,9 @@
   <data name="Log in" xml:space="preserve">
     <value>Влез</value>
   </data>
+  <data name="TimezoneAdjustment" xml:space="preserve">
+    <value>ⓘ Часовете са автоматично коригирани спрямо настоящата ви часова зона</value>
+  </data>
   <data name="NoAvailableApppointments" xml:space="preserve">
     <value>В календара няма свободни часове. Иди на </value>
   </data>

@@ -17,11 +17,15 @@
     @if (Model.Status.Equals("NewAppointment") || Model.Status.Equals("AwaitingApproval"))
     {
         <p>
-            <b>@(Model.IsOnSite ? localizer["Session in person"] : "Online session")</b>
+            <b>@(Model.IsOnSite? localizer["Session in person"] : localizer["Online session"])</b>
         </p>
-        <p>
-            Описание: @Model.Description
-        </p>
+        if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p>
+                Описание: @Model.Description
+            </p>
+        }
+
     }
 </div>
 <div></div>
